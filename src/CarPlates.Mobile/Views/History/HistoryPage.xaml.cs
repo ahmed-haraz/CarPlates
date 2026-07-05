@@ -1,3 +1,5 @@
+using CarPlates.Mobile.ViewModels;
+
 namespace CarPlates.Mobile.Views.History;
 
 public partial class HistoryPage : ContentPage

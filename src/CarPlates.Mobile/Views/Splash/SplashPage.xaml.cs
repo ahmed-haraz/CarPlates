@@ -1,3 +1,5 @@
+using CarPlates.Mobile.ViewModels;
+
 namespace CarPlates.Mobile.Views.Splash;
 
 public partial class SplashPage : ContentPage

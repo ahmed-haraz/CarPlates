@@ -8,89 +8,102 @@
              Title="History">
 
     <ContentPage.Resources>
-        <converters:SyncStatusToColorConverter x:Key="SyncStatusToColorConverter"/>
-        <converters:PlateFormatConverter x:Key="PlateFormatConverter"/>
+        <converters:SyncStatusToColorConverter x:Key="SyncStatusToColorConverter" />
+        <converters:PlateFormatConverter x:Key="PlateFormatConverter" />
     </ContentPage.Resources>
 
     <Grid RowDefinitions="Auto,Auto,*">
         <!-- Search Bar -->
-        <Grid Grid.Row="0" Padding="16,8" ColumnDefinitions="*,Auto,Auto">
+        <Grid Grid.Row="0"
+              Padding="16,8"
+              ColumnDefinitions="*,Auto,Auto">
             <Entry Grid.Column="0"
                    Text="{Binding SearchQuery}"
                    Placeholder="Search by plate number..."
-                   ReturnCommand="{Binding SearchCommand}"/>
+                   ReturnCommand="{Binding SearchCommand}" />
             <Button Grid.Column="1"
                     Text="🔍"
                     Style="{StaticResource IconButton}"
-                    Command="{Binding SearchCommand}"/>
+                    Command="{Binding SearchCommand}" />
             <Button Grid.Column="2"
                     Text="📅"
                     Style="{StaticResource IconButton}"
-                    Command="{Binding FilterByDateCommand}"/>
+                    Command="{Binding FilterByDateCommand}" />
         </Grid>
 
         <!-- Stats Bar -->
-        <Grid Grid.Row="1" Padding="16,4" ColumnDefinitions="*,Auto">
+        <Grid Grid.Row="1"
+              Padding="16,4"
+              ColumnDefinitions="*,Auto">
             <Label Grid.Column="0"
                    Text="{Binding TotalCount, StringFormat='{0} records'}"
-                   Style="{StaticResource Caption}"/>
+                   Style="{StaticResource Caption}" />
             <Button Grid.Column="1"
                     Text="📤 Export"
                     Style="{StaticResource IconButton}"
                     Command="{Binding ExportCommand}"
-                    FontSize="14"/>
+                    FontSize="14" />
         </Grid>
 
         <!-- Scan List -->
-        <RefreshView Grid.Row="2" 
+        <RefreshView Grid.Row="2"
                      Command="{Binding RefreshCommand}"
                      IsRefreshing="{Binding IsRefreshing}">
             <CollectionView ItemsSource="{Binding ScanRecords}"
-                          EmptyView="No scan records found">
-                <CollectionView.ItemTemplate>
-                    <DataTemplate x:DataType="vm:ScanRecordListDto">
+                            EmptyView="No scan records found">
+
+                <CollectionView.ItemTemplate x:DataType="vm:ScanRecordListDto">
+                    <DataTemplate>
                         <SwipeView>
                             <SwipeView.RightItems>
                                 <SwipeItems>
                                     <SwipeItem Text="Delete"
-                                              BackgroundColor="{StaticResource Error}"
-                                              Command="{Binding Source={RelativeSource AncestorType={x:Type vm:HistoryViewModel}}, Path=DeleteCommand}"
-                                              CommandParameter="{Binding .}"/>
+                                               BackgroundColor="{StaticResource Error}"
+                                               Command="{Binding Source={RelativeSource AncestorType={x:Type vm:HistoryViewModel}}, Path=DeleteCommand}"
+                                               CommandParameter="{Binding .}" />
                                 </SwipeItems>
                             </SwipeView.RightItems>
-                            <Frame Style="{StaticResource Card}" Margin="12,4">
+                            <Border Style="{StaticResource Card}"
+                                    Margin="12,4">
                                 <Grid ColumnDefinitions="Auto,*,Auto">
-                                    <VerticalStackLayout Grid.Column="0" WidthRequest="48">
-                                        <Label Text="🚗" FontSize="24" HorizontalOptions="Center"/>
+                                    <VerticalStackLayout Grid.Column="0"
+                                                         WidthRequest="48">
+                                        <Label Text="🚗"
+                                               FontSize="24"
+                                               HorizontalOptions="Center" />
                                     </VerticalStackLayout>
-                                    <VerticalStackLayout Grid.Column="1" Padding="8,0">
-                                        <Label Text="{Binding PlateNumber, Converter={StaticResource PlateFormatConverter}}" 
+                                    <VerticalStackLayout Grid.Column="1"
+                                                         Padding="8,0">
+                                        <Label Text="{Binding PlateNumber, Converter={StaticResource PlateFormatConverter}}"
                                                Style="{StaticResource Body}"
-                                               FontAttributes="Bold"/>
-                                        <Label Text="{Binding VehicleBrand}" 
-                                               Style="{StaticResource Caption}"/>
-                                        <Label Text="{Binding ScanTime, StringFormat='{0:MMM dd, yyyy HH:mm}'}" 
-                                               Style="{StaticResource Caption}"/>
+                                               FontAttributes="Bold" />
+                                        <Label Text="{Binding VehicleBrand}"
+                                               Style="{StaticResource Caption}" />
+                                        <Label Text="{Binding ScanTime, StringFormat='{0:MMM dd, yyyy HH:mm}'}"
+                                               Style="{StaticResource Caption}" />
                                     </VerticalStackLayout>
-                                    <VerticalStackLayout Grid.Column="2" HorizontalOptions="End">
-                                        <Label Text="{Binding SyncStatus}" 
+                                    <VerticalStackLayout Grid.Column="2"
+                                                         HorizontalOptions="End">
+                                        <Label Text="{Binding SyncStatus}"
                                                TextColor="{Binding SyncStatus, Converter={StaticResource SyncStatusToColorConverter}}"
                                                FontSize="11"
-                                               FontAttributes="Bold"/>
-                                        <Label Text="{Binding Confidence, StringFormat='{0:P0}'}" 
-                                               Style="{StaticResource Caption}"/>
+                                               FontAttributes="Bold" />
+                                        <Label Text="{Binding Confidence, StringFormat='{0:P0}'}"
+                                               Style="{StaticResource Caption}" />
                                     </VerticalStackLayout>
                                 </Grid>
-                                <Frame.GestureRecognizers>
+                                <Border.GestureRecognizers>
                                     <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:HistoryViewModel}}, Path=ViewDetailsCommand}"
-                                                         CommandParameter="{Binding .}"/>
-                                </Frame.GestureRecognizers>
-                            </Frame>
+                                                          CommandParameter="{Binding .}" />
+                                </Border.GestureRecognizers>
+                            </Border>
                         </SwipeView>
-                    </CollectionView.ItemTemplate>
-                </CollectionView>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
             </CollectionView>
+
         </RefreshView>
+
     </Grid>
 
 </ContentPage>

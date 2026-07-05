@@ -1,3 +1,5 @@
+using CarPlates.Mobile.ViewModels;
+
 namespace CarPlates.Mobile.Views.Settings;
 
 public partial class SettingsPage : ContentPage

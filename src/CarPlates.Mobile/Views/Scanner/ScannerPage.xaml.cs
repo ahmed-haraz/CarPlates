@@ -1,3 +1,5 @@
+using CarPlates.Mobile.ViewModels;
+
 namespace CarPlates.Mobile.Views.Scanner;
 
 public partial class ScannerPage : ContentPage

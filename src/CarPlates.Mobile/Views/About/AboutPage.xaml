@@ -7,16 +7,16 @@
     <ScrollView>
         <VerticalStackLayout Padding="24" Spacing="20" HorizontalOptions="Center">
             <!-- App Icon -->
-            <Frame WidthRequest="120" 
+            <Border WidthRequest="120" 
                    HeightRequest="120" 
-                   CornerRadius="24"
+                   StrokeShape="RoundRectangle 24"
                    BackgroundColor="{StaticResource Primary}"
                    Padding="0">
                 <Label Text="🚗" 
                        FontSize="64" 
                        HorizontalOptions="Center"
                        VerticalOptions="Center"/>
-            </Frame>
+            </Border>
 
             <Label Text="CarPlates" 
                    Style="{StaticResource Headline}"
@@ -46,10 +46,10 @@
                 <Label Text="• JWT Authentication" Style="{StaticResource Caption}"/>
                 <Label Text="• CameraX Live Preview" Style="{StaticResource Caption}"/>
                 <Label Text="• Automatic Plate Recognition" Style="{StaticResource Caption}"/>
-                <Label Text="• Egyptian & English Plates" Style="{StaticResource Caption}"/>
+                <Label Text="• Egyptian and English Plates" Style="{StaticResource Caption}"/>
                 <Label Text="• Vehicle Lookup via REST API" Style="{StaticResource Caption}"/>
-                <Label Text="• Offline Cache & Sync" Style="{StaticResource Caption}"/>
-                <Label Text="• Scan History & Export" Style="{StaticResource Caption}"/>
+                <Label Text="• Offline Cache and Sync" Style="{StaticResource Caption}"/>
+                <Label Text="• Scan History and Export" Style="{StaticResource Caption}"/>
             </VerticalStackLayout>
 
             <BoxView HeightRequest="1" Color="{StaticResource Border}" Margin="0,16"/>

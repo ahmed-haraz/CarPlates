@@ -1,3 +1,5 @@
+using System.Windows.Input;
+
 namespace CarPlates.Mobile.Controls;
 
 public partial class ErrorView : ContentView

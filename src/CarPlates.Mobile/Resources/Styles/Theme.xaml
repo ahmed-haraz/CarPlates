@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<?xaml-comp compile?>
+    
 <ResourceDictionary 
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
@@ -19,7 +19,7 @@
 
     <Style TargetType="Label" x:Key="Subtitle">
         <Setter Property="FontSize" Value="18" />
-        <Setter Property="FontAttributes" Value="SemiBold" />
+        <Setter Property="FontAttributes" Value="Bold" />
         <Setter Property="TextColor" Value="{StaticResource TextSecondary}" />
     </Style>
 
@@ -62,20 +62,18 @@
     </Style>
 
     <!-- Cards -->
-    <Style TargetType="Frame" x:Key="Card">
+    <Style TargetType="Border" x:Key="Card">
         <Setter Property="BackgroundColor" Value="{StaticResource Surface}" />
-        <Setter Property="BorderColor" Value="{StaticResource Border}" />
-        <Setter Property="CornerRadius" Value="16" />
+        <Setter Property="Stroke" Value="{StaticResource Border}" />
+        <Setter Property="StrokeShape" Value="RoundRectangle 16" />
         <Setter Property="Padding" Value="16" />
-        <Setter Property="HasShadow" Value="True" />
     </Style>
 
-    <Style TargetType="Frame" x:Key="ElevatedCard">
+    <Style TargetType="Border" x:Key="ElevatedCard">
         <Setter Property="BackgroundColor" Value="{StaticResource Surface}" />
-        <Setter Property="BorderColor" Value="Transparent" />
-        <Setter Property="CornerRadius" Value="16" />
+        <Setter Property="Stroke" Value="Transparent" />
+        <Setter Property="StrokeShape" Value="RoundRectangle 16" />
         <Setter Property="Padding" Value="16" />
-        <Setter Property="HasShadow" Value="True" />
         <Setter Property="Shadow">
             <Setter.Value>
                 <Shadow Brush="Black" Offset="0,4" Radius="8" Opacity="0.1" />

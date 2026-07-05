@@ -1,3 +1,5 @@
+using CarPlates.Mobile.ViewModels;
+
 namespace CarPlates.Mobile.Views.Profile;
 
 public partial class ProfilePage : ContentPage
