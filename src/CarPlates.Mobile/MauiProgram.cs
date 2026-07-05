@@ -10,6 +10,8 @@ using CarPlates.Mobile.Views.Settings;
 using CarPlates.Mobile.Views.Splash;
 using CarPlates.Mobile.Views.Vehicle;
 using CarPlates.Shared.Constants;
+using CarPlates.Mobile.Controls;
+using CarPlates.Mobile.Handlers;
 using CommunityToolkit.Maui;
 using MediatR;
 using Microsoft.Extensions.Logging;
@@ -25,6 +27,10 @@ public static class MauiProgram
         builder
             .UseMauiApp<App>()
             .UseMauiCommunityToolkit()
+            .ConfigureMauiHandlers(handlers =>
+            {
+                handlers.AddHandler<CameraPreview, CameraPreviewHandler>();
+            })
             .ConfigureFonts(fonts =>
             {
                 fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");

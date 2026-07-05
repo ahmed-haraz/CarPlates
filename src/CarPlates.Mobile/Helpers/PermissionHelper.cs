@@ -14,12 +14,19 @@ public static class PermissionHelper
 
     public static async Task<bool> RequestStoragePermissionAsync()
     {
+#if ANDROID
         var status = await Permissions.CheckStatusAsync<Permissions.StorageRead>();
         if (status != PermissionStatus.Granted)
         {
             status = await Permissions.RequestAsync<Permissions.StorageRead>();
         }
         return status == PermissionStatus.Granted;
+#else
+        // iOS stores app-created files in the app sandbox and does not need
+        // Android-style external storage permission for the current workflow.
+        await Task.CompletedTask;
+        return true;
+#endif
     }
 
     public static async Task<bool> RequestAllPermissionsAsync()

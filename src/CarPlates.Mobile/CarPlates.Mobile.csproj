@@ -1,7 +1,7 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFramework>net10.0-android</TargetFramework>
+		<TargetFrameworks>net10.0-android;net10.0-ios</TargetFrameworks>
 
 		<OutputType>Exe</OutputType>
 		<RootNamespace>CarPlates.Mobile</RootNamespace>
@@ -20,7 +20,8 @@
 		<ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
 		<ApplicationVersion>1</ApplicationVersion>
 
-		<SupportedOSPlatformVersion>21.0</SupportedOSPlatformVersion>
+		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">21.0</SupportedOSPlatformVersion>
+		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">15.0</SupportedOSPlatformVersion>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -71,23 +72,23 @@
 						  Version="14.2.0" />
 
 		<!-- CameraX -->
-		<PackageReference Include="Xamarin.AndroidX.Camera.Camera2"
+		<PackageReference Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'" Include="Xamarin.AndroidX.Camera.Camera2"
 						  Version="1.6.1.1" />
 
-		<PackageReference Include="Xamarin.AndroidX.Camera.Lifecycle"
+		<PackageReference Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'" Include="Xamarin.AndroidX.Camera.Lifecycle"
 						  Version="1.6.1.1" />
 
-		<PackageReference Include="Xamarin.AndroidX.Camera.View"
+		<PackageReference Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'" Include="Xamarin.AndroidX.Camera.View"
 						  Version="1.6.1.1" />
 
 		<!-- ML Kit -->
-		<PackageReference Include="Xamarin.Google.MLKit.Vision.Text"
+		<PackageReference Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'" Include="Xamarin.Google.MLKit.Vision.Text"
 						  Version="17.0.0" />
 
-		<PackageReference Include="Xamarin.Google.MLKit.Vision.Common"
+		<PackageReference Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'" Include="Xamarin.Google.MLKit.Vision.Common"
 						  Version="117.3.0.19" />
 
-		<PackageReference Include="Xamarin.AndroidX.Lifecycle.Common"
+		<PackageReference Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'" Include="Xamarin.AndroidX.Lifecycle.Common"
 						  Version="2.11.0.1" />
 
 	</ItemGroup>
