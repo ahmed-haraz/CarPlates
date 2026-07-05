@@ -85,9 +85,7 @@
 						  Version="1.6.1.1" />
 
 		<!-- ML Kit -->
-		<PackageReference Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'"
-						  Include="Xamarin.Google.MLKit.Vision.Text"
-						  Version="17.0.0" />
+		
 
 		<PackageReference Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'"
 						  Include="Xamarin.Google.MLKit.Vision.Common"

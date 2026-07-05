@@ -57,7 +57,7 @@ public static class MauiProgram
         builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>));
 
         // AutoMapper
-        builder.Services.AddAutoMapper(typeof(Application.Common.MappingProfile).Assembly);
+        //builder.Services.AddAutoMapper(typeof(Application.Common.MappingProfile).Assembly);
 
         // ViewModels
         builder.Services.AddTransient<SplashViewModel>();
