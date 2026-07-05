@@ -16,6 +16,7 @@ using CommunityToolkit.Maui;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using System.Reflection;
+using CarPlates.Application.Common;
 
 namespace CarPlates.Mobile;
 
@@ -57,7 +58,7 @@ public static class MauiProgram
         builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>));
 
         // AutoMapper
-        //builder.Services.AddAutoMapper(typeof(Application.Common.MappingProfile).Assembly);
+        builder.Services.AddAutoMapper(typeof(MappingProfile).Assembly);
 
         // ViewModels
         builder.Services.AddTransient<SplashViewModel>();
