@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:CarPlates.Mobile.ViewModels"
+             x:Class="CarPlates.Mobile.Views.Login.LoginPage"
+             x:DataType="vm:LoginViewModel"
+             Shell.NavBarIsVisible="False">
+
+    <Grid RowDefinitions="Auto,*">
+        <!-- Header -->
+        <Grid BackgroundColor="{StaticResource Primary}" 
+              HeightRequest="200"
+              RowDefinitions="*,Auto">
+            <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center" Spacing="8">
+                <Label Text="🚗" FontSize="64" HorizontalOptions="Center"/>
+                <Label Text="CarPlates" 
+                       Style="{StaticResource Title}"
+                       TextColor="White"
+                       HorizontalOptions="Center"/>
+            </VerticalStackLayout>
+        </Grid>
+
+        <!-- Login Form -->
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout Padding="24,32" Spacing="16">
+                <!-- Welcome Text -->
+                <Label Text="Welcome Back" 
+                       Style="{StaticResource Title}"
+                       HorizontalOptions="Start"/>
+                <Label Text="Sign in to continue" 
+                       Style="{StaticResource Subtitle}"
+                       HorizontalOptions="Start"/>
+
+                <!-- Error Message -->
+                <Frame BackgroundColor="{StaticResource Error}" 
+                       Padding="12"
+                       IsVisible="{Binding HasError}"
+                       CornerRadius="8">
+                    <Label Text="{Binding ErrorMessage}" 
+                           TextColor="White"
+                           FontSize="14"/>
+                </Frame>
+
+                <!-- Username -->
+                <VerticalStackLayout Spacing="4">
+                    <Label Text="Username" Style="{StaticResource Body}" FontAttributes="Bold"/>
+                    <Entry Text="{Binding Username}" 
+                           Placeholder="Enter username"
+                           Style="{StaticResource FormEntry}"
+                           ReturnType="Next"/>
+                </VerticalStackLayout>
+
+                <!-- Password -->
+                <VerticalStackLayout Spacing="4">
+                    <Label Text="Password" Style="{StaticResource Body}" FontAttributes="Bold"/>
+                    <Grid ColumnDefinitions="*,Auto">
+                        <Entry Grid.Column="0"
+                               Text="{Binding Password}" 
+                               Placeholder="Enter password"
+                               IsPassword="{Binding IsPasswordVisible, Converter={StaticResource InvertedBoolConverter}}"
+                               Style="{StaticResource FormEntry}"
+                               ReturnType="Done"/>
+                        <Button Grid.Column="1"
+                                Text="{Binding IsPasswordVisible, Converter={StaticResource BoolToEyeIconConverter}}"
+                                Style="{StaticResource IconButton}"
+                                Command="{Binding TogglePasswordVisibilityCommand}"
+                                WidthRequest="48"/>
+                    </Grid>
+                </VerticalStackLayout>
+
+                <!-- Login Button -->
+                <Button Text="Sign In" 
+                        Style="{StaticResource PrimaryButton}"
+                        Command="{Binding LoginCommand}"
+                        IsEnabled="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}"
+                        Margin="0,16,0,0"/>
+
+                <!-- Loading -->
+                <ActivityIndicator IsRunning="{Binding IsBusy}" 
+                                   IsVisible="{Binding IsBusy}"
+                                   Color="{StaticResource Primary}"/>
+            </VerticalStackLayout>
+        </ScrollView>
+    </Grid>
+
+</ContentPage>

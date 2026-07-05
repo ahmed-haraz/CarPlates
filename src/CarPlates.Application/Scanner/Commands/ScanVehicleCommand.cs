@@ -1,0 +1,16 @@
+using CarPlates.Application.Common.DTOs;
+using MediatR;
+
+namespace CarPlates.Application.Scanner.Commands;
+
+public record ScanVehicleCommand(
+    string PlateNumber,
+    string PlateType,
+    float Confidence,
+    string? PhotoPath) : IRequest<ScanVehicleResult>;
+
+public record ScanVehicleResult(
+    bool Success,
+    ScanRecordDto? ScanRecord,
+    VehicleDetailsDto? VehicleInfo,
+    string? ErrorMessage);

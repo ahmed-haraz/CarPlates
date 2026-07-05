@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:CarPlates.Mobile.ViewModels"
+             xmlns:converters="clr-namespace:CarPlates.Mobile.Converters"
+             x:Class="CarPlates.Mobile.Views.Dashboard.DashboardPage"
+             x:DataType="vm:DashboardViewModel"
+             Title="Dashboard">
+
+    <ContentPage.Resources>
+        <converters:SyncStatusToColorConverter x:Key="SyncStatusToColorConverter"/>
+    </ContentPage.Resources>
+
+    <RefreshView Command="{Binding LoadDataCommand}" IsRefreshing="{Binding IsBusy}">
+        <ScrollView>
+            <VerticalStackLayout Padding="16" Spacing="16">
+                <!-- Welcome Header -->
+                <Grid ColumnDefinitions="*,Auto">
+                    <VerticalStackLayout Grid.Column="0">
+                        <Label Text="Welcome back," Style="{StaticResource Caption}"/>
+                        <Label Text="{Binding UserName}" Style="{StaticResource Title}"/>
+                    </VerticalStackLayout>
+                    <Button Grid.Column="1"
+                            Text="👤"
+                            Style="{StaticResource IconButton}"
+                            Command="{Binding NavigateToProfileCommand}"/>
+                </Grid>
+
+                <!-- Quick Scan Button -->
+                <Button Text="📷 Scan License Plate"
+                        Style="{StaticResource PrimaryButton}"
+                        Command="{Binding NavigateToScanCommand}"
+                        HeightRequest="64"
+                        FontSize="18"/>
+
+                <!-- Statistics Cards -->
+                <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+                    <Frame Style="{StaticResource ElevatedCard}" Grid.Column="0">
+                        <VerticalStackLayout HorizontalOptions="Center">
+                            <Label Text="{Binding Statistics.TodayScans}" 
+                                   Style="{StaticResource Headline}"
+                                   TextColor="{StaticResource Primary}"
+                                   HorizontalOptions="Center"/>
+                            <Label Text="Today's Scans" 
+                                   Style="{StaticResource Caption}"
+                                   HorizontalOptions="Center"/>
+                        </VerticalStackLayout>
+                    </Frame>
+                    <Frame Style="{StaticResource ElevatedCard}" Grid.Column="1">
+                        <VerticalStackLayout HorizontalOptions="Center">
+                            <Label Text="{Binding Statistics.TotalScans}" 
+                                   Style="{StaticResource Headline}"
+                                   TextColor="{StaticResource Primary}"
+                                   HorizontalOptions="Center"/>
+                            <Label Text="Total Scans" 
+                                   Style="{StaticResource Caption}"
+                                   HorizontalOptions="Center"/>
+                        </VerticalStackLayout>
+                    </Frame>
+                </Grid>
+
+                <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+                    <Frame Style="{StaticResource ElevatedCard}" Grid.Column="0">
+                        <VerticalStackLayout HorizontalOptions="Center">
+                            <Label Text="{Binding Statistics.PendingSync}" 
+                                   Style="{StaticResource Headline}"
+                                   TextColor="{StaticResource Warning}"
+                                   HorizontalOptions="Center"/>
+                            <Label Text="Pending Sync" 
+                                   Style="{StaticResource Caption}"
+                                   HorizontalOptions="Center"/>
+                        </VerticalStackLayout>
+                    </Frame>
+                    <Frame Style="{StaticResource ElevatedCard}" Grid.Column="1">
+                        <VerticalStackLayout HorizontalOptions="Center">
+                            <Label Text="{Binding Statistics.UniqueVehicles}" 
+                                   Style="{StaticResource Headline}"
+                                   TextColor="{StaticResource Success}"
+                                   HorizontalOptions="Center"/>
+                            <Label Text="Unique Vehicles" 
+                                   Style="{StaticResource Caption}"
+                                   HorizontalOptions="Center"/>
+                        </VerticalStackLayout>
+                    </Frame>
+                </Grid>
+
+                <!-- Recent Scans -->
+                <Label Text="Recent Scans" Style="{StaticResource Title}" Margin="0,8,0,0"/>
+
+                <CollectionView ItemsSource="{Binding RecentScans}"
+                               EmptyView="No recent scans">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="vm:RecentScanDto">
+                            <Frame Style="{StaticResource Card}" Margin="0,4">
+                                <Grid ColumnDefinitions="Auto,*,Auto">
+                                    <Label Grid.Column="0" 
+                                           Text="🚗" 
+                                           FontSize="24"
+                                           VerticalOptions="Center"/>
+                                    <VerticalStackLayout Grid.Column="1" Padding="12,0">
+                                        <Label Text="{Binding PlateNumber}" 
+                                               Style="{StaticResource Body}"
+                                               FontAttributes="Bold"/>
+                                        <Label Text="{Binding VehicleBrand}" 
+                                               Style="{StaticResource Caption}"/>
+                                    </VerticalStackLayout>
+                                    <VerticalStackLayout Grid.Column="2" HorizontalOptions="End">
+                                        <Label Text="{Binding AccessStatus}" 
+                                               TextColor="{StaticResource Success}"
+                                               FontSize="12"/>
+                                        <Label Text="{Binding ScanTime, StringFormat='{0:HH:mm}'}" 
+                                               Style="{StaticResource Caption}"/>
+                                    </VerticalStackLayout>
+                                </Grid>
+                                <Frame.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:DashboardViewModel}}, Path=ViewVehicleDetailsCommand}"
+                                                         CommandParameter="{Binding .}"/>
+                                </Frame.GestureRecognizers>
+                            </Frame>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+
+                <!-- View All History -->
+                <Button Text="View All History →"
+                        Style="{StaticResource SecondaryButton}"
+                        Command="{Binding NavigateToHistoryCommand}"/>
+            </VerticalStackLayout>
+        </ScrollView>
+    </RefreshView>
+
+</ContentPage>

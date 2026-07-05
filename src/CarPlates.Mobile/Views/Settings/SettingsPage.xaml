@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:CarPlates.Mobile.ViewModels"
+             x:Class="CarPlates.Mobile.Views.Settings.SettingsPage"
+             x:DataType="vm:SettingsViewModel"
+             Title="Settings">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="16" Spacing="16">
+            <!-- Appearance Section -->
+            <Label Text="Appearance" Style="{StaticResource Title}"/>
+            <Frame Style="{StaticResource Card}">
+                <VerticalStackLayout Spacing="12">
+                    <Grid ColumnDefinitions="*,Auto">
+                        <Label Grid.Column="0" Text="Dark Mode" Style="{StaticResource Body}" VerticalOptions="Center"/>
+                        <Switch Grid.Column="1" IsToggled="{Binding IsDarkMode}"/>
+                    </Grid>
+                    <BoxView HeightRequest="1" Color="{StaticResource Border}" Margin="0,4"/>
+                    <Grid ColumnDefinitions="*,Auto">
+                        <Label Grid.Column="0" Text="Language" Style="{StaticResource Body}" VerticalOptions="Center"/>
+                        <Picker Grid.Column="1" 
+                                ItemsSource="{Binding AvailableLanguages}"
+                                SelectedItem="{Binding SelectedLanguage}"
+                                WidthRequest="120"/>
+                    </Grid>
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- Scanner Section -->
+            <Label Text="Scanner" Style="{StaticResource Title}" Margin="0,8,0,0"/>
+            <Frame Style="{StaticResource Card}">
+                <VerticalStackLayout Spacing="12">
+                    <Grid ColumnDefinitions="*,Auto">
+                        <Label Grid.Column="0" Text="OCR Confidence" Style="{StaticResource Body}" VerticalOptions="Center"/>
+                        <Label Grid.Column="1" Text="{Binding OcrConfidence, StringFormat='{0:P0}'}" Style="{StaticResource Caption}"/>
+                    </Grid>
+                    <Slider Minimum="0.5" Maximum="1.0" Value="{Binding OcrConfidence}" Margin="0,-8,0,0"/>
+                    <BoxView HeightRequest="1" Color="{StaticResource Border}" Margin="0,4"/>
+                    <Grid ColumnDefinitions="*,Auto">
+                        <Label Grid.Column="0" Text="Auto Resume Scanning" Style="{StaticResource Body}" VerticalOptions="Center"/>
+                        <Switch Grid.Column="1" IsToggled="{Binding AutoResume}"/>
+                    </Grid>
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- API Section -->
+            <Label Text="API Configuration" Style="{StaticResource Title}" Margin="0,8,0,0"/>
+            <Frame Style="{StaticResource Card}">
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="API URL" Style="{StaticResource Body}" FontAttributes="Bold"/>
+                    <Entry Text="{Binding ApiUrl}" Placeholder="https://api.example.com"/>
+                    <BoxView HeightRequest="1" Color="{StaticResource Border}" Margin="0,4"/>
+                    <Grid ColumnDefinitions="*,Auto">
+                        <Label Grid.Column="0" Text="Pending Sync" Style="{StaticResource Body}" VerticalOptions="Center"/>
+                        <Label Grid.Column="1" Text="{Binding PendingSyncCount}" Style="{StaticResource Caption}"/>
+                    </Grid>
+                    <Button Text="🔄 Sync Now"
+                            Style="{StaticResource PrimaryButton}"
+                            Command="{Binding SyncNowCommand}"
+                            HeightRequest="44"/>
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- Notifications Section -->
+            <Label Text="Notifications" Style="{StaticResource Title}" Margin="0,8,0,0"/>
+            <Frame Style="{StaticResource Card}">
+                <Grid ColumnDefinitions="*,Auto">
+                    <Label Grid.Column="0" Text="Enable Notifications" Style="{StaticResource Body}" VerticalOptions="Center"/>
+                    <Switch Grid.Column="1" IsToggled="{Binding NotificationsEnabled}"/>
+                </Grid>
+            </Frame>
+
+            <!-- Data Management -->
+            <Label Text="Data Management" Style="{StaticResource Title}" Margin="0,8,0,0"/>
+            <Frame Style="{StaticResource Card}">
+                <VerticalStackLayout Spacing="8">
+                    <Button Text="🗑 Clear Cache"
+                            Style="{StaticResource SecondaryButton}"
+                            Command="{Binding ClearCacheCommand}"
+                            HeightRequest="44"/>
+                    <Button Text="📋 View Logs"
+                            Style="{StaticResource SecondaryButton}"
+                            Command="{Binding ViewLogsCommand}"
+                            HeightRequest="44"/>
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- Save Button -->
+            <Button Text="💾 Save Settings"
+                    Style="{StaticResource PrimaryButton}"
+                    Command="{Binding SaveSettingsCommand}"
+                    HeightRequest="56"
+                    Margin="0,16,0,0"/>
+
+            <!-- About & Logout -->
+            <VerticalStackLayout Spacing="8" Margin="0,16,0,0">
+                <Button Text="ℹ About"
+                        Style="{StaticResource SecondaryButton}"
+                        Command="{Binding NavigateToAboutCommand}"
+                        HeightRequest="44"/>
+                <Button Text="🚪 Logout"
+                        BackgroundColor="{StaticResource Error}"
+                        TextColor="White"
+                        Command="{Binding LogoutCommand}"
+                        HeightRequest="44"
+                        CornerRadius="12"/>
+            </VerticalStackLayout>
+        </VerticalStackLayout>
+    </ScrollView>
+
+</ContentPage>

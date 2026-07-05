@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:CarPlates.Mobile.ViewModels"
+             xmlns:converters="clr-namespace:CarPlates.Mobile.Converters"
+             x:Class="CarPlates.Mobile.Views.History.HistoryPage"
+             x:DataType="vm:HistoryViewModel"
+             Title="History">
+
+    <ContentPage.Resources>
+        <converters:SyncStatusToColorConverter x:Key="SyncStatusToColorConverter"/>
+        <converters:PlateFormatConverter x:Key="PlateFormatConverter"/>
+    </ContentPage.Resources>
+
+    <Grid RowDefinitions="Auto,Auto,*">
+        <!-- Search Bar -->
+        <Grid Grid.Row="0" Padding="16,8" ColumnDefinitions="*,Auto,Auto">
+            <Entry Grid.Column="0"
+                   Text="{Binding SearchQuery}"
+                   Placeholder="Search by plate number..."
+                   ReturnCommand="{Binding SearchCommand}"/>
+            <Button Grid.Column="1"
+                    Text="🔍"
+                    Style="{StaticResource IconButton}"
+                    Command="{Binding SearchCommand}"/>
+            <Button Grid.Column="2"
+                    Text="📅"
+                    Style="{StaticResource IconButton}"
+                    Command="{Binding FilterByDateCommand}"/>
+        </Grid>
+
+        <!-- Stats Bar -->
+        <Grid Grid.Row="1" Padding="16,4" ColumnDefinitions="*,Auto">
+            <Label Grid.Column="0"
+                   Text="{Binding TotalCount, StringFormat='{0} records'}"
+                   Style="{StaticResource Caption}"/>
+            <Button Grid.Column="1"
+                    Text="📤 Export"
+                    Style="{StaticResource IconButton}"
+                    Command="{Binding ExportCommand}"
+                    FontSize="14"/>
+        </Grid>
+
+        <!-- Scan List -->
+        <RefreshView Grid.Row="2" 
+                     Command="{Binding RefreshCommand}"
+                     IsRefreshing="{Binding IsRefreshing}">
+            <CollectionView ItemsSource="{Binding ScanRecords}"
+                          EmptyView="No scan records found">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="vm:ScanRecordListDto">
+                        <SwipeView>
+                            <SwipeView.RightItems>
+                                <SwipeItems>
+                                    <SwipeItem Text="Delete"
+                                              BackgroundColor="{StaticResource Error}"
+                                              Command="{Binding Source={RelativeSource AncestorType={x:Type vm:HistoryViewModel}}, Path=DeleteCommand}"
+                                              CommandParameter="{Binding .}"/>
+                                </SwipeItems>
+                            </SwipeView.RightItems>
+                            <Frame Style="{StaticResource Card}" Margin="12,4">
+                                <Grid ColumnDefinitions="Auto,*,Auto">
+                                    <VerticalStackLayout Grid.Column="0" WidthRequest="48">
+                                        <Label Text="🚗" FontSize="24" HorizontalOptions="Center"/>
+                                    </VerticalStackLayout>
+                                    <VerticalStackLayout Grid.Column="1" Padding="8,0">
+                                        <Label Text="{Binding PlateNumber, Converter={StaticResource PlateFormatConverter}}" 
+                                               Style="{StaticResource Body}"
+                                               FontAttributes="Bold"/>
+                                        <Label Text="{Binding VehicleBrand}" 
+                                               Style="{StaticResource Caption}"/>
+                                        <Label Text="{Binding ScanTime, StringFormat='{0:MMM dd, yyyy HH:mm}'}" 
+                                               Style="{StaticResource Caption}"/>
+                                    </VerticalStackLayout>
+                                    <VerticalStackLayout Grid.Column="2" HorizontalOptions="End">
+                                        <Label Text="{Binding SyncStatus}" 
+                                               TextColor="{Binding SyncStatus, Converter={StaticResource SyncStatusToColorConverter}}"
+                                               FontSize="11"
+                                               FontAttributes="Bold"/>
+                                        <Label Text="{Binding Confidence, StringFormat='{0:P0}'}" 
+                                               Style="{StaticResource Caption}"/>
+                                    </VerticalStackLayout>
+                                </Grid>
+                                <Frame.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:HistoryViewModel}}, Path=ViewDetailsCommand}"
+                                                         CommandParameter="{Binding .}"/>
+                                </Frame.GestureRecognizers>
+                            </Frame>
+                        </SwipeView>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </CollectionView>
+        </RefreshView>
+    </Grid>
+
+</ContentPage>

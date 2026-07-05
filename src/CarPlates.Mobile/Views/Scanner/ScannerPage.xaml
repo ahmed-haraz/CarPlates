@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:CarPlates.Mobile.ViewModels"
+             xmlns:controls="clr-namespace:CarPlates.Mobile.Controls"
+             x:Class="CarPlates.Mobile.Views.Scanner.ScannerPage"
+             x:DataType="vm:ScannerViewModel"
+             Title="Scan"
+             Shell.NavBarIsVisible="False">
+
+    <Grid>
+        <!-- Camera Preview Background -->
+        <controls:CameraPreview x:Name="CameraPreview"
+                               HorizontalOptions="Fill"
+                               VerticalOptions="Fill"/>
+
+        <!-- Scan Overlay -->
+        <controls:ScanOverlay IsVisible="{Binding IsScanning}"/>
+
+        <!-- Top Controls -->
+        <Grid VerticalOptions="Start" Padding="16" ColumnDefinitions="Auto,*,Auto">
+            <Button Grid.Column="0"
+                    Text="{Binding IsTorchOn, Converter={StaticResource TorchIconConverter}}"
+                    Style="{StaticResource IconButton}"
+                    Command="{Binding ToggleTorchCommand}"
+                    BackgroundColor="{StaticResource Surface}"
+                    Opacity="0.8"/>
+
+            <Label Grid.Column="1"
+                   Text="{Binding ScanStatus}"
+                   Style="{StaticResource Caption}"
+                   TextColor="White"
+                   HorizontalOptions="Center"
+                   VerticalOptions="Center"
+                   BackgroundColor="{StaticResource Surface}"
+                   Padding="12,6"
+                   Opacity="0.9"/>
+
+            <Button Grid.Column="2"
+                    Text="🔄"
+                    Style="{StaticResource IconButton}"
+                    Command="{Binding SwitchCameraCommand}"
+                    BackgroundColor="{StaticResource Surface}"
+                    Opacity="0.8"/>
+        </Grid>
+
+        <!-- Bottom Controls -->
+        <Grid VerticalOptions="End" Padding="16,24" RowDefinitions="Auto,Auto">
+            <!-- Detection Info -->
+            <Frame Grid.Row="0" 
+                   Style="{StaticResource Card}"
+                   BackgroundColor="{StaticResource Surface}"
+                   Opacity="0.9"
+                   IsVisible="{Binding IsScanning}"
+                   Margin="0,0,0,12">
+                <Grid ColumnDefinitions="*,Auto">
+                    <VerticalStackLayout Grid.Column="0">
+                        <Label Text="{Binding DetectedPlate}" 
+                               Style="{StaticResource Title}"
+                               FontSize="20"/>
+                        <Label Text="{Binding DetectionConfidence, StringFormat='Confidence: {0:P0}'}" 
+                               Style="{StaticResource Caption}"/>
+                    </VerticalStackLayout>
+                    <ActivityIndicator Grid.Column="1"
+                                      IsRunning="{Binding IsBusy}"
+                                      Color="{StaticResource Primary}"/>
+                </Grid>
+            </Frame>
+
+            <!-- Manual Entry Button -->
+            <Button Grid.Row="1"
+                    Text="✎ Manual Entry"
+                    Style="{StaticResource SecondaryButton}"
+                    Command="{Binding ManualEntryCommand}"
+                    BackgroundColor="{StaticResource Surface}"
+                    Opacity="0.9"/>
+        </Grid>
+
+        <!-- Vehicle Info Bottom Sheet -->
+        <Frame Grid.Row="0"
+               Style="{StaticResource ElevatedCard}"
+               VerticalOptions="End"
+               Margin="16,0,16,80"
+               IsVisible="{Binding ShowVehicleInfo}">
+            <Grid RowDefinitions="Auto,Auto,Auto,Auto" ColumnDefinitions="*,Auto">
+                <Label Grid.Row="0" Grid.Column="0"
+                       Text="{Binding VehicleInfo.PlateNumber}"
+                       Style="{StaticResource Title}"/>
+                <Label Grid.Row="0" Grid.Column="1"
+                       Text="{Binding VehicleInfo.AccessStatus}"
+                       TextColor="{StaticResource Success}"
+                       FontAttributes="Bold"/>
+
+                <Label Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
+                       Text="{Binding VehicleInfo.Brand}"
+                       Style="{StaticResource Body}"/>
+                <Label Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2"
+                       Text="{Binding VehicleInfo.Model}"
+                       Style="{StaticResource Caption}"/>
+                <Label Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2"
+                       Text="{Binding VehicleInfo.OwnerName}"
+                       Style="{StaticResource Caption}"/>
+
+                <Frame.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding DismissVehicleInfoCommand}"/>
+                </Frame.GestureRecognizers>
+            </Grid>
+        </Frame>
+    </Grid>
+
+</ContentPage>

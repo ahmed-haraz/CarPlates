@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:CarPlates.Mobile.ViewModels"
+             x:Class="CarPlates.Mobile.Views.Profile.ProfilePage"
+             x:DataType="vm:ProfileViewModel"
+             Title="Profile">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="16" Spacing="16">
+            <!-- Profile Header -->
+            <Frame Style="{StaticResource ElevatedCard}" Padding="24">
+                <VerticalStackLayout HorizontalOptions="Center" Spacing="12">
+                    <Frame WidthRequest="100" 
+                           HeightRequest="100" 
+                           CornerRadius="50"
+                           BackgroundColor="{StaticResource Primary}"
+                           Padding="0">
+                        <Label Text="👤" 
+                               FontSize="48" 
+                               HorizontalOptions="Center"
+                               VerticalOptions="Center"/>
+                    </Frame>
+                    <Button Text="📷 Change Photo"
+                            Style="{StaticResource SecondaryButton}"
+                            Command="{Binding ChangePhotoCommand}"
+                            HeightRequest="36"
+                            FontSize="12"/>
+                    <Label Text="{Binding FullName}" 
+                           Style="{StaticResource Title}"
+                           HorizontalOptions="Center"/>
+                    <Label Text="{Binding Role}" 
+                           Style="{StaticResource Caption}"
+                           HorizontalOptions="Center"/>
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- User Info -->
+            <Frame Style="{StaticResource Card}">
+                <Grid RowDefinitions="Auto,Auto,Auto" ColumnDefinitions="Auto,*" RowSpacing="12" ColumnSpacing="16">
+                    <Label Grid.Row="0" Grid.Column="0" Text="Username:" Style="{StaticResource Body}" FontAttributes="Bold"/>
+                    <Label Grid.Row="0" Grid.Column="1" Text="{Binding UserName}" Style="{StaticResource Body}"/>
+
+                    <Label Grid.Row="1" Grid.Column="0" Text="Email:" Style="{StaticResource Body}" FontAttributes="Bold"/>
+                    <Label Grid.Row="1" Grid.Column="1" Text="{Binding Email}" Style="{StaticResource Body}"/>
+
+                    <Label Grid.Row="2" Grid.Column="0" Text="Full Name:" Style="{StaticResource Body}" FontAttributes="Bold"/>
+                    <Label Grid.Row="2" Grid.Column="1" Text="{Binding FullName}" Style="{StaticResource Body}"/>
+                </Grid>
+            </Frame>
+
+            <!-- Actions -->
+            <VerticalStackLayout Spacing="8">
+                <Button Text="✏ Edit Profile"
+                        Style="{StaticResource PrimaryButton}"
+                        Command="{Binding EditProfileCommand}"
+                        HeightRequest="48"/>
+                <Button Text="🔒 Change Password"
+                        Style="{StaticResource SecondaryButton}"
+                        Command="{Binding ChangePasswordCommand}"
+                        HeightRequest="48"/>
+            </VerticalStackLayout>
+        </VerticalStackLayout>
+    </ScrollView>
+
+</ContentPage>

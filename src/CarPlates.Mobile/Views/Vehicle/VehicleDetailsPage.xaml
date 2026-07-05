@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:CarPlates.Mobile.ViewModels"
+             x:Class="CarPlates.Mobile.Views.Vehicle.VehicleDetailsPage"
+             x:DataType="vm:VehicleDetailsViewModel"
+             Title="Vehicle Details">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="16" Spacing="16">
+            <!-- Plate Card -->
+            <Frame Style="{StaticResource ElevatedCard}" Padding="24">
+                <VerticalStackLayout HorizontalOptions="Center" Spacing="8">
+                    <Label Text="🚗" FontSize="48" HorizontalOptions="Center"/>
+                    <Label Text="{Binding VehicleDetails.PlateNumber}" 
+                           Style="{StaticResource Headline}"
+                           HorizontalOptions="Center"
+                           TextColor="{StaticResource Primary}"/>
+                    <Label Text="{Binding VehicleDetails.AccessStatus}" 
+                           TextColor="{StaticResource Success}"
+                           FontAttributes="Bold"
+                           HorizontalOptions="Center"/>
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- Vehicle Info Grid -->
+            <Frame Style="{StaticResource Card}">
+                <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto" ColumnDefinitions="Auto,*" RowSpacing="12" ColumnSpacing="16">
+                    <Label Grid.Row="0" Grid.Column="0" Text="Brand:" Style="{StaticResource Body}" FontAttributes="Bold"/>
+                    <Label Grid.Row="0" Grid.Column="1" Text="{Binding VehicleDetails.Brand}" Style="{StaticResource Body}"/>
+
+                    <Label Grid.Row="1" Grid.Column="0" Text="Model:" Style="{StaticResource Body}" FontAttributes="Bold"/>
+                    <Label Grid.Row="1" Grid.Column="1" Text="{Binding VehicleDetails.Model}" Style="{StaticResource Body}"/>
+
+                    <Label Grid.Row="2" Grid.Column="0" Text="Color:" Style="{StaticResource Body}" FontAttributes="Bold"/>
+                    <Label Grid.Row="2" Grid.Column="1" Text="{Binding VehicleDetails.Color}" Style="{StaticResource Body}"/>
+
+                    <Label Grid.Row="3" Grid.Column="0" Text="Owner:" Style="{StaticResource Body}" FontAttributes="Bold"/>
+                    <Label Grid.Row="3" Grid.Column="1" Text="{Binding VehicleDetails.OwnerName}" Style="{StaticResource Body}"/>
+
+                    <Label Grid.Row="4" Grid.Column="0" Text="Total Scans:" Style="{StaticResource Body}" FontAttributes="Bold"/>
+                    <Label Grid.Row="4" Grid.Column="1" Text="{Binding VehicleDetails.TotalScans}" Style="{StaticResource Body}"/>
+                </Grid>
+            </Frame>
+
+            <!-- Scan History -->
+            <Label Text="Scan History" Style="{StaticResource Title}" Margin="0,8,0,0"/>
+            <CollectionView ItemsSource="{Binding ScanHistory}"
+                          EmptyView="No scan history available">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="vm:ScanRecordDto">
+                        <Frame Style="{StaticResource Card}" Margin="0,4">
+                            <Grid ColumnDefinitions="*,Auto">
+                                <Label Grid.Column="0" 
+                                       Text="{Binding ScanTime, StringFormat='{0:MMM dd, yyyy HH:mm}'}" 
+                                       Style="{StaticResource Body}"/>
+                                <Label Grid.Column="1" 
+                                       Text="{Binding Confidence, StringFormat='{0:P0}'}" 
+                                       Style="{StaticResource Caption}"/>
+                            </Grid>
+                        </Frame>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+            <!-- Action Buttons -->
+            <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+                <Button Grid.Column="0"
+                        Text="📷 Scan Again"
+                        Style="{StaticResource PrimaryButton}"
+                        Command="{Binding ScanAgainCommand}"/>
+                <Button Grid.Column="1"
+                        Text="📤 Share"
+                        Style="{StaticResource SecondaryButton}"
+                        Command="{Binding ShareCommand}"/>
+            </Grid>
+        </VerticalStackLayout>
+    </ScrollView>
+
+</ContentPage>
