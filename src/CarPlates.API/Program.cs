@@ -56,6 +56,12 @@ builder.Services.AddSwaggerGen(c =>
 });
 
 // ===========================
+// Legacy DES Encryption
+// ===========================
+builder.Services.Configure<LegacyDesOptions>(
+    builder.Configuration.GetSection("LegacyDes"));
+
+// ===========================
 // Database
 // ===========================
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
