@@ -24,30 +24,27 @@
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">15.0</SupportedOSPlatformVersion>
 	</PropertyGroup>
 
+	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net10.0-android|AnyCPU'">
+	  <EmbedAssembliesIntoApk>True</EmbedAssembliesIntoApk>
+	</PropertyGroup>
+
 	<ItemGroup>
 
 		<!-- App Icon -->
-		<MauiIcon Include="Resources\AppIcon\appicon.svg"
-				  ForegroundFile="Resources\AppIcon\appiconfg.svg"
-				  Color="#512BD4" />
+		<MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="#512BD4" />
 
 		<!-- Splash -->
-		<MauiSplashScreen Include="Resources\Images\splash.svg"
-						  Color="#512BD4"
-						  BaseSize="128,128" />
+		<MauiSplashScreen Include="Resources\Images\splash.svg" Color="#512BD4" BaseSize="128,128" />
 
 		<!-- Images -->
 		<MauiImage Include="Resources\Images\*" />
-		<MauiImage Update="Resources\Images\dotnet_bot.png"
-				   Resize="True"
-				   BaseSize="300,185" />
+		<MauiImage Update="Resources\Images\dotnet_bot.png" Resize="True" BaseSize="300,185" />
 
 		<!-- Fonts -->
 		<MauiFont Include="Resources\Fonts\*" />
 
 		<!-- Raw Assets -->
-		<MauiAsset Include="Resources\Raw\**"
-				   LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
+		<MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
 
 	</ItemGroup>
 
@@ -59,41 +56,29 @@
 
 	<ItemGroup>
 
-		<PackageReference Include="CommunityToolkit.Mvvm"
-						  Version="8.4.2" />
+		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
 
-		<PackageReference Include="CommunityToolkit.Maui"
-						  Version="11.2.0" />
+		<PackageReference Include="CommunityToolkit.Maui" Version="11.2.0" />
 
-		<PackageReference Include="Microsoft.Extensions.Logging.Debug"
-						  Version="10.0.9" />
+		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="10.0.9" />
 
-		<PackageReference Include="MediatR"
-						  Version="14.2.0" />
+		<PackageReference Include="MediatR" Version="14.2.0" />
 
+		<PackageReference Include="Microsoft.Maui.Controls" Version="10.0.20" />
+		
 		<!-- CameraX -->
-		<PackageReference Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'"
-						  Include="Xamarin.AndroidX.Camera.Camera2"
-						  Version="1.6.1.1" />
+		<PackageReference Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'" Include="Xamarin.AndroidX.Camera.Camera2" Version="1.6.1.1" />
 
-		<PackageReference Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'"
-						  Include="Xamarin.AndroidX.Camera.Lifecycle"
-						  Version="1.6.1.1" />
+		<PackageReference Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'" Include="Xamarin.AndroidX.Camera.Lifecycle" Version="1.6.1.1" />
 
-		<PackageReference Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'"
-						  Include="Xamarin.AndroidX.Camera.View"
-						  Version="1.6.1.1" />
+		<PackageReference Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'" Include="Xamarin.AndroidX.Camera.View" Version="1.6.1.1" />
 
 		<!-- ML Kit -->
 		
 
-		<PackageReference Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'"
-						  Include="Xamarin.Google.MLKit.Vision.Common"
-						  Version="117.3.0.19" />
+		<PackageReference Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'" Include="Xamarin.Google.MLKit.Vision.Common" Version="117.3.0.19" />
 
-		<PackageReference Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'"
-						  Include="Xamarin.AndroidX.Lifecycle.Common"
-						  Version="2.11.0.1" />
+		<PackageReference Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'" Include="Xamarin.AndroidX.Lifecycle.Common" Version="2.11.0.1" />
 
 	</ItemGroup>
 
