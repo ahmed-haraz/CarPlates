@@ -1,10 +1,10 @@
 using CarPlates.API.Models;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace CarPlates.API.Data;
 
-public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : IdentityDbContext<ApplicationUser>(options)
+public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
+    : DbContext(options)
 {
     public DbSet<Vehicle> Vehicles { get; set; } = null!;
     public DbSet<ScanRecord> ScanRecords { get; set; } = null!;

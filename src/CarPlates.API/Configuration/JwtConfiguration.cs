@@ -31,6 +31,7 @@ public static class JwtConfiguration
             };
         });
 
+
         return services;
     }
 }
