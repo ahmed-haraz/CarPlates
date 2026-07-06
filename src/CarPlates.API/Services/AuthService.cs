@@ -4,8 +4,6 @@ using CarPlates.API.Configuration;
 using CarPlates.API.Data;
 using CarPlates.API.Interface;
 using CarPlates.API.Models;
-using CarPlates.API.Models.DTOs;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 
@@ -13,14 +11,11 @@ namespace CarPlates.API.Services;
 
 public class AuthService(
     ApplicationDbContext context,
-    UserManager<ApplicationUser> userManager,
     IJwtService jwtService,
     IOptions<LegacyDesOptions> desOptions) : IAuthService
 {
-    private const string DefaultRole = "Operator";
 
     private readonly ApplicationDbContext _context = context;
-    private readonly UserManager<ApplicationUser> _userManager = userManager;
     private readonly IJwtService _jwtService = jwtService;
     private readonly LegacyDesOptions _desOptions = desOptions.Value;
 
@@ -28,9 +23,9 @@ public class AuthService(
     {
         var user = await _context.FwUsers
             .AsNoTracking()
-            .FirstOrDefaultAsync(u => u.UserName == request.Username, CancellationToken.None);
+            .FirstOrDefaultAsync(u => u.UserName == request.Username);
 
-        if (user == null || !PasswordMatches(user.Password, request.Password))
+        if (user == null || !PasswordMatches(user.Password!, request.Password))
         {
             return null;
         }
@@ -44,45 +39,109 @@ public class AuthService(
             IsActive = true
         };
 
-        var roles = new List<string> { DefaultRole };
-        var accessToken = _jwtService.GenerateAccessToken(applicationUser, roles);
+
+        var accessToken = _jwtService.GenerateAccessToken(applicationUser);
         var refreshToken = _jwtService.GenerateRefreshToken();
+
+        _context.RefreshTokens.Add(new RefreshTokens
+        {
+            UserId = applicationUser.Id,
+            Token = refreshToken,
+            CreatedAt = DateTime.UtcNow,
+            ExpiresAt = DateTime.UtcNow.AddDays(7),
+            Revoked = false
+        });
+
+        await _context.SaveChangesAsync();
 
         return new LoginResponseDto(
             accessToken,
             refreshToken,
             new UserDto(
                 applicationUser.Id,
-                applicationUser.UserName,
-                applicationUser.Email,
+                applicationUser.UserName!,
+                applicationUser.Email!,
                 applicationUser.FullName,
-                applicationUser.ProfilePhotoUrl,
-                DefaultRole));
+                user.BranchID ?? 0,
+                user.CashBoxID ?? 0,
+                user.CarID ?? 0,
+                user.StoreID ?? 0,
+                user.SalesRepID ?? 0,
+                user.UserType ?? 0
+            ));
     }
 
     public async Task<LoginResponseDto?> RefreshTokenAsync(RefreshTokenRequestDto request)
     {
-        // Validate refresh token logic here
-        // For demo, simplified
-        await Task.CompletedTask;
-        return null;
-    }
+        var storedToken = await _context.RefreshTokens
+            .FirstOrDefaultAsync(x =>
+                x.Token == request.RefreshToken &&
+                !x.Revoked &&
+                x.ExpiresAt > DateTime.UtcNow);
 
-    public async Task<bool> RegisterAsync(RegisterRequestDto request)
-    {
-        var user = new ApplicationUser
+        if (storedToken == null)
         {
-            UserName = request.Username,
-            Email = request.Email,
-            FullName = request.FullName
+            return null;
+        }
+
+        var user = await _context.FwUsers
+            .AsNoTracking()
+            .FirstOrDefaultAsync(x => x.ID.ToString() == storedToken.UserId);
+
+        if (user == null)
+        {
+            return null;
+        }
+
+        var applicationUser = new ApplicationUser
+        {
+            Id = user.ID.ToString(),
+            UserName = user.UserName,
+            Email = user.email,
+            FullName = GetFullName(user),
+            IsActive = true
         };
 
-        var result = await _userManager.CreateAsync(user, request.Password);
-        if (result.Succeeded)
+
+        var newAccessToken = _jwtService.GenerateAccessToken(applicationUser);
+        var newRefreshToken = _jwtService.GenerateRefreshToken();
+
+        // Revoke the old refresh token
+        storedToken.Revoked = true;
+
+        // Save the new refresh token
+        _context.RefreshTokens.Add(new RefreshTokens
         {
-            await _userManager.AddToRoleAsync(user, DefaultRole);
-        }
-        return result.Succeeded;
+            UserId = applicationUser.Id,
+            Token = newRefreshToken,
+            CreatedAt = DateTime.UtcNow,
+            ExpiresAt = DateTime.UtcNow.AddDays(7),
+            Revoked = false
+        });
+
+        await _context.SaveChangesAsync();
+
+        return new LoginResponseDto(
+            newAccessToken,
+            newRefreshToken,
+            new UserDto(
+                applicationUser.Id,
+                applicationUser.UserName!,
+                applicationUser.Email!,
+                applicationUser.FullName,
+                user.BranchID ?? 0,
+                user.CashBoxID ?? 0,
+                user.CarID ?? 0,
+                user.StoreID ?? 0,
+                user.SalesRepID ?? 0,
+                user.UserType ?? 0
+            ));
+    }
+
+    public Task<bool> RegisterAsync(RegisterRequestDto request)
+    {
+        throw new NotSupportedException(
+            "User registration is managed by the legacy system.");
     }
 
     public async Task<UserDto?> GetUserAsync(string userId)
@@ -98,13 +157,16 @@ public class AuthService(
 
         return new UserDto(
             user.ID.ToString(),
-            user.UserName,
-            user.email,
+            user.UserName!,
+            user.email!,
             GetFullName(user),
-            null,
-            DefaultRole);
+            user.BranchID ?? 0,
+            user.CashBoxID ?? 0,
+            user.CarID ?? 0,
+            user.StoreID ?? 0,
+            user.SalesRepID ?? 0,
+            user.UserType ?? 0);
     }
-
 
     private bool PasswordMatches(string storedPassword, string plainPassword)
     {
@@ -113,25 +175,37 @@ public class AuthService(
             return false;
         }
 
-        return string.Equals(storedPassword, LegacyDesEncrypt(plainPassword), StringComparison.Ordinal);
+        return string.Equals(
+            storedPassword,
+            LegacyDesEncrypt(plainPassword),
+            StringComparison.Ordinal);
     }
 
     private string LegacyDesEncrypt(string plain)
     {
         try
         {
-            // "9&%$#@!12*ABxyZ".Substring(0, 8) → "9&%$#@!1"
-            var desKey = Encoding.UTF8.GetString(Convert.FromBase64String(_desOptions.Key));
+            var desKey = Encoding.UTF8.GetString(
+                Convert.FromBase64String(_desOptions.Key));
+
             byte[] bKey = Encoding.UTF8.GetBytes(desKey.Substring(0, 8));
             byte[] desIv = Convert.FromBase64String(_desOptions.Iv);
 
 #pragma warning disable SYSLIB0021
             using var des = new DESCryptoServiceProvider();
+
             byte[] inputArray = Encoding.UTF8.GetBytes(plain);
+
             using var ms = new MemoryStream();
-            using var cs = new CryptoStream(ms, des.CreateEncryptor(bKey, desIv), CryptoStreamMode.Write);
+
+            using var cs = new CryptoStream(
+                ms,
+                des.CreateEncryptor(bKey, desIv),
+                CryptoStreamMode.Write);
+
             cs.Write(inputArray, 0, inputArray.Length);
             cs.FlushFinalBlock();
+
             return Convert.ToBase64String(ms.ToArray());
 #pragma warning restore SYSLIB0021
         }
@@ -153,6 +227,6 @@ public class AuthService(
             return user.UserFullName_Ar;
         }
 
-        return user.UserName;
+        return user.UserName!;
     }
 }

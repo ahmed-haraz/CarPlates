@@ -1,7 +1,6 @@
 using CarPlates.API.Data;
 using CarPlates.API.Interface;
 using CarPlates.API.Models;
-using CarPlates.API.Models.DTOs;
 using Microsoft.EntityFrameworkCore;
 
 namespace CarPlates.API.Services;

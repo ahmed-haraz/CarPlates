@@ -5,7 +5,7 @@ namespace CarPlates.API.Interface;
 
 public interface IJwtService
 {
-    string GenerateAccessToken(ApplicationUser user, IList<string> roles);
+    string GenerateAccessToken(ApplicationUser user);
     string GenerateRefreshToken();
     ClaimsPrincipal? ValidateRefreshToken(string refreshToken);
 }

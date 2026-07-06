@@ -1,5 +1,5 @@
 using CarPlates.API.Interface;
-using CarPlates.API.Models.DTOs;
+using CarPlates.API.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

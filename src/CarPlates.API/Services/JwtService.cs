@@ -12,27 +12,30 @@ public class JwtService(IConfiguration configuration) : IJwtService
 {
     private readonly IConfiguration _configuration = configuration;
 
-    public string GenerateAccessToken(ApplicationUser user, IList<string> roles)
+    public string GenerateAccessToken(ApplicationUser user)
     {
-        var jwtSettings = _configuration.GetSection("JwtSettings");
-        var secret = jwtSettings["Key"]!;
-        var issuer = jwtSettings["Issuer"]!;
-        var audience = jwtSettings["Audience"]!;
-        var expiryMinutes = int.Parse(jwtSettings["ExpiryMinutes"]!);
+        var secret = Environment.GetEnvironmentVariable("JWT__Key")
+    ?? throw new InvalidOperationException("JWT__Key is missing.");
+
+        var issuer = Environment.GetEnvironmentVariable("JWT__Issuer")
+            ?? throw new InvalidOperationException("JWT__Issuer is missing.");
+
+        var audience = Environment.GetEnvironmentVariable("JWT__Audience")
+            ?? throw new InvalidOperationException("JWT__Audience is missing.");
+
+        if (!int.TryParse(Environment.GetEnvironmentVariable("JWT__ExpiryMinutes"), out var expiryMinutes))
+        {
+            throw new InvalidOperationException("JWT__ExpiryMinutes is missing or invalid.");
+        }
 
         var claims = new List<Claim>
-        {
-            new(JwtRegisteredClaimNames.Sub, user.Id),
-            new(JwtRegisteredClaimNames.Email, user.Email ?? ""),
-            new(JwtRegisteredClaimNames.Name, user.UserName ?? ""),
-            new("fullName", user.FullName),
-            new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
-        };
-
-        foreach (var role in roles)
-        {
-            claims.Add(new Claim(ClaimTypes.Role, role));
-        }
+            {
+                new(JwtRegisteredClaimNames.Sub, user.Id),
+                new(JwtRegisteredClaimNames.Email, user.Email ?? ""),
+                new(JwtRegisteredClaimNames.Name, user.UserName ?? ""),
+                new("fullName", user.FullName),
+                new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+            };
 
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret));
         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
@@ -41,7 +44,7 @@ public class JwtService(IConfiguration configuration) : IJwtService
             issuer: issuer,
             audience: audience,
             claims: claims,
-            expires: DateTime.Now.AddMinutes(expiryMinutes),
+            expires: DateTime.UtcNow.AddMinutes(expiryMinutes),
             signingCredentials: creds);
 
         return new JwtSecurityTokenHandler().WriteToken(token);

@@ -1,4 +1,4 @@
-﻿using CarPlates.API.Models.DTOs;
+﻿using CarPlates.API.Models;
 
 namespace CarPlates.API.Interface;
 

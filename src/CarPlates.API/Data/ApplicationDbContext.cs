@@ -10,6 +10,8 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     public DbSet<ScanRecord> ScanRecords { get; set; } = null!;
     public DbSet<fw_Users> FwUsers { get; set; } = null!;
 
+    public DbSet<RefreshTokens> RefreshTokens => Set<RefreshTokens>();
+
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
@@ -52,6 +54,20 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
                   .WithMany(v => v.ScanRecords)
                   .HasForeignKey(s => s.VehicleId)
                   .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        builder.Entity<RefreshTokens>(entity =>
+        {
+            entity.HasKey(x => x.Id);
+
+            entity.Property(x => x.Token)
+                  .HasMaxLength(512);
+
+            entity.HasIndex(x => x.Token)
+                  .IsUnique();
+
+            entity.HasIndex(x => x.UserId);
+
         });
     }
 }
