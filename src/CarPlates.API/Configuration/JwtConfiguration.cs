@@ -9,7 +9,7 @@ public static class JwtConfiguration
     public static IServiceCollection AddJwtAuthentication(this IServiceCollection services, IConfiguration configuration)
     {
         var jwtSettings = configuration.GetSection("JwtSettings");
-        var secret = jwtSettings["Secret"]!;
+        var secret = jwtSettings["Key"]!;
 
         services.AddAuthentication(options =>
         {
