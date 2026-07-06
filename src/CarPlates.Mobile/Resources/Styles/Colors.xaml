@@ -28,4 +28,11 @@
     <Color x:Key="TextSecondaryDark">#B0B0B0</Color>
     <Color x:Key="BorderDark">#333333</Color>
 
+    <!-- Shared aliases used by styles and views -->
+    <Color x:Key="Background">#FFFFFF</Color>
+    <Color x:Key="Surface">#F5F5F5</Color>
+    <Color x:Key="TextPrimary">#212121</Color>
+    <Color x:Key="TextSecondary">#757575</Color>
+    <Color x:Key="Border">#E0E0E0</Color>
+
 </ResourceDictionary>
