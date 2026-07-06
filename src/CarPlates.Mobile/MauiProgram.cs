@@ -50,7 +50,7 @@ public static class MauiProgram
         builder.Services.AddMediatR(cfg =>
         {
             cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
-            cfg.RegisterServicesFromAssembly(typeof(Application.Common.Interfaces.IAuthenticationService).Assembly);
+            cfg.RegisterServicesFromAssembly(typeof(CarPlates.Application.Common.Interfaces.IAuthenticationService).Assembly);
         });
 
         // Pipeline behaviors
@@ -58,7 +58,7 @@ public static class MauiProgram
         builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>));
 
         // AutoMapper
-        builder.Services.AddAutoMapper(typeof(MappingProfile).Assembly);
+        builder.Services.AddAutoMapper(_ => { }, typeof(MappingProfile).Assembly);
 
         // ViewModels
         builder.Services.AddTransient<SplashViewModel>();
