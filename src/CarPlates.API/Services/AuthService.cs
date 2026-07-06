@@ -1,22 +1,28 @@
+using System.Security.Cryptography;
+using System.Text;
+using CarPlates.API.Configuration;
 using CarPlates.API.Data;
 using CarPlates.API.Interface;
 using CarPlates.API.Models;
 using CarPlates.API.Models.DTOs;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 namespace CarPlates.API.Services;
 
 public class AuthService(
     ApplicationDbContext context,
     UserManager<ApplicationUser> userManager,
-    IJwtService jwtService) : IAuthService
+    IJwtService jwtService,
+    IOptions<LegacyDesOptions> desOptions) : IAuthService
 {
     private const string DefaultRole = "Operator";
 
     private readonly ApplicationDbContext _context = context;
     private readonly UserManager<ApplicationUser> _userManager = userManager;
     private readonly IJwtService _jwtService = jwtService;
+    private readonly LegacyDesOptions _desOptions = desOptions.Value;
 
     public async Task<LoginResponseDto?> LoginAsync(LoginRequestDto request)
     {
@@ -24,7 +30,7 @@ public class AuthService(
             .AsNoTracking()
             .FirstOrDefaultAsync(u => u.UserName == request.Username, CancellationToken.None);
 
-        if (user == null || user.Password != request.Password)
+        if (user == null || !PasswordMatches(user.Password, request.Password))
         {
             return null;
         }
@@ -97,6 +103,42 @@ public class AuthService(
             GetFullName(user),
             null,
             DefaultRole);
+    }
+
+
+    private bool PasswordMatches(string storedPassword, string plainPassword)
+    {
+        if (string.IsNullOrEmpty(storedPassword))
+        {
+            return false;
+        }
+
+        return string.Equals(storedPassword, LegacyDesEncrypt(plainPassword), StringComparison.Ordinal);
+    }
+
+    private string LegacyDesEncrypt(string plain)
+    {
+        try
+        {
+            // "9&%$#@!12*ABxyZ".Substring(0, 8) → "9&%$#@!1"
+            var desKey = Encoding.UTF8.GetString(Convert.FromBase64String(_desOptions.Key));
+            byte[] bKey = Encoding.UTF8.GetBytes(desKey.Substring(0, 8));
+            byte[] desIv = Convert.FromBase64String(_desOptions.Iv);
+
+#pragma warning disable SYSLIB0021
+            using var des = new DESCryptoServiceProvider();
+            byte[] inputArray = Encoding.UTF8.GetBytes(plain);
+            using var ms = new MemoryStream();
+            using var cs = new CryptoStream(ms, des.CreateEncryptor(bKey, desIv), CryptoStreamMode.Write);
+            cs.Write(inputArray, 0, inputArray.Length);
+            cs.FlushFinalBlock();
+            return Convert.ToBase64String(ms.ToArray());
+#pragma warning restore SYSLIB0021
+        }
+        catch
+        {
+            return string.Empty;
+        }
     }
 
     private static string GetFullName(fw_Users user)
