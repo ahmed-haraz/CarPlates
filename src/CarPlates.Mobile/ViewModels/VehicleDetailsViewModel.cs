@@ -54,7 +54,7 @@ public partial class VehicleDetailsViewModel : BaseViewModel
     [RelayCommand]
     private async Task ScanAgainAsync()
     {
-        await Shell.Current.GoToAsync("//main/scanner");
+        await Shell.Current.GoToAsync("//scanner");
     }
 
     [RelayCommand]

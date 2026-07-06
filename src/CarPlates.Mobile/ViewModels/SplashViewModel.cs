@@ -23,7 +23,7 @@ public partial class SplashViewModel : BaseViewModel
 
         if (isAuthenticated)
         {
-            await Shell.Current.GoToAsync("//main/dashboard");
+            await Shell.Current.GoToAsync("//dashboard");
         }
         else
         {

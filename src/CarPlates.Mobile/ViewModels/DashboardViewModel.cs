@@ -56,13 +56,13 @@ public partial class DashboardViewModel : BaseViewModel
     [RelayCommand]
     private async Task NavigateToScanAsync()
     {
-        await Shell.Current.GoToAsync("//main/scanner");
+        await Shell.Current.GoToAsync("//scanner");
     }
 
     [RelayCommand]
     private async Task NavigateToHistoryAsync()
     {
-        await Shell.Current.GoToAsync("//main/history");
+        await Shell.Current.GoToAsync("//history");
     }
 
     [RelayCommand]

@@ -44,7 +44,7 @@ public partial class LoginViewModel : BaseViewModel
 
             if (result.Success)
             {
-                await Shell.Current.GoToAsync("//main/dashboard");
+                await Shell.Current.GoToAsync("//dashboard");
             }
             else
             {
