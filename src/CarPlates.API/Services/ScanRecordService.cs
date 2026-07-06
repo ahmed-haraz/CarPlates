@@ -38,7 +38,7 @@ public class ScanRecordService : IScanRecordService
 
     public async Task<IReadOnlyList<ScanRecordDto>> GetAllAsync(string? plateNumber = null, DateTime? startDate = null, DateTime? endDate = null)
     {
-        var query = _context.ScanRecords.AsNoTracking().Include(s => s.Vehicle);
+        IQueryable<ScanRecord> query = _context.ScanRecords.AsNoTracking().Include(s => s.Vehicle);
 
         if (!string.IsNullOrWhiteSpace(plateNumber))
             query = query.Where(s => s.PlateNumber.Contains(plateNumber));
