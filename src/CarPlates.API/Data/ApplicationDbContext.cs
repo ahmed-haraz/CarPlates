@@ -8,10 +8,24 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
 {
     public DbSet<Vehicle> Vehicles { get; set; } = null!;
     public DbSet<ScanRecord> ScanRecords { get; set; } = null!;
+    public DbSet<fw_Users> FwUsers { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
+
+        builder.Entity<fw_Users>(entity =>
+        {
+            entity.ToTable("fw_Users");
+            entity.HasKey(u => u.ID);
+            entity.HasIndex(u => u.UserName);
+            entity.Property(u => u.UserName).HasMaxLength(256);
+            entity.Property(u => u.Password).HasMaxLength(256);
+            entity.Property(u => u.MobilePassword).HasMaxLength(256);
+            entity.Property(u => u.UserFullName_Ar).HasMaxLength(256);
+            entity.Property(u => u.UserFullName_En).HasMaxLength(256);
+            entity.Property(u => u.email).HasMaxLength(256);
+        });
 
         builder.Entity<Vehicle>(entity =>
         {
