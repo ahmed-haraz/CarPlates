@@ -12,6 +12,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CarPlates.Infrastructure", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CarPlates.Shared", "src\CarPlates.Shared\CarPlates.Shared.csproj", "{2FDB7714-38FC-0A31-8CDC-8EBEFB163ECD}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CarPlates.API", "src\CarPlates.API\CarPlates.API.csproj", "{41C35233-233C-FF8F-5528-79D66C5CE43B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -40,6 +42,10 @@ Global
 		{2FDB7714-38FC-0A31-8CDC-8EBEFB163ECD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2FDB7714-38FC-0A31-8CDC-8EBEFB163ECD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2FDB7714-38FC-0A31-8CDC-8EBEFB163ECD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{41C35233-233C-FF8F-5528-79D66C5CE43B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{41C35233-233C-FF8F-5528-79D66C5CE43B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{41C35233-233C-FF8F-5528-79D66C5CE43B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{41C35233-233C-FF8F-5528-79D66C5CE43B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

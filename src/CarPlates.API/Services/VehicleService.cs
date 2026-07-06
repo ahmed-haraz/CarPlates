@@ -1,0 +1,129 @@
+using CarPlates.API.Data;
+using CarPlates.API.Models;
+using CarPlates.API.Models.DTOs;
+using Microsoft.EntityFrameworkCore;
+
+namespace CarPlates.API.Services;
+
+public interface IVehicleService
+{
+    Task<VehicleDto?> GetByPlateNumberAsync(string plateNumber);
+    Task<VehicleDto?> GetByIdAsync(Guid id);
+    Task<IReadOnlyList<VehicleDto>> GetAllAsync(string? search = null, string? status = null);
+    Task<VehicleDto> CreateAsync(VehicleCreateDto dto);
+    Task<VehicleDto?> UpdateAsync(Guid id, VehicleUpdateDto dto);
+    Task<bool> DeleteAsync(Guid id);
+    Task<bool> ExistsAsync(string plateNumber);
+}
+
+public class VehicleService : IVehicleService
+{
+    private readonly ApplicationDbContext _context;
+
+    public VehicleService(ApplicationDbContext context)
+    {
+        _context = context;
+    }
+
+    public async Task<VehicleDto?> GetByPlateNumberAsync(string plateNumber)
+    {
+        var vehicle = await _context.Vehicles
+            .AsNoTracking()
+            .FirstOrDefaultAsync(v => v.PlateNumber == plateNumber && !v.IsDeleted);
+
+        return vehicle == null ? null : MapToDto(vehicle);
+    }
+
+    public async Task<VehicleDto?> GetByIdAsync(Guid id)
+    {
+        var vehicle = await _context.Vehicles
+            .AsNoTracking()
+            .FirstOrDefaultAsync(v => v.Id == id && !v.IsDeleted);
+
+        return vehicle == null ? null : MapToDto(vehicle);
+    }
+
+    public async Task<IReadOnlyList<VehicleDto>> GetAllAsync(string? search = null, string? status = null)
+    {
+        var query = _context.Vehicles.AsNoTracking().Where(v => !v.IsDeleted);
+
+        if (!string.IsNullOrWhiteSpace(search))
+        {
+            query = query.Where(v => v.PlateNumber.Contains(search) || 
+                                     (v.Brand != null && v.Brand.Contains(search)) ||
+                                     (v.OwnerName != null && v.OwnerName.Contains(search)));
+        }
+
+        if (!string.IsNullOrWhiteSpace(status))
+        {
+            query = query.Where(v => v.AccessStatus == status);
+        }
+
+        var vehicles = await query.OrderByDescending(v => v.CreatedAt).ToListAsync();
+        return vehicles.Select(MapToDto).ToList();
+    }
+
+    public async Task<VehicleDto> CreateAsync(VehicleCreateDto dto)
+    {
+        var vehicle = new Vehicle
+        {
+            PlateNumber = dto.PlateNumber.ToUpperInvariant(),
+            PlateType = dto.PlateType,
+            Brand = dto.Brand,
+            Model = dto.Model,
+            Color = dto.Color,
+            OwnerName = dto.OwnerName,
+            OwnerPhone = dto.OwnerPhone,
+            OwnerNationalId = dto.OwnerNationalId,
+            AccessStatus = dto.AccessStatus
+        };
+
+        _context.Vehicles.Add(vehicle);
+        await _context.SaveChangesAsync();
+        return MapToDto(vehicle);
+    }
+
+    public async Task<VehicleDto?> UpdateAsync(Guid id, VehicleUpdateDto dto)
+    {
+        var vehicle = await _context.Vehicles.FindAsync(id);
+        if (vehicle == null || vehicle.IsDeleted) return null;
+
+        vehicle.Brand = dto.Brand ?? vehicle.Brand;
+        vehicle.Model = dto.Model ?? vehicle.Model;
+        vehicle.Color = dto.Color ?? vehicle.Color;
+        vehicle.OwnerName = dto.OwnerName ?? vehicle.OwnerName;
+        vehicle.OwnerPhone = dto.OwnerPhone ?? vehicle.OwnerPhone;
+        vehicle.AccessStatus = dto.AccessStatus ?? vehicle.AccessStatus;
+        vehicle.Notes = dto.Notes ?? vehicle.Notes;
+        vehicle.UpdatedAt = DateTime.UtcNow;
+
+        await _context.SaveChangesAsync();
+        return MapToDto(vehicle);
+    }
+
+    public async Task<bool> DeleteAsync(Guid id)
+    {
+        var vehicle = await _context.Vehicles.FindAsync(id);
+        if (vehicle == null) return false;
+
+        vehicle.IsDeleted = true;
+        vehicle.UpdatedAt = DateTime.UtcNow;
+        await _context.SaveChangesAsync();
+        return true;
+    }
+
+    public async Task<bool> ExistsAsync(string plateNumber)
+    {
+        return await _context.Vehicles.AnyAsync(v => v.PlateNumber == plateNumber && !v.IsDeleted);
+    }
+
+    private static VehicleDto MapToDto(Vehicle v) => new(
+        v.Id,
+        v.PlateNumber,
+        v.PlateType,
+        v.Brand,
+        v.Model,
+        v.Color,
+        v.OwnerName,
+        v.AccessStatus);
+}
