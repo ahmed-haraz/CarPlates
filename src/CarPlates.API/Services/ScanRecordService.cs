@@ -1,30 +1,15 @@
 using CarPlates.API.Data;
+using CarPlates.API.Interface;
 using CarPlates.API.Models;
 using CarPlates.API.Models.DTOs;
 using Microsoft.EntityFrameworkCore;
 
 namespace CarPlates.API.Services;
 
-public interface IScanRecordService
+public class ScanRecordService(ApplicationDbContext context, IVehicleService vehicleService) : IScanRecordService
 {
-    Task<ScanRecordDto?> GetByIdAsync(Guid id);
-    Task<IReadOnlyList<ScanRecordDto>> GetAllAsync(string? plateNumber = null, DateTime? startDate = null, DateTime? endDate = null);
-    Task<IReadOnlyList<RecentScanDto>> GetRecentAsync(int count = 10);
-    Task<ScanRecordDto> CreateAsync(ScanRecordCreateDto dto, string? userId = null);
-    Task<DashboardStatisticsDto> GetStatisticsAsync();
-    Task<SyncBatchResponseDto> SyncBatchAsync(SyncBatchRequestDto dto, string? userId = null);
-}
-
-public class ScanRecordService : IScanRecordService
-{
-    private readonly ApplicationDbContext _context;
-    private readonly IVehicleService _vehicleService;
-
-    public ScanRecordService(ApplicationDbContext context, IVehicleService vehicleService)
-    {
-        _context = context;
-        _vehicleService = vehicleService;
-    }
+    private readonly ApplicationDbContext _context = context;
+    private readonly IVehicleService _vehicleService = vehicleService;
 
     public async Task<ScanRecordDto?> GetByIdAsync(Guid id)
     {

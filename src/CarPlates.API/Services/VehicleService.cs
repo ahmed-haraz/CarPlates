@@ -1,29 +1,14 @@
 using CarPlates.API.Data;
+using CarPlates.API.Interface;
 using CarPlates.API.Models;
 using CarPlates.API.Models.DTOs;
 using Microsoft.EntityFrameworkCore;
 
 namespace CarPlates.API.Services;
 
-public interface IVehicleService
+public class VehicleService(ApplicationDbContext context) : IVehicleService
 {
-    Task<VehicleDto?> GetByPlateNumberAsync(string plateNumber);
-    Task<VehicleDto?> GetByIdAsync(Guid id);
-    Task<IReadOnlyList<VehicleDto>> GetAllAsync(string? search = null, string? status = null);
-    Task<VehicleDto> CreateAsync(VehicleCreateDto dto);
-    Task<VehicleDto?> UpdateAsync(Guid id, VehicleUpdateDto dto);
-    Task<bool> DeleteAsync(Guid id);
-    Task<bool> ExistsAsync(string plateNumber);
-}
-
-public class VehicleService : IVehicleService
-{
-    private readonly ApplicationDbContext _context;
-
-    public VehicleService(ApplicationDbContext context)
-    {
-        _context = context;
-    }
+    private readonly ApplicationDbContext _context = context;
 
     public async Task<VehicleDto?> GetByPlateNumberAsync(string plateNumber)
     {
@@ -49,7 +34,7 @@ public class VehicleService : IVehicleService
 
         if (!string.IsNullOrWhiteSpace(search))
         {
-            query = query.Where(v => v.PlateNumber.Contains(search) || 
+            query = query.Where(v => v.PlateNumber.Contains(search) ||
                                      (v.Brand != null && v.Brand.Contains(search)) ||
                                      (v.OwnerName != null && v.OwnerName.Contains(search)));
         }
