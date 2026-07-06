@@ -1,5 +1,5 @@
+using CarPlates.API.Interface;
 using CarPlates.API.Models.DTOs;
-using CarPlates.API.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -8,16 +8,10 @@ namespace CarPlates.API.Controllers;
 [ApiController]
 [Route("api/v1/[controller]")]
 [Authorize]
-public class ScansController : ControllerBase
+public class ScansController(IScanRecordService scanService, ILogger<ScansController> logger) : ControllerBase
 {
-    private readonly IScanRecordService _scanService;
-    private readonly ILogger<ScansController> _logger;
-
-    public ScansController(IScanRecordService scanService, ILogger<ScansController> logger)
-    {
-        _scanService = scanService;
-        _logger = logger;
-    }
+    private readonly IScanRecordService _scanService = scanService;
+    private readonly ILogger<ScansController> _logger = logger;
 
     [HttpGet]
     public async Task<ActionResult<IReadOnlyList<ScanRecordDto>>> GetAll(

@@ -1,5 +1,5 @@
+using CarPlates.API.Interface;
 using CarPlates.API.Models.DTOs;
-using CarPlates.API.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -8,16 +8,10 @@ namespace CarPlates.API.Controllers;
 [ApiController]
 [Route("api/v1/[controller]")]
 [Authorize]
-public class VehiclesController : ControllerBase
+public class VehiclesController(IVehicleService vehicleService, ILogger<VehiclesController> logger) : ControllerBase
 {
-    private readonly IVehicleService _vehicleService;
-    private readonly ILogger<VehiclesController> _logger;
-
-    public VehiclesController(IVehicleService vehicleService, ILogger<VehiclesController> logger)
-    {
-        _vehicleService = vehicleService;
-        _logger = logger;
-    }
+    private readonly IVehicleService _vehicleService = vehicleService;
+    private readonly ILogger<VehiclesController> _logger = logger;
 
     [HttpGet]
     public async Task<ActionResult<IReadOnlyList<VehicleDto>>> GetAll(
