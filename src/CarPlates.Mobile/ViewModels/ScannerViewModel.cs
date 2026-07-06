@@ -3,6 +3,7 @@ using CarPlates.Application.Common.Interfaces;
 using CarPlates.Application.Scanner.Commands;
 using CarPlates.Domain.Enums;
 using CarPlates.Domain.ValueObjects;
+using CarPlates.Shared.Constants;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MediatR;

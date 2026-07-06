@@ -1,39 +1,31 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<ResourceDictionary 
-    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
+<ResourceDictionary xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
 
-    <!-- Primary Colors -->
+    <!-- Primary -->
     <Color x:Key="Primary">#512BD4</Color>
     <Color x:Key="PrimaryDark">#3B1E9E</Color>
     <Color x:Key="PrimaryLight">#7C5CE0</Color>
     <Color x:Key="Accent">#FF6B6B</Color>
 
-    <!-- Semantic Colors -->
+    <!-- Semantic -->
     <Color x:Key="Success">#4CAF50</Color>
     <Color x:Key="Warning">#FF9800</Color>
     <Color x:Key="Error">#F44336</Color>
     <Color x:Key="Info">#2196F3</Color>
 
-    <!-- Light Theme -->
+    <!-- Light -->
     <Color x:Key="BackgroundLight">#FFFFFF</Color>
     <Color x:Key="SurfaceLight">#F5F5F5</Color>
     <Color x:Key="TextPrimaryLight">#212121</Color>
     <Color x:Key="TextSecondaryLight">#757575</Color>
     <Color x:Key="BorderLight">#E0E0E0</Color>
 
-    <!-- Dark Theme -->
+    <!-- Dark -->
     <Color x:Key="BackgroundDark">#121212</Color>
     <Color x:Key="SurfaceDark">#1E1E1E</Color>
     <Color x:Key="TextPrimaryDark">#FFFFFF</Color>
     <Color x:Key="TextSecondaryDark">#B0B0B0</Color>
     <Color x:Key="BorderDark">#333333</Color>
-
-    <!-- Dynamic Colors -->
-    <Color x:Key="Background">{AppThemeBinding Light={StaticResource BackgroundLight}, Dark={StaticResource BackgroundDark}}</Color>
-    <Color x:Key="Surface">{AppThemeBinding Light={StaticResource SurfaceLight}, Dark={StaticResource SurfaceDark}}</Color>
-    <Color x:Key="TextPrimary">{AppThemeBinding Light={StaticResource TextPrimaryLight}, Dark={StaticResource TextPrimaryDark}}</Color>
-    <Color x:Key="TextSecondary">{AppThemeBinding Light={StaticResource TextSecondaryLight}, Dark={StaticResource TextSecondaryDark}}</Color>
-    <Color x:Key="Border">{AppThemeBinding Light={StaticResource BorderLight}, Dark={StaticResource BorderDark}}</Color>
 
 </ResourceDictionary>

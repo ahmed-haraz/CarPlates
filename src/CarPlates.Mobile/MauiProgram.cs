@@ -1,5 +1,8 @@
+using CarPlates.Application.Common;
 using CarPlates.Application.Common.Behaviors;
 using CarPlates.Infrastructure.DependencyInjection;
+using CarPlates.Mobile.Controls;
+
 using CarPlates.Mobile.ViewModels;
 using CarPlates.Mobile.Views.Dashboard;
 using CarPlates.Mobile.Views.History;
@@ -10,13 +13,16 @@ using CarPlates.Mobile.Views.Settings;
 using CarPlates.Mobile.Views.Splash;
 using CarPlates.Mobile.Views.Vehicle;
 using CarPlates.Shared.Constants;
-using CarPlates.Mobile.Controls;
-using CarPlates.Mobile.Handlers;
 using CommunityToolkit.Maui;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using System.Reflection;
-using CarPlates.Application.Common;
+
+#if ANDROID
+using CarPlates.Mobile.Platforms.Android.Handlers;
+#elif IOS
+using CarPlates.Mobile.Platforms.iOS;
+#endif
 
 namespace CarPlates.Mobile;
 

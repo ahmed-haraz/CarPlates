@@ -7,11 +7,11 @@ public static class ThemeHelper
 {
     public static void ApplyTheme(AppTheme theme)
     {
-        Application.Current!.UserAppTheme = theme switch
+        Microsoft.Maui.Controls.Application.Current!.UserAppTheme = theme switch
         {
-            AppTheme.Dark => AppTheme.Dark,
-            AppTheme.Light => AppTheme.Light,
-            _ => AppTheme.System
+            AppTheme.Dark => Microsoft.Maui.ApplicationModel.AppTheme.Dark,
+            AppTheme.Light => Microsoft.Maui.ApplicationModel.AppTheme.Light,
+            _ => Microsoft.Maui.ApplicationModel.AppTheme.Unspecified
         };
     }
 

@@ -1,7 +1,7 @@
 using CarPlates.Application.Common.Interfaces;
-using CarPlates.Domain.Enums;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using AppTheme = CarPlates.Domain.Enums.AppTheme;
 
 namespace CarPlates.Mobile.ViewModels;
 
@@ -72,7 +72,7 @@ public partial class SettingsViewModel : BaseViewModel
                 theme, language, ApiUrl, OcrConfidence, AutoResume, NotificationsEnabled);
 
             await _settingsService.SaveSettingsAsync(settings);
-            await Shell.Current.DisplayAlert("Success", "Settings saved", "OK");
+            await Shell.Current.DisplayAlertAsync("Success", "Settings saved", "OK");
         });
     }
 
@@ -83,12 +83,12 @@ public partial class SettingsViewModel : BaseViewModel
         {
             if (!await _syncService.IsOnlineAsync())
             {
-                await Shell.Current.DisplayAlert("Offline", "No internet connection", "OK");
+                await Shell.Current.DisplayAlertAsync("Offline", "No internet connection", "OK");
                 return;
             }
 
             var result = await _syncService.SyncPendingAsync();
-            await Shell.Current.DisplayAlert(
+            await Shell.Current.DisplayAlertAsync(
                 "Sync Complete",
                 $"Synced: {result.SyncedCount}, Failed: {result.FailedCount}",
                 "OK");
@@ -98,7 +98,7 @@ public partial class SettingsViewModel : BaseViewModel
     [RelayCommand]
     private async Task ClearCacheAsync()
     {
-        var confirm = await Shell.Current.DisplayAlert(
+        var confirm = await Shell.Current.DisplayAlertAsync(
             "Clear Cache",
             "This will delete all local scan history. Continue?",
             "Clear", "Cancel");
@@ -106,20 +106,20 @@ public partial class SettingsViewModel : BaseViewModel
         if (confirm)
         {
             // Clear cache logic
-            await Shell.Current.DisplayAlert("Success", "Cache cleared", "OK");
+            await Shell.Current.DisplayAlertAsync("Success", "Cache cleared", "OK");
         }
     }
 
     [RelayCommand]
     private async Task ViewLogsAsync()
     {
-        await Shell.Current.DisplayAlert("Logs", "Log viewer coming soon", "OK");
+        await Shell.Current.DisplayAlertAsync("Logs", "Log viewer coming soon", "OK");
     }
 
     [RelayCommand]
     private async Task LogoutAsync()
     {
-        var confirm = await Shell.Current.DisplayAlert(
+        var confirm = await Shell.Current.DisplayAlertAsync(
             "Logout",
             "Are you sure you want to logout?",
             "Logout", "Cancel");
