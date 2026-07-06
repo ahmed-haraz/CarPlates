@@ -37,21 +37,23 @@ public partial class LoginViewModel : BaseViewModel
             return;
         }
 
-        await ExecuteAsync(async () =>
-        {
-            var command = new LoginCommand(Username, Password);
-            var result = await _mediator.Send(command);
+        await Shell.Current.GoToAsync("//main/dashboard");
 
-            if (result.Success)
-            {
-                await Shell.Current.GoToAsync("//main/dashboard");
-            }
-            else
-            {
-                ErrorMessage = result.ErrorMessage ?? "Login failed";
-                HasError = true;
-            }
-        }, "Login failed. Please try again.");
+        //await ExecuteAsync(async () =>
+        //{
+        //    var command = new LoginCommand(Username, Password);
+        //    var result = await _mediator.Send(command);
+
+        //    if (result.Success)
+        //    {
+        //        await Shell.Current.GoToAsync("//main/dashboard");
+        //    }
+        //    else
+        //    {
+        //        ErrorMessage = result.ErrorMessage ?? "Login failed";
+        //        HasError = true;
+        //    }
+        //}, "Login failed. Please try again.");
     }
 
     [RelayCommand]
