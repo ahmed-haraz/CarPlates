@@ -28,4 +28,11 @@
     <Color x:Key="TextSecondaryDark">#B0B0B0</Color>
     <Color x:Key="BorderDark">#333333</Color>
 
+    <!-- Theme aliases -->
+    <Color x:Key="Background">{AppThemeBinding Light={StaticResource BackgroundLight}, Dark={StaticResource BackgroundDark}}</Color>
+    <Color x:Key="Surface">{AppThemeBinding Light={StaticResource SurfaceLight}, Dark={StaticResource SurfaceDark}}</Color>
+    <Color x:Key="TextPrimary">{AppThemeBinding Light={StaticResource TextPrimaryLight}, Dark={StaticResource TextPrimaryDark}}</Color>
+    <Color x:Key="TextSecondary">{AppThemeBinding Light={StaticResource TextSecondaryLight}, Dark={StaticResource TextSecondaryDark}}</Color>
+    <Color x:Key="Border">{AppThemeBinding Light={StaticResource BorderLight}, Dark={StaticResource BorderDark}}</Color>
+
 </ResourceDictionary>
