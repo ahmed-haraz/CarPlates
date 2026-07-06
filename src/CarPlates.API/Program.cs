@@ -1,6 +1,6 @@
-using AutoMapper;
 using CarPlates.API.Configuration;
 using CarPlates.API.Data;
+using CarPlates.API.Interface;
 using CarPlates.API.Middleware;
 using CarPlates.API.Models;
 using CarPlates.API.Services;

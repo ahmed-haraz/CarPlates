@@ -1,32 +1,18 @@
+using CarPlates.API.Interface;
 using CarPlates.API.Models;
 using CarPlates.API.Models.DTOs;
 using Microsoft.AspNetCore.Identity;
 
 namespace CarPlates.API.Services;
 
-public interface IAuthService
+public class AuthService(
+    UserManager<ApplicationUser> userManager,
+    SignInManager<ApplicationUser> signInManager,
+    IJwtService jwtService) : IAuthService
 {
-    Task<LoginResponseDto?> LoginAsync(LoginRequestDto request);
-    Task<LoginResponseDto?> RefreshTokenAsync(RefreshTokenRequestDto request);
-    Task<bool> RegisterAsync(RegisterRequestDto request);
-    Task<UserDto?> GetUserAsync(string userId);
-}
-
-public class AuthService : IAuthService
-{
-    private readonly UserManager<ApplicationUser> _userManager;
-    private readonly SignInManager<ApplicationUser> _signInManager;
-    private readonly IJwtService _jwtService;
-
-    public AuthService(
-        UserManager<ApplicationUser> userManager,
-        SignInManager<ApplicationUser> signInManager,
-        IJwtService jwtService)
-    {
-        _userManager = userManager;
-        _signInManager = signInManager;
-        _jwtService = jwtService;
-    }
+    private readonly UserManager<ApplicationUser> _userManager = userManager;
+    private readonly SignInManager<ApplicationUser> _signInManager = signInManager;
+    private readonly IJwtService _jwtService = jwtService;
 
     public async Task<LoginResponseDto?> LoginAsync(LoginRequestDto request)
     {

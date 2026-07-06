@@ -2,42 +2,31 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
+using CarPlates.API.Interface;
 using CarPlates.API.Models;
 using Microsoft.IdentityModel.Tokens;
 
 namespace CarPlates.API.Services;
 
-public interface IJwtService
+public class JwtService(IConfiguration configuration) : IJwtService
 {
-    string GenerateAccessToken(ApplicationUser user, IList<string> roles);
-    string GenerateRefreshToken();
-    ClaimsPrincipal? ValidateRefreshToken(string refreshToken);
-}
-
-public class JwtService : IJwtService
-{
-    private readonly IConfiguration _configuration;
-
-    public JwtService(IConfiguration configuration)
-    {
-        _configuration = configuration;
-    }
+    private readonly IConfiguration _configuration = configuration;
 
     public string GenerateAccessToken(ApplicationUser user, IList<string> roles)
     {
         var jwtSettings = _configuration.GetSection("JwtSettings");
-        var secret = jwtSettings["Secret"]!;
+        var secret = jwtSettings["Key"]!;
         var issuer = jwtSettings["Issuer"]!;
         var audience = jwtSettings["Audience"]!;
         var expiryMinutes = int.Parse(jwtSettings["ExpiryMinutes"]!);
 
         var claims = new List<Claim>
         {
-            new Claim(JwtRegisteredClaimNames.Sub, user.Id),
-            new Claim(JwtRegisteredClaimNames.Email, user.Email ?? ""),
-            new Claim(JwtRegisteredClaimNames.Name, user.UserName ?? ""),
-            new Claim("fullName", user.FullName),
-            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+            new(JwtRegisteredClaimNames.Sub, user.Id),
+            new(JwtRegisteredClaimNames.Email, user.Email ?? ""),
+            new(JwtRegisteredClaimNames.Name, user.UserName ?? ""),
+            new("fullName", user.FullName),
+            new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
         };
 
         foreach (var role in roles)

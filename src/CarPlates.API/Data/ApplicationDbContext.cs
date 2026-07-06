@@ -4,10 +4,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CarPlates.API.Data;
 
-public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
+public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : IdentityDbContext<ApplicationUser>(options)
 {
-    public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
-
     public DbSet<Vehicle> Vehicles { get; set; } = null!;
     public DbSet<ScanRecord> ScanRecords { get; set; } = null!;
 
