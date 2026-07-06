@@ -28,11 +28,11 @@
     <Color x:Key="TextSecondaryDark">#B0B0B0</Color>
     <Color x:Key="BorderDark">#333333</Color>
 
-    <!-- Theme aliases -->
-    <Color x:Key="Background">{AppThemeBinding Light={StaticResource BackgroundLight}, Dark={StaticResource BackgroundDark}}</Color>
-    <Color x:Key="Surface">{AppThemeBinding Light={StaticResource SurfaceLight}, Dark={StaticResource SurfaceDark}}</Color>
-    <Color x:Key="TextPrimary">{AppThemeBinding Light={StaticResource TextPrimaryLight}, Dark={StaticResource TextPrimaryDark}}</Color>
-    <Color x:Key="TextSecondary">{AppThemeBinding Light={StaticResource TextSecondaryLight}, Dark={StaticResource TextSecondaryDark}}</Color>
-    <Color x:Key="Border">{AppThemeBinding Light={StaticResource BorderLight}, Dark={StaticResource BorderDark}}</Color>
+    <!-- Shared aliases used by styles and views -->
+    <Color x:Key="Background">#FFFFFF</Color>
+    <Color x:Key="Surface">#F5F5F5</Color>
+    <Color x:Key="TextPrimary">#212121</Color>
+    <Color x:Key="TextSecondary">#757575</Color>
+    <Color x:Key="Border">#E0E0E0</Color>
 
 </ResourceDictionary>
