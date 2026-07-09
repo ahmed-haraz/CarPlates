@@ -2,18 +2,13 @@ using CarPlates.API.Configuration;
 using CarPlates.API.Data;
 using CarPlates.API.Interface;
 using CarPlates.API.Middleware;
-using CarPlates.API.Models;
 using CarPlates.API.Services;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// ===========================
-// Serilog
-// ===========================
 Log.Logger = new LoggerConfiguration()
     .ReadFrom.Configuration(builder.Configuration)
     .WriteTo.Console()
@@ -22,15 +17,9 @@ Log.Logger = new LoggerConfiguration()
 
 builder.Host.UseSerilog();
 
-// ===========================
-// Controllers
-// ===========================
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 
-// ===========================
-// Swagger
-// ===========================
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo
@@ -55,57 +44,35 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
-// ===========================
-// Legacy DES Encryption
-// ===========================
 builder.Services.Configure<LegacyDesOptions>(
     builder.Configuration.GetSection("LegacyDes"));
 
-// ===========================
-// Database
-// ===========================
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(
         builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// ===========================
-// JWT Authentication
-// ===========================
 builder.Services.AddJwtAuthentication(builder.Configuration);
-
-// ===========================
-// Dependency Injection
-// ===========================
 builder.Services.AddScoped<IVehicleService, VehicleService>();
 builder.Services.AddScoped<IScanRecordService, ScanRecordService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IJwtService, JwtService>();
 
-// ===========================
-// AutoMapper
-// ===========================
 builder.Services.AddAutoMapper(cfg => cfg.AddMaps(AppDomain.CurrentDomain.GetAssemblies()));
 
-// ===========================
-// Build App
-// ===========================
-var app = builder.Build();
 
-// ===========================
-// Middleware
-// ===========================
-//if (app.Environment.IsDevelopment())
-//{
-//    app.UseSwagger();
-//    app.UseSwaggerUI();
-//}
+builder.WebHost.ConfigureKestrel(options =>
+{
+    options.ListenAnyIP(56035);
+});
+
+var app = builder.Build();
 
 app.UseSwagger();
 app.UseSwaggerUI();
 
 app.UseSerilogRequestLogging();
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 
 app.UseMiddleware<ExceptionMiddleware>();
 
@@ -114,9 +81,6 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-// ===========================
-// Database Migration
-// ===========================
 using (var scope = app.Services.CreateScope())
 {
     var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();

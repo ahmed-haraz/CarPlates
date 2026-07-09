@@ -9,7 +9,6 @@ using CarPlates.Infrastructure.Storage;
 using CarPlates.Infrastructure.Storage.Database;
 using CarPlates.Shared.Constants;
 using Microsoft.Extensions.DependencyInjection;
-using Polly;
 using Serilog;
 
 namespace CarPlates.Infrastructure.DependencyInjection;
@@ -17,7 +16,7 @@ namespace CarPlates.Infrastructure.DependencyInjection;
 public static class ServiceRegistration
 {
     public static IServiceCollection AddInfrastructureServices(
-        this IServiceCollection services, 
+        this IServiceCollection services,
         string dbPath,
         string apiUrl)
     {

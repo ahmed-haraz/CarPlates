@@ -49,18 +49,18 @@ public partial class ProfileViewModel : BaseViewModel
     [RelayCommand]
     private async Task EditProfileAsync()
     {
-        await Shell.Current.DisplayAlert("Edit Profile", "Profile editing coming soon", "OK");
+        await Shell.Current.DisplayAlertAsync("Edit Profile", "Profile editing coming soon", "OK");
     }
 
     [RelayCommand]
     private async Task ChangePhotoAsync()
     {
-        await Shell.Current.DisplayAlert("Change Photo", "Photo upload coming soon", "OK");
+        await Shell.Current.DisplayAlertAsync("Change Photo", "Photo upload coming soon", "OK");
     }
 
     [RelayCommand]
     private async Task ChangePasswordAsync()
     {
-        await Shell.Current.DisplayAlert("Change Password", "Password change coming soon", "OK");
+        await Shell.Current.DisplayAlertAsync("Change Password", "Password change coming soon", "OK");
     }
 }

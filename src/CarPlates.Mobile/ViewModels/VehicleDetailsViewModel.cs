@@ -33,7 +33,7 @@ public partial class VehicleDetailsViewModel : BaseViewModel
     {
         if (!string.IsNullOrEmpty(value))
         {
-            LoadVehicleDetailsAsync();
+            _ = LoadVehicleDetailsAsync();
         }
     }
 

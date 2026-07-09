@@ -1,25 +1,17 @@
-using System.Net.Http.Json;
 using CarPlates.Application.Common.Interfaces;
-using CarPlates.Domain.Entities;
 using Microsoft.Extensions.Logging;
+using System.Net.Http.Json;
 
 namespace CarPlates.Infrastructure.Api;
 
-public class VehicleLookupService : IVehicleLookupService
+public class VehicleLookupService(
+    IHttpClientFactory httpClientFactory,
+    ILoggingService loggingService,
+    ILogger<VehicleLookupService> logger) : IVehicleLookupService
 {
-    private readonly HttpClient _httpClient;
-    private readonly ILoggingService _loggingService;
-    private readonly ILogger<VehicleLookupService> _logger;
-
-    public VehicleLookupService(
-        IHttpClientFactory httpClientFactory,
-        ILoggingService loggingService,
-        ILogger<VehicleLookupService> logger)
-    {
-        _httpClient = httpClientFactory.CreateClient("CarPlatesApi");
-        _loggingService = loggingService;
-        _logger = logger;
-    }
+    private readonly HttpClient _httpClient = httpClientFactory.CreateClient("CarPlatesApi");
+    private readonly ILoggingService _loggingService = loggingService;
+    private readonly ILogger<VehicleLookupService> _logger = logger;
 
     public async Task<VehicleLookupResult> LookupAsync(string plateNumber, CancellationToken cancellationToken = default)
     {

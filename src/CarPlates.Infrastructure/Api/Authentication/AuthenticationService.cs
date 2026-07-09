@@ -1,27 +1,18 @@
-using System.Net.Http.Json;
-using System.Text.Json;
 using CarPlates.Application.Common.DTOs;
 using CarPlates.Application.Common.Interfaces;
-using CarPlates.Domain.Exceptions;
 using Microsoft.Extensions.Logging;
+using System.Net.Http.Json;
 
 namespace CarPlates.Infrastructure.Api.Authentication;
 
-public class AuthenticationService : IAuthenticationService
+public class AuthenticationService(
+    IHttpClientFactory httpClientFactory,
+    ITokenStorage tokenStorage,
+    ILogger<AuthenticationService> logger) : IAuthenticationService
 {
-    private readonly HttpClient _httpClient;
-    private readonly ITokenStorage _tokenStorage;
-    private readonly ILogger<AuthenticationService> _logger;
-
-    public AuthenticationService(
-        IHttpClientFactory httpClientFactory,
-        ITokenStorage tokenStorage,
-        ILogger<AuthenticationService> logger)
-    {
-        _httpClient = httpClientFactory.CreateClient("CarPlatesApi");
-        _tokenStorage = tokenStorage;
-        _logger = logger;
-    }
+    private readonly HttpClient _httpClient = httpClientFactory.CreateClient("CarPlatesApi");
+    private readonly ITokenStorage _tokenStorage = tokenStorage;
+    private readonly ILogger<AuthenticationService> _logger = logger;
 
     public async Task<AuthResult> LoginAsync(string username, string password, CancellationToken cancellationToken = default)
     {

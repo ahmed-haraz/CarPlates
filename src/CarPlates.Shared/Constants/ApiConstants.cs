@@ -2,7 +2,7 @@ namespace CarPlates.Shared.Constants;
 
 public static class ApiConstants
 {
-    public const string DefaultApiUrl = "https://api.carplates.example.com";
+    public const string DefaultApiUrl = "http://192.168.1.6:56035";
     public const string ApiVersion = "v1";
     public const int TimeoutSeconds = 30;
     public const int MaxRetryCount = 3;

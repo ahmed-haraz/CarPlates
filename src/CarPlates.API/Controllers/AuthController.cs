@@ -46,24 +46,5 @@ public class AuthController(IAuthService authService, ILogger<AuthController> lo
         return Ok(new { Message = "User registered successfully" });
     }
 
-    [HttpPost("logout")]
-    [Authorize]
-    public Task<ActionResult> Logout()
-    {
-        // In production, invalidate the token/blacklist it
-        return Task.FromResult<ActionResult>(Ok(new { Message = "Logged out successfully" }));
-    }
-
-    [HttpGet("me")]
-    [Authorize]
-    public async Task<ActionResult<UserDto>> GetCurrentUser()
-    {
-        var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
-        if (userId == null) return Unauthorized();
-
-        var user = await _authService.GetUserAsync(userId);
-        if (user == null) return NotFound();
-
-        return Ok(user);
-    }
+    
 }

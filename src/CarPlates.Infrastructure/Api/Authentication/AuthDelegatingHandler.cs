@@ -1,16 +1,10 @@
 using CarPlates.Application.Common.Interfaces;
-using CarPlates.Shared.Constants;
 
 namespace CarPlates.Infrastructure.Api.Authentication;
 
-public class AuthDelegatingHandler : DelegatingHandler
+public class AuthDelegatingHandler(ITokenStorage tokenStorage) : DelegatingHandler
 {
-    private readonly ITokenStorage _tokenStorage;
-
-    public AuthDelegatingHandler(ITokenStorage tokenStorage)
-    {
-        _tokenStorage = tokenStorage;
-    }
+    private readonly ITokenStorage _tokenStorage = tokenStorage;
 
     protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
     {

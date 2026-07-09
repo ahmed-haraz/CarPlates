@@ -73,7 +73,7 @@ public partial class HistoryViewModel : BaseViewModel
     [RelayCommand]
     private async Task DeleteAsync(ScanRecordListDto record)
     {
-        var confirm = await Shell.Current.DisplayAlert(
+        var confirm = await Shell.Current.DisplayAlertAsync(
             "Delete Record",
             $"Delete scan for {record.PlateNumber}?",
             "Delete", "Cancel");
@@ -89,13 +89,13 @@ public partial class HistoryViewModel : BaseViewModel
     private async Task ExportAsync()
     {
         // Export to CSV/JSON
-        await Shell.Current.DisplayAlert("Export", "Export feature coming soon", "OK");
+        await Shell.Current.DisplayAlertAsync("Export", "Export feature coming soon", "OK");
     }
 
     [RelayCommand]
     private async Task FilterByDateAsync()
     {
         // Show date picker and filter
-        await Shell.Current.DisplayAlert("Filter", "Date filter coming soon", "OK");
+        await Shell.Current.DisplayAlertAsync("Filter", "Date filter coming soon", "OK");
     }
 }
