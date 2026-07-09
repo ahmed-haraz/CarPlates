@@ -32,18 +32,18 @@ public partial class ProfileViewModel : BaseViewModel
     [RelayCommand]
     private async Task LoadProfileAsync()
     {
-        await ExecuteAsync(async () =>
-        {
-            var user = await _authService.GetCurrentUserAsync();
-            if (user != null)
-            {
-                UserName = user.Username;
-                Email = user.Email;
-                FullName = user.FullName;
-                Role = user.Role;
-                ProfilePhotoUrl = user.ProfilePhotoUrl;
-            }
-        });
+        //await ExecuteAsync(async () =>
+        //{
+        //    var user = await _authService.GetCurrentUserAsync();
+        //    if (user != null)
+        //    {
+        //        UserName = user.Username;
+        //        Email = user.Email;
+        //        FullName = user.FullName;
+        //        Role = user.Role;
+        //        ProfilePhotoUrl = user.ProfilePhotoUrl;
+        //    }
+        //});
     }
 
     [RelayCommand]

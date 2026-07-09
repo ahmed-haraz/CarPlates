@@ -21,30 +21,30 @@ public class AuthenticationService(
             _logger.LogInformation("Attempting login for user: {Username}", username);
 
             var request = new LoginRequestDto(username, password);
-            var response = await _httpClient.PostAsJsonAsync("auth/login", request, cancellationToken);
+            var response = await _httpClient.PostAsJsonAsync("Auth/login", request, cancellationToken);
 
             if (!response.IsSuccessStatusCode)
             {
                 var error = await response.Content.ReadAsStringAsync(cancellationToken);
                 _logger.LogWarning("Login failed for {Username}: {StatusCode}", username, response.StatusCode);
-                return new AuthResult(false, null, null, $"Login failed: {error}");
+                return new AuthResult(false, null, null, $"Login failed: {error}", null!);
             }
 
             var result = await response.Content.ReadFromJsonAsync<LoginResponseDto>(cancellationToken);
             if (result == null)
             {
-                return new AuthResult(false, null, null, "Invalid response from server");
+                return new AuthResult(false, null, null, "Invalid response from server", null!);
             }
 
             await _tokenStorage.SaveTokenAsync(result.AccessToken, result.RefreshToken);
             _logger.LogInformation("Login successful for {Username}", username);
 
-            return new AuthResult(true, result.AccessToken, result.RefreshToken, null);
+            return new AuthResult(true, result.AccessToken, result.RefreshToken, null, result.User);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Login error for {Username}", username);
-            return new AuthResult(false, null, null, $"Network error: {ex.Message}");
+            return new AuthResult(false, null, null, $"Network error: {ex.Message}", null!);
         }
     }
 
@@ -58,57 +58,26 @@ public class AuthenticationService(
             if (!response.IsSuccessStatusCode)
             {
                 await _tokenStorage.ClearTokensAsync();
-                return new AuthResult(false, null, null, "Token refresh failed");
+                return new AuthResult(false, null, null, "Token refresh failed", null!);
             }
 
             var result = await response.Content.ReadFromJsonAsync<LoginResponseDto>(cancellationToken);
-            if (result == null) return new AuthResult(false, null, null, "Invalid refresh response");
+            if (result == null) return new AuthResult(false, null, null, "Invalid refresh response", null!);
 
             await _tokenStorage.SaveTokenAsync(result.AccessToken, result.RefreshToken);
-            return new AuthResult(true, result.AccessToken, result.RefreshToken, null);
+            return new AuthResult(true, result.AccessToken, result.RefreshToken, null, result.User);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Token refresh error");
-            return new AuthResult(false, null, null, ex.Message);
+            return new AuthResult(false, null, null, ex.Message, null!);
         }
     }
 
-    public async Task<bool> LogoutAsync(CancellationToken cancellationToken = default)
-    {
-        try
-        {
-            await _httpClient.PostAsync("auth/logout", null, cancellationToken);
-        }
-        catch { /* Ignore API errors on logout */ }
-        finally
-        {
-            await _tokenStorage.ClearTokensAsync();
-        }
-        return true;
-    }
-
+   
     public async Task<bool> IsAuthenticatedAsync(CancellationToken cancellationToken = default)
     {
         return await _tokenStorage.HasValidTokenAsync();
     }
 
-    public async Task<UserInfo?> GetCurrentUserAsync(CancellationToken cancellationToken = default)
-    {
-        try
-        {
-            var response = await _httpClient.GetAsync("auth/me", cancellationToken);
-            if (!response.IsSuccessStatusCode) return null;
-
-            var user = await response.Content.ReadFromJsonAsync<UserDto>(cancellationToken);
-            if (user == null) return null;
-
-            return new UserInfo(user.Username, user.Email, user.FullName, user.ProfilePhotoUrl, user.Role);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error getting current user");
-            return null;
-        }
-    }
 }

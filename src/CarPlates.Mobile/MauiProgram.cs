@@ -47,6 +47,9 @@ public static class MauiProgram
 
         // Database path
         var dbPath = Path.Combine(FileSystem.AppDataDirectory, StorageConstants.DatabaseName);
+
+        Preferences.Remove("api_url");
+
         var apiUrl = Preferences.Get("api_url", ApiConstants.DefaultApiUrl);
 
         // Infrastructure services

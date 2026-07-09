@@ -126,7 +126,6 @@ public partial class SettingsViewModel : BaseViewModel
 
         if (confirm)
         {
-            await _authService.LogoutAsync();
             await Shell.Current.GoToAsync("//login");
         }
     }
