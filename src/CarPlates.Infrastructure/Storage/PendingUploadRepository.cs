@@ -46,4 +46,9 @@ public class PendingUploadRepository(DatabaseContext context) : IPendingUploadRe
             .Where(p => p.Status == Domain.Enums.UploadStatus.Pending)
             .CountAsync();
     }
+
+    public async Task ClearAllAsync(CancellationToken cancellationToken = default)
+    {
+        await _database.DeleteAllAsync<PendingUpload>();
+    }
 }

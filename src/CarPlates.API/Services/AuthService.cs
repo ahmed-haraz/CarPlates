@@ -168,6 +168,28 @@ public class AuthService(
             user.UserType ?? 0);
     }
 
+    public async Task<bool> LogoutAsync(string refreshToken)
+    {
+        if (string.IsNullOrWhiteSpace(refreshToken))
+        {
+            return false;
+        }
+
+        var storedToken = await _context.RefreshTokens
+            .FirstOrDefaultAsync(x => x.Token == refreshToken && !x.Revoked);
+
+        if (storedToken == null)
+        {
+            // Already revoked/unknown - treat logout as a no-op success so the
+            // client can always clear its local session state.
+            return true;
+        }
+
+        storedToken.Revoked = true;
+        await _context.SaveChangesAsync();
+        return true;
+    }
+
     private bool PasswordMatches(string storedPassword, string plainPassword)
     {
         if (string.IsNullOrEmpty(storedPassword))

@@ -25,8 +25,8 @@ public class GetVehicleDetailsHandler : IRequestHandler<GetVehicleDetailsQuery, 
 
         if (!lookup.Found) return null;
 
-        var scans = await _scanRepository.GetByPlateNumberAsync(request.PlateNumber, cancellationToken);
-        var totalScans = scans != null ? 1 : 0;
+        var scans = await _scanRepository.GetAllByPlateNumberAsync(request.PlateNumber, cancellationToken);
+        var latestScan = scans.Count > 0 ? scans[0] : null; // already ordered newest-first
 
         return new VehicleDetailsDto(
             request.PlateNumber,
@@ -35,8 +35,8 @@ public class GetVehicleDetailsHandler : IRequestHandler<GetVehicleDetailsQuery, 
             lookup.Color,
             lookup.OwnerName,
             lookup.AccessStatus,
-            scans?.ScanTime,
-            totalScans,
-            scans?.PhotoPath);
+            latestScan?.ScanTime,
+            scans.Count,
+            latestScan?.PhotoPath);
     }
 }

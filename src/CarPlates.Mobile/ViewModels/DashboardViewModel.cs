@@ -45,24 +45,24 @@ public partial class DashboardViewModel : BaseViewModel
             RecentScans = recent?.ToList() ?? new List<RecentScanDto>();
 
             // Load user info
-            //var user = await _authService.GetCurrentUserAsync();
-            //if (user != null)
-            //{
-            //    UserName = user.FullName;
-            //}
+            var user = await _authService.GetCurrentUserAsync();
+            if (user != null)
+            {
+                UserName = user.FullName;
+            }
         });
     }
 
     [RelayCommand]
     private async Task NavigateToScanAsync()
     {
-        await Shell.Current.GoToAsync("//scanner");
+        await Shell.Current.GoToAsync("//main/scanner");
     }
 
     [RelayCommand]
     private async Task NavigateToHistoryAsync()
     {
-        await Shell.Current.GoToAsync("//history");
+        await Shell.Current.GoToAsync("//main/history");
     }
 
     [RelayCommand]

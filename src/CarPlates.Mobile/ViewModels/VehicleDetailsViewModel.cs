@@ -1,3 +1,4 @@
+using AutoMapper;
 using CarPlates.Application.Common.DTOs;
 using CarPlates.Application.Common.Interfaces;
 using CarPlates.Application.Vehicle.Queries;
@@ -12,6 +13,7 @@ public partial class VehicleDetailsViewModel : BaseViewModel
 {
     private readonly IMediator _mediator;
     private readonly IScanRepository _scanRepository;
+    private readonly IMapper _mapper;
 
     [ObservableProperty]
     private string _plateNumber = string.Empty;
@@ -22,10 +24,11 @@ public partial class VehicleDetailsViewModel : BaseViewModel
     [ObservableProperty]
     private List<ScanRecordDto> _scanHistory = new();
 
-    public VehicleDetailsViewModel(IMediator mediator, IScanRepository scanRepository)
+    public VehicleDetailsViewModel(IMediator mediator, IScanRepository scanRepository, IMapper mapper)
     {
         _mediator = mediator;
         _scanRepository = scanRepository;
+        _mapper = mapper;
         Title = "Vehicle Details";
     }
 
@@ -46,15 +49,15 @@ public partial class VehicleDetailsViewModel : BaseViewModel
             VehicleDetails = await _mediator.Send(query);
 
             // Load scan history for this plate
-            var scans = await _scanRepository.GetByPlateNumberAsync(PlateNumber);
-            // Map to DTOs if needed
+            var scans = await _scanRepository.GetAllByPlateNumberAsync(PlateNumber);
+            ScanHistory = _mapper.Map<List<ScanRecordDto>>(scans);
         });
     }
 
     [RelayCommand]
     private async Task ScanAgainAsync()
     {
-        await Shell.Current.GoToAsync("//scanner");
+        await Shell.Current.GoToAsync("//main/scanner");
     }
 
     [RelayCommand]

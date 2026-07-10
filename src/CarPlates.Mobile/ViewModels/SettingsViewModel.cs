@@ -1,15 +1,20 @@
+using CarPlates.Application.Authentication.Commands;
 using CarPlates.Application.Common.Interfaces;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using MediatR;
 using AppTheme = CarPlates.Domain.Enums.AppTheme;
 
 namespace CarPlates.Mobile.ViewModels;
 
 public partial class SettingsViewModel : BaseViewModel
 {
+    private readonly IMediator _mediator;
     private readonly ISettingsService _settingsService;
     private readonly IAuthenticationService _authService;
     private readonly ISyncService _syncService;
+    private readonly IScanRepository _scanRepository;
+    private readonly IPendingUploadRepository _pendingUploadRepository;
 
     [ObservableProperty]
     private bool _isDarkMode;
@@ -35,13 +40,19 @@ public partial class SettingsViewModel : BaseViewModel
     public List<string> AvailableLanguages { get; } = new() { "English", "Arabic" };
 
     public SettingsViewModel(
+        IMediator mediator,
         ISettingsService settingsService,
         IAuthenticationService authService,
-        ISyncService syncService)
+        ISyncService syncService,
+        IScanRepository scanRepository,
+        IPendingUploadRepository pendingUploadRepository)
     {
+        _mediator = mediator;
         _settingsService = settingsService;
         _authService = authService;
         _syncService = syncService;
+        _scanRepository = scanRepository;
+        _pendingUploadRepository = pendingUploadRepository;
         Title = "Settings";
     }
 
@@ -105,7 +116,12 @@ public partial class SettingsViewModel : BaseViewModel
 
         if (confirm)
         {
-            // Clear cache logic
+            await ExecuteAsync(async () =>
+            {
+                await _scanRepository.ClearAllAsync();
+                await _pendingUploadRepository.ClearAllAsync();
+                PendingSyncCount = 0;
+            });
             await Shell.Current.DisplayAlertAsync("Success", "Cache cleared", "OK");
         }
     }
@@ -126,6 +142,10 @@ public partial class SettingsViewModel : BaseViewModel
 
         if (confirm)
         {
+            await ExecuteAsync(async () =>
+            {
+                await _mediator.Send(new LogoutCommand());
+            });
             await Shell.Current.GoToAsync("//login");
         }
     }

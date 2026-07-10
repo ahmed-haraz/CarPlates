@@ -168,8 +168,26 @@ public partial class ScannerViewModel : BaseViewModel
     [RelayCommand]
     private async Task ManualEntryAsync()
     {
-        // Navigate to manual plate entry or show entry dialog
-        await Shell.Current.DisplayPromptAsync("Manual Entry", "Enter plate number:",
+        var plateText = await Shell.Current.DisplayPromptAsync("Manual Entry", "Enter plate number:",
             accept: "Search", cancel: "Cancel");
+
+        if (string.IsNullOrWhiteSpace(plateText)) return;
+
+        await ExecuteAsync(async () =>
+        {
+            var recognitionResult = await _plateRecognitionService.RecognizeFromTextAsync(plateText);
+
+            if (!recognitionResult.Success || recognitionResult.PlateNumber == null)
+            {
+                ScanStatus = recognitionResult.ErrorMessage ?? "Invalid plate number";
+                return;
+            }
+
+            DetectedPlate = recognitionResult.PlateNumber.Value;
+            DetectionConfidence = recognitionResult.PlateNumber.Confidence;
+            ScanStatus = $"Detected: {DetectedPlate}";
+
+            await ProcessScanAsync(recognitionResult.PlateNumber);
+        });
     }
 }

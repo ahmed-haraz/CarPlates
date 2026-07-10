@@ -46,7 +46,8 @@ public static class ServiceRegistration
         })
         .AddHttpMessageHandler<AuthDelegatingHandler>();
 
-        services.AddScoped<AuthDelegatingHandler>();
+        services.AddScoped<AuthDelegatingHandler>(sp =>
+            new AuthDelegatingHandler(sp.GetRequiredService<ITokenStorage>(), apiUrl));
 
         // Logging - use a simple path that works on all platforms
         var logDir = Path.Combine(

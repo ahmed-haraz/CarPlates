@@ -72,6 +72,15 @@ public class ScanRepository : IScanRepository
             .FirstOrDefaultAsync();
     }
 
+    public async Task<IReadOnlyList<ScanRecord>> GetAllByPlateNumberAsync(string plateNumber, CancellationToken cancellationToken = default)
+    {
+        var records = await _database.Table<ScanRecord>()
+            .Where(r => r.PlateNumber == plateNumber && !r.IsDeleted)
+            .OrderByDescending(r => r.ScanTime)
+            .ToListAsync();
+        return records.AsReadOnly();
+    }
+
     public async Task AddAsync(ScanRecord scanRecord, CancellationToken cancellationToken = default)
     {
         await _database.InsertAsync(scanRecord);
@@ -105,5 +114,10 @@ public class ScanRepository : IScanRepository
         return await _database.Table<ScanRecord>()
             .Where(r => r.ScanTime >= today && !r.IsDeleted)
             .CountAsync();
+    }
+
+    public async Task ClearAllAsync(CancellationToken cancellationToken = default)
+    {
+        await _database.DeleteAllAsync<ScanRecord>();
     }
 }

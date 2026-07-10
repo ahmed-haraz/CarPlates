@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using CarPlates.API.Interface;
 using CarPlates.API.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -46,5 +47,32 @@ public class AuthController(IAuthService authService, ILogger<AuthController> lo
         return Ok(new { Message = "User registered successfully" });
     }
 
-    
+    [HttpGet("me")]
+    [Authorize]
+    public async Task<ActionResult<UserDto>> Me()
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)
+            ?? User.FindFirstValue("sub");
+
+        if (string.IsNullOrEmpty(userId))
+        {
+            return Unauthorized();
+        }
+
+        var user = await _authService.GetUserAsync(userId);
+        if (user == null) return NotFound();
+
+        return Ok(user);
+    }
+
+    [HttpPost("logout")]
+    [Authorize]
+    public async Task<ActionResult> Logout([FromBody] LogoutRequestDto request)
+    {
+        await _authService.LogoutAsync(request.RefreshToken);
+        // Always succeed from the client's perspective: the important part is
+        // that the client clears its own local session regardless of whether
+        // the server-side token happened to already be revoked/expired.
+        return Ok(new { Message = "Logged out" });
+    }
 }

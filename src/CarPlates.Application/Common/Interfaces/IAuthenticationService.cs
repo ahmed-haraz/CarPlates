@@ -7,6 +7,8 @@ public interface IAuthenticationService
     Task<AuthResult> LoginAsync(string username, string password, CancellationToken cancellationToken = default);
     Task<AuthResult> RefreshTokenAsync(string refreshToken, CancellationToken cancellationToken = default);
     Task<bool> IsAuthenticatedAsync(CancellationToken cancellationToken = default);
+    Task<UserDto?> GetCurrentUserAsync(CancellationToken cancellationToken = default);
+    Task LogoutAsync(CancellationToken cancellationToken = default);
 
 }
 

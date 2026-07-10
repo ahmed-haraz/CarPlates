@@ -10,4 +10,5 @@ public interface IPendingUploadRepository
     Task UpdateAsync(PendingUpload pendingUpload, CancellationToken cancellationToken = default);
     Task DeleteAsync(Guid id, CancellationToken cancellationToken = default);
     Task<int> GetPendingCountAsync(CancellationToken cancellationToken = default);
+    Task ClearAllAsync(CancellationToken cancellationToken = default);
 }

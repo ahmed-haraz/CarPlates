@@ -37,6 +37,7 @@ public class AuthenticationService(
             }
 
             await _tokenStorage.SaveTokenAsync(result.AccessToken, result.RefreshToken);
+            await _tokenStorage.SaveCurrentUserAsync(result.User);
             _logger.LogInformation("Login successful for {Username}", username);
 
             return new AuthResult(true, result.AccessToken, result.RefreshToken, null, result.User);
@@ -65,6 +66,7 @@ public class AuthenticationService(
             if (result == null) return new AuthResult(false, null, null, "Invalid refresh response", null!);
 
             await _tokenStorage.SaveTokenAsync(result.AccessToken, result.RefreshToken);
+            await _tokenStorage.SaveCurrentUserAsync(result.User);
             return new AuthResult(true, result.AccessToken, result.RefreshToken, null, result.User);
         }
         catch (Exception ex)
@@ -74,10 +76,73 @@ public class AuthenticationService(
         }
     }
 
-   
     public async Task<bool> IsAuthenticatedAsync(CancellationToken cancellationToken = default)
     {
         return await _tokenStorage.HasValidTokenAsync();
     }
 
+    public async Task<UserDto?> GetCurrentUserAsync(CancellationToken cancellationToken = default)
+    {
+        // Fast path: serve the profile cached at login time so Dashboard/Profile
+        // can render instantly without a network round trip.
+        var cached = await _tokenStorage.GetCachedCurrentUserAsync();
+        if (cached != null)
+        {
+            return cached;
+        }
+
+        // Fallback: cache missed (e.g. cleared, or app updated) but we still hold
+        // a valid token - ask the API who we are and re-cache the result.
+        if (!await _tokenStorage.HasValidTokenAsync())
+        {
+            return null;
+        }
+
+        try
+        {
+            var response = await _httpClient.GetAsync("Auth/me", cancellationToken);
+            if (!response.IsSuccessStatusCode)
+            {
+                return null;
+            }
+
+            var user = await response.Content.ReadFromJsonAsync<UserDto>(cancellationToken);
+            if (user != null)
+            {
+                await _tokenStorage.SaveCurrentUserAsync(user);
+            }
+            return user;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to fetch current user");
+            return null;
+        }
+    }
+
+    public async Task LogoutAsync(CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var (_, refreshToken) = await _tokenStorage.GetTokensAsync();
+            if (!string.IsNullOrEmpty(refreshToken))
+            {
+                await _httpClient.PostAsJsonAsync(
+                    "Auth/logout",
+                    new RefreshTokenRequestDto(refreshToken),
+                    cancellationToken);
+            }
+        }
+        catch (Exception ex)
+        {
+            // Even if revoking the token server-side fails (offline, server down,
+            // etc.) we must still clear the local session below - a failed
+            // network call must never trap the user in a "logged in" state.
+            _logger.LogWarning(ex, "Server-side logout call failed; clearing local session anyway");
+        }
+        finally
+        {
+            await _tokenStorage.ClearTokensAsync();
+        }
+    }
 }

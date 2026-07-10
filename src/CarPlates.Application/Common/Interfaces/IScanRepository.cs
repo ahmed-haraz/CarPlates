@@ -11,9 +11,11 @@ public interface IScanRepository
     Task<IReadOnlyList<ScanRecord>> SearchAsync(string query, CancellationToken cancellationToken = default);
     Task<IReadOnlyList<ScanRecord>> GetPendingSyncAsync(CancellationToken cancellationToken = default);
     Task<ScanRecord?> GetByPlateNumberAsync(string plateNumber, CancellationToken cancellationToken = default);
+    Task<IReadOnlyList<ScanRecord>> GetAllByPlateNumberAsync(string plateNumber, CancellationToken cancellationToken = default);
     Task AddAsync(ScanRecord scanRecord, CancellationToken cancellationToken = default);
     Task UpdateAsync(ScanRecord scanRecord, CancellationToken cancellationToken = default);
     Task DeleteAsync(Guid id, CancellationToken cancellationToken = default);
     Task<int> GetTotalCountAsync(CancellationToken cancellationToken = default);
     Task<int> GetTodayCountAsync(CancellationToken cancellationToken = default);
+    Task ClearAllAsync(CancellationToken cancellationToken = default);
 }
