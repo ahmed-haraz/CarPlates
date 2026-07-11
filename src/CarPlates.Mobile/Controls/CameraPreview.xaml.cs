@@ -8,6 +8,9 @@ public partial class CameraPreview : ContentView
     public static readonly BindableProperty CameraFacingProperty = BindableProperty.Create(
         nameof(CameraFacing), typeof(CameraFacing), typeof(CameraPreview), CameraFacing.Back);
 
+    public static readonly BindableProperty IsPreviewingProperty = BindableProperty.Create(
+        nameof(IsPreviewing), typeof(bool), typeof(CameraPreview), false);
+
     public bool IsTorchOn
     {
         get => (bool)GetValue(IsTorchOnProperty);
@@ -20,6 +23,12 @@ public partial class CameraPreview : ContentView
         set => SetValue(CameraFacingProperty, value);
     }
 
+    public bool IsPreviewing
+    {
+        get => (bool)GetValue(IsPreviewingProperty);
+        set => SetValue(IsPreviewingProperty, value);
+    }
+
     public event EventHandler<FrameCapturedEventArgs>? FrameCaptured;
 
     public CameraPreview()
@@ -29,12 +38,13 @@ public partial class CameraPreview : ContentView
 
     public void StartPreview()
     {
-        // Platform-specific implementation in handler
+        IsPreviewing = true;
         OnStartPreview();
     }
 
     public void StopPreview()
     {
+        IsPreviewing = false;
         OnStopPreview();
     }
 

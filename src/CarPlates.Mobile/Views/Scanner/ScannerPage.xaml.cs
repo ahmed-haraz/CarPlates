@@ -10,12 +10,12 @@ public partial class ScannerPage : ContentPage
         BindingContext = viewModel;
     }
 
-    protected override async void OnAppearing()
+    protected override void OnAppearing()
     {
         base.OnAppearing();
         if (BindingContext is ScannerViewModel vm)
         {
-            await vm.StartScanningCommand.ExecuteAsync(null);
+            _ = Dispatcher.DispatchAsync(() => vm.StartScanningCommand.ExecuteAsync(null));
         }
     }
 
