@@ -60,7 +60,7 @@
   </resheader>
 
   <data name="AppName" xml:space="preserve">
-    <value>CarPlates</value>
+    <value>ArkanMaintenance</value>
   </data>
   <data name="Tagline" xml:space="preserve">
     <value>License Plate Recognition</value>
@@ -157,6 +157,9 @@
   </data>
   <data name="PointCameraAtPlate" xml:space="preserve">
     <value>Point camera at license plate</value>
+  </data>
+  <data name="CameraPermissionRequired" xml:space="preserve">
+    <value>Camera permission is required to scan plates. Please enable it in your device settings.</value>
   </data>
   <data name="ManualEntry" xml:space="preserve">
     <value>Manual Entry</value>
@@ -366,7 +369,7 @@
     <value>• Scan History and Export</value>
   </data>
   <data name="Copyright" xml:space="preserve">
-    <value>© 2026 CarPlates. All rights reserved.</value>
+    <value>© 2026 ArkanMaintenance. All rights reserved.</value>
   </data>
   <data name="SyncResultFormat" xml:space="preserve">
     <value>Synced: {0}, Failed: {1}</value>

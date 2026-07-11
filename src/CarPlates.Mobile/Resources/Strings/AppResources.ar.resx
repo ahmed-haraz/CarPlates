@@ -60,7 +60,7 @@
   </resheader>
 
   <data name="AppName" xml:space="preserve">
-    <value>لوحات السيارات</value>
+    <value>أركان للصيانة</value>
   </data>
   <data name="Tagline" xml:space="preserve">
     <value>التعرف على لوحات السيارات</value>
@@ -157,6 +157,9 @@
   </data>
   <data name="PointCameraAtPlate" xml:space="preserve">
     <value>وجّه الكاميرا نحو لوحة السيارة</value>
+  </data>
+  <data name="CameraPermissionRequired" xml:space="preserve">
+    <value>يلزم إذن الكاميرا لمسح اللوحات. يرجى تفعيله من إعدادات الجهاز.</value>
   </data>
   <data name="ManualEntry" xml:space="preserve">
     <value>إدخال يدوي</value>
@@ -366,7 +369,7 @@
     <value>• سجل المسح والتصدير</value>
   </data>
   <data name="Copyright" xml:space="preserve">
-    <value>© 2026 لوحات السيارات. جميع الحقوق محفوظة.</value>
+    <value>© 2026 أركان للصيانة. جميع الحقوق محفوظة.</value>
   </data>
   <data name="SyncResultFormat" xml:space="preserve">
     <value>تمت مزامنة: {0}، فشل: {1}</value>

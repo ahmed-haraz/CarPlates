@@ -41,6 +41,7 @@ public static class AppResources
     public static string ViewAllHistory => LocalizationResourceManager.Instance["ViewAllHistory"];
     public static string Scan => LocalizationResourceManager.Instance["Scan"];
     public static string PointCameraAtPlate => LocalizationResourceManager.Instance["PointCameraAtPlate"];
+    public static string CameraPermissionRequired => LocalizationResourceManager.Instance["CameraPermissionRequired"];
     public static string ManualEntry => LocalizationResourceManager.Instance["ManualEntry"];
     public static string EnterPlateNumberPrompt => LocalizationResourceManager.Instance["EnterPlateNumberPrompt"];
     public static string InvalidPlateNumber => LocalizationResourceManager.Instance["InvalidPlateNumber"];

@@ -7,11 +7,17 @@ using Xamarin.Google.MLKit.Vision.Text.Latin;
 
 namespace CarPlates.Mobile.Platforms.Android.Handlers;
 
-public class PlateAnalyzer(Context context, CameraPreview cameraPreview) : Java.Lang.Object, ImageAnalysis.IAnalyzer
+public class PlateAnalyzer : Java.Lang.Object, ImageAnalysis.IAnalyzer
 {
-    private readonly CameraPreview _cameraPreview = cameraPreview;
-    private readonly ITextRecognizer _textRecognizer = TextRecognition.GetClient(TextRecognizerOptions.DefaultOptions);
+    private readonly CameraPreview _cameraPreview;
+    private readonly ITextRecognizer _textRecognizer;
     private long _lastAnalyzedAt;
+
+    public PlateAnalyzer(Context context, CameraPreview cameraPreview)
+    {
+        _cameraPreview = cameraPreview;
+        _textRecognizer = TextRecognition.GetClient(TextRecognizerOptions.DefaultOptions);
+    }
 
     public void Analyze(IImageProxy imageProxy)
     {
@@ -38,24 +44,18 @@ public class PlateAnalyzer(Context context, CameraPreview cameraPreview) : Java.
             .AddOnCompleteListener(new ImageCloseListener(imageProxy));
     }
 
-    private sealed class TextSuccessListener : Java.Lang.Object, global::Android.Gms.Tasks.IOnSuccessListener
+    private sealed class TextSuccessListener(CameraPreview cameraPreview) : Java.Lang.Object, global::Android.Gms.Tasks.IOnSuccessListener
     {
-        private readonly CameraPreview _cameraPreview;
-
-        public TextSuccessListener(CameraPreview cameraPreview)
-        {
-            _cameraPreview = cameraPreview;
-        }
+        private readonly CameraPreview _cameraPreview = cameraPreview;
 
         public void OnSuccess(Java.Lang.Object? result)
         {
-            var visionText = result as Xamarin.Google.MLKit.Vision.Text.Text;
-
-            if (visionText == null || string.IsNullOrWhiteSpace(visionText.GetText()))
+            if (result is not Text text || string.IsNullOrWhiteSpace(text.GetText()))
+            {
                 return;
+            }
 
-            MainThread.BeginInvokeOnMainThread(() =>
-                _cameraPreview.NotifyRecognizedText(visionText.GetText()));
+            MainThread.BeginInvokeOnMainThread(() => _cameraPreview.NotifyRecognizedText(text.GetText()));
         }
     }
 

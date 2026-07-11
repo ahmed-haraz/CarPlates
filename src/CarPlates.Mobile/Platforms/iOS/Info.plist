@@ -23,8 +23,8 @@
         <string>UIInterfaceOrientationLandscapeRight</string>
     </array>
     <key>NSCameraUsageDescription</key>
-    <string>CarPlates uses the camera to scan vehicle license plates.</string>
+    <string>ArkanMaintenance uses the camera to scan vehicle license plates.</string>
     <key>NSPhotoLibraryAddUsageDescription</key>
-    <string>CarPlates can save scan images when you choose to export them.</string>
+    <string>ArkanMaintenance can save scan images when you choose to export them.</string>
 </dict>
 </plist>

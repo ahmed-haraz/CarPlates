@@ -4,6 +4,7 @@ using CarPlates.Application.Scanner.Commands;
 using CarPlates.Domain.Enums;
 using CarPlates.Domain.ValueObjects;
 using CarPlates.Mobile.Controls;
+using CarPlates.Mobile.Helpers;
 using CarPlates.Mobile.Localization;
 using CarPlates.Mobile.Navigation;
 using CarPlates.Shared.Constants;
@@ -68,6 +69,14 @@ public partial class ScannerViewModel : BaseViewModel
     private async Task StartScanningAsync()
     {
         if (IsScanning) return;
+
+        var hasCameraPermission = await PermissionHelper.RequestCameraPermissionAsync();
+        if (!hasCameraPermission)
+        {
+            ScanStatus = AppResources.CameraPermissionRequired;
+            _loggingService.LogWarning("Camera permission was denied when opening the scanner");
+            return;
+        }
 
         IsScanning = true;
         ShowVehicleInfo = false;
