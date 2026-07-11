@@ -2,37 +2,42 @@
 <ResourceDictionary xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
                     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
 
-    <!-- Primary -->
-    <Color x:Key="Primary">#512BD4</Color>
-    <Color x:Key="PrimaryDark">#3B1E9E</Color>
-    <Color x:Key="PrimaryLight">#7C5CE0</Color>
-    <Color x:Key="Accent">#FF6B6B</Color>
+    <!-- Brand palette: midnight, electric blue, and cyan for a modern ANPR/security feel. -->
+    <Color x:Key="Primary">#2563EB</Color>
+    <Color x:Key="PrimaryDark">#102A56</Color>
+    <Color x:Key="PrimaryLight">#60A5FA</Color>
+    <Color x:Key="Accent">#22D3EE</Color>
+    <Color x:Key="AccentSoft">#E0F7FF</Color>
+    <Color x:Key="PrimarySoft">#EAF1FF</Color>
 
     <!-- Semantic -->
-    <Color x:Key="Success">#4CAF50</Color>
-    <Color x:Key="Warning">#FF9800</Color>
-    <Color x:Key="Error">#F44336</Color>
-    <Color x:Key="Info">#2196F3</Color>
+    <Color x:Key="Success">#10B981</Color>
+    <Color x:Key="Warning">#F59E0B</Color>
+    <Color x:Key="Error">#EF4444</Color>
+    <Color x:Key="Info">#0EA5E9</Color>
 
     <!-- Light -->
-    <Color x:Key="BackgroundLight">#FFFFFF</Color>
-    <Color x:Key="SurfaceLight">#F5F5F5</Color>
-    <Color x:Key="TextPrimaryLight">#212121</Color>
-    <Color x:Key="TextSecondaryLight">#757575</Color>
-    <Color x:Key="BorderLight">#E0E0E0</Color>
+    <Color x:Key="BackgroundLight">#F6F8FC</Color>
+    <Color x:Key="SurfaceLight">#FFFFFF</Color>
+    <Color x:Key="SurfaceMutedLight">#EEF4FF</Color>
+    <Color x:Key="TextPrimaryLight">#0F172A</Color>
+    <Color x:Key="TextSecondaryLight">#64748B</Color>
+    <Color x:Key="BorderLight">#DDE7F3</Color>
 
     <!-- Dark -->
-    <Color x:Key="BackgroundDark">#121212</Color>
-    <Color x:Key="SurfaceDark">#1E1E1E</Color>
-    <Color x:Key="TextPrimaryDark">#FFFFFF</Color>
-    <Color x:Key="TextSecondaryDark">#B0B0B0</Color>
-    <Color x:Key="BorderDark">#333333</Color>
+    <Color x:Key="BackgroundDark">#07111F</Color>
+    <Color x:Key="SurfaceDark">#0F1B2D</Color>
+    <Color x:Key="SurfaceMutedDark">#14243A</Color>
+    <Color x:Key="TextPrimaryDark">#F8FAFC</Color>
+    <Color x:Key="TextSecondaryDark">#94A3B8</Color>
+    <Color x:Key="BorderDark">#24364F</Color>
 
     <!-- Shared aliases used by styles and views -->
-    <Color x:Key="Background">#FFFFFF</Color>
-    <Color x:Key="Surface">#F5F5F5</Color>
-    <Color x:Key="TextPrimary">#212121</Color>
-    <Color x:Key="TextSecondary">#757575</Color>
-    <Color x:Key="Border">#E0E0E0</Color>
+    <Color x:Key="Background">#F6F8FC</Color>
+    <Color x:Key="Surface">#FFFFFF</Color>
+    <Color x:Key="SurfaceMuted">#EEF4FF</Color>
+    <Color x:Key="TextPrimary">#0F172A</Color>
+    <Color x:Key="TextSecondary">#64748B</Color>
+    <Color x:Key="Border">#DDE7F3</Color>
 
 </ResourceDictionary>
