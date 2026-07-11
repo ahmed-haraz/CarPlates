@@ -19,7 +19,8 @@ public partial class SplashViewModel : BaseViewModel
     [RelayCommand]
     private async Task InitializeAsync()
     {
-        await Task.Delay(2000); // Splash delay
+        // Keep startup responsive; do not make users wait on a fixed splash delay.
+        await Task.Yield();
 
         var isAuthenticated = await _authService.IsAuthenticatedAsync();
 
