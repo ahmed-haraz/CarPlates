@@ -98,13 +98,18 @@ public partial class CameraPreviewHandler : ViewHandler<CameraPreview, PreviewVi
         var preview = new Preview.Builder().Build();
         preview.SetSurfaceProvider(ContextCompat.GetMainExecutor(Context), PlatformView.SurfaceProvider);
 
+        var analysis = new ImageAnalysis.Builder()
+            .SetBackpressureStrategy(ImageAnalysis.StrategyKeepOnlyLatest)
+            .Build();
+        analysis.SetAnalyzer(ContextCompat.GetMainExecutor(Context), new PlateAnalyzer(Context, VirtualView));
+
         var selector = new CameraSelector.Builder()
             .RequireLensFacing(VirtualView.CameraFacing == CameraFacing.Front
                 ? CameraSelector.LensFacingFront
                 : CameraSelector.LensFacingBack)
             .Build();
 
-        _camera = _cameraProvider.BindToLifecycle(lifecycleOwner, selector, preview);
+        _camera = _cameraProvider.BindToLifecycle(lifecycleOwner, selector, preview, analysis);
 
         if (_camera.CameraInfo.HasFlashUnit)
         {

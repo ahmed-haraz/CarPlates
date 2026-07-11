@@ -1,3 +1,5 @@
+using System.Windows.Input;
+
 namespace CarPlates.Mobile.Controls;
 
 public partial class CameraPreview : ContentView
@@ -10,6 +12,9 @@ public partial class CameraPreview : ContentView
 
     public static readonly BindableProperty IsPreviewingProperty = BindableProperty.Create(
         nameof(IsPreviewing), typeof(bool), typeof(CameraPreview), false);
+
+    public static readonly BindableProperty RecognizedTextCommandProperty = BindableProperty.Create(
+        nameof(RecognizedTextCommand), typeof(ICommand), typeof(CameraPreview));
 
     public bool IsTorchOn
     {
@@ -27,6 +32,12 @@ public partial class CameraPreview : ContentView
     {
         get => (bool)GetValue(IsPreviewingProperty);
         set => SetValue(IsPreviewingProperty, value);
+    }
+
+    public ICommand? RecognizedTextCommand
+    {
+        get => (ICommand?)GetValue(RecognizedTextCommandProperty);
+        set => SetValue(RecognizedTextCommandProperty, value);
     }
 
     public event EventHandler<FrameCapturedEventArgs>? FrameCaptured;
@@ -51,6 +62,14 @@ public partial class CameraPreview : ContentView
     protected virtual void OnStartPreview() { }
     protected virtual void OnStopPreview() { }
     protected virtual void OnFrameCaptured(FrameCapturedEventArgs e) => FrameCaptured?.Invoke(this, e);
+
+    public void NotifyRecognizedText(string text)
+    {
+        if (RecognizedTextCommand?.CanExecute(text) == true)
+        {
+            RecognizedTextCommand.Execute(text);
+        }
+    }
 }
 
 public enum CameraFacing

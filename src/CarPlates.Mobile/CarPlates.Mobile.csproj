@@ -78,6 +78,8 @@
 
 		<PackageReference Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'" Include="Xamarin.Google.MLKit.Vision.Common" Version="117.3.0.19" />
 
+		<PackageReference Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'" Include="Xamarin.Google.MLKit.TextRecognition" Version="116.0.1.8" />
+
 		<PackageReference Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'" Include="Xamarin.AndroidX.Lifecycle.Common" Version="2.11.0.1" />
 
 	</ItemGroup>
