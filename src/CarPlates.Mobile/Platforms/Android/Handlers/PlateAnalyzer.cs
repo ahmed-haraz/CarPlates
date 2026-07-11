@@ -1,23 +1,88 @@
 using Android.Content;
 using AndroidX.Camera.Core;
 using CarPlates.Mobile.Controls;
+using Google.MLKit.Vision.Common;
+using Google.MLKit.Vision.Text;
+using Google.MLKit.Vision.Text.Latin;
 
 namespace CarPlates.Mobile.Platforms.Android.Handlers;
 
 public class PlateAnalyzer : Java.Lang.Object, ImageAnalysis.IAnalyzer
 {
-    private readonly Context _context;
     private readonly CameraPreview _cameraPreview;
+    private readonly ITextRecognizer _textRecognizer;
+    private long _lastAnalyzedAt;
 
     public PlateAnalyzer(Context context, CameraPreview cameraPreview)
     {
-        _context = context;
         _cameraPreview = cameraPreview;
+        _textRecognizer = TextRecognition.GetClient(TextRecognizerOptions.DefaultOptions);
     }
 
     public void Analyze(IImageProxy imageProxy)
     {
-        // Stub: close the image without processing
-        imageProxy.Close();
+        var now = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+        if (now - _lastAnalyzedAt < 750)
+        {
+            imageProxy.Close();
+            return;
+        }
+
+        _lastAnalyzedAt = now;
+
+        var mediaImage = imageProxy.Image;
+        if (mediaImage is null)
+        {
+            imageProxy.Close();
+            return;
+        }
+
+        var image = InputImage.FromMediaImage(mediaImage, imageProxy.ImageInfo.RotationDegrees);
+        _textRecognizer.Process(image)
+            .AddOnSuccessListener(new TextSuccessListener(_cameraPreview))
+            .AddOnFailureListener(new TextFailureListener())
+            .AddOnCompleteListener(new ImageCloseListener(imageProxy));
+    }
+
+    private sealed class TextSuccessListener : Java.Lang.Object, Android.Gms.Tasks.IOnSuccessListener
+    {
+        private readonly CameraPreview _cameraPreview;
+
+        public TextSuccessListener(CameraPreview cameraPreview)
+        {
+            _cameraPreview = cameraPreview;
+        }
+
+        public void OnSuccess(Java.Lang.Object? result)
+        {
+            if (result is not Text text || string.IsNullOrWhiteSpace(text.Text))
+            {
+                return;
+            }
+
+            MainThread.BeginInvokeOnMainThread(() => _cameraPreview.NotifyRecognizedText(text.Text));
+        }
+    }
+
+    private sealed class TextFailureListener : Java.Lang.Object, Android.Gms.Tasks.IOnFailureListener
+    {
+        public void OnFailure(Java.Lang.Exception e)
+        {
+        }
+    }
+
+    private sealed class ImageCloseListener : Java.Lang.Object, Android.Gms.Tasks.IOnCompleteListener
+    {
+        private readonly IImageProxy _imageProxy;
+
+        public ImageCloseListener(IImageProxy imageProxy)
+        {
+            _imageProxy = imageProxy;
+        }
+
+        public void OnComplete(Android.Gms.Tasks.Task task)
+        {
+            _imageProxy.Close();
+        }
     }
 }

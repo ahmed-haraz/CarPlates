@@ -102,38 +102,55 @@ public partial class ScannerViewModel : BaseViewModel
     {
         if (!IsScanning || IsBusy) return;
 
-        // Duplicate filter
-        var minInterval = TimeSpan.FromSeconds(ScannerConstants.DuplicateFilterSeconds);
-        if (DateTime.UtcNow - _lastScanTime < minInterval) return;
-
         try
         {
             using var stream = new MemoryStream(imageData);
             var result = await _plateRecognitionService.RecognizeAsync(stream);
-
-            if (result.Success && result.PlateNumber != null)
-            {
-                var confidence = await _settingsService.GetOcrConfidenceAsync();
-                if (result.PlateNumber.Confidence < confidence) return;
-
-                // Check for duplicates in recent scans
-                if (_recentPlates.Contains(result.PlateNumber.Value)) return;
-
-                _lastScanTime = DateTime.UtcNow;
-                _recentPlates.Enqueue(result.PlateNumber.Value);
-                if (_recentPlates.Count > 10) _recentPlates.Dequeue();
-
-                DetectedPlate = result.PlateNumber.Value;
-                DetectionConfidence = result.PlateNumber.Confidence;
-                ScanStatus = string.Format(AppResources.DetectedFormat, DetectedPlate);
-
-                await ProcessScanAsync(result.PlateNumber);
-            }
+            await ProcessRecognitionResultAsync(result);
         }
         catch (Exception ex)
         {
             _loggingService.LogError(ex, "Error processing frame");
         }
+    }
+
+    [RelayCommand]
+    private async Task ProcessRecognizedTextAsync(string? text)
+    {
+        if (!IsScanning || IsBusy || string.IsNullOrWhiteSpace(text)) return;
+
+        try
+        {
+            var result = await _plateRecognitionService.RecognizeFromTextAsync(text);
+            await ProcessRecognitionResultAsync(result);
+        }
+        catch (Exception ex)
+        {
+            _loggingService.LogError(ex, "Error processing recognized text");
+        }
+    }
+
+    private async Task ProcessRecognitionResultAsync(PlateRecognitionResult result)
+    {
+        if (!result.Success || result.PlateNumber == null) return;
+
+        var minInterval = TimeSpan.FromSeconds(ScannerConstants.DuplicateFilterSeconds);
+        if (DateTime.UtcNow - _lastScanTime < minInterval) return;
+
+        var confidence = await _settingsService.GetOcrConfidenceAsync();
+        if (result.PlateNumber.Confidence < confidence) return;
+
+        if (_recentPlates.Contains(result.PlateNumber.Value)) return;
+
+        _lastScanTime = DateTime.UtcNow;
+        _recentPlates.Enqueue(result.PlateNumber.Value);
+        if (_recentPlates.Count > 10) _recentPlates.Dequeue();
+
+        DetectedPlate = result.PlateNumber.Value;
+        DetectionConfidence = result.PlateNumber.Confidence;
+        ScanStatus = string.Format(AppResources.DetectedFormat, DetectedPlate);
+
+        await ProcessScanAsync(result.PlateNumber);
     }
 
     private async Task ProcessScanAsync(PlateNumber plateNumber)

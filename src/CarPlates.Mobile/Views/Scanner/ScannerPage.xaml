@@ -15,6 +15,7 @@
                                IsPreviewing="{Binding IsScanning}"
                                IsTorchOn="{Binding IsTorchOn}"
                                CameraFacing="{Binding CameraFacing}"
+                               RecognizedTextCommand="{Binding ProcessRecognizedTextCommand}"
                                HorizontalOptions="Fill"
                                VerticalOptions="Fill"/>
 

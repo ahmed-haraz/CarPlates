@@ -26,7 +26,7 @@ public class PlateRecognitionService(
     {
         _logger.LogDebug("Recognizing plate from text: {Text}", text);
 
-        var normalizedText = text.NormalizePlate();
+        var normalizedText = text.ToEnglishNumbers().NormalizePlate();
 
         // Try Egyptian plate pattern first
         var egyptianMatch = TryMatchEgyptianPlate(normalizedText);
@@ -60,7 +60,7 @@ public class PlateRecognitionService(
 
     public bool IsValidPlate(string text)
     {
-        var normalized = text.NormalizePlate();
+        var normalized = text.ToEnglishNumbers().NormalizePlate();
         return TryMatchEgyptianPlate(normalized) != null || TryMatchEnglishPlate(normalized) != null;
     }
 
@@ -75,15 +75,18 @@ public class PlateRecognitionService(
 
     private string? TryMatchEnglishPlate(string text)
     {
-        // English plates: ABC123, 123ABC, AB12CDE, etc.
+        // English/Saudi plate OCR commonly arrives as separate number and letter
+        // groups (for example, "395 BTN") or as one normalized token. Skip
+        // country/header words such as EGYPT by evaluating every candidate.
         var pattern = @"[A-Z0-9]{3,10}";
-        var match = Regex.Match(text, pattern);
-        if (!match.Success) return null;
-
-        var value = match.Value;
-        // Must contain both letters and numbers for a valid plate
-        if (value.Any(char.IsLetter) && value.Any(char.IsDigit))
-            return value;
+        foreach (Match match in Regex.Matches(text, pattern))
+        {
+            var value = match.Value;
+            if (value.Any(char.IsLetter) && value.Any(char.IsDigit))
+            {
+                return value;
+            }
+        }
 
         return null;
     }
