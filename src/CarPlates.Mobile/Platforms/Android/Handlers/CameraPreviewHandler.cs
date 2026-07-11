@@ -29,10 +29,9 @@ public partial class CameraPreviewHandler : ViewHandler<CameraPreview, PreviewVi
 
     protected override PreviewView CreatePlatformView()
     {
-        return new PreviewView(Context)
-        {
-            ImplementationMode = PreviewView.ImplementationModeCompatible
-        };
+        var previewView = new PreviewView(Context);
+        previewView.SetImplementationMode(PreviewView.ImplementationMode.Compatible);
+        return previewView;
     }
 
     protected override void ConnectHandler(PreviewView platformView)
@@ -81,7 +80,7 @@ public partial class CameraPreviewHandler : ViewHandler<CameraPreview, PreviewVi
 
     private async Task StartCameraAsync()
     {
-        if (ContextCompat.CheckSelfPermission(Context, Android.Manifest.Permission.Camera) != Permission.Granted)
+        if (ContextCompat.CheckSelfPermission(Context, global::Android.Manifest.Permission.Camera) != Permission.Granted)
         {
             return;
         }
@@ -97,7 +96,7 @@ public partial class CameraPreviewHandler : ViewHandler<CameraPreview, PreviewVi
         _cameraProvider.UnbindAll();
 
         var preview = new Preview.Builder().Build();
-        preview.SetSurfaceProvider(PlatformView.SurfaceProvider);
+        preview.SetSurfaceProvider(ContextCompat.GetMainExecutor(Context), PlatformView.SurfaceProvider);
 
         var selector = new CameraSelector.Builder()
             .RequireLensFacing(VirtualView.CameraFacing == CameraFacing.Front
