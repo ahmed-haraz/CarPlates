@@ -4,7 +4,7 @@
              xmlns:vm="clr-namespace:CarPlates.Mobile.ViewModels"
              x:Class="CarPlates.Mobile.Views.Splash.SplashPage"
              x:DataType="vm:SplashViewModel"
-             Shell.NavBarIsVisible="False"
+             NavigationPage.HasNavigationBar="False"
              BackgroundColor="{StaticResource Primary}">
 
     <Grid>

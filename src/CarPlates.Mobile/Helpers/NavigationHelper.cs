@@ -17,11 +17,11 @@ public static class NavigationHelper
 
     public static async Task DisplayErrorAsync(string title, string message)
     {
-        await Shell.Current.DisplayAlert(title, message, "OK");
+        await Shell.Current.DisplayAlertAsync(title, message, "OK");
     }
 
     public static async Task<bool> DisplayConfirmAsync(string title, string message)
     {
-        return await Shell.Current.DisplayAlert(title, message, "Yes", "No");
+        return await Shell.Current.DisplayAlertAsync(title, message, "Yes", "No");
     }
 }

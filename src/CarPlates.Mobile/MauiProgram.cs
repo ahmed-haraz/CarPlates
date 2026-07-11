@@ -2,11 +2,14 @@ using CarPlates.Application.Common;
 using CarPlates.Application.Common.Behaviors;
 using CarPlates.Infrastructure.DependencyInjection;
 using CarPlates.Mobile.Controls;
+using CarPlates.Mobile.Navigation;
 
 using CarPlates.Mobile.ViewModels;
+using CarPlates.Mobile.Views.About;
 using CarPlates.Mobile.Views.Dashboard;
 using CarPlates.Mobile.Views.History;
 using CarPlates.Mobile.Views.Login;
+using CarPlates.Mobile.Views.Main;
 using CarPlates.Mobile.Views.Profile;
 using CarPlates.Mobile.Views.Scanner;
 using CarPlates.Mobile.Views.Settings;
@@ -69,6 +72,9 @@ public static class MauiProgram
         // AutoMapper
         builder.Services.AddAutoMapper(cfg => cfg.AddMaps(typeof(MappingProfile).Assembly));
 
+        // Navigation (replaces Shell)
+        builder.Services.AddSingleton<INavigationService, NavigationService>();
+
         // ViewModels
         builder.Services.AddTransient<SplashViewModel>();
         builder.Services.AddTransient<LoginViewModel>();
@@ -88,6 +94,8 @@ public static class MauiProgram
         builder.Services.AddTransient<VehicleDetailsPage>();
         builder.Services.AddTransient<SettingsPage>();
         builder.Services.AddTransient<ProfilePage>();
+        builder.Services.AddTransient<AboutPage>();
+        builder.Services.AddTransient<MainTabbedPage>();
 
         // Logging
 #if DEBUG

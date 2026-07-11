@@ -2,14 +2,14 @@ using AutoMapper;
 using CarPlates.Application.Common.DTOs;
 using CarPlates.Application.Common.Interfaces;
 using CarPlates.Application.Vehicle.Queries;
+using CarPlates.Mobile.Navigation;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MediatR;
 
 namespace CarPlates.Mobile.ViewModels;
 
-[QueryProperty(nameof(PlateNumber), "plateNumber")]
-public partial class VehicleDetailsViewModel : BaseViewModel
+public partial class VehicleDetailsViewModel : BaseViewModel, IQueryAttributable
 {
     private readonly IMediator _mediator;
     private readonly IScanRepository _scanRepository;
@@ -24,12 +24,22 @@ public partial class VehicleDetailsViewModel : BaseViewModel
     [ObservableProperty]
     private List<ScanRecordDto> _scanHistory = new();
 
-    public VehicleDetailsViewModel(IMediator mediator, IScanRepository scanRepository, IMapper mapper)
+    public VehicleDetailsViewModel(IMediator mediator, IScanRepository scanRepository, IMapper mapper, INavigationService navigation) : base(navigation)
     {
         _mediator = mediator;
         _scanRepository = scanRepository;
         _mapper = mapper;
         Title = "Vehicle Details";
+    }
+
+    // Replaces Shell's [QueryProperty]/routing-based parameter passing now that
+    // navigation goes through INavigationService.PushAsync's parameters dictionary.
+    public void ApplyQueryAttributes(IDictionary<string, object> query)
+    {
+        if (query.TryGetValue("plateNumber", out var value) && value is string plate)
+        {
+            PlateNumber = plate;
+        }
     }
 
     partial void OnPlateNumberChanged(string value)
@@ -57,7 +67,8 @@ public partial class VehicleDetailsViewModel : BaseViewModel
     [RelayCommand]
     private async Task ScanAgainAsync()
     {
-        await Shell.Current.GoToAsync("//main/scanner");
+        await Navigation.GoBackAsync();
+        await Navigation.SwitchTabAsync(MainTab.Scanner);
     }
 
     [RelayCommand]

@@ -1,6 +1,7 @@
 using CarPlates.Application.Common.DTOs;
 using CarPlates.Application.Common.Interfaces;
 using CarPlates.Application.History.Queries;
+using CarPlates.Mobile.Navigation;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MediatR;
@@ -24,7 +25,7 @@ public partial class HistoryViewModel : BaseViewModel
     [ObservableProperty]
     private int _totalCount;
 
-    public HistoryViewModel(IMediator mediator, IScanRepository scanRepository)
+    public HistoryViewModel(IMediator mediator, IScanRepository scanRepository, INavigationService navigation) : base(navigation)
     {
         _mediator = mediator;
         _scanRepository = scanRepository;
@@ -67,13 +68,16 @@ public partial class HistoryViewModel : BaseViewModel
     [RelayCommand]
     private async Task ViewDetailsAsync(ScanRecordListDto record)
     {
-        await Shell.Current.GoToAsync($"vehicle?plateNumber={record.PlateNumber}");
+        await Navigation.PushAsync<VehicleDetailsViewModel>(new Dictionary<string, object>
+        {
+            ["plateNumber"] = record.PlateNumber
+        });
     }
 
     [RelayCommand]
     private async Task DeleteAsync(ScanRecordListDto record)
     {
-        var confirm = await Shell.Current.DisplayAlertAsync(
+        var confirm = await Navigation.DisplayConfirmAsync(
             "Delete Record",
             $"Delete scan for {record.PlateNumber}?",
             "Delete", "Cancel");
@@ -89,13 +93,13 @@ public partial class HistoryViewModel : BaseViewModel
     private async Task ExportAsync()
     {
         // Export to CSV/JSON
-        await Shell.Current.DisplayAlertAsync("Export", "Export feature coming soon", "OK");
+        await Navigation.DisplayAlertAsync("Export", "Export feature coming soon");
     }
 
     [RelayCommand]
     private async Task FilterByDateAsync()
     {
         // Show date picker and filter
-        await Shell.Current.DisplayAlertAsync("Filter", "Date filter coming soon", "OK");
+        await Navigation.DisplayAlertAsync("Filter", "Date filter coming soon");
     }
 }

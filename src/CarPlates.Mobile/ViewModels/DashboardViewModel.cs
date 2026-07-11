@@ -1,6 +1,7 @@
 using CarPlates.Application.Common.DTOs;
 using CarPlates.Application.Common.Interfaces;
 using CarPlates.Application.Dashboard.Queries;
+using CarPlates.Mobile.Navigation;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MediatR;
@@ -22,7 +23,7 @@ public partial class DashboardViewModel : BaseViewModel
     [ObservableProperty]
     private string _userName = "User";
 
-    public DashboardViewModel(IMediator mediator, IAuthenticationService authService, IScanRepository scanRepository)
+    public DashboardViewModel(IMediator mediator, IAuthenticationService authService, IScanRepository scanRepository, INavigationService navigation) : base(navigation)
     {
         _mediator = mediator;
         _authService = authService;
@@ -56,24 +57,27 @@ public partial class DashboardViewModel : BaseViewModel
     [RelayCommand]
     private async Task NavigateToScanAsync()
     {
-        await Shell.Current.GoToAsync("//main/scanner");
+        await Navigation.SwitchTabAsync(MainTab.Scanner);
     }
 
     [RelayCommand]
     private async Task NavigateToHistoryAsync()
     {
-        await Shell.Current.GoToAsync("//main/history");
+        await Navigation.SwitchTabAsync(MainTab.History);
     }
 
     [RelayCommand]
     private async Task ViewVehicleDetailsAsync(RecentScanDto scan)
     {
-        await Shell.Current.GoToAsync($"vehicle?plateNumber={scan.PlateNumber}");
+        await Navigation.PushAsync<VehicleDetailsViewModel>(new Dictionary<string, object>
+        {
+            ["plateNumber"] = scan.PlateNumber
+        });
     }
 
     [RelayCommand]
     private async Task NavigateToProfileAsync()
     {
-        await Shell.Current.GoToAsync("profile");
+        await Navigation.PushAsync<ProfileViewModel>();
     }
 }

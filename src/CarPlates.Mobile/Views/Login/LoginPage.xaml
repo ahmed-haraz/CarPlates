@@ -4,7 +4,7 @@
              xmlns:vm="clr-namespace:CarPlates.Mobile.ViewModels"
              x:Class="CarPlates.Mobile.Views.Login.LoginPage"
              x:DataType="vm:LoginViewModel"
-             Shell.NavBarIsVisible="False">
+             NavigationPage.HasNavigationBar="False">
 
     <Grid RowDefinitions="Auto,*">
         <!-- Header -->

@@ -3,6 +3,7 @@ using CarPlates.Application.Common.Interfaces;
 using CarPlates.Application.Scanner.Commands;
 using CarPlates.Domain.Enums;
 using CarPlates.Domain.ValueObjects;
+using CarPlates.Mobile.Navigation;
 using CarPlates.Shared.Constants;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -47,7 +48,8 @@ public partial class ScannerViewModel : BaseViewModel
         IPlateRecognitionService plateRecognitionService,
         ICameraService cameraService,
         ISettingsService settingsService,
-        ILoggingService loggingService)
+        ILoggingService loggingService,
+        INavigationService navigation) : base(navigation)
     {
         _mediator = mediator;
         _plateRecognitionService = plateRecognitionService;
@@ -168,7 +170,7 @@ public partial class ScannerViewModel : BaseViewModel
     [RelayCommand]
     private async Task ManualEntryAsync()
     {
-        var plateText = await Shell.Current.DisplayPromptAsync("Manual Entry", "Enter plate number:",
+        var plateText = await Navigation.DisplayPromptAsync("Manual Entry", "Enter plate number:",
             accept: "Search", cancel: "Cancel");
 
         if (string.IsNullOrWhiteSpace(plateText)) return;

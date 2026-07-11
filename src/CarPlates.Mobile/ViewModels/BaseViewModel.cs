@@ -1,3 +1,4 @@
+using CarPlates.Mobile.Navigation;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 
@@ -5,6 +6,13 @@ namespace CarPlates.Mobile.ViewModels;
 
 public abstract partial class BaseViewModel : ObservableObject
 {
+    protected readonly INavigationService Navigation;
+
+    protected BaseViewModel(INavigationService navigation)
+    {
+        Navigation = navigation;
+    }
+
     [ObservableProperty]
     private bool _isBusy;
 

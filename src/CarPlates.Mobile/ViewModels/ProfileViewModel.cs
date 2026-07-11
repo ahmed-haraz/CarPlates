@@ -1,4 +1,5 @@
 using CarPlates.Application.Common.Interfaces;
+using CarPlates.Mobile.Navigation;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 
@@ -23,7 +24,7 @@ public partial class ProfileViewModel : BaseViewModel
     [ObservableProperty]
     private string? _profilePhotoUrl;
 
-    public ProfileViewModel(IAuthenticationService authService)
+    public ProfileViewModel(IAuthenticationService authService, INavigationService navigation) : base(navigation)
     {
         _authService = authService;
         Title = "Profile";
@@ -50,18 +51,18 @@ public partial class ProfileViewModel : BaseViewModel
     [RelayCommand]
     private async Task EditProfileAsync()
     {
-        await Shell.Current.DisplayAlertAsync("Edit Profile", "Profile editing coming soon", "OK");
+        await Navigation.DisplayAlertAsync("Edit Profile", "Profile editing coming soon");
     }
 
     [RelayCommand]
     private async Task ChangePhotoAsync()
     {
-        await Shell.Current.DisplayAlertAsync("Change Photo", "Photo upload coming soon", "OK");
+        await Navigation.DisplayAlertAsync("Change Photo", "Photo upload coming soon");
     }
 
     [RelayCommand]
     private async Task ChangePasswordAsync()
     {
-        await Shell.Current.DisplayAlertAsync("Change Password", "Password change coming soon", "OK");
+        await Navigation.DisplayAlertAsync("Change Password", "Password change coming soon");
     }
 }

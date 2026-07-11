@@ -1,0 +1,119 @@
+using CarPlates.Mobile.Views.Login;
+using CarPlates.Mobile.Views.Main;
+
+namespace CarPlates.Mobile.Navigation;
+
+public class NavigationService(IServiceProvider serviceProvider) : INavigationService
+{
+    private readonly IServiceProvider _serviceProvider = serviceProvider;
+
+    // Convention cache: "XyzViewModel" -> the "XyzPage" type registered somewhere
+    // under CarPlates.Mobile.Views.*. Avoids a hand-maintained routing table that
+    // silently drifts out of sync as pages get added (the same failure mode the
+    // Shell route strings had).
+    private static readonly Dictionary<Type, Type> PageTypeCache = new();
+
+    private static Window CurrentWindow => Application.Current!.Windows[0];
+
+    private static INavigation CurrentNavigation => CurrentWindow.Page switch
+    {
+        TabbedPage { CurrentPage: NavigationPage navPage } => navPage.Navigation,
+        TabbedPage tabbed => tabbed.Navigation,
+        NavigationPage navPage => navPage.Navigation,
+        Page page => page.Navigation,
+        _ => throw new InvalidOperationException("App has no navigable root page set yet.")
+    };
+
+    public Task GoToLoginRootAsync()
+    {
+        var loginPage = _serviceProvider.GetRequiredService<LoginPage>();
+        NavigationPage.SetHasNavigationBar(loginPage, false);
+        CurrentWindow.Page = new NavigationPage(loginPage);
+        return Task.CompletedTask;
+    }
+
+    public Task GoToMainRootAsync()
+    {
+        CurrentWindow.Page = _serviceProvider.GetRequiredService<MainTabbedPage>();
+        return Task.CompletedTask;
+    }
+
+    public async Task PushAsync<TViewModel>(IDictionary<string, object>? parameters = null) where TViewModel : ViewModels.BaseViewModel
+    {
+        var pageType = ResolvePageType(typeof(TViewModel));
+        var page = (Page)_serviceProvider.GetRequiredService(pageType);
+
+        if (parameters != null && parameters.Count > 0 && page.BindingContext is IQueryAttributable queryAware)
+        {
+            queryAware.ApplyQueryAttributes(parameters);
+        }
+
+        await CurrentNavigation.PushAsync(page);
+    }
+
+    public async Task PushPageAsync<TPage>() where TPage : Page
+    {
+        var page = _serviceProvider.GetRequiredService<TPage>();
+        await CurrentNavigation.PushAsync(page);
+    }
+
+    public async Task GoBackAsync()
+    {
+        await CurrentNavigation.PopAsync();
+    }
+
+    public Task SwitchTabAsync(MainTab tab)
+    {
+        if (CurrentWindow.Page is TabbedPage tabbed)
+        {
+            var index = (int)tab;
+            if (index >= 0 && index < tabbed.Children.Count)
+            {
+                tabbed.CurrentPage = tabbed.Children[index];
+            }
+        }
+        return Task.CompletedTask;
+    }
+
+    public async Task DisplayAlertAsync(string title, string message, string cancel = "OK")
+    {
+        var page = CurrentWindow.Page;
+        if (page != null) await page.DisplayAlert(title, message, cancel);
+    }
+
+    public async Task<bool> DisplayConfirmAsync(string title, string message, string accept = "Yes", string cancel = "No")
+    {
+        var page = CurrentWindow.Page;
+        return page != null && await page.DisplayAlert(title, message, accept, cancel);
+    }
+
+    public async Task<string?> DisplayPromptAsync(string title, string message, string accept = "OK", string cancel = "Cancel", string? placeholder = null)
+    {
+        var page = CurrentWindow.Page;
+        if (page == null) return null;
+        return await page.DisplayPromptAsync(title, message, accept, cancel, placeholder: placeholder);
+    }
+
+    private static Type ResolvePageType(Type viewModelType)
+    {
+        if (PageTypeCache.TryGetValue(viewModelType, out var cached)) return cached;
+
+        var baseName = viewModelType.Name.EndsWith("ViewModel")
+            ? viewModelType.Name[..^"ViewModel".Length]
+            : viewModelType.Name;
+        var expectedPageName = baseName + "Page";
+
+        var pageType = typeof(NavigationService).Assembly.GetTypes()
+            .FirstOrDefault(t => t.Name == expectedPageName && typeof(Page).IsAssignableFrom(t));
+
+        if (pageType == null)
+        {
+            throw new InvalidOperationException(
+                $"No page found matching naming convention '{expectedPageName}' for view model '{viewModelType.Name}'. " +
+                "Page classes must be named after their view model (e.g. LoginViewModel -> LoginPage).");
+        }
+
+        PageTypeCache[viewModelType] = pageType;
+        return pageType;
+    }
+}

@@ -1,4 +1,5 @@
 using CarPlates.Application.Common.Interfaces;
+using CarPlates.Mobile.Navigation;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 
@@ -8,7 +9,7 @@ public partial class SplashViewModel : BaseViewModel
 {
     private readonly IAuthenticationService _authService;
 
-    public SplashViewModel(IAuthenticationService authService)
+    public SplashViewModel(IAuthenticationService authService, INavigationService navigation) : base(navigation)
     {
         _authService = authService;
         Title = "CarPlates";
@@ -23,11 +24,11 @@ public partial class SplashViewModel : BaseViewModel
 
         if (isAuthenticated)
         {
-            await Shell.Current.GoToAsync("//main/dashboard");
+            await Navigation.GoToMainRootAsync();
         }
         else
         {
-            await Shell.Current.GoToAsync("//login");
+            await Navigation.GoToLoginRootAsync();
         }
     }
 }

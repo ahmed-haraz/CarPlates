@@ -2,6 +2,8 @@ using CarPlates.Application.Authentication.Commands;
 using CarPlates.Application.Common.Interfaces;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CarPlates.Mobile.Navigation;
+using CarPlates.Mobile.Views.About;
 using MediatR;
 using AppTheme = CarPlates.Domain.Enums.AppTheme;
 
@@ -45,7 +47,8 @@ public partial class SettingsViewModel : BaseViewModel
         IAuthenticationService authService,
         ISyncService syncService,
         IScanRepository scanRepository,
-        IPendingUploadRepository pendingUploadRepository)
+        IPendingUploadRepository pendingUploadRepository,
+        INavigationService navigation) : base(navigation)
     {
         _mediator = mediator;
         _settingsService = settingsService;
@@ -83,7 +86,7 @@ public partial class SettingsViewModel : BaseViewModel
                 theme, language, ApiUrl, OcrConfidence, AutoResume, NotificationsEnabled);
 
             await _settingsService.SaveSettingsAsync(settings);
-            await Shell.Current.DisplayAlertAsync("Success", "Settings saved", "OK");
+            await Navigation.DisplayAlertAsync("Success", "Settings saved");
         });
     }
 
@@ -94,22 +97,21 @@ public partial class SettingsViewModel : BaseViewModel
         {
             if (!await _syncService.IsOnlineAsync())
             {
-                await Shell.Current.DisplayAlertAsync("Offline", "No internet connection", "OK");
+                await Navigation.DisplayAlertAsync("Offline", "No internet connection");
                 return;
             }
 
             var result = await _syncService.SyncPendingAsync();
-            await Shell.Current.DisplayAlertAsync(
+            await Navigation.DisplayAlertAsync(
                 "Sync Complete",
-                $"Synced: {result.SyncedCount}, Failed: {result.FailedCount}",
-                "OK");
+                $"Synced: {result.SyncedCount}, Failed: {result.FailedCount}");
         });
     }
 
     [RelayCommand]
     private async Task ClearCacheAsync()
     {
-        var confirm = await Shell.Current.DisplayAlertAsync(
+        var confirm = await Navigation.DisplayConfirmAsync(
             "Clear Cache",
             "This will delete all local scan history. Continue?",
             "Clear", "Cancel");
@@ -122,20 +124,20 @@ public partial class SettingsViewModel : BaseViewModel
                 await _pendingUploadRepository.ClearAllAsync();
                 PendingSyncCount = 0;
             });
-            await Shell.Current.DisplayAlertAsync("Success", "Cache cleared", "OK");
+            await Navigation.DisplayAlertAsync("Success", "Cache cleared");
         }
     }
 
     [RelayCommand]
     private async Task ViewLogsAsync()
     {
-        await Shell.Current.DisplayAlertAsync("Logs", "Log viewer coming soon", "OK");
+        await Navigation.DisplayAlertAsync("Logs", "Log viewer coming soon");
     }
 
     [RelayCommand]
     private async Task LogoutAsync()
     {
-        var confirm = await Shell.Current.DisplayAlertAsync(
+        var confirm = await Navigation.DisplayConfirmAsync(
             "Logout",
             "Are you sure you want to logout?",
             "Logout", "Cancel");
@@ -146,13 +148,13 @@ public partial class SettingsViewModel : BaseViewModel
             {
                 await _mediator.Send(new LogoutCommand());
             });
-            await Shell.Current.GoToAsync("//login");
+            await Navigation.GoToLoginRootAsync();
         }
     }
 
     [RelayCommand]
     private async Task NavigateToAboutAsync()
     {
-        await Shell.Current.GoToAsync("about");
+        await Navigation.PushPageAsync<AboutPage>();
     }
 }

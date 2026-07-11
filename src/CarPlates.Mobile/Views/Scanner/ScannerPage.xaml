@@ -6,7 +6,7 @@
              x:Class="CarPlates.Mobile.Views.Scanner.ScannerPage"
              x:DataType="vm:ScannerViewModel"
              Title="Scan"
-             Shell.NavBarIsVisible="False">
+             NavigationPage.HasNavigationBar="False">
 
     <Grid>
         <!-- Camera Preview Background -->

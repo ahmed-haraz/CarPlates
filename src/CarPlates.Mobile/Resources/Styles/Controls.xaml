@@ -14,16 +14,12 @@
         <Setter Property="BarTextColor" Value="White" />
     </Style>
 
-    <!-- Default Shell -->
-    <Style TargetType="Shell" ApplyToDerivedTypes="True">
-        <Setter Property="BackgroundColor" Value="{StaticResource Background}" />
-        <Setter Property="ForegroundColor" Value="White" />
-        <Setter Property="TitleColor" Value="White" />
-        <Setter Property="DisabledColor" Value="{StaticResource TextSecondary}" />
-        <Setter Property="UnselectedColor" Value="{StaticResource TextSecondary}" />
-        <Setter Property="TabBarBackgroundColor" Value="{StaticResource Surface}" />
-        <Setter Property="TabBarTitleColor" Value="{StaticResource Primary}" />
-        <Setter Property="TabBarUnselectedColor" Value="{StaticResource TextSecondary}" />
+    <!-- Default TabbedPage (replaces the old Shell TabBar styling) -->
+    <Style TargetType="TabbedPage">
+        <Setter Property="BarBackgroundColor" Value="{StaticResource Surface}" />
+        <Setter Property="BarTextColor" Value="{StaticResource TextSecondary}" />
+        <Setter Property="SelectedTabColor" Value="{StaticResource Primary}" />
+        <Setter Property="UnselectedTabColor" Value="{StaticResource TextSecondary}" />
     </Style>
 
     <!-- Default Label -->

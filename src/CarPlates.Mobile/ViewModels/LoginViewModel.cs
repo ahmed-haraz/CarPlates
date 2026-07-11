@@ -3,6 +3,7 @@ using CarPlates.Application.Common.Interfaces;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MediatR;
+using CarPlates.Mobile.Navigation;
 
 namespace CarPlates.Mobile.ViewModels;
 
@@ -20,7 +21,7 @@ public partial class LoginViewModel : BaseViewModel
     [ObservableProperty]
     private bool _isPasswordVisible;
 
-    public LoginViewModel(IMediator mediator, IAuthenticationService authService)
+    public LoginViewModel(IMediator mediator, IAuthenticationService authService, INavigationService navigation) : base(navigation)
     {
         _mediator = mediator;
         _authService = authService;
@@ -44,7 +45,7 @@ public partial class LoginViewModel : BaseViewModel
 
             if (result.Success)
             {
-                await Shell.Current.GoToAsync("//main/dashboard");
+                await Navigation.GoToMainRootAsync();
             }
             else
             {

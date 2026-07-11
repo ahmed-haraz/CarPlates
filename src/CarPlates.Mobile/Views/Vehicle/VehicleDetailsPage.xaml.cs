@@ -3,7 +3,6 @@ using CarPlates.Mobile.ViewModels;
 
 namespace CarPlates.Mobile.Views.Vehicle;
 
-[QueryProperty(nameof(PlateNumber), "plateNumber")]
 public partial class VehicleDetailsPage : ContentPage
 {
     public VehicleDetailsPage(VehicleDetailsViewModel viewModel)

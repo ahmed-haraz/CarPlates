@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<TabbedPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+            xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+            x:Class="CarPlates.Mobile.Views.Main.MainTabbedPage">
+    <!-- Each tab wraps its page in its own NavigationPage so pushing a detail
+         page (e.g. Vehicle Details from Dashboard or History) keeps its own
+         back stack per tab, the same way Shell's per-tab navigation worked. -->
+</TabbedPage>
