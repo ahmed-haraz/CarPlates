@@ -16,35 +16,29 @@ public partial class MainTabbedPage : TabbedPage
     {
         InitializeComponent();
 
-        var dashboardTab = new NavigationPage(dashboardPage)
-        {
-            Title = AppResources.Dashboard,
-            IconImageSource = "dashboard.png"
-        };
-        var scannerTab = new NavigationPage(scannerPage)
-        {
-            Title = AppResources.Scan,
-            IconImageSource = "camera.png"
-        };
-        var historyTab = new NavigationPage(historyPage)
-        {
-            Title = AppResources.History,
-            IconImageSource = "history.png"
-        };
-        var settingsTab = new NavigationPage(settingsPage)
-        {
-            Title = AppResources.Settings,
-            IconImageSource = "settings.png"
-        };
+        var dashboardTab = CreateIconOnlyTab(dashboardPage, "dashboard.png", AppResources.Dashboard);
+        var scannerTab = CreateIconOnlyTab(scannerPage, "camera.png", AppResources.Scan);
+        var historyTab = CreateIconOnlyTab(historyPage, "history.png", AppResources.History);
+        var settingsTab = CreateIconOnlyTab(settingsPage, "settings.png", AppResources.Settings);
 
         Children.Add(dashboardTab);
         Children.Add(scannerTab);
         Children.Add(historyTab);
         Children.Add(settingsTab);
 
-        // Tab labels are set once here; if the language changes while the user is
-        // already inside the tabbed shell, the labels catch up next time
-        // MainTabbedPage is recreated (e.g. next login), not live in-place - a
-        // known, minor limitation flagged rather than silently left unhandled.
+    }
+
+    private static NavigationPage CreateIconOnlyTab(Page page, string icon, string accessibilityName)
+    {
+        var tab = new NavigationPage(page)
+        {
+            Title = string.Empty,
+            IconImageSource = icon
+        };
+
+        AutomationProperties.SetName(tab, accessibilityName);
+        AutomationProperties.SetHelpText(tab, accessibilityName);
+
+        return tab;
     }
 }

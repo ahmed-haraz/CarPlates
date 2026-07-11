@@ -25,26 +25,30 @@
 
     <!-- Main App Tab Bar -->
     <TabBar Route="main">
-        <Tab Title="Dashboard"
-             Icon="dashboard.png">
+        <Tab Title=""
+             Icon="dashboard.png"
+             AutomationProperties.Name="Dashboard">
             <ShellContent Route="dashboard"
                           ContentTemplate="{DataTemplate dashboard:DashboardPage}" />
         </Tab>
 
-        <Tab Title="Scan"
-             Icon="camera.png">
+        <Tab Title=""
+             Icon="camera.png"
+             AutomationProperties.Name="Scan">
             <ShellContent Route="scanner"
                           ContentTemplate="{DataTemplate scanner:ScannerPage}" />
         </Tab>
 
-        <Tab Title="History"
-             Icon="history.png">
+        <Tab Title=""
+             Icon="history.png"
+             AutomationProperties.Name="History">
             <ShellContent Route="history"
                           ContentTemplate="{DataTemplate history:HistoryPage}" />
         </Tab>
 
-        <Tab Title="Settings"
-             Icon="settings.png">
+        <Tab Title=""
+             Icon="settings.png"
+             AutomationProperties.Name="Settings">
             <ShellContent Route="settings"
                           ContentTemplate="{DataTemplate settings:SettingsPage}" />
         </Tab>
