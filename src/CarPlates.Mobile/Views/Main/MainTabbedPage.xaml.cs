@@ -16,10 +16,10 @@ public partial class MainTabbedPage : TabbedPage
     {
         InitializeComponent();
 
-        var dashboardTab = CreateIconOnlyTab(dashboardPage, "dashboard.png", AppResources.Dashboard);
-        var scannerTab = CreateIconOnlyTab(scannerPage, "camera.png", AppResources.Scan);
-        var historyTab = CreateIconOnlyTab(historyPage, "history.png", AppResources.History);
-        var settingsTab = CreateIconOnlyTab(settingsPage, "settings.png", AppResources.Settings);
+        var dashboardTab = CreateIconOnlyTab(dashboardPage, "dashboard.svg", AppResources.Dashboard);
+        var scannerTab = CreateIconOnlyTab(scannerPage, "camera.svg", AppResources.Scan);
+        var historyTab = CreateIconOnlyTab(historyPage, "history.svg", AppResources.History);
+        var settingsTab = CreateIconOnlyTab(settingsPage, "settings.svg", AppResources.Settings);
 
         Children.Add(dashboardTab);
         Children.Add(scannerTab);

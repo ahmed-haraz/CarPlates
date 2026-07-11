@@ -1,9 +1,9 @@
 using Android.Content;
 using AndroidX.Camera.Core;
 using CarPlates.Mobile.Controls;
-using Google.MLKit.Vision.Common;
-using Google.MLKit.Vision.Text;
-using Google.MLKit.Vision.Text.Latin;
+using Xamarin.Google.MLKit.Vision.Common;
+using Xamarin.Google.MLKit.Vision.Text;
+using Xamarin.Google.MLKit.Vision.Text.Latin;
 
 namespace CarPlates.Mobile.Platforms.Android.Handlers;
 
@@ -44,7 +44,7 @@ public class PlateAnalyzer : Java.Lang.Object, ImageAnalysis.IAnalyzer
             .AddOnCompleteListener(new ImageCloseListener(imageProxy));
     }
 
-    private sealed class TextSuccessListener : Java.Lang.Object, Android.Gms.Tasks.IOnSuccessListener
+    private sealed class TextSuccessListener : Java.Lang.Object, global::Android.Gms.Tasks.IOnSuccessListener
     {
         private readonly CameraPreview _cameraPreview;
 
@@ -55,23 +55,24 @@ public class PlateAnalyzer : Java.Lang.Object, ImageAnalysis.IAnalyzer
 
         public void OnSuccess(Java.Lang.Object? result)
         {
-            if (result is not Text text || string.IsNullOrWhiteSpace(text.Text))
-            {
-                return;
-            }
+            var visionText = result as Xamarin.Google.MLKit.Vision.Text.Text;
 
-            MainThread.BeginInvokeOnMainThread(() => _cameraPreview.NotifyRecognizedText(text.Text));
+            if (visionText == null || string.IsNullOrWhiteSpace(visionText.GetText()))
+                return;
+
+            MainThread.BeginInvokeOnMainThread(() =>
+                _cameraPreview.NotifyRecognizedText(visionText.GetText()));
         }
     }
 
-    private sealed class TextFailureListener : Java.Lang.Object, Android.Gms.Tasks.IOnFailureListener
+    private sealed class TextFailureListener : Java.Lang.Object, global::Android.Gms.Tasks.IOnFailureListener
     {
         public void OnFailure(Java.Lang.Exception e)
         {
         }
     }
 
-    private sealed class ImageCloseListener : Java.Lang.Object, Android.Gms.Tasks.IOnCompleteListener
+    private sealed class ImageCloseListener : Java.Lang.Object, global::Android.Gms.Tasks.IOnCompleteListener
     {
         private readonly IImageProxy _imageProxy;
 
@@ -80,7 +81,7 @@ public class PlateAnalyzer : Java.Lang.Object, ImageAnalysis.IAnalyzer
             _imageProxy = imageProxy;
         }
 
-        public void OnComplete(Android.Gms.Tasks.Task task)
+        public void OnComplete(global::Android.Gms.Tasks.Task task)
         {
             _imageProxy.Close();
         }
