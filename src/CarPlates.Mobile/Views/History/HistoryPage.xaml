@@ -16,7 +16,7 @@
     <Grid RowDefinitions="Auto,Auto,*">
         <!-- Search Bar -->
         <Grid Grid.Row="0"
-              Padding="16,8"
+              Padding="20,18,20,8"
               ColumnDefinitions="*,Auto,Auto">
             <Entry Grid.Column="0"
                    Text="{Binding SearchQuery}"
@@ -34,7 +34,7 @@
 
         <!-- Stats Bar -->
         <Grid Grid.Row="1"
-              Padding="16,4"
+              Padding="20,4"
               ColumnDefinitions="*,Auto">
             <Label Grid.Column="0"
                    Text="{Binding TotalCount, StringFormat='{0} records'}"
@@ -64,7 +64,7 @@
                                                CommandParameter="{Binding .}" />
                                 </SwipeItems>
                             </SwipeView.RightItems>
-                            <Border Style="{StaticResource Card}"
+                            <Frame Style="{StaticResource Card}"
                                     Margin="12,4">
                                 <Grid ColumnDefinitions="Auto,*,Auto">
                                     <VerticalStackLayout Grid.Column="0"
@@ -93,11 +93,11 @@
                                                Style="{StaticResource Caption}" />
                                     </VerticalStackLayout>
                                 </Grid>
-                                <Border.GestureRecognizers>
+                                <Frame.GestureRecognizers>
                                     <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:HistoryViewModel}}, Path=ViewDetailsCommand}"
                                                           CommandParameter="{Binding .}" />
-                                </Border.GestureRecognizers>
-                            </Border>
+                                </Frame.GestureRecognizers>
+                            </Frame>
                         </SwipeView>
                     </DataTemplate>
                 </CollectionView.ItemTemplate>

@@ -6,37 +6,37 @@
              x:Class="CarPlates.Mobile.Views.Splash.SplashPage"
              x:DataType="vm:SplashViewModel"
              NavigationPage.HasNavigationBar="False"
-             BackgroundColor="{StaticResource Primary}">
+             BackgroundColor="{StaticResource PrimaryDark}">
 
     <Grid>
         <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center" Spacing="20">
             <!-- App Icon -->
-            <Frame BackgroundColor="White" 
-                   CornerRadius="24" 
-                   WidthRequest="120" 
+            <Frame BackgroundColor="White"
+                   CornerRadius="30"
+                   WidthRequest="120"
                    HeightRequest="120"
                    Padding="0"
                    HasShadow="True">
-                <Label Text="🚗" 
-                       FontSize="64" 
-                       HorizontalOptions="Center" 
+                <Label Text="🚘"
+                       FontSize="64"
+                       HorizontalOptions="Center"
                        VerticalOptions="Center"/>
             </Frame>
 
             <!-- App Name -->
-            <Label Text="{loc:Translate Key=AppName}" 
+            <Label Text="{loc:Translate Key=AppName}"
                    Style="{StaticResource Headline}"
                    TextColor="White"
                    HorizontalOptions="Center"/>
 
             <!-- Tagline -->
-            <Label Text="{loc:Translate Key=Tagline}" 
+            <Label Text="{loc:Translate Key=Tagline}"
                    Style="{StaticResource Subtitle}"
-                   TextColor="{StaticResource PrimaryLight}"
+                   TextColor="{StaticResource Accent}"
                    HorizontalOptions="Center"/>
 
             <!-- Loading Indicator -->
-            <ActivityIndicator IsRunning="True" 
+            <ActivityIndicator IsRunning="True"
                                Color="White"
                                Margin="0,20,0,0"/>
         </VerticalStackLayout>

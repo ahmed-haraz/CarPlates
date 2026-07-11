@@ -10,7 +10,7 @@
 
     <!-- Default NavigationPage -->
     <Style TargetType="NavigationPage">
-        <Setter Property="BarBackgroundColor" Value="{StaticResource Primary}" />
+        <Setter Property="BarBackgroundColor" Value="{StaticResource PrimaryDark}" />
         <Setter Property="BarTextColor" Value="White" />
     </Style>
 
@@ -33,8 +33,8 @@
         <Setter Property="BackgroundColor" Value="{StaticResource Primary}" />
         <Setter Property="FontFamily" Value="OpenSansRegular" />
         <Setter Property="FontSize" Value="16" />
-        <Setter Property="CornerRadius" Value="8" />
-        <Setter Property="Padding" Value="14,10" />
+        <Setter Property="CornerRadius" Value="16" />
+        <Setter Property="Padding" Value="18,12" />
     </Style>
 
     <!-- Default Entry -->
@@ -44,7 +44,7 @@
         <Setter Property="FontFamily" Value="OpenSansRegular" />
         <Setter Property="FontSize" Value="16" />
         <Setter Property="PlaceholderColor" Value="{DynamicResource TextSecondary}" />
-        <Setter Property="MinimumHeightRequest" Value="44" />
+        <Setter Property="MinimumHeightRequest" Value="52" />
         <Setter Property="Margin" Value="0,4" />
     </Style>
 
@@ -70,8 +70,8 @@
     <Style TargetType="Border">
         <Setter Property="BackgroundColor" Value="{DynamicResource Surface}" />
         <Setter Property="Stroke" Value="{DynamicResource Border}" />
-        <Setter Property="StrokeShape" Value="RoundRectangle 12" />
-        <Setter Property="Padding" Value="12" />
+        <Setter Property="StrokeShape" Value="RoundRectangle 22" />
+        <Setter Property="Padding" Value="16" />
     </Style>
 
     <!-- Default ActivityIndicator -->

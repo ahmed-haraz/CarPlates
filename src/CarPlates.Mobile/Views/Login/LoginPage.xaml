@@ -7,79 +7,84 @@
              x:DataType="vm:LoginViewModel"
              NavigationPage.HasNavigationBar="False">
 
-    <Grid RowDefinitions="Auto,*">
-        <!-- Header -->
-        <Grid BackgroundColor="{StaticResource Primary}" 
-              HeightRequest="200"
-              RowDefinitions="*,Auto">
-            <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center" Spacing="8">
-                <Label Text="🚗" FontSize="64" HorizontalOptions="Center"/>
-                <Label Text="{loc:Translate Key=AppName}" 
-                       Style="{StaticResource Title}"
-                       TextColor="White"
-                       HorizontalOptions="Center"/>
-            </VerticalStackLayout>
-        </Grid>
+    <Grid RowDefinitions="Auto,*" BackgroundColor="{DynamicResource Background}">
+        <Frame Grid.Row="0"
+               Style="{StaticResource HeroCard}"
+               Margin="20,24,20,0"
+               HeightRequest="230">
+            <Grid RowDefinitions="*,Auto">
+                <VerticalStackLayout VerticalOptions="Center" Spacing="10">
+                    <Frame BackgroundColor="{StaticResource AccentSoft}"
+                           WidthRequest="76"
+                           HeightRequest="76"
+                           CornerRadius="24"
+                           Padding="0"
+                           HasShadow="False"
+                           HorizontalOptions="Start">
+                        <Label Text="🚘" FontSize="40" HorizontalOptions="Center" VerticalOptions="Center" />
+                    </Frame>
+                    <Label Text="SMART PLATE ACCESS" Style="{StaticResource Eyebrow}" TextColor="{StaticResource Accent}" />
+                    <Label Text="{loc:Translate Key=AppName}"
+                           Style="{StaticResource Headline}"
+                           TextColor="White" />
+                    <Label Text="{loc:Translate Key=SignInToContinue}"
+                           Style="{StaticResource Subtitle}"
+                           TextColor="#D7E7FF" />
+                </VerticalStackLayout>
+            </Grid>
+        </Frame>
 
-        <!-- Login Form -->
         <ScrollView Grid.Row="1">
-            <VerticalStackLayout Padding="24,32" Spacing="16">
-                <!-- Welcome Text -->
-                <Label Text="{loc:Translate Key=WelcomeBack}" 
-                       Style="{StaticResource Title}"
-                       HorizontalOptions="Start"/>
-                <Label Text="{loc:Translate Key=SignInToContinue}" 
-                       Style="{StaticResource Subtitle}"
-                       HorizontalOptions="Start"/>
+            <VerticalStackLayout Padding="20,28" Spacing="18">
+                <VerticalStackLayout Spacing="4">
+                    <Label Text="{loc:Translate Key=WelcomeBack}" Style="{StaticResource Title}" />
+                    <Label Text="Securely continue to your vehicle scanning workspace." Style="{StaticResource Subtitle}" />
+                </VerticalStackLayout>
 
-                <!-- Error Message -->
-                <Frame BackgroundColor="{StaticResource Error}" 
-                       Padding="12"
+                <Frame BackgroundColor="{StaticResource Error}"
+                       Padding="14"
                        IsVisible="{Binding HasError}"
-                       CornerRadius="8">
-                    <Label Text="{Binding ErrorMessage}" 
-                           TextColor="White"
-                           FontSize="14"/>
+                       CornerRadius="18"
+                       HasShadow="False">
+                    <Label Text="{Binding ErrorMessage}" TextColor="White" FontSize="14" />
                 </Frame>
 
-                <!-- Username -->
-                <VerticalStackLayout Spacing="4">
-                    <Label Text="{loc:Translate Key=Username}" Style="{StaticResource Body}" FontAttributes="Bold"/>
-                    <Entry Text="{Binding Username}" 
-                           Placeholder="{loc:Translate Key=EnterUsername}"
-                           Style="{StaticResource FormEntry}"
-                           ReturnType="Next"/>
-                </VerticalStackLayout>
+                <Frame Style="{StaticResource Card}">
+                    <VerticalStackLayout Spacing="14">
+                        <VerticalStackLayout Spacing="4">
+                            <Label Text="{loc:Translate Key=Username}" Style="{StaticResource Eyebrow}" />
+                            <Entry Text="{Binding Username}"
+                                   Placeholder="{loc:Translate Key=EnterUsername}"
+                                   Style="{StaticResource FormEntry}"
+                                   ReturnType="Next" />
+                        </VerticalStackLayout>
 
-                <!-- Password -->
-                <VerticalStackLayout Spacing="4">
-                    <Label Text="{loc:Translate Key=Password}" Style="{StaticResource Body}" FontAttributes="Bold"/>
-                    <Grid ColumnDefinitions="*,Auto">
-                        <Entry Grid.Column="0"
-                               Text="{Binding Password}" 
-                               Placeholder="{loc:Translate Key=EnterPassword}"
-                               IsPassword="{Binding IsPasswordVisible, Converter={StaticResource InvertedBoolConverter}}"
-                               Style="{StaticResource FormEntry}"
-                               ReturnType="Done"/>
-                        <Button Grid.Column="1"
-                                Text="{Binding IsPasswordVisible, Converter={StaticResource BoolToEyeIconConverter}}"
-                                Style="{StaticResource IconButton}"
-                                Command="{Binding TogglePasswordVisibilityCommand}"
-                                WidthRequest="48"/>
-                    </Grid>
-                </VerticalStackLayout>
+                        <VerticalStackLayout Spacing="4">
+                            <Label Text="{loc:Translate Key=Password}" Style="{StaticResource Eyebrow}" />
+                            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                                <Entry Grid.Column="0"
+                                       Text="{Binding Password}"
+                                       Placeholder="{loc:Translate Key=EnterPassword}"
+                                       IsPassword="{Binding IsPasswordVisible, Converter={StaticResource InvertedBoolConverter}}"
+                                       Style="{StaticResource FormEntry}"
+                                       ReturnType="Done" />
+                                <Button Grid.Column="1"
+                                        Text="{Binding IsPasswordVisible, Converter={StaticResource BoolToEyeIconConverter}}"
+                                        Style="{StaticResource IconButton}"
+                                        Command="{Binding TogglePasswordVisibilityCommand}" />
+                            </Grid>
+                        </VerticalStackLayout>
+                    </VerticalStackLayout>
+                </Frame>
 
-                <!-- Login Button -->
-                <Button Text="{loc:Translate Key=SignIn}" 
+                <Button Text="{loc:Translate Key=SignIn}"
                         Style="{StaticResource PrimaryButton}"
                         Command="{Binding LoginCommand}"
-                        IsEnabled="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}"
-                        Margin="0,16,0,0"/>
+                        IsEnabled="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}" />
 
-                <!-- Loading -->
-                <ActivityIndicator IsRunning="{Binding IsBusy}" 
+                <ActivityIndicator IsRunning="{Binding IsBusy}"
                                    IsVisible="{Binding IsBusy}"
-                                   Color="{StaticResource Primary}"/>
+                                   Color="{StaticResource Primary}" />
             </VerticalStackLayout>
         </ScrollView>
     </Grid>
