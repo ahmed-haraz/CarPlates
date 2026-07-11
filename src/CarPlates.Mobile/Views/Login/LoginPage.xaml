@@ -2,6 +2,7 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:CarPlates.Mobile.ViewModels"
+             xmlns:loc="clr-namespace:CarPlates.Mobile.Localization"
              x:Class="CarPlates.Mobile.Views.Login.LoginPage"
              x:DataType="vm:LoginViewModel"
              NavigationPage.HasNavigationBar="False">
@@ -13,7 +14,7 @@
               RowDefinitions="*,Auto">
             <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center" Spacing="8">
                 <Label Text="🚗" FontSize="64" HorizontalOptions="Center"/>
-                <Label Text="CarPlates" 
+                <Label Text="{loc:Translate Key=AppName}" 
                        Style="{StaticResource Title}"
                        TextColor="White"
                        HorizontalOptions="Center"/>
@@ -24,10 +25,10 @@
         <ScrollView Grid.Row="1">
             <VerticalStackLayout Padding="24,32" Spacing="16">
                 <!-- Welcome Text -->
-                <Label Text="Welcome Back" 
+                <Label Text="{loc:Translate Key=WelcomeBack}" 
                        Style="{StaticResource Title}"
                        HorizontalOptions="Start"/>
-                <Label Text="Sign in to continue" 
+                <Label Text="{loc:Translate Key=SignInToContinue}" 
                        Style="{StaticResource Subtitle}"
                        HorizontalOptions="Start"/>
 
@@ -43,20 +44,20 @@
 
                 <!-- Username -->
                 <VerticalStackLayout Spacing="4">
-                    <Label Text="Username" Style="{StaticResource Body}" FontAttributes="Bold"/>
+                    <Label Text="{loc:Translate Key=Username}" Style="{StaticResource Body}" FontAttributes="Bold"/>
                     <Entry Text="{Binding Username}" 
-                           Placeholder="Enter username"
+                           Placeholder="{loc:Translate Key=EnterUsername}"
                            Style="{StaticResource FormEntry}"
                            ReturnType="Next"/>
                 </VerticalStackLayout>
 
                 <!-- Password -->
                 <VerticalStackLayout Spacing="4">
-                    <Label Text="Password" Style="{StaticResource Body}" FontAttributes="Bold"/>
+                    <Label Text="{loc:Translate Key=Password}" Style="{StaticResource Body}" FontAttributes="Bold"/>
                     <Grid ColumnDefinitions="*,Auto">
                         <Entry Grid.Column="0"
                                Text="{Binding Password}" 
-                               Placeholder="Enter password"
+                               Placeholder="{loc:Translate Key=EnterPassword}"
                                IsPassword="{Binding IsPasswordVisible, Converter={StaticResource InvertedBoolConverter}}"
                                Style="{StaticResource FormEntry}"
                                ReturnType="Done"/>
@@ -69,7 +70,7 @@
                 </VerticalStackLayout>
 
                 <!-- Login Button -->
-                <Button Text="Sign In" 
+                <Button Text="{loc:Translate Key=SignIn}" 
                         Style="{StaticResource PrimaryButton}"
                         Command="{Binding LoginCommand}"
                         IsEnabled="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}"

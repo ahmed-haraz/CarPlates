@@ -2,9 +2,10 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:CarPlates.Mobile.ViewModels"
+             xmlns:loc="clr-namespace:CarPlates.Mobile.Localization"
              x:Class="CarPlates.Mobile.Views.Profile.ProfilePage"
              x:DataType="vm:ProfileViewModel"
-             Title="Profile">
+             Title="{Binding Title}">
 
     <ScrollView>
         <VerticalStackLayout Padding="16" Spacing="16">
@@ -21,7 +22,7 @@
                                HorizontalOptions="Center"
                                VerticalOptions="Center"/>
                     </Frame>
-                    <Button Text="📷 Change Photo"
+                    <Button Text="{loc:Translate Key=ChangePhotoButton}"
                             Style="{StaticResource SecondaryButton}"
                             Command="{Binding ChangePhotoCommand}"
                             HeightRequest="36"
@@ -38,24 +39,24 @@
             <!-- User Info -->
             <Frame Style="{StaticResource Card}">
                 <Grid RowDefinitions="Auto,Auto,Auto" ColumnDefinitions="Auto,*" RowSpacing="12" ColumnSpacing="16">
-                    <Label Grid.Row="0" Grid.Column="0" Text="Username:" Style="{StaticResource Body}" FontAttributes="Bold"/>
+                    <Label Grid.Row="0" Grid.Column="0" Text="{loc:Translate Key=UsernameColon}" Style="{StaticResource Body}" FontAttributes="Bold"/>
                     <Label Grid.Row="0" Grid.Column="1" Text="{Binding UserName}" Style="{StaticResource Body}"/>
 
-                    <Label Grid.Row="1" Grid.Column="0" Text="Email:" Style="{StaticResource Body}" FontAttributes="Bold"/>
+                    <Label Grid.Row="1" Grid.Column="0" Text="{loc:Translate Key=EmailColon}" Style="{StaticResource Body}" FontAttributes="Bold"/>
                     <Label Grid.Row="1" Grid.Column="1" Text="{Binding Email}" Style="{StaticResource Body}"/>
 
-                    <Label Grid.Row="2" Grid.Column="0" Text="Full Name:" Style="{StaticResource Body}" FontAttributes="Bold"/>
+                    <Label Grid.Row="2" Grid.Column="0" Text="{loc:Translate Key=FullNameColon}" Style="{StaticResource Body}" FontAttributes="Bold"/>
                     <Label Grid.Row="2" Grid.Column="1" Text="{Binding FullName}" Style="{StaticResource Body}"/>
                 </Grid>
             </Frame>
 
             <!-- Actions -->
             <VerticalStackLayout Spacing="8">
-                <Button Text="✏ Edit Profile"
+                <Button Text="{loc:Translate Key=EditProfileButton}"
                         Style="{StaticResource PrimaryButton}"
                         Command="{Binding EditProfileCommand}"
                         HeightRequest="48"/>
-                <Button Text="🔒 Change Password"
+                <Button Text="{loc:Translate Key=ChangePasswordButton}"
                         Style="{StaticResource SecondaryButton}"
                         Command="{Binding ChangePasswordCommand}"
                         HeightRequest="48"/>

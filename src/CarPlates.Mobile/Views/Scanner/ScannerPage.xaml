@@ -3,9 +3,10 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:CarPlates.Mobile.ViewModels"
              xmlns:controls="clr-namespace:CarPlates.Mobile.Controls"
+             xmlns:loc="clr-namespace:CarPlates.Mobile.Localization"
              x:Class="CarPlates.Mobile.Views.Scanner.ScannerPage"
              x:DataType="vm:ScannerViewModel"
-             Title="Scan"
+             Title="{Binding Title}"
              NavigationPage.HasNavigationBar="False">
 
     <Grid>
@@ -69,7 +70,7 @@
 
             <!-- Manual Entry Button -->
             <Button Grid.Row="1"
-                    Text="✎ Manual Entry"
+                    Text="{loc:Translate Key=ManualEntryButton}"
                     Style="{StaticResource SecondaryButton}"
                     Command="{Binding ManualEntryCommand}"
                     BackgroundColor="{StaticResource Surface}"

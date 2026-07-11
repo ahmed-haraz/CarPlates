@@ -2,9 +2,11 @@ using CarPlates.Application.Authentication.Commands;
 using CarPlates.Application.Common.Interfaces;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CarPlates.Mobile.Localization;
 using CarPlates.Mobile.Navigation;
 using CarPlates.Mobile.Views.About;
 using MediatR;
+using System.Globalization;
 using AppTheme = CarPlates.Domain.Enums.AppTheme;
 
 namespace CarPlates.Mobile.ViewModels;
@@ -22,7 +24,7 @@ public partial class SettingsViewModel : BaseViewModel
     private bool _isDarkMode;
 
     [ObservableProperty]
-    private string _selectedLanguage = "English";
+    private string _selectedLanguage = "English";  // native-language label, matches AvailableLanguages
 
     [ObservableProperty]
     private string _apiUrl = string.Empty;
@@ -39,7 +41,7 @@ public partial class SettingsViewModel : BaseViewModel
     [ObservableProperty]
     private int _pendingSyncCount;
 
-    public List<string> AvailableLanguages { get; } = new() { "English", "Arabic" };
+    public List<string> AvailableLanguages { get; } = new() { "English", "العربية" };
 
     public SettingsViewModel(
         IMediator mediator,
@@ -56,7 +58,7 @@ public partial class SettingsViewModel : BaseViewModel
         _syncService = syncService;
         _scanRepository = scanRepository;
         _pendingUploadRepository = pendingUploadRepository;
-        Title = "Settings";
+        Title = AppResources.Settings;
     }
 
     [RelayCommand]
@@ -66,7 +68,7 @@ public partial class SettingsViewModel : BaseViewModel
         {
             var settings = await _settingsService.GetSettingsAsync();
             IsDarkMode = settings.Theme == AppTheme.Dark;
-            SelectedLanguage = settings.Language == "ar" ? "Arabic" : "English";
+            SelectedLanguage = settings.Language == "ar" ? "العربية" : "English";
             ApiUrl = settings.ApiUrl;
             OcrConfidence = settings.OcrConfidence;
             AutoResume = settings.AutoResume;
@@ -80,13 +82,20 @@ public partial class SettingsViewModel : BaseViewModel
         await ExecuteAsync(async () =>
         {
             var theme = IsDarkMode ? AppTheme.Dark : AppTheme.Light;
-            var language = SelectedLanguage == "Arabic" ? "ar" : "en";
+            var language = SelectedLanguage == "العربية" ? "ar" : "en";
 
             var settings = new AppSettings(
                 theme, language, ApiUrl, OcrConfidence, AutoResume, NotificationsEnabled);
 
             await _settingsService.SaveSettingsAsync(settings);
-            await Navigation.DisplayAlertAsync("Success", "Settings saved");
+
+            // Apply immediately - no restart needed. Switches every {loc:Translate}
+            // binding and AppResources.* call in one shot, and flips the current
+            // root's FlowDirection for Arabic/English RTL vs LTR layout.
+            LocalizationResourceManager.Instance.SetCulture(new CultureInfo(language));
+            await Navigation.ApplyCurrentFlowDirectionAsync();
+
+            await Navigation.DisplayAlertAsync(AppResources.Success, AppResources.SettingsSaved);
         });
     }
 
@@ -97,14 +106,14 @@ public partial class SettingsViewModel : BaseViewModel
         {
             if (!await _syncService.IsOnlineAsync())
             {
-                await Navigation.DisplayAlertAsync("Offline", "No internet connection");
+                await Navigation.DisplayAlertAsync(AppResources.Offline, AppResources.NoInternetConnection);
                 return;
             }
 
             var result = await _syncService.SyncPendingAsync();
             await Navigation.DisplayAlertAsync(
-                "Sync Complete",
-                $"Synced: {result.SyncedCount}, Failed: {result.FailedCount}");
+                AppResources.SyncComplete,
+                string.Format(AppResources.SyncResultFormat, result.SyncedCount, result.FailedCount));
         });
     }
 
@@ -112,9 +121,9 @@ public partial class SettingsViewModel : BaseViewModel
     private async Task ClearCacheAsync()
     {
         var confirm = await Navigation.DisplayConfirmAsync(
-            "Clear Cache",
-            "This will delete all local scan history. Continue?",
-            "Clear", "Cancel");
+            AppResources.ClearCache,
+            AppResources.ClearCacheConfirmMessage,
+            AppResources.Clear, AppResources.Cancel);
 
         if (confirm)
         {
@@ -124,23 +133,23 @@ public partial class SettingsViewModel : BaseViewModel
                 await _pendingUploadRepository.ClearAllAsync();
                 PendingSyncCount = 0;
             });
-            await Navigation.DisplayAlertAsync("Success", "Cache cleared");
+            await Navigation.DisplayAlertAsync(AppResources.Success, AppResources.CacheCleared);
         }
     }
 
     [RelayCommand]
     private async Task ViewLogsAsync()
     {
-        await Navigation.DisplayAlertAsync("Logs", "Log viewer coming soon");
+        await Navigation.DisplayAlertAsync(AppResources.ViewLogs, AppResources.LogViewerComingSoon);
     }
 
     [RelayCommand]
     private async Task LogoutAsync()
     {
         var confirm = await Navigation.DisplayConfirmAsync(
-            "Logout",
-            "Are you sure you want to logout?",
-            "Logout", "Cancel");
+            AppResources.Logout,
+            AppResources.LogoutConfirmMessage,
+            AppResources.Logout, AppResources.Cancel);
 
         if (confirm)
         {

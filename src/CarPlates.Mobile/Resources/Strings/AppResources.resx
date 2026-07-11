@@ -1,0 +1,446 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+
+  <data name="AppName" xml:space="preserve">
+    <value>CarPlates</value>
+  </data>
+  <data name="Tagline" xml:space="preserve">
+    <value>License Plate Recognition</value>
+  </data>
+  <data name="OK" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="Save" xml:space="preserve">
+    <value>Save</value>
+  </data>
+  <data name="Delete" xml:space="preserve">
+    <value>Delete</value>
+  </data>
+  <data name="Search" xml:space="preserve">
+    <value>Search</value>
+  </data>
+  <data name="Yes" xml:space="preserve">
+    <value>Yes</value>
+  </data>
+  <data name="No" xml:space="preserve">
+    <value>No</value>
+  </data>
+  <data name="Success" xml:space="preserve">
+    <value>Success</value>
+  </data>
+  <data name="Error" xml:space="preserve">
+    <value>Error</value>
+  </data>
+  <data name="Offline" xml:space="preserve">
+    <value>Offline</value>
+  </data>
+  <data name="WelcomeBack" xml:space="preserve">
+    <value>Welcome Back</value>
+  </data>
+  <data name="SignInToContinue" xml:space="preserve">
+    <value>Sign in to continue</value>
+  </data>
+  <data name="Username" xml:space="preserve">
+    <value>Username</value>
+  </data>
+  <data name="EnterUsername" xml:space="preserve">
+    <value>Enter username</value>
+  </data>
+  <data name="Password" xml:space="preserve">
+    <value>Password</value>
+  </data>
+  <data name="EnterPassword" xml:space="preserve">
+    <value>Enter password</value>
+  </data>
+  <data name="SignIn" xml:space="preserve">
+    <value>Sign In</value>
+  </data>
+  <data name="PleaseEnterCredentials" xml:space="preserve">
+    <value>Please enter username and password</value>
+  </data>
+  <data name="LoginFailed" xml:space="preserve">
+    <value>Login failed</value>
+  </data>
+  <data name="LoginFailedTryAgain" xml:space="preserve">
+    <value>Login failed. Please try again.</value>
+  </data>
+  <data name="WelcomeBackComma" xml:space="preserve">
+    <value>Welcome back,</value>
+  </data>
+  <data name="ScanLicensePlate" xml:space="preserve">
+    <value>Scan License Plate</value>
+  </data>
+  <data name="TodaysScans" xml:space="preserve">
+    <value>Today's Scans</value>
+  </data>
+  <data name="TotalScansLabel" xml:space="preserve">
+    <value>Total Scans</value>
+  </data>
+  <data name="PendingSync" xml:space="preserve">
+    <value>Pending Sync</value>
+  </data>
+  <data name="UniqueVehicles" xml:space="preserve">
+    <value>Unique Vehicles</value>
+  </data>
+  <data name="RecentScans" xml:space="preserve">
+    <value>Recent Scans</value>
+  </data>
+  <data name="NoRecentScans" xml:space="preserve">
+    <value>No recent scans</value>
+  </data>
+  <data name="ViewAllHistory" xml:space="preserve">
+    <value>View All History →</value>
+  </data>
+  <data name="Scan" xml:space="preserve">
+    <value>Scan</value>
+  </data>
+  <data name="PointCameraAtPlate" xml:space="preserve">
+    <value>Point camera at license plate</value>
+  </data>
+  <data name="ManualEntry" xml:space="preserve">
+    <value>Manual Entry</value>
+  </data>
+  <data name="EnterPlateNumberPrompt" xml:space="preserve">
+    <value>Enter plate number:</value>
+  </data>
+  <data name="InvalidPlateNumber" xml:space="preserve">
+    <value>Invalid plate number</value>
+  </data>
+  <data name="VehicleNotFound" xml:space="preserve">
+    <value>Vehicle not found</value>
+  </data>
+  <data name="ConfidencePrefix" xml:space="preserve">
+    <value>Confidence</value>
+  </data>
+  <data name="History" xml:space="preserve">
+    <value>History</value>
+  </data>
+  <data name="SearchByPlate" xml:space="preserve">
+    <value>Search by plate number...</value>
+  </data>
+  <data name="Export" xml:space="preserve">
+    <value>Export</value>
+  </data>
+  <data name="DeleteRecord" xml:space="preserve">
+    <value>Delete Record</value>
+  </data>
+  <data name="NoScanRecordsFound" xml:space="preserve">
+    <value>No scan records found</value>
+  </data>
+  <data name="ExportComingSoon" xml:space="preserve">
+    <value>Export feature coming soon</value>
+  </data>
+  <data name="DateFilterComingSoon" xml:space="preserve">
+    <value>Date filter coming soon</value>
+  </data>
+  <data name="RecordsSuffix" xml:space="preserve">
+    <value>records</value>
+  </data>
+  <data name="Settings" xml:space="preserve">
+    <value>Settings</value>
+  </data>
+  <data name="Appearance" xml:space="preserve">
+    <value>Appearance</value>
+  </data>
+  <data name="DarkMode" xml:space="preserve">
+    <value>Dark Mode</value>
+  </data>
+  <data name="Language" xml:space="preserve">
+    <value>Language</value>
+  </data>
+  <data name="Scanner" xml:space="preserve">
+    <value>Scanner</value>
+  </data>
+  <data name="OcrConfidence" xml:space="preserve">
+    <value>OCR Confidence</value>
+  </data>
+  <data name="AutoResumeScanning" xml:space="preserve">
+    <value>Auto Resume Scanning</value>
+  </data>
+  <data name="ApiConfiguration" xml:space="preserve">
+    <value>API Configuration</value>
+  </data>
+  <data name="ApiUrl" xml:space="preserve">
+    <value>API URL</value>
+  </data>
+  <data name="SyncNow" xml:space="preserve">
+    <value>Sync Now</value>
+  </data>
+  <data name="Notifications" xml:space="preserve">
+    <value>Notifications</value>
+  </data>
+  <data name="EnableNotifications" xml:space="preserve">
+    <value>Enable Notifications</value>
+  </data>
+  <data name="DataManagement" xml:space="preserve">
+    <value>Data Management</value>
+  </data>
+  <data name="ClearCache" xml:space="preserve">
+    <value>Clear Cache</value>
+  </data>
+  <data name="ViewLogs" xml:space="preserve">
+    <value>View Logs</value>
+  </data>
+  <data name="SaveSettings" xml:space="preserve">
+    <value>Save Settings</value>
+  </data>
+  <data name="About" xml:space="preserve">
+    <value>About</value>
+  </data>
+  <data name="Logout" xml:space="preserve">
+    <value>Logout</value>
+  </data>
+  <data name="ClearCacheConfirmMessage" xml:space="preserve">
+    <value>This will delete all local scan history. Continue?</value>
+  </data>
+  <data name="Clear" xml:space="preserve">
+    <value>Clear</value>
+  </data>
+  <data name="LogoutConfirmMessage" xml:space="preserve">
+    <value>Are you sure you want to logout?</value>
+  </data>
+  <data name="SettingsSaved" xml:space="preserve">
+    <value>Settings saved</value>
+  </data>
+  <data name="NoInternetConnection" xml:space="preserve">
+    <value>No internet connection</value>
+  </data>
+  <data name="SyncComplete" xml:space="preserve">
+    <value>Sync Complete</value>
+  </data>
+  <data name="CacheCleared" xml:space="preserve">
+    <value>Cache cleared</value>
+  </data>
+  <data name="LogViewerComingSoon" xml:space="preserve">
+    <value>Log viewer coming soon</value>
+  </data>
+  <data name="English" xml:space="preserve">
+    <value>English</value>
+  </data>
+  <data name="Arabic" xml:space="preserve">
+    <value>Arabic</value>
+  </data>
+  <data name="Profile" xml:space="preserve">
+    <value>Profile</value>
+  </data>
+  <data name="ChangePhoto" xml:space="preserve">
+    <value>Change Photo</value>
+  </data>
+  <data name="Email" xml:space="preserve">
+    <value>Email</value>
+  </data>
+  <data name="FullName" xml:space="preserve">
+    <value>Full Name</value>
+  </data>
+  <data name="EditProfile" xml:space="preserve">
+    <value>Edit Profile</value>
+  </data>
+  <data name="ChangePassword" xml:space="preserve">
+    <value>Change Password</value>
+  </data>
+  <data name="EditProfileComingSoon" xml:space="preserve">
+    <value>Profile editing coming soon</value>
+  </data>
+  <data name="ChangePhotoComingSoon" xml:space="preserve">
+    <value>Photo upload coming soon</value>
+  </data>
+  <data name="ChangePasswordComingSoon" xml:space="preserve">
+    <value>Password change coming soon</value>
+  </data>
+  <data name="VehicleDetails" xml:space="preserve">
+    <value>Vehicle Details</value>
+  </data>
+  <data name="Brand" xml:space="preserve">
+    <value>Brand</value>
+  </data>
+  <data name="Model" xml:space="preserve">
+    <value>Model</value>
+  </data>
+  <data name="Color" xml:space="preserve">
+    <value>Color</value>
+  </data>
+  <data name="Owner" xml:space="preserve">
+    <value>Owner</value>
+  </data>
+  <data name="ScanHistory" xml:space="preserve">
+    <value>Scan History</value>
+  </data>
+  <data name="NoScanHistoryAvailable" xml:space="preserve">
+    <value>No scan history available</value>
+  </data>
+  <data name="ScanAgain" xml:space="preserve">
+    <value>Scan Again</value>
+  </data>
+  <data name="Share" xml:space="preserve">
+    <value>Share</value>
+  </data>
+  <data name="VersionLabel" xml:space="preserve">
+    <value>Version 1.0.0</value>
+  </data>
+  <data name="BuiltWithDescription" xml:space="preserve">
+    <value>Built with .NET MAUI, Clean Architecture, and Google ML Kit OCR.</value>
+  </data>
+  <data name="FeaturesLabel" xml:space="preserve">
+    <value>• Features:</value>
+  </data>
+  <data name="FeatureJwtAuth" xml:space="preserve">
+    <value>• JWT Authentication</value>
+  </data>
+  <data name="FeatureCameraPreview" xml:space="preserve">
+    <value>• CameraX Live Preview</value>
+  </data>
+  <data name="FeatureAutoRecognition" xml:space="preserve">
+    <value>• Automatic Plate Recognition</value>
+  </data>
+  <data name="FeatureEgyptEnglishPlates" xml:space="preserve">
+    <value>• Egyptian and English Plates</value>
+  </data>
+  <data name="FeatureVehicleLookup" xml:space="preserve">
+    <value>• Vehicle Lookup via REST API</value>
+  </data>
+  <data name="FeatureOfflineSync" xml:space="preserve">
+    <value>• Offline Cache and Sync</value>
+  </data>
+  <data name="FeatureHistoryExport" xml:space="preserve">
+    <value>• Scan History and Export</value>
+  </data>
+  <data name="Copyright" xml:space="preserve">
+    <value>© 2026 CarPlates. All rights reserved.</value>
+  </data>
+  <data name="SyncResultFormat" xml:space="preserve">
+    <value>Synced: {0}, Failed: {1}</value>
+  </data>
+  <data name="DetectedFormat" xml:space="preserve">
+    <value>Detected: {0}</value>
+  </data>
+  <data name="ManualEntryButton" xml:space="preserve">
+    <value>✎ Manual Entry</value>
+  </data>
+  <data name="ExportButton" xml:space="preserve">
+    <value>📤 Export</value>
+  </data>
+  <data name="ClearCacheButton" xml:space="preserve">
+    <value>🗑 Clear Cache</value>
+  </data>
+  <data name="ViewLogsButton" xml:space="preserve">
+    <value>📋 View Logs</value>
+  </data>
+  <data name="SaveSettingsButton" xml:space="preserve">
+    <value>💾 Save Settings</value>
+  </data>
+  <data name="AboutButton" xml:space="preserve">
+    <value>ℹ About</value>
+  </data>
+  <data name="LogoutButton" xml:space="preserve">
+    <value>🚪 Logout</value>
+  </data>
+  <data name="EditProfileButton" xml:space="preserve">
+    <value>✏ Edit Profile</value>
+  </data>
+  <data name="ChangePasswordButton" xml:space="preserve">
+    <value>🔒 Change Password</value>
+  </data>
+  <data name="ChangePhotoButton" xml:space="preserve">
+    <value>📷 Change Photo</value>
+  </data>
+  <data name="ScanAgainButton" xml:space="preserve">
+    <value>📷 Scan Again</value>
+  </data>
+  <data name="ShareButton" xml:space="preserve">
+    <value>📤 Share</value>
+  </data>
+  <data name="SyncNowButton" xml:space="preserve">
+    <value>🔄 Sync Now</value>
+  </data>
+  <data name="ScanLicensePlateButton" xml:space="preserve">
+    <value>📷 Scan License Plate</value>
+  </data>
+  <data name="Dashboard" xml:space="preserve">
+    <value>Dashboard</value>
+  </data>
+  <data name="UsernameColon" xml:space="preserve">
+    <value>Username:</value>
+  </data>
+  <data name="EmailColon" xml:space="preserve">
+    <value>Email:</value>
+  </data>
+  <data name="FullNameColon" xml:space="preserve">
+    <value>Full Name:</value>
+  </data>
+  <data name="BrandColon" xml:space="preserve">
+    <value>Brand:</value>
+  </data>
+  <data name="ModelColon" xml:space="preserve">
+    <value>Model:</value>
+  </data>
+  <data name="ColorColon" xml:space="preserve">
+    <value>Color:</value>
+  </data>
+  <data name="OwnerColon" xml:space="preserve">
+    <value>Owner:</value>
+  </data>
+  <data name="TotalScansColon" xml:space="preserve">
+    <value>Total Scans:</value>
+  </data>
+</root>

@@ -3,9 +3,10 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:CarPlates.Mobile.ViewModels"
              xmlns:converters="clr-namespace:CarPlates.Mobile.Converters"
+             xmlns:loc="clr-namespace:CarPlates.Mobile.Localization"
              x:Class="CarPlates.Mobile.Views.History.HistoryPage"
              x:DataType="vm:HistoryViewModel"
-             Title="History">
+             Title="{Binding Title}">
 
     <ContentPage.Resources>
         <converters:SyncStatusToColorConverter x:Key="SyncStatusToColorConverter" />
@@ -19,7 +20,7 @@
               ColumnDefinitions="*,Auto,Auto">
             <Entry Grid.Column="0"
                    Text="{Binding SearchQuery}"
-                   Placeholder="Search by plate number..."
+                   Placeholder="{loc:Translate Key=SearchByPlate}"
                    ReturnCommand="{Binding SearchCommand}" />
             <Button Grid.Column="1"
                     Text="🔍"
@@ -39,7 +40,7 @@
                    Text="{Binding TotalCount, StringFormat='{0} records'}"
                    Style="{StaticResource Caption}" />
             <Button Grid.Column="1"
-                    Text="📤 Export"
+                    Text="{loc:Translate Key=ExportButton}"
                     Style="{StaticResource IconButton}"
                     Command="{Binding ExportCommand}"
                     FontSize="14" />
@@ -50,7 +51,7 @@
                      Command="{Binding RefreshCommand}"
                      IsRefreshing="{Binding IsRefreshing}">
             <CollectionView ItemsSource="{Binding ScanRecords}"
-                            EmptyView="No scan records found">
+                            EmptyView="{loc:Translate Key=NoScanRecordsFound}">
 
                 <CollectionView.ItemTemplate x:DataType="vm:ScanRecordListDto">
                     <DataTemplate>

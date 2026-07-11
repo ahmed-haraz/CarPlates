@@ -1,4 +1,5 @@
 using CarPlates.Application.Common.Interfaces;
+using CarPlates.Mobile.Localization;
 using CarPlates.Mobile.Navigation;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -12,7 +13,7 @@ public partial class SplashViewModel : BaseViewModel
     public SplashViewModel(IAuthenticationService authService, INavigationService navigation) : base(navigation)
     {
         _authService = authService;
-        Title = "CarPlates";
+        Title = AppResources.AppName;
     }
 
     [RelayCommand]

@@ -1,3 +1,4 @@
+using CarPlates.Mobile.Localization;
 using CarPlates.Mobile.Views.Dashboard;
 using CarPlates.Mobile.Views.History;
 using CarPlates.Mobile.Views.Scanner;
@@ -17,22 +18,22 @@ public partial class MainTabbedPage : TabbedPage
 
         var dashboardTab = new NavigationPage(dashboardPage)
         {
-            Title = "Dashboard",
+            Title = AppResources.Dashboard,
             IconImageSource = "dashboard.png"
         };
         var scannerTab = new NavigationPage(scannerPage)
         {
-            Title = "Scan",
+            Title = AppResources.Scan,
             IconImageSource = "camera.png"
         };
         var historyTab = new NavigationPage(historyPage)
         {
-            Title = "History",
+            Title = AppResources.History,
             IconImageSource = "history.png"
         };
         var settingsTab = new NavigationPage(settingsPage)
         {
-            Title = "Settings",
+            Title = AppResources.Settings,
             IconImageSource = "settings.png"
         };
 
@@ -40,5 +41,10 @@ public partial class MainTabbedPage : TabbedPage
         Children.Add(scannerTab);
         Children.Add(historyTab);
         Children.Add(settingsTab);
+
+        // Tab labels are set once here; if the language changes while the user is
+        // already inside the tabbed shell, the labels catch up next time
+        // MainTabbedPage is recreated (e.g. next login), not live in-place - a
+        // known, minor limitation flagged rather than silently left unhandled.
     }
 }

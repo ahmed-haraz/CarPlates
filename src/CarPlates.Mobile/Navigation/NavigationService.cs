@@ -1,5 +1,6 @@
 using CarPlates.Mobile.Views.Login;
 using CarPlates.Mobile.Views.Main;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace CarPlates.Mobile.Navigation;
 
@@ -13,7 +14,7 @@ public class NavigationService(IServiceProvider serviceProvider) : INavigationSe
     // Shell route strings had).
     private static readonly Dictionary<Type, Type> PageTypeCache = new();
 
-    private static Window CurrentWindow => Application.Current!.Windows[0];
+    private static Window CurrentWindow => global::Microsoft.Maui.Controls.Application.Current!.Windows[0];
 
     private static INavigation CurrentNavigation => CurrentWindow.Page switch
     {
@@ -28,13 +29,16 @@ public class NavigationService(IServiceProvider serviceProvider) : INavigationSe
     {
         var loginPage = _serviceProvider.GetRequiredService<LoginPage>();
         NavigationPage.SetHasNavigationBar(loginPage, false);
-        CurrentWindow.Page = new NavigationPage(loginPage);
+        var nav = new NavigationPage(loginPage) { FlowDirection = Localization.LocalizationResourceManager.Instance.FlowDirection };
+        CurrentWindow.Page = nav;
         return Task.CompletedTask;
     }
 
     public Task GoToMainRootAsync()
     {
-        CurrentWindow.Page = _serviceProvider.GetRequiredService<MainTabbedPage>();
+        var mainPage = _serviceProvider.GetRequiredService<MainTabbedPage>();
+        mainPage.FlowDirection = Localization.LocalizationResourceManager.Instance.FlowDirection;
+        CurrentWindow.Page = mainPage;
         return Task.CompletedTask;
     }
 
@@ -71,6 +75,16 @@ public class NavigationService(IServiceProvider serviceProvider) : INavigationSe
             {
                 tabbed.CurrentPage = tabbed.Children[index];
             }
+        }
+        return Task.CompletedTask;
+    }
+
+    public Task ApplyCurrentFlowDirectionAsync()
+    {
+        var page = CurrentWindow.Page;
+        if (page != null)
+        {
+            page.FlowDirection = Localization.LocalizationResourceManager.Instance.FlowDirection;
         }
         return Task.CompletedTask;
     }

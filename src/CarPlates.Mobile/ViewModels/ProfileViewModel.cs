@@ -1,4 +1,5 @@
 using CarPlates.Application.Common.Interfaces;
+using CarPlates.Mobile.Localization;
 using CarPlates.Mobile.Navigation;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -27,7 +28,7 @@ public partial class ProfileViewModel : BaseViewModel
     public ProfileViewModel(IAuthenticationService authService, INavigationService navigation) : base(navigation)
     {
         _authService = authService;
-        Title = "Profile";
+        Title = AppResources.Profile;
     }
 
     [RelayCommand]
@@ -51,18 +52,18 @@ public partial class ProfileViewModel : BaseViewModel
     [RelayCommand]
     private async Task EditProfileAsync()
     {
-        await Navigation.DisplayAlertAsync("Edit Profile", "Profile editing coming soon");
+        await Navigation.DisplayAlertAsync(AppResources.EditProfile, AppResources.EditProfileComingSoon);
     }
 
     [RelayCommand]
     private async Task ChangePhotoAsync()
     {
-        await Navigation.DisplayAlertAsync("Change Photo", "Photo upload coming soon");
+        await Navigation.DisplayAlertAsync(AppResources.ChangePhoto, AppResources.ChangePhotoComingSoon);
     }
 
     [RelayCommand]
     private async Task ChangePasswordAsync()
     {
-        await Navigation.DisplayAlertAsync("Change Password", "Password change coming soon");
+        await Navigation.DisplayAlertAsync(AppResources.ChangePassword, AppResources.ChangePasswordComingSoon);
     }
 }

@@ -2,6 +2,7 @@ using AutoMapper;
 using CarPlates.Application.Common.DTOs;
 using CarPlates.Application.Common.Interfaces;
 using CarPlates.Application.Vehicle.Queries;
+using CarPlates.Mobile.Localization;
 using CarPlates.Mobile.Navigation;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -29,7 +30,7 @@ public partial class VehicleDetailsViewModel : BaseViewModel, IQueryAttributable
         _mediator = mediator;
         _scanRepository = scanRepository;
         _mapper = mapper;
-        Title = "Vehicle Details";
+        Title = AppResources.VehicleDetails;
     }
 
     // Replaces Shell's [QueryProperty]/routing-based parameter passing now that

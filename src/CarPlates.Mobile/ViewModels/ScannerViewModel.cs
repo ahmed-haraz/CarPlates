@@ -3,6 +3,7 @@ using CarPlates.Application.Common.Interfaces;
 using CarPlates.Application.Scanner.Commands;
 using CarPlates.Domain.Enums;
 using CarPlates.Domain.ValueObjects;
+using CarPlates.Mobile.Localization;
 using CarPlates.Mobile.Navigation;
 using CarPlates.Shared.Constants;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -41,7 +42,7 @@ public partial class ScannerViewModel : BaseViewModel
     private float _detectionConfidence;
 
     [ObservableProperty]
-    private string _scanStatus = "Point camera at license plate";
+    private string _scanStatus = AppResources.PointCameraAtPlate;
 
     public ScannerViewModel(
         IMediator mediator,
@@ -56,7 +57,7 @@ public partial class ScannerViewModel : BaseViewModel
         _cameraService = cameraService;
         _settingsService = settingsService;
         _loggingService = loggingService;
-        Title = "Scan";
+        Title = AppResources.Scan;
     }
 
     [RelayCommand]
@@ -64,7 +65,7 @@ public partial class ScannerViewModel : BaseViewModel
     {
         IsScanning = true;
         ShowVehicleInfo = false;
-        ScanStatus = "Point camera at license plate";
+        ScanStatus = AppResources.PointCameraAtPlate;
         await _cameraService.StartPreviewAsync();
     }
 
@@ -115,7 +116,7 @@ public partial class ScannerViewModel : BaseViewModel
 
                 DetectedPlate = result.PlateNumber.Value;
                 DetectionConfidence = result.PlateNumber.Confidence;
-                ScanStatus = $"Detected: {DetectedPlate}";
+                ScanStatus = string.Format(AppResources.DetectedFormat, DetectedPlate);
 
                 await ProcessScanAsync(result.PlateNumber);
             }
@@ -155,7 +156,7 @@ public partial class ScannerViewModel : BaseViewModel
             else
             {
                 _loggingService.LogScanner(plateNumber.Value, plateNumber.Confidence, false);
-                ScanStatus = result.ErrorMessage ?? "Vehicle not found";
+                ScanStatus = result.ErrorMessage ?? AppResources.VehicleNotFound;
             }
         });
     }
@@ -164,14 +165,14 @@ public partial class ScannerViewModel : BaseViewModel
     private void DismissVehicleInfo()
     {
         ShowVehicleInfo = false;
-        ScanStatus = "Point camera at license plate";
+        ScanStatus = AppResources.PointCameraAtPlate;
     }
 
     [RelayCommand]
     private async Task ManualEntryAsync()
     {
-        var plateText = await Navigation.DisplayPromptAsync("Manual Entry", "Enter plate number:",
-            accept: "Search", cancel: "Cancel");
+        var plateText = await Navigation.DisplayPromptAsync(AppResources.ManualEntry, AppResources.EnterPlateNumberPrompt,
+            accept: AppResources.Search, cancel: AppResources.Cancel);
 
         if (string.IsNullOrWhiteSpace(plateText)) return;
 
@@ -181,13 +182,13 @@ public partial class ScannerViewModel : BaseViewModel
 
             if (!recognitionResult.Success || recognitionResult.PlateNumber == null)
             {
-                ScanStatus = recognitionResult.ErrorMessage ?? "Invalid plate number";
+                ScanStatus = recognitionResult.ErrorMessage ?? AppResources.InvalidPlateNumber;
                 return;
             }
 
             DetectedPlate = recognitionResult.PlateNumber.Value;
             DetectionConfidence = recognitionResult.PlateNumber.Confidence;
-            ScanStatus = $"Detected: {DetectedPlate}";
+            ScanStatus = string.Format(AppResources.DetectedFormat, DetectedPlate);
 
             await ProcessScanAsync(recognitionResult.PlateNumber);
         });

@@ -1,6 +1,7 @@
 using CarPlates.Application.Common.DTOs;
 using CarPlates.Application.Common.Interfaces;
 using CarPlates.Application.History.Queries;
+using CarPlates.Mobile.Localization;
 using CarPlates.Mobile.Navigation;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -29,7 +30,7 @@ public partial class HistoryViewModel : BaseViewModel
     {
         _mediator = mediator;
         _scanRepository = scanRepository;
-        Title = "History";
+        Title = AppResources.History;
     }
 
     [RelayCommand]
@@ -78,9 +79,9 @@ public partial class HistoryViewModel : BaseViewModel
     private async Task DeleteAsync(ScanRecordListDto record)
     {
         var confirm = await Navigation.DisplayConfirmAsync(
-            "Delete Record",
-            $"Delete scan for {record.PlateNumber}?",
-            "Delete", "Cancel");
+            AppResources.DeleteRecord,
+            $"{AppResources.Delete} {record.PlateNumber}?",
+            AppResources.Delete, AppResources.Cancel);
 
         if (confirm)
         {
@@ -93,13 +94,13 @@ public partial class HistoryViewModel : BaseViewModel
     private async Task ExportAsync()
     {
         // Export to CSV/JSON
-        await Navigation.DisplayAlertAsync("Export", "Export feature coming soon");
+        await Navigation.DisplayAlertAsync(AppResources.Export, AppResources.ExportComingSoon);
     }
 
     [RelayCommand]
     private async Task FilterByDateAsync()
     {
         // Show date picker and filter
-        await Navigation.DisplayAlertAsync("Filter", "Date filter coming soon");
+        await Navigation.DisplayAlertAsync(AppResources.Search, AppResources.DateFilterComingSoon);
     }
 }

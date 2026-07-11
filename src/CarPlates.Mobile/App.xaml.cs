@@ -1,3 +1,4 @@
+using CarPlates.Mobile.Localization;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace CarPlates.Mobile;
@@ -7,6 +8,13 @@ public partial class App : Microsoft.Maui.Controls.Application
     public App()
     {
         InitializeComponent();
+
+        // Apply the persisted language choice (falls back to device locale via
+        // CultureInfo.CurrentUICulture's default if none was ever saved) before any
+        // page is created, so the very first frame is already in the right language/direction.
+        var savedLanguage = Preferences.Get("language", "en");
+        var culture = new System.Globalization.CultureInfo(savedLanguage == "ar" ? "ar" : "en");
+        LocalizationResourceManager.Instance.SetCulture(culture);
     }
 
     protected override Window CreateWindow(IActivationState? activationState)
@@ -18,7 +26,10 @@ public partial class App : Microsoft.Maui.Controls.Application
         var splashPage = services.GetRequiredService<Views.Splash.SplashPage>();
         NavigationPage.SetHasNavigationBar(splashPage, false);
 
-        var rootNav = new NavigationPage(splashPage);
+        var rootNav = new NavigationPage(splashPage)
+        {
+            FlowDirection = LocalizationResourceManager.Instance.FlowDirection
+        };
         return new Window(rootNav);
     }
 }

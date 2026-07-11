@@ -3,6 +3,7 @@ using CarPlates.Application.Common.Interfaces;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MediatR;
+using CarPlates.Mobile.Localization;
 using CarPlates.Mobile.Navigation;
 
 namespace CarPlates.Mobile.ViewModels;
@@ -25,7 +26,7 @@ public partial class LoginViewModel : BaseViewModel
     {
         _mediator = mediator;
         _authService = authService;
-        Title = "Login";
+        Title = AppResources.SignIn;
     }
 
     [RelayCommand]
@@ -33,7 +34,7 @@ public partial class LoginViewModel : BaseViewModel
     {
         if (string.IsNullOrWhiteSpace(Username) || string.IsNullOrWhiteSpace(Password))
         {
-            ErrorMessage = "Please enter username and password";
+            ErrorMessage = AppResources.PleaseEnterCredentials;
             HasError = true;
             return;
         }
@@ -49,10 +50,10 @@ public partial class LoginViewModel : BaseViewModel
             }
             else
             {
-                ErrorMessage = result.ErrorMessage ?? "Login failed";
+                ErrorMessage = result.ErrorMessage ?? AppResources.LoginFailed;
                 HasError = true;
             }
-        }, "Login failed. Please try again.");
+        }, AppResources.LoginFailedTryAgain);
     }
 
     [RelayCommand]

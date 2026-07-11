@@ -2,6 +2,7 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:CarPlates.Mobile.ViewModels"
+             xmlns:loc="clr-namespace:CarPlates.Mobile.Localization"
              x:Class="CarPlates.Mobile.Views.Splash.SplashPage"
              x:DataType="vm:SplashViewModel"
              NavigationPage.HasNavigationBar="False"
@@ -23,13 +24,13 @@
             </Frame>
 
             <!-- App Name -->
-            <Label Text="CarPlates" 
+            <Label Text="{loc:Translate Key=AppName}" 
                    Style="{StaticResource Headline}"
                    TextColor="White"
                    HorizontalOptions="Center"/>
 
             <!-- Tagline -->
-            <Label Text="License Plate Recognition" 
+            <Label Text="{loc:Translate Key=Tagline}" 
                    Style="{StaticResource Subtitle}"
                    TextColor="{StaticResource PrimaryLight}"
                    HorizontalOptions="Center"/>

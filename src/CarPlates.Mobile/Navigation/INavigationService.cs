@@ -27,6 +27,11 @@ public interface INavigationService
     /// <summary>Switches the visible tab within the main tabbed root.</summary>
     Task SwitchTabAsync(MainTab tab);
 
+    /// <summary>Re-applies the current language's flow direction (LTR/RTL) to whatever
+    /// root page is currently showing, without swapping/losing it. Call this right after
+    /// changing language while already inside the app (e.g. from Settings).</summary>
+    Task ApplyCurrentFlowDirectionAsync();
+
     Task DisplayAlertAsync(string title, string message, string cancel = "OK");
     Task<bool> DisplayConfirmAsync(string title, string message, string accept = "Yes", string cancel = "No");
     Task<string?> DisplayPromptAsync(string title, string message, string accept = "OK", string cancel = "Cancel", string? placeholder = null);

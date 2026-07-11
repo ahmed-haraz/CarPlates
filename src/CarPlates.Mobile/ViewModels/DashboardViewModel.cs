@@ -1,6 +1,7 @@
 using CarPlates.Application.Common.DTOs;
 using CarPlates.Application.Common.Interfaces;
 using CarPlates.Application.Dashboard.Queries;
+using CarPlates.Mobile.Localization;
 using CarPlates.Mobile.Navigation;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -28,7 +29,7 @@ public partial class DashboardViewModel : BaseViewModel
         _mediator = mediator;
         _authService = authService;
         _scanRepository = scanRepository;
-        Title = "Dashboard";
+        Title = AppResources.Dashboard;
     }
 
     [RelayCommand]
