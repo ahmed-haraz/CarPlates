@@ -80,40 +80,49 @@ public partial class CameraPreviewHandler : ViewHandler<CameraPreview, PreviewVi
 
     private async Task StartCameraAsync()
     {
-        if (ContextCompat.CheckSelfPermission(Context, global::Android.Manifest.Permission.Camera) != Permission.Granted)
+        try
         {
-            return;
+            if (ContextCompat.CheckSelfPermission(Context, global::Android.Manifest.Permission.Camera) != Permission.Granted)
+            {
+                System.Diagnostics.Debug.WriteLine("[CameraPreviewHandler] Camera permission not granted, aborting start.");
+                return;
+            }
+
+            var lifecycleOwner = Context as ILifecycleOwner ?? Platform.CurrentActivity as ILifecycleOwner;
+            if (lifecycleOwner is null || PlatformView is null || VirtualView is null)
+            {
+                System.Diagnostics.Debug.WriteLine("[CameraPreviewHandler] Missing lifecycle owner, platform view, or virtual view.");
+                return;
+            }
+
+            var providerFuture = ProcessCameraProvider.GetInstance(Context);
+            _cameraProvider = (ProcessCameraProvider)await Task.Run(() => providerFuture.Get());
+            _cameraProvider.UnbindAll();
+
+            var preview = new Preview.Builder().Build();
+            preview.SetSurfaceProvider(ContextCompat.GetMainExecutor(Context), PlatformView.SurfaceProvider);
+
+            var analysis = new ImageAnalysis.Builder()
+                .SetBackpressureStrategy(ImageAnalysis.StrategyKeepOnlyLatest)
+                .Build();
+            analysis.SetAnalyzer(ContextCompat.GetMainExecutor(Context), new PlateAnalyzer(Context, VirtualView));
+
+            var selector = new CameraSelector.Builder()
+                .RequireLensFacing(VirtualView.CameraFacing == CameraFacing.Front
+                    ? CameraSelector.LensFacingFront
+                    : CameraSelector.LensFacingBack)
+                .Build();
+
+            _camera = _cameraProvider.BindToLifecycle(lifecycleOwner, selector, preview, analysis);
+
+            if (_camera.CameraInfo.HasFlashUnit)
+            {
+                _camera.CameraControl.EnableTorch(VirtualView.IsTorchOn);
+            }
         }
-
-        var lifecycleOwner = Context as ILifecycleOwner ?? Platform.CurrentActivity as ILifecycleOwner;
-        if (lifecycleOwner is null || PlatformView is null || VirtualView is null)
+        catch (Exception ex)
         {
-            return;
-        }
-
-        var providerFuture = ProcessCameraProvider.GetInstance(Context);
-        _cameraProvider = (ProcessCameraProvider)await Task.Run(() => providerFuture.Get());
-        _cameraProvider.UnbindAll();
-
-        var preview = new Preview.Builder().Build();
-        preview.SetSurfaceProvider(ContextCompat.GetMainExecutor(Context), PlatformView.SurfaceProvider);
-
-        var analysis = new ImageAnalysis.Builder()
-            .SetBackpressureStrategy(ImageAnalysis.StrategyKeepOnlyLatest)
-            .Build();
-        analysis.SetAnalyzer(ContextCompat.GetMainExecutor(Context), new PlateAnalyzer(Context, VirtualView));
-
-        var selector = new CameraSelector.Builder()
-            .RequireLensFacing(VirtualView.CameraFacing == CameraFacing.Front
-                ? CameraSelector.LensFacingFront
-                : CameraSelector.LensFacingBack)
-            .Build();
-
-        _camera = _cameraProvider.BindToLifecycle(lifecycleOwner, selector, preview, analysis);
-
-        if (_camera.CameraInfo.HasFlashUnit)
-        {
-            _camera.CameraControl.EnableTorch(VirtualView.IsTorchOn);
+            System.Diagnostics.Debug.WriteLine($"[CameraPreviewHandler] Failed to start camera: {ex}");
         }
     }
 

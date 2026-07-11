@@ -10,19 +10,10 @@ namespace CarPlates.Mobile;
           ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation | ConfigChanges.UiMode | ConfigChanges.ScreenLayout | ConfigChanges.SmallestScreenSize | ConfigChanges.Density)]
 public class MainActivity : MauiAppCompatActivity
 {
-    protected override void OnCreate(Bundle? savedInstanceState)
+    public override void OnRequestPermissionsResult(int requestCode, string[] permissions, [Android.Runtime.GeneratedEnum] Permission[] grantResults)
     {
-        base.OnCreate(savedInstanceState);
+        Microsoft.Maui.ApplicationModel.Platform.OnRequestPermissionsResult(requestCode, permissions, grantResults);
 
-        // Request camera permission on startup
-        if (Build.VERSION.SdkInt >= BuildVersionCodes.M)
-        {
-            RequestPermissions(new[] { 
-                Android.Manifest.Permission.Camera,
-                Android.Manifest.Permission.Internet,
-                Android.Manifest.Permission.AccessNetworkState,
-                Android.Manifest.Permission.WriteExternalStorage
-            }, 0);
-        }
+        base.OnRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 }

@@ -39,6 +39,7 @@ public abstract partial class BaseViewModel : ObservableObject
         }
         catch (Exception ex)
         {
+            System.Diagnostics.Debug.WriteLine($"[BaseViewModel] Unhandled error: {ex}");
             HasError = true;
             ErrorMessage = errorMessage ?? ex.Message;
         }
@@ -62,6 +63,7 @@ public abstract partial class BaseViewModel : ObservableObject
         }
         catch (Exception ex)
         {
+            System.Diagnostics.Debug.WriteLine($"[BaseViewModel] Unhandled error: {ex}");
             HasError = true;
             ErrorMessage = errorMessage ?? ex.Message;
             return default;
