@@ -10,7 +10,13 @@ public class AuthenticationService(
     ITokenStorage tokenStorage,
     ILogger<AuthenticationService> logger) : IAuthenticationService
 {
-    private readonly HttpClient _httpClient = httpClientFactory.CreateClient("CarPlatesApi");
+    private readonly IHttpClientFactory _httpClientFactory = httpClientFactory;
+
+    // Resolved fresh on every call rather than cached in a field - a cached
+    // HttpClient would keep using whatever BaseAddress was in effect the first
+    // time this service was constructed, silently ignoring later API URL
+    // changes from Settings for the rest of the app's lifetime.
+    private HttpClient Client => _httpClientFactory.CreateClient("CarPlatesApi");
     private readonly ITokenStorage _tokenStorage = tokenStorage;
     private readonly ILogger<AuthenticationService> _logger = logger;
 
@@ -21,7 +27,7 @@ public class AuthenticationService(
             _logger.LogInformation("Attempting login for user: {Username}", username);
 
             var request = new LoginRequestDto(username, password);
-            var response = await _httpClient.PostAsJsonAsync("Auth/login", request, cancellationToken);
+            var response = await Client.PostAsJsonAsync("Auth/login", request, cancellationToken);
 
             if (!response.IsSuccessStatusCode)
             {
@@ -54,7 +60,7 @@ public class AuthenticationService(
         try
         {
             var request = new RefreshTokenRequestDto(refreshToken);
-            var response = await _httpClient.PostAsJsonAsync("auth/refresh", request, cancellationToken);
+            var response = await Client.PostAsJsonAsync("auth/refresh", request, cancellationToken);
 
             if (!response.IsSuccessStatusCode)
             {
@@ -100,7 +106,7 @@ public class AuthenticationService(
 
         try
         {
-            var response = await _httpClient.GetAsync("Auth/me", cancellationToken);
+            var response = await Client.GetAsync("Auth/me", cancellationToken);
             if (!response.IsSuccessStatusCode)
             {
                 return null;
@@ -127,7 +133,7 @@ public class AuthenticationService(
             var (_, refreshToken) = await _tokenStorage.GetTokensAsync();
             if (!string.IsNullOrEmpty(refreshToken))
             {
-                await _httpClient.PostAsJsonAsync(
+                await Client.PostAsJsonAsync(
                     "Auth/logout",
                     new RefreshTokenRequestDto(refreshToken),
                     cancellationToken);

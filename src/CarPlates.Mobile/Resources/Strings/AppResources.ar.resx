@@ -443,4 +443,13 @@
   <data name="TotalScansColon" xml:space="preserve">
     <value>إجمالي عمليات المسح:</value>
   </data>
+  <data name="TestConnectionButton" xml:space="preserve">
+    <value>🔌 اختبار الاتصال</value>
+  </data>
+  <data name="ConnectionSuccessful" xml:space="preserve">
+    <value>تم الاتصال بنجاح</value>
+  </data>
+  <data name="ConnectionFailed" xml:space="preserve">
+    <value>فشل الاتصال</value>
+  </data>
 </root>

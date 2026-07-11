@@ -23,6 +23,13 @@ public partial class App : Microsoft.Maui.Controls.Application
         // constructor-injected view model works the same way every other page's
         // does. Shell used to own this bootstrapping implicitly; now it's explicit.
         var services = IPlatformApplication.Current!.Services;
+
+        var savedTheme = Preferences.Get("theme", "System");
+        var theme = Enum.TryParse<CarPlates.Domain.Enums.AppTheme>(savedTheme, out var parsed)
+            ? parsed
+            : CarPlates.Domain.Enums.AppTheme.System;
+        services.GetRequiredService<Theming.IThemeService>().ApplyTheme(theme);
+
         var splashPage = services.GetRequiredService<Views.Splash.SplashPage>();
         NavigationPage.SetHasNavigationBar(splashPage, false);
 

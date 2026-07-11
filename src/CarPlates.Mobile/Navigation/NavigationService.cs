@@ -1,6 +1,5 @@
 using CarPlates.Mobile.Views.Login;
 using CarPlates.Mobile.Views.Main;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace CarPlates.Mobile.Navigation;
 
@@ -8,13 +7,9 @@ public class NavigationService(IServiceProvider serviceProvider) : INavigationSe
 {
     private readonly IServiceProvider _serviceProvider = serviceProvider;
 
-    // Convention cache: "XyzViewModel" -> the "XyzPage" type registered somewhere
-    // under CarPlates.Mobile.Views.*. Avoids a hand-maintained routing table that
-    // silently drifts out of sync as pages get added (the same failure mode the
-    // Shell route strings had).
     private static readonly Dictionary<Type, Type> PageTypeCache = new();
 
-    private static Window CurrentWindow => global::Microsoft.Maui.Controls.Application.Current!.Windows[0];
+    private static Window CurrentWindow => Microsoft.Maui.Controls.Application.Current!.Windows[0];
 
     private static INavigation CurrentNavigation => CurrentWindow.Page switch
     {
@@ -92,13 +87,13 @@ public class NavigationService(IServiceProvider serviceProvider) : INavigationSe
     public async Task DisplayAlertAsync(string title, string message, string cancel = "OK")
     {
         var page = CurrentWindow.Page;
-        if (page != null) await page.DisplayAlert(title, message, cancel);
+        if (page != null) await page.DisplayAlertAsync(title, message, cancel);
     }
 
     public async Task<bool> DisplayConfirmAsync(string title, string message, string accept = "Yes", string cancel = "No")
     {
         var page = CurrentWindow.Page;
-        return page != null && await page.DisplayAlert(title, message, accept, cancel);
+        return page != null && await page.DisplayAlertAsync(title, message, accept, cancel);
     }
 
     public async Task<string?> DisplayPromptAsync(string title, string message, string accept = "OK", string cancel = "Cancel", string? placeholder = null)

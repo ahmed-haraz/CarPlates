@@ -5,8 +5,9 @@ using Microsoft.Maui.Storage;
 
 namespace CarPlates.Infrastructure.Services;
 
-public class SettingsService : ISettingsService
+public class SettingsService(IApiUrlProvider apiUrlProvider) : ISettingsService
 {
+    private readonly IApiUrlProvider _apiUrlProvider = apiUrlProvider;
     public async Task<AppSettings> GetSettingsAsync()
     {
         return new AppSettings(
@@ -59,6 +60,7 @@ public class SettingsService : ISettingsService
     public Task SetApiUrlAsync(string url)
     {
         Preferences.Set("api_url", url);
+        _apiUrlProvider.SetApiUrl(url);
         return Task.CompletedTask;
     }
 

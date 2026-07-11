@@ -443,4 +443,13 @@
   <data name="TotalScansColon" xml:space="preserve">
     <value>Total Scans:</value>
   </data>
+  <data name="TestConnectionButton" xml:space="preserve">
+    <value>🔌 Test Connection</value>
+  </data>
+  <data name="ConnectionSuccessful" xml:space="preserve">
+    <value>Connection successful</value>
+  </data>
+  <data name="ConnectionFailed" xml:space="preserve">
+    <value>Connection failed</value>
+  </data>
 </root>

@@ -9,7 +9,10 @@ public class VehicleLookupService(
     ILoggingService loggingService,
     ILogger<VehicleLookupService> logger) : IVehicleLookupService
 {
-    private readonly HttpClient _httpClient = httpClientFactory.CreateClient("CarPlatesApi");
+    private readonly IHttpClientFactory _httpClientFactory = httpClientFactory;
+
+    // Resolved fresh per call - see AuthenticationService for why this isn't a cached field.
+    private HttpClient Client => _httpClientFactory.CreateClient("CarPlatesApi");
     private readonly ILoggingService _loggingService = loggingService;
     private readonly ILogger<VehicleLookupService> _logger = logger;
 
@@ -21,7 +24,7 @@ public class VehicleLookupService(
         {
             _logger.LogInformation("Looking up vehicle: {PlateNumber}", plateNumber);
 
-            var response = await _httpClient.GetAsync($"vehicles/{plateNumber}", cancellationToken);
+            var response = await Client.GetAsync($"vehicles/{plateNumber}", cancellationToken);
             stopwatch.Stop();
 
             if (response.StatusCode == System.Net.HttpStatusCode.NotFound)

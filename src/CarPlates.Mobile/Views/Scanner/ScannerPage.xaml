@@ -24,7 +24,7 @@
                     Text="{Binding IsTorchOn, Converter={StaticResource TorchIconConverter}}"
                     Style="{StaticResource IconButton}"
                     Command="{Binding ToggleTorchCommand}"
-                    BackgroundColor="{StaticResource Surface}"
+                    BackgroundColor="{DynamicResource Surface}"
                     Opacity="0.8"/>
 
             <Label Grid.Column="1"
@@ -33,7 +33,7 @@
                    TextColor="White"
                    HorizontalOptions="Center"
                    VerticalOptions="Center"
-                   BackgroundColor="{StaticResource Surface}"
+                   BackgroundColor="{DynamicResource Surface}"
                    Padding="12,6"
                    Opacity="0.9"/>
 
@@ -41,7 +41,7 @@
                     Text="🔄"
                     Style="{StaticResource IconButton}"
                     Command="{Binding SwitchCameraCommand}"
-                    BackgroundColor="{StaticResource Surface}"
+                    BackgroundColor="{DynamicResource Surface}"
                     Opacity="0.8"/>
         </Grid>
 
@@ -50,7 +50,7 @@
             <!-- Detection Info -->
             <Frame Grid.Row="0" 
                    Style="{StaticResource Card}"
-                   BackgroundColor="{StaticResource Surface}"
+                   BackgroundColor="{DynamicResource Surface}"
                    Opacity="0.9"
                    IsVisible="{Binding IsScanning}"
                    Margin="0,0,0,12">
@@ -73,7 +73,7 @@
                     Text="{loc:Translate Key=ManualEntryButton}"
                     Style="{StaticResource SecondaryButton}"
                     Command="{Binding ManualEntryCommand}"
-                    BackgroundColor="{StaticResource Surface}"
+                    BackgroundColor="{DynamicResource Surface}"
                     Opacity="0.9"/>
         </Grid>
 

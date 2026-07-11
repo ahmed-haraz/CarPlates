@@ -36,18 +36,25 @@ public static class ServiceRegistration
         services.AddScoped<ISettingsService, SettingsService>();
         services.AddScoped<ITokenStorage, TokenStorage>();
         services.AddScoped<ILoggingService, LoggingService>();
+        services.AddScoped<IApiConnectivityService, ApiConnectivityService>();
+
+        // Live-updatable API base URL: seeded from the persisted preference, but
+        // changing it later (Settings -> Save) updates this singleton immediately,
+        // which the HttpClient factory below reads on every CreateClient call -
+        // no app restart needed to point at a different API.
+        services.AddSingleton<IApiUrlProvider>(_ => new ApiUrlProvider(apiUrl));
 
         // HttpClient with Auth handler
-        services.AddHttpClient("CarPlatesApi", client =>
+        services.AddHttpClient("CarPlatesApi", (sp, client) =>
         {
-            client.BaseAddress = new Uri(apiUrl);
+            client.BaseAddress = new Uri(sp.GetRequiredService<IApiUrlProvider>().CurrentApiUrl);
             client.Timeout = TimeSpan.FromSeconds(ApiConstants.TimeoutSeconds);
             client.DefaultRequestHeaders.Add("Accept", "application/json");
         })
         .AddHttpMessageHandler<AuthDelegatingHandler>();
 
         services.AddScoped<AuthDelegatingHandler>(sp =>
-            new AuthDelegatingHandler(sp.GetRequiredService<ITokenStorage>(), apiUrl));
+            new AuthDelegatingHandler(sp.GetRequiredService<ITokenStorage>(), sp.GetRequiredService<IApiUrlProvider>()));
 
         // Logging - use a simple path that works on all platforms
         var logDir = Path.Combine(

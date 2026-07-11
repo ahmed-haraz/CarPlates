@@ -136,4 +136,7 @@ public static class AppResources
     public static string ColorColon => LocalizationResourceManager.Instance["ColorColon"];
     public static string OwnerColon => LocalizationResourceManager.Instance["OwnerColon"];
     public static string TotalScansColon => LocalizationResourceManager.Instance["TotalScansColon"];
+    public static string TestConnectionButton => LocalizationResourceManager.Instance["TestConnectionButton"];
+    public static string ConnectionSuccessful => LocalizationResourceManager.Instance["ConnectionSuccessful"];
+    public static string ConnectionFailed => LocalizationResourceManager.Instance["ConnectionFailed"];
 }

@@ -4,6 +4,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CarPlates.Mobile.Localization;
 using CarPlates.Mobile.Navigation;
+using CarPlates.Mobile.Theming;
 using CarPlates.Mobile.Views.About;
 using MediatR;
 using System.Globalization;
@@ -19,6 +20,8 @@ public partial class SettingsViewModel : BaseViewModel
     private readonly ISyncService _syncService;
     private readonly IScanRepository _scanRepository;
     private readonly IPendingUploadRepository _pendingUploadRepository;
+    private readonly IThemeService _themeService;
+    private readonly IApiConnectivityService _connectivityService;
 
     [ObservableProperty]
     private bool _isDarkMode;
@@ -50,6 +53,8 @@ public partial class SettingsViewModel : BaseViewModel
         ISyncService syncService,
         IScanRepository scanRepository,
         IPendingUploadRepository pendingUploadRepository,
+        IThemeService themeService,
+        IApiConnectivityService connectivityService,
         INavigationService navigation) : base(navigation)
     {
         _mediator = mediator;
@@ -58,6 +63,8 @@ public partial class SettingsViewModel : BaseViewModel
         _syncService = syncService;
         _scanRepository = scanRepository;
         _pendingUploadRepository = pendingUploadRepository;
+        _themeService = themeService;
+        _connectivityService = connectivityService;
         Title = AppResources.Settings;
     }
 
@@ -94,8 +101,31 @@ public partial class SettingsViewModel : BaseViewModel
             // root's FlowDirection for Arabic/English RTL vs LTR layout.
             LocalizationResourceManager.Instance.SetCulture(new CultureInfo(language));
             await Navigation.ApplyCurrentFlowDirectionAsync();
+            _themeService.ApplyTheme(theme);
 
             await Navigation.DisplayAlertAsync(AppResources.Success, AppResources.SettingsSaved);
+        });
+    }
+
+    [RelayCommand]
+    private async Task TestConnectionAsync()
+    {
+        await ExecuteAsync(async () =>
+        {
+            // Uses whatever is currently typed in the ApiUrl field, saving it
+            // first so the test reflects exactly what "Save Settings" would
+            // apply - avoids a confusing "it worked here but not after I saved" gap.
+            await _settingsService.SetApiUrlAsync(ApiUrl);
+            var result = await _connectivityService.TestConnectionAsync();
+
+            if (result.IsReachable)
+            {
+                await Navigation.DisplayAlertAsync(AppResources.Success, AppResources.ConnectionSuccessful);
+            }
+            else
+            {
+                await Navigation.DisplayAlertAsync(AppResources.ConnectionFailed, result.ErrorMessage ?? AppResources.ConnectionFailed);
+            }
         });
     }
 

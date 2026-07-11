@@ -6,17 +6,10 @@ using CarPlates.Application.Common.Interfaces;
 
 namespace CarPlates.Infrastructure.Api.Authentication;
 
-public class AuthDelegatingHandler(ITokenStorage tokenStorage, string apiBaseUrl) : DelegatingHandler
+public class AuthDelegatingHandler(ITokenStorage tokenStorage, IApiUrlProvider apiUrlProvider) : DelegatingHandler
 {
     private readonly ITokenStorage _tokenStorage = tokenStorage;
-
-    // The API base (e.g. "http://host:port/api/v1/") that "CarPlatesApi" HttpClient
-    // was configured with. Needed to build the refresh-token request URL
-    // correctly: resolving "auth/refresh" relative to the *current* request's
-    // URI (e.g. ".../api/v1/vehicles/ABC123") would replace the last path
-    // segment and produce ".../api/v1/auth/refresh" only by accident for
-    // single-segment paths, and silently break for anything nested deeper.
-    private readonly Uri _apiBaseUri = new(apiBaseUrl.EndsWith('/') ? apiBaseUrl : apiBaseUrl + "/");
+    private readonly IApiUrlProvider _apiUrlProvider = apiUrlProvider;
 
     // Guards against concurrent requests each independently kicking off a
     // refresh when a token expires; only one refresh call happens at a time
@@ -96,7 +89,12 @@ public class AuthDelegatingHandler(ITokenStorage tokenStorage, string apiBaseUrl
 
     private HttpRequestMessage BuildRefreshRequest(string refreshToken)
     {
-        var refreshUri = new Uri(_apiBaseUri, "auth/refresh");
+        // Read the API base fresh on every call (not cached in a field) so this
+        // keeps working correctly even if the user changes the API URL in
+        // Settings mid-session.
+        var apiBaseUrl = _apiUrlProvider.CurrentApiUrl;
+        var apiBaseUri = new Uri(apiBaseUrl.EndsWith('/') ? apiBaseUrl : apiBaseUrl + "/");
+        var refreshUri = new Uri(apiBaseUri, "auth/refresh");
         return new HttpRequestMessage(HttpMethod.Post, refreshUri)
         {
             Content = JsonContent.Create(new RefreshTokenRequestDto(refreshToken))

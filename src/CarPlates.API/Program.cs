@@ -62,7 +62,13 @@ builder.Services.AddAutoMapper(cfg => cfg.AddMaps(AppDomain.CurrentDomain.GetAss
 
 builder.WebHost.ConfigureKestrel(options =>
 {
+    // Plain HTTP kept for convenient same-network debugging from a device/emulator
+    // that hasn't (or can't) trust a dev certificate. HTTPS is required for the
+    // real mobile app builds: iOS App Transport Security blocks plain HTTP by
+    // default, and Android 9+ (API 28+) blocks cleartext traffic by default too -
+    // both would silently fail every request against an HTTP-only API.
     options.ListenAnyIP(56035);
+    options.ListenAnyIP(56036, listenOptions => listenOptions.UseHttps());
 });
 
 var app = builder.Build();
@@ -72,7 +78,9 @@ app.UseSwaggerUI();
 
 app.UseSerilogRequestLogging();
 
-//app.UseHttpsRedirection();
+// Only redirects to the HTTPS port configured above; harmless if a client
+// only ever calls the HTTPS port directly.
+app.UseHttpsRedirection();
 
 app.UseMiddleware<ExceptionMiddleware>();
 

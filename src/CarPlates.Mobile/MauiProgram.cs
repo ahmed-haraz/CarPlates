@@ -3,6 +3,7 @@ using CarPlates.Application.Common.Behaviors;
 using CarPlates.Infrastructure.DependencyInjection;
 using CarPlates.Mobile.Controls;
 using CarPlates.Mobile.Navigation;
+using CarPlates.Mobile.Theming;
 
 using CarPlates.Mobile.ViewModels;
 using CarPlates.Mobile.Views.About;
@@ -74,6 +75,9 @@ public static class MauiProgram
 
         // Navigation (replaces Shell)
         builder.Services.AddSingleton<INavigationService, NavigationService>();
+
+        // Theming
+        builder.Services.AddSingleton<IThemeService, ThemeService>();
 
         // ViewModels
         builder.Services.AddTransient<SplashViewModel>();
