@@ -7,17 +7,11 @@ using Xamarin.Google.MLKit.Vision.Text.Latin;
 
 namespace CarPlates.Mobile.Platforms.Android.Handlers;
 
-public class PlateAnalyzer : Java.Lang.Object, ImageAnalysis.IAnalyzer
+public class PlateAnalyzer(Context context, CameraPreview cameraPreview) : Java.Lang.Object, ImageAnalysis.IAnalyzer
 {
-    private readonly CameraPreview _cameraPreview;
-    private readonly ITextRecognizer _textRecognizer;
+    private readonly CameraPreview _cameraPreview = cameraPreview;
+    private readonly ITextRecognizer _textRecognizer = TextRecognition.GetClient(TextRecognizerOptions.DefaultOptions);
     private long _lastAnalyzedAt;
-
-    public PlateAnalyzer(Context context, CameraPreview cameraPreview)
-    {
-        _cameraPreview = cameraPreview;
-        _textRecognizer = TextRecognition.GetClient(TextRecognizerOptions.DefaultOptions);
-    }
 
     public void Analyze(IImageProxy imageProxy)
     {
