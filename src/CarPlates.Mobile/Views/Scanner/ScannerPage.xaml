@@ -12,6 +12,9 @@
     <Grid>
         <!-- Camera Preview Background -->
         <controls:CameraPreview x:Name="CameraPreview"
+                               IsPreviewing="{Binding IsScanning}"
+                               IsTorchOn="{Binding IsTorchOn}"
+                               CameraFacing="{Binding CameraFacing}"
                                HorizontalOptions="Fill"
                                VerticalOptions="Fill"/>
 

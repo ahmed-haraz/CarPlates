@@ -3,6 +3,7 @@ using CarPlates.Application.Common.Interfaces;
 using CarPlates.Application.Scanner.Commands;
 using CarPlates.Domain.Enums;
 using CarPlates.Domain.ValueObjects;
+using CarPlates.Mobile.Controls;
 using CarPlates.Mobile.Localization;
 using CarPlates.Mobile.Navigation;
 using CarPlates.Shared.Constants;
@@ -24,10 +25,13 @@ public partial class ScannerViewModel : BaseViewModel
     private readonly Queue<string> _recentPlates = new();
 
     [ObservableProperty]
-    private bool _isScanning = true;
+    private bool _isScanning;
 
     [ObservableProperty]
     private bool _isTorchOn;
+
+    [ObservableProperty]
+    private CameraFacing _cameraFacing = CameraFacing.Back;
 
     [ObservableProperty]
     private bool _showVehicleInfo;
@@ -63,6 +67,8 @@ public partial class ScannerViewModel : BaseViewModel
     [RelayCommand]
     private async Task StartScanningAsync()
     {
+        if (IsScanning) return;
+
         IsScanning = true;
         ShowVehicleInfo = false;
         ScanStatus = AppResources.PointCameraAtPlate;
@@ -72,6 +78,8 @@ public partial class ScannerViewModel : BaseViewModel
     [RelayCommand]
     private async Task StopScanningAsync()
     {
+        if (!IsScanning) return;
+
         IsScanning = false;
         await _cameraService.StopPreviewAsync();
     }
@@ -85,7 +93,8 @@ public partial class ScannerViewModel : BaseViewModel
     [RelayCommand]
     private async Task SwitchCameraAsync()
     {
-        await _cameraService.SwitchCameraAsync();
+        var isFrontCamera = await _cameraService.SwitchCameraAsync();
+        CameraFacing = isFrontCamera ? CameraFacing.Front : CameraFacing.Back;
     }
 
     [RelayCommand]
