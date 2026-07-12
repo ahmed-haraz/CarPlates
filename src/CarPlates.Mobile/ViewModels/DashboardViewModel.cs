@@ -44,13 +44,13 @@ public partial class DashboardViewModel : BaseViewModel
             // Load recent scans
             var recentQuery = new GetRecentScansQuery(5);
             var recent = await _mediator.Send(recentQuery);
-            RecentScans = recent?.ToList() ?? new List<RecentScanDto>();
+            RecentScans = recent?.ToList() ?? [];
 
             // Load user info
             var user = await _authService.GetCurrentUserAsync();
             if (user != null)
             {
-                UserName = user.FullName;
+                UserName = user.Username;
             }
         });
     }
