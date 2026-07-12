@@ -164,6 +164,15 @@
   <data name="ManualEntry" xml:space="preserve">
     <value>Manual Entry</value>
   </data>
+  <data name="TapToScanButton" xml:space="preserve">
+    <value>📷 Tap to Scan Plate</value>
+  </data>
+  <data name="ScanningDocument" xml:space="preserve">
+    <value>Scanning plate...</value>
+  </data>
+  <data name="NoTextDetectedOnPlate" xml:space="preserve">
+    <value>Could not read the plate. Try again with better lighting, or use manual entry.</value>
+  </data>
   <data name="EnterPlateNumberPrompt" xml:space="preserve">
     <value>Enter plate number:</value>
   </data>

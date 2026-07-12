@@ -22,10 +22,13 @@ using MediatR;
 using Microsoft.Extensions.Logging;
 using System.Reflection;
 
+using CarPlates.Application.Common.Interfaces;
 #if ANDROID
 using CarPlates.Mobile.Platforms.Android.Handlers;
+using CarPlates.Mobile.Platforms.Android.Services;
 #elif IOS
 using CarPlates.Mobile.Platforms.iOS;
+using CarPlates.Mobile.Platforms.iOS.Services;
 #endif
 
 namespace CarPlates.Mobile;
@@ -78,6 +81,11 @@ public static class MauiProgram
 
         // Theming
         builder.Services.AddSingleton<IThemeService, ThemeService>();
+
+        // Tap-to-scan document scanner (platform-specific)
+#if ANDROID || IOS
+        builder.Services.AddSingleton<IDocumentScannerService, DocumentScannerService>();
+#endif
 
         // ViewModels
         builder.Services.AddTransient<SplashViewModel>();

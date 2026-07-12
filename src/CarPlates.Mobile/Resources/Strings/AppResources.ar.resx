@@ -164,6 +164,15 @@
   <data name="ManualEntry" xml:space="preserve">
     <value>إدخال يدوي</value>
   </data>
+  <data name="TapToScanButton" xml:space="preserve">
+    <value>📷 اضغط لمسح اللوحة</value>
+  </data>
+  <data name="ScanningDocument" xml:space="preserve">
+    <value>جارِ مسح اللوحة...</value>
+  </data>
+  <data name="NoTextDetectedOnPlate" xml:space="preserve">
+    <value>تعذّرت قراءة اللوحة. حاول مرة أخرى بإضاءة أفضل أو استخدم الإدخال اليدوي.</value>
+  </data>
   <data name="EnterPlateNumberPrompt" xml:space="preserve">
     <value>أدخل رقم اللوحة:</value>
   </data>

@@ -3,7 +3,7 @@ namespace CarPlates.Shared.Constants;
 public static class ApiConstants
 {
     public const string ApiVersion = "v1";
-    public const string DefaultApiUrl = $"http://192.168.0.105:56035/api/{ApiVersion}/";
+    public const string DefaultApiUrl = $"http://192.168.1.37:56035/api/{ApiVersion}/";
     public const int TimeoutSeconds = 30;
     public const int MaxRetryCount = 3;
     public const int RetryDelayMs = 1000;
@@ -26,6 +26,15 @@ public static class ScannerConstants
     public const int MaxScanHistory = 1000;
     public const string EgyptianPlatePattern = @"^[\u0660-\u0669]{1,4}\s*[-]?\s*[\u0621-\u064A]{1,3}$";
     public const string EnglishPlatePattern = @"^[A-Z0-9]{3,10}$";
+
+    // Words/labels ML Kit commonly reads off the plate itself (country name,
+    // issuing region, etc.) that must never be mistaken for the plate value.
+    public static readonly string[] OcrNoiseWords =
+    {
+        "EGYPT", "ARE", "ARAB", "REPUBLIC", "OF",
+        "KSA", "SAUDI", "ARABIA", "KINGDOM",
+        "مصر", "جمهورية", "السعودية", "المملكة", "العربية", "السعوديه"
+    };
 }
 
 public static class AuthConstants

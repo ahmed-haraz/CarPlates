@@ -50,7 +50,7 @@
         </Grid>
 
         <!-- Bottom Controls -->
-        <Grid VerticalOptions="End" Padding="16,24" RowDefinitions="Auto,Auto">
+        <Grid VerticalOptions="End" Padding="16,24" RowDefinitions="Auto,Auto,Auto" RowSpacing="8">
             <!-- Detection Info -->
             <Frame Grid.Row="0" 
                    Style="{StaticResource Card}"
@@ -72,8 +72,15 @@
                 </Grid>
             </Frame>
 
-            <!-- Manual Entry Button -->
+            <!-- Tap to Scan Button -->
             <Button Grid.Row="1"
+                    Text="{loc:Translate Key=TapToScanButton}"
+                    Style="{StaticResource PrimaryButton}"
+                    Command="{Binding ScanDocumentCommand}"
+                    IsEnabled="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}"/>
+
+            <!-- Manual Entry Button -->
+            <Button Grid.Row="2"
                     Text="{loc:Translate Key=ManualEntryButton}"
                     Style="{StaticResource SecondaryButton}"
                     Command="{Binding ManualEntryCommand}"

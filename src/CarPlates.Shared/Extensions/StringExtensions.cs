@@ -25,7 +25,9 @@ public static class StringExtensions
         return input.Trim().ToUpperInvariant()
             .Replace(" ", "")
             .Replace("-", "")
-            .Replace("_", "");
+            .Replace("_", "")
+            .Replace("\r", "")
+            .Replace("\n", "");
     }
 
     public static bool IsNullOrEmpty(this string? value) => string.IsNullOrEmpty(value);

@@ -43,6 +43,9 @@ public static class AppResources
     public static string PointCameraAtPlate => LocalizationResourceManager.Instance["PointCameraAtPlate"];
     public static string CameraPermissionRequired => LocalizationResourceManager.Instance["CameraPermissionRequired"];
     public static string ManualEntry => LocalizationResourceManager.Instance["ManualEntry"];
+    public static string TapToScanButton => LocalizationResourceManager.Instance["TapToScanButton"];
+    public static string ScanningDocument => LocalizationResourceManager.Instance["ScanningDocument"];
+    public static string NoTextDetectedOnPlate => LocalizationResourceManager.Instance["NoTextDetectedOnPlate"];
     public static string EnterPlateNumberPrompt => LocalizationResourceManager.Instance["EnterPlateNumberPrompt"];
     public static string InvalidPlateNumber => LocalizationResourceManager.Instance["InvalidPlateNumber"];
     public static string VehicleNotFound => LocalizationResourceManager.Instance["VehicleNotFound"];
