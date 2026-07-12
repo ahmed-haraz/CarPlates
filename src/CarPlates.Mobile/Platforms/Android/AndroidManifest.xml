@@ -4,7 +4,7 @@
                android:icon="@mipmap/appicon" 
                android:roundIcon="@mipmap/appicon_round" 
                android:supportsRtl="true"
-               android:label="ArkanMaintenance">
+               android:label="Maintenance">
     </application>
 
     <!-- Permissions -->

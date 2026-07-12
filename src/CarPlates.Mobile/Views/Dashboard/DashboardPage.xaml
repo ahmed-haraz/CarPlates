@@ -16,7 +16,7 @@
         <ScrollView>
             <VerticalStackLayout Padding="20" Spacing="18">
                 <!-- Welcome Header -->
-                <Frame Style="{StaticResource HeroCard}">
+                <Border Style="{StaticResource HeroCard}">
                     <Grid RowDefinitions="Auto,Auto,Auto" ColumnDefinitions="*,Auto" RowSpacing="12">
                         <VerticalStackLayout Grid.Row="0" Grid.Column="0" Spacing="2">
                             <Label Text="LIVE CONTROL CENTER" Style="{StaticResource Eyebrow}" TextColor="{StaticResource Accent}" />
@@ -36,11 +36,11 @@
                                 HeightRequest="62"
                                 FontSize="18" />
                     </Grid>
-                </Frame>
+                </Border>
 
                 <!-- Statistics Cards -->
                 <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
-                    <Frame Style="{StaticResource ElevatedCard}" Grid.Column="0">
+                    <Border Style="{StaticResource ElevatedCard}" Grid.Column="0">
                         <VerticalStackLayout HorizontalOptions="Center">
                             <Label Text="{Binding Statistics.TodayScans}"
                                    Style="{StaticResource Headline}"
@@ -50,8 +50,8 @@
                                    Style="{StaticResource Caption}"
                                    HorizontalOptions="Center"/>
                         </VerticalStackLayout>
-                    </Frame>
-                    <Frame Style="{StaticResource ElevatedCard}" Grid.Column="1">
+                    </Border>
+                    <Border Style="{StaticResource ElevatedCard}" Grid.Column="1">
                         <VerticalStackLayout HorizontalOptions="Center">
                             <Label Text="{Binding Statistics.TotalScans}"
                                    Style="{StaticResource Headline}"
@@ -61,11 +61,11 @@
                                    Style="{StaticResource Caption}"
                                    HorizontalOptions="Center"/>
                         </VerticalStackLayout>
-                    </Frame>
+                    </Border>
                 </Grid>
 
                 <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
-                    <Frame Style="{StaticResource ElevatedCard}" Grid.Column="0">
+                    <Border Style="{StaticResource ElevatedCard}" Grid.Column="0">
                         <VerticalStackLayout HorizontalOptions="Center">
                             <Label Text="{Binding Statistics.PendingSync}"
                                    Style="{StaticResource Headline}"
@@ -75,8 +75,8 @@
                                    Style="{StaticResource Caption}"
                                    HorizontalOptions="Center"/>
                         </VerticalStackLayout>
-                    </Frame>
-                    <Frame Style="{StaticResource ElevatedCard}" Grid.Column="1">
+                    </Border>
+                    <Border Style="{StaticResource ElevatedCard}" Grid.Column="1">
                         <VerticalStackLayout HorizontalOptions="Center">
                             <Label Text="{Binding Statistics.UniqueVehicles}"
                                    Style="{StaticResource Headline}"
@@ -86,7 +86,7 @@
                                    Style="{StaticResource Caption}"
                                    HorizontalOptions="Center"/>
                         </VerticalStackLayout>
-                    </Frame>
+                    </Border>
                 </Grid>
 
                 <!-- Recent Scans -->
@@ -96,7 +96,7 @@
                                EmptyView="{loc:Translate Key=NoRecentScans}">
                     <CollectionView.ItemTemplate>
                         <DataTemplate x:DataType="vm:RecentScanDto">
-                            <Frame Style="{StaticResource Card}" Margin="0,6">
+                            <Border Style="{StaticResource Card}" Margin="0,6">
                                 <Grid ColumnDefinitions="Auto,*,Auto">
                                     <Label Grid.Column="0"
                                            Text="🚘"
@@ -117,11 +117,11 @@
                                                Style="{StaticResource Caption}"/>
                                     </VerticalStackLayout>
                                 </Grid>
-                                <Frame.GestureRecognizers>
+                                <Border.GestureRecognizers>
                                     <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:DashboardViewModel}}, Path=ViewVehicleDetailsCommand}"
                                                          CommandParameter="{Binding .}"/>
-                                </Frame.GestureRecognizers>
-                            </Frame>
+                                </Border.GestureRecognizers>
+                            </Border>
                         </DataTemplate>
                     </CollectionView.ItemTemplate>
                 </CollectionView>

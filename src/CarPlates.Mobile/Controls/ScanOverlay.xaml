@@ -33,12 +33,11 @@
                  BackgroundColor="Black" Opacity="0.6"/>
 
         <!-- Scan frame -->
-        <Frame Grid.Row="1" Grid.Column="1"
+        <Border Grid.Row="1" Grid.Column="1"
                BackgroundColor="Transparent"
-               BorderColor="{StaticResource Primary}"
-               CornerRadius="8"
-               Padding="0"
-               HasShadow="False">
+               Stroke="{StaticResource Primary}"
+               StrokeShape="RoundRectangle 8"
+               Padding="0">
             <!-- Corner markers -->
             <Grid>
                 <BoxView BackgroundColor="{StaticResource Primary}" 
@@ -85,7 +84,7 @@
                         Margin="8,0"
                         Opacity="0.8"/>
             </Grid>
-        </Frame>
+        </Border>
     </Grid>
 
 </ContentView>

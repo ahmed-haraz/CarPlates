@@ -69,36 +69,32 @@
     </Style>
 
     <!-- Cards -->
-    <Style TargetType="Frame" x:Key="Card">
+    <Style TargetType="Border" x:Key="Card">
         <Setter Property="BackgroundColor" Value="{DynamicResource Surface}" />
-        <Setter Property="BorderColor" Value="{DynamicResource Border}" />
-        <Setter Property="CornerRadius" Value="22" />
+        <Setter Property="Stroke" Value="{DynamicResource Border}" />
+        <Setter Property="StrokeShape" Value="RoundRectangle 22" />
         <Setter Property="Padding" Value="18" />
-        <Setter Property="HasShadow" Value="False" />
     </Style>
 
-    <Style TargetType="Frame" x:Key="ElevatedCard">
+    <Style TargetType="Border" x:Key="ElevatedCard">
         <Setter Property="BackgroundColor" Value="{DynamicResource Surface}" />
-        <Setter Property="BorderColor" Value="Transparent" />
-        <Setter Property="CornerRadius" Value="26" />
+        <Setter Property="Stroke" Value="Transparent" />
+        <Setter Property="StrokeShape" Value="RoundRectangle 26" />
         <Setter Property="Padding" Value="20" />
-        <Setter Property="HasShadow" Value="True" />
     </Style>
 
-    <Style TargetType="Frame" x:Key="HeroCard">
+    <Style TargetType="Border" x:Key="HeroCard">
         <Setter Property="BackgroundColor" Value="{StaticResource PrimaryDark}" />
-        <Setter Property="BorderColor" Value="Transparent" />
-        <Setter Property="CornerRadius" Value="30" />
+        <Setter Property="Stroke" Value="Transparent" />
+        <Setter Property="StrokeShape" Value="RoundRectangle 30" />
         <Setter Property="Padding" Value="24" />
-        <Setter Property="HasShadow" Value="True" />
     </Style>
 
-    <Style TargetType="Frame" x:Key="Pill">
+    <Style TargetType="Border" x:Key="Pill">
         <Setter Property="BackgroundColor" Value="{StaticResource PrimarySoft}" />
-        <Setter Property="BorderColor" Value="Transparent" />
-        <Setter Property="CornerRadius" Value="16" />
+        <Setter Property="Stroke" Value="Transparent" />
+        <Setter Property="StrokeShape" Value="RoundRectangle 16" />
         <Setter Property="Padding" Value="10,6" />
-        <Setter Property="HasShadow" Value="False" />
     </Style>
 
     <!-- Input Fields -->

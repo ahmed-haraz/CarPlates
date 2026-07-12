@@ -11,7 +11,7 @@
         <VerticalStackLayout Padding="16" Spacing="16">
             <!-- Appearance Section -->
             <Label Text="{loc:Translate Key=Appearance}" Style="{StaticResource Title}"/>
-            <Frame Style="{StaticResource Card}">
+            <Border Style="{StaticResource Card}">
                 <VerticalStackLayout Spacing="12">
                     <Grid ColumnDefinitions="*,Auto">
                         <Label Grid.Column="0" Text="{loc:Translate Key=DarkMode}" Style="{StaticResource Body}" VerticalOptions="Center"/>
@@ -26,11 +26,11 @@
                                 WidthRequest="120"/>
                     </Grid>
                 </VerticalStackLayout>
-            </Frame>
+            </Border>
 
             <!-- Scanner Section -->
             <Label Text="{loc:Translate Key=Scanner}" Style="{StaticResource Title}" Margin="0,8,0,0"/>
-            <Frame Style="{StaticResource Card}">
+            <Border Style="{StaticResource Card}">
                 <VerticalStackLayout Spacing="12">
                     <Grid ColumnDefinitions="*,Auto">
                         <Label Grid.Column="0" Text="{loc:Translate Key=OcrConfidence}" Style="{StaticResource Body}" VerticalOptions="Center"/>
@@ -43,11 +43,11 @@
                         <Switch Grid.Column="1" IsToggled="{Binding AutoResume}"/>
                     </Grid>
                 </VerticalStackLayout>
-            </Frame>
+            </Border>
 
             <!-- API Section -->
             <Label Text="{loc:Translate Key=ApiConfiguration}" Style="{StaticResource Title}" Margin="0,8,0,0"/>
-            <Frame Style="{StaticResource Card}">
+            <Border Style="{StaticResource Card}">
                 <VerticalStackLayout Spacing="12">
                     <Label Text="{loc:Translate Key=ApiUrl}" Style="{StaticResource Body}" FontAttributes="Bold"/>
                     <Entry Text="{Binding ApiUrl}" Placeholder="https://api.example.com"/>
@@ -66,20 +66,20 @@
                             Command="{Binding SyncNowCommand}"
                             HeightRequest="44"/>
                 </VerticalStackLayout>
-            </Frame>
+            </Border>
 
             <!-- Notifications Section -->
             <Label Text="{loc:Translate Key=Notifications}" Style="{StaticResource Title}" Margin="0,8,0,0"/>
-            <Frame Style="{StaticResource Card}">
+            <Border Style="{StaticResource Card}">
                 <Grid ColumnDefinitions="*,Auto">
                     <Label Grid.Column="0" Text="{loc:Translate Key=EnableNotifications}" Style="{StaticResource Body}" VerticalOptions="Center"/>
                     <Switch Grid.Column="1" IsToggled="{Binding NotificationsEnabled}"/>
                 </Grid>
-            </Frame>
+            </Border>
 
             <!-- Data Management -->
             <Label Text="{loc:Translate Key=DataManagement}" Style="{StaticResource Title}" Margin="0,8,0,0"/>
-            <Frame Style="{StaticResource Card}">
+            <Border Style="{StaticResource Card}">
                 <VerticalStackLayout Spacing="8">
                     <Button Text="{loc:Translate Key=ClearCacheButton}"
                             Style="{StaticResource SecondaryButton}"
@@ -90,7 +90,7 @@
                             Command="{Binding ViewLogsCommand}"
                             HeightRequest="44"/>
                 </VerticalStackLayout>
-            </Frame>
+            </Border>
 
             <!-- Save Button -->
             <Button Text="{loc:Translate Key=SaveSettingsButton}"

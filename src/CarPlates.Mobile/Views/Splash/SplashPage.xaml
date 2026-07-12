@@ -11,17 +11,17 @@
     <Grid>
         <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center" Spacing="20">
             <!-- App Icon -->
-            <Frame BackgroundColor="White"
-                   CornerRadius="30"
+            <Border BackgroundColor="White"
+                   Stroke="Transparent"
+                   StrokeShape="RoundRectangle 30"
                    WidthRequest="120"
                    HeightRequest="120"
-                   Padding="0"
-                   HasShadow="True">
+                   Padding="0">
                 <Label Text="🚘"
                        FontSize="64"
                        HorizontalOptions="Center"
                        VerticalOptions="Center"/>
-            </Frame>
+            </Border>
 
             <!-- App Name -->
             <Label Text="{loc:Translate Key=AppName}"

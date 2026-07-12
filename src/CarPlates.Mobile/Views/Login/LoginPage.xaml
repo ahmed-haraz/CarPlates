@@ -8,21 +8,19 @@
              NavigationPage.HasNavigationBar="False">
 
     <Grid RowDefinitions="Auto,*" BackgroundColor="{DynamicResource Background}">
-        <Frame Grid.Row="0"
+        <Border Grid.Row="0"
                Style="{StaticResource HeroCard}"
-               Margin="20,24,20,0"
-               HeightRequest="230">
+               Margin="20,24,20,0">
             <Grid RowDefinitions="*,Auto">
                 <VerticalStackLayout VerticalOptions="Center" Spacing="10">
-                    <Frame BackgroundColor="{StaticResource AccentSoft}"
+                    <Border BackgroundColor="{StaticResource AccentSoft}"
                            WidthRequest="76"
                            HeightRequest="76"
-                           CornerRadius="24"
+                           StrokeShape="RoundRectangle 24"
                            Padding="0"
-                           HasShadow="False"
                            HorizontalOptions="Start">
                         <Label Text="🚘" FontSize="40" HorizontalOptions="Center" VerticalOptions="Center" />
-                    </Frame>
+                    </Border>
                     <Label Text="SMART PLATE ACCESS" Style="{StaticResource Eyebrow}" TextColor="{StaticResource Accent}" />
                     <Label Text="{loc:Translate Key=AppName}"
                            Style="{StaticResource Headline}"
@@ -32,7 +30,7 @@
                            TextColor="#D7E7FF" />
                 </VerticalStackLayout>
             </Grid>
-        </Frame>
+        </Border>
 
         <ScrollView Grid.Row="1">
             <VerticalStackLayout Padding="20,28" Spacing="18">
@@ -41,15 +39,14 @@
                     <Label Text="Securely continue to your vehicle scanning workspace." Style="{StaticResource Subtitle}" />
                 </VerticalStackLayout>
 
-                <Frame BackgroundColor="{StaticResource Error}"
+                <Border BackgroundColor="{StaticResource Error}"
                        Padding="14"
                        IsVisible="{Binding HasError}"
-                       CornerRadius="18"
-                       HasShadow="False">
+                       StrokeShape="RoundRectangle 18">
                     <Label Text="{Binding ErrorMessage}" TextColor="White" FontSize="14" />
-                </Frame>
+                </Border>
 
-                <Frame Style="{StaticResource Card}">
+                <Border Style="{StaticResource Card}">
                     <VerticalStackLayout Spacing="14">
                         <VerticalStackLayout Spacing="4">
                             <Label Text="{loc:Translate Key=Username}" Style="{StaticResource Eyebrow}" />
@@ -75,7 +72,7 @@
                             </Grid>
                         </VerticalStackLayout>
                     </VerticalStackLayout>
-                </Frame>
+                </Border>
 
                 <Button Text="{loc:Translate Key=SignIn}"
                         Style="{StaticResource PrimaryButton}"

@@ -10,7 +10,7 @@
     <ScrollView>
         <VerticalStackLayout Padding="16" Spacing="16">
             <!-- Plate Card -->
-            <Frame Style="{StaticResource ElevatedCard}" Padding="24">
+            <Border Style="{StaticResource ElevatedCard}" Padding="24">
                 <VerticalStackLayout HorizontalOptions="Center" Spacing="8">
                     <Label Text="🚗" FontSize="48" HorizontalOptions="Center"/>
                     <Label Text="{Binding VehicleDetails.PlateNumber}" 
@@ -22,10 +22,10 @@
                            FontAttributes="Bold"
                            HorizontalOptions="Center"/>
                 </VerticalStackLayout>
-            </Frame>
+            </Border>
 
             <!-- Vehicle Info Grid -->
-            <Frame Style="{StaticResource Card}">
+            <Border Style="{StaticResource Card}">
                 <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto" ColumnDefinitions="Auto,*" RowSpacing="12" ColumnSpacing="16">
                     <Label Grid.Row="0" Grid.Column="0" Text="{loc:Translate Key=BrandColon}" Style="{StaticResource Body}" FontAttributes="Bold"/>
                     <Label Grid.Row="0" Grid.Column="1" Text="{Binding VehicleDetails.Brand}" Style="{StaticResource Body}"/>
@@ -42,7 +42,7 @@
                     <Label Grid.Row="4" Grid.Column="0" Text="{loc:Translate Key=TotalScansColon}" Style="{StaticResource Body}" FontAttributes="Bold"/>
                     <Label Grid.Row="4" Grid.Column="1" Text="{Binding VehicleDetails.TotalScans}" Style="{StaticResource Body}"/>
                 </Grid>
-            </Frame>
+            </Border>
 
             <!-- Scan History -->
             <Label Text="{loc:Translate Key=ScanHistory}" Style="{StaticResource Title}" Margin="0,8,0,0"/>
@@ -50,7 +50,7 @@
                           EmptyView="{loc:Translate Key=NoScanHistoryAvailable}">
                 <CollectionView.ItemTemplate>
                     <DataTemplate x:DataType="vm:ScanRecordDto">
-                        <Frame Style="{StaticResource Card}" Margin="0,4">
+                        <Border Style="{StaticResource Card}" Margin="0,4">
                             <Grid ColumnDefinitions="*,Auto">
                                 <Label Grid.Column="0" 
                                        Text="{Binding ScanTime, StringFormat='{0:MMM dd, yyyy HH:mm}'}" 
@@ -59,7 +59,7 @@
                                        Text="{Binding Confidence, StringFormat='{0:P0}'}" 
                                        Style="{StaticResource Caption}"/>
                             </Grid>
-                        </Frame>
+                        </Border>
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
             </CollectionView>

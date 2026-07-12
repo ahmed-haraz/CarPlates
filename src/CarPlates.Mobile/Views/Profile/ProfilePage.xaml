@@ -10,18 +10,18 @@
     <ScrollView>
         <VerticalStackLayout Padding="16" Spacing="16">
             <!-- Profile Header -->
-            <Frame Style="{StaticResource ElevatedCard}" Padding="24">
+            <Border Style="{StaticResource ElevatedCard}" Padding="24">
                 <VerticalStackLayout HorizontalOptions="Center" Spacing="12">
-                    <Frame WidthRequest="100" 
+                    <Border WidthRequest="100" 
                            HeightRequest="100" 
-                           CornerRadius="50"
+                           StrokeShape="RoundRectangle 50"
                            BackgroundColor="{StaticResource Primary}"
                            Padding="0">
                         <Label Text="👤" 
                                FontSize="48" 
                                HorizontalOptions="Center"
                                VerticalOptions="Center"/>
-                    </Frame>
+                    </Border>
                     <Button Text="{loc:Translate Key=ChangePhotoButton}"
                             Style="{StaticResource SecondaryButton}"
                             Command="{Binding ChangePhotoCommand}"
@@ -34,10 +34,10 @@
                            Style="{StaticResource Caption}"
                            HorizontalOptions="Center"/>
                 </VerticalStackLayout>
-            </Frame>
+            </Border>
 
             <!-- User Info -->
-            <Frame Style="{StaticResource Card}">
+            <Border Style="{StaticResource Card}">
                 <Grid RowDefinitions="Auto,Auto,Auto" ColumnDefinitions="Auto,*" RowSpacing="12" ColumnSpacing="16">
                     <Label Grid.Row="0" Grid.Column="0" Text="{loc:Translate Key=UsernameColon}" Style="{StaticResource Body}" FontAttributes="Bold"/>
                     <Label Grid.Row="0" Grid.Column="1" Text="{Binding UserName}" Style="{StaticResource Body}"/>
@@ -48,7 +48,7 @@
                     <Label Grid.Row="2" Grid.Column="0" Text="{loc:Translate Key=FullNameColon}" Style="{StaticResource Body}" FontAttributes="Bold"/>
                     <Label Grid.Row="2" Grid.Column="1" Text="{Binding FullName}" Style="{StaticResource Body}"/>
                 </Grid>
-            </Frame>
+            </Border>
 
             <!-- Actions -->
             <VerticalStackLayout Spacing="8">

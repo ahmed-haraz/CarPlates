@@ -12,24 +12,26 @@
     <Grid>
         <!-- Camera Preview Background -->
         <controls:CameraPreview x:Name="CameraPreview"
-                               IsPreviewing="{Binding IsScanning}"
-                               IsTorchOn="{Binding IsTorchOn}"
-                               CameraFacing="{Binding CameraFacing}"
-                               RecognizedTextCommand="{Binding ProcessRecognizedTextCommand}"
-                               HorizontalOptions="Fill"
-                               VerticalOptions="Fill"/>
+                                IsPreviewing="{Binding IsScanning}"
+                                IsTorchOn="{Binding IsTorchOn}"
+                                CameraFacing="{Binding CameraFacing}"
+                                RecognizedTextCommand="{Binding ProcessRecognizedTextCommand}"
+                                HorizontalOptions="Fill"
+                                VerticalOptions="Fill" />
 
         <!-- Scan Overlay -->
-        <controls:ScanOverlay IsVisible="{Binding IsScanning}"/>
+        <controls:ScanOverlay IsVisible="{Binding IsScanning}" />
 
         <!-- Top Controls -->
-        <Grid VerticalOptions="Start" Padding="16" ColumnDefinitions="Auto,*,Auto">
+        <Grid VerticalOptions="Start"
+              Padding="16"
+              ColumnDefinitions="Auto,*,Auto">
             <Button Grid.Column="0"
                     Text="{Binding IsTorchOn, Converter={StaticResource TorchIconConverter}}"
                     Style="{StaticResource IconButton}"
                     Command="{Binding ToggleTorchCommand}"
                     BackgroundColor="{DynamicResource Surface}"
-                    Opacity="0.8"/>
+                    Opacity="0.8" />
 
             <Label Grid.Column="1"
                    Text="{Binding ScanStatus}"
@@ -39,45 +41,48 @@
                    VerticalOptions="Center"
                    BackgroundColor="{DynamicResource Surface}"
                    Padding="12,6"
-                   Opacity="0.9"/>
+                   Opacity="0.9" />
 
             <Button Grid.Column="2"
                     Text="🔄"
                     Style="{StaticResource IconButton}"
                     Command="{Binding SwitchCameraCommand}"
                     BackgroundColor="{DynamicResource Surface}"
-                    Opacity="0.8"/>
+                    Opacity="0.8" />
         </Grid>
 
         <!-- Bottom Controls -->
-        <Grid VerticalOptions="End" Padding="16,24" RowDefinitions="Auto,Auto,Auto" RowSpacing="8">
+        <Grid VerticalOptions="End"
+              Padding="16,24"
+              RowDefinitions="Auto,Auto,Auto"
+              RowSpacing="8">
             <!-- Detection Info -->
-            <Frame Grid.Row="0" 
-                   Style="{StaticResource Card}"
-                   BackgroundColor="{DynamicResource Surface}"
-                   Opacity="0.9"
-                   IsVisible="{Binding IsScanning}"
-                   Margin="0,0,0,12">
+            <Border Grid.Row="0"
+                    Style="{StaticResource Card}"
+                    BackgroundColor="{DynamicResource Surface}"
+                    Opacity="0.9"
+                    IsVisible="{Binding IsScanning}"
+                    Margin="0,0,0,12">
                 <Grid ColumnDefinitions="*,Auto">
                     <VerticalStackLayout Grid.Column="0">
-                        <Label Text="{Binding DetectedPlate}" 
+                        <Label Text="{Binding DetectedPlate}"
                                Style="{StaticResource Title}"
-                               FontSize="20"/>
-                        <Label Text="{Binding DetectionConfidence, StringFormat='Confidence: {0:P0}'}" 
-                               Style="{StaticResource Caption}"/>
+                               FontSize="20" />
+                        <Label Text="{Binding DetectionConfidence, StringFormat='Confidence: {0:P0}'}"
+                               Style="{StaticResource Caption}" />
                     </VerticalStackLayout>
                     <ActivityIndicator Grid.Column="1"
-                                      IsRunning="{Binding IsBusy}"
-                                      Color="{StaticResource Primary}"/>
+                                       IsRunning="{Binding IsBusy}"
+                                       Color="{StaticResource Primary}" />
                 </Grid>
-            </Frame>
+            </Border>
 
             <!-- Tap to Scan Button -->
             <Button Grid.Row="1"
                     Text="{loc:Translate Key=TapToScanButton}"
                     Style="{StaticResource PrimaryButton}"
                     Command="{Binding ScanDocumentCommand}"
-                    IsEnabled="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}"/>
+                    IsEnabled="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}" />
 
             <!-- Manual Entry Button -->
             <Button Grid.Row="2"
@@ -85,39 +90,49 @@
                     Style="{StaticResource SecondaryButton}"
                     Command="{Binding ManualEntryCommand}"
                     BackgroundColor="{DynamicResource Surface}"
-                    Opacity="0.9"/>
+                    Opacity="0.9" />
         </Grid>
 
         <!-- Vehicle Info Bottom Sheet -->
-        <Frame Grid.Row="0"
-               Style="{StaticResource ElevatedCard}"
-               VerticalOptions="End"
-               Margin="16,0,16,80"
-               IsVisible="{Binding ShowVehicleInfo}">
-            <Grid RowDefinitions="Auto,Auto,Auto,Auto" ColumnDefinitions="*,Auto">
-                <Label Grid.Row="0" Grid.Column="0"
+        <Border Grid.Row="0"
+                Style="{StaticResource ElevatedCard}"
+                VerticalOptions="End"
+                Margin="16,0,16,80"
+                IsVisible="{Binding ShowVehicleInfo}">
+
+            <Border.GestureRecognizers>
+                <TapGestureRecognizer Command="{Binding DismissVehicleInfoCommand}" />
+            </Border.GestureRecognizers>
+
+            <Grid RowDefinitions="Auto,Auto,Auto,Auto"
+                  ColumnDefinitions="*,Auto">
+                <Label Grid.Row="0"
+                       Grid.Column="0"
                        Text="{Binding VehicleInfo.PlateNumber}"
-                       Style="{StaticResource Title}"/>
-                <Label Grid.Row="0" Grid.Column="1"
+                       Style="{StaticResource Title}" />
+                <Label Grid.Row="0"
+                       Grid.Column="1"
                        Text="{Binding VehicleInfo.AccessStatus}"
                        TextColor="{StaticResource Success}"
-                       FontAttributes="Bold"/>
+                       FontAttributes="Bold" />
 
-                <Label Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
+                <Label Grid.Row="1"
+                       Grid.Column="0"
+                       Grid.ColumnSpan="2"
                        Text="{Binding VehicleInfo.Brand}"
-                       Style="{StaticResource Body}"/>
-                <Label Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2"
+                       Style="{StaticResource Body}" />
+                <Label Grid.Row="2"
+                       Grid.Column="0"
+                       Grid.ColumnSpan="2"
                        Text="{Binding VehicleInfo.Model}"
-                       Style="{StaticResource Caption}"/>
-                <Label Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2"
+                       Style="{StaticResource Caption}" />
+                <Label Grid.Row="3"
+                       Grid.Column="0"
+                       Grid.ColumnSpan="2"
                        Text="{Binding VehicleInfo.OwnerName}"
-                       Style="{StaticResource Caption}"/>
-
-                <Frame.GestureRecognizers>
-                    <TapGestureRecognizer Command="{Binding DismissVehicleInfoCommand}"/>
-                </Frame.GestureRecognizers>
+                       Style="{StaticResource Caption}" />
             </Grid>
-        </Frame>
+        </Border>
     </Grid>
 
 </ContentPage>
