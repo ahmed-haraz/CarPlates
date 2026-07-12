@@ -1,7 +1,6 @@
 using CarPlates.Application.Common.DTOs;
 using CarPlates.Application.Common.Interfaces;
 using CarPlates.Application.Scanner.Commands;
-using CarPlates.Domain.Enums;
 using CarPlates.Domain.ValueObjects;
 using CarPlates.Mobile.Controls;
 using CarPlates.Mobile.Helpers;

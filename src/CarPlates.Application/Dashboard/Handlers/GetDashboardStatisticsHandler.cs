@@ -6,18 +6,12 @@ using MediatR;
 
 namespace CarPlates.Application.Dashboard.Handlers;
 
-public class GetDashboardStatisticsHandler : IRequestHandler<GetDashboardStatisticsQuery, DashboardStatisticsDto>
+public class GetDashboardStatisticsHandler(
+    IScanRepository scanRepository,
+    IPendingUploadRepository pendingUploadRepository) : IRequestHandler<GetDashboardStatisticsQuery, DashboardStatisticsDto>
 {
-    private readonly IScanRepository _scanRepository;
-    private readonly IPendingUploadRepository _pendingUploadRepository;
-
-    public GetDashboardStatisticsHandler(
-        IScanRepository scanRepository,
-        IPendingUploadRepository pendingUploadRepository)
-    {
-        _scanRepository = scanRepository;
-        _pendingUploadRepository = pendingUploadRepository;
-    }
+    private readonly IScanRepository _scanRepository = scanRepository;
+    private readonly IPendingUploadRepository _pendingUploadRepository = pendingUploadRepository;
 
     public async Task<DashboardStatisticsDto> Handle(GetDashboardStatisticsQuery request, CancellationToken cancellationToken)
     {
@@ -32,16 +26,10 @@ public class GetDashboardStatisticsHandler : IRequestHandler<GetDashboardStatist
     }
 }
 
-public class GetRecentScansHandler : IRequestHandler<GetRecentScansQuery, IReadOnlyList<RecentScanDto>>
+public class GetRecentScansHandler(IScanRepository scanRepository, IMapper mapper) : IRequestHandler<GetRecentScansQuery, IReadOnlyList<RecentScanDto>>
 {
-    private readonly IScanRepository _scanRepository;
-    private readonly IMapper _mapper;
-
-    public GetRecentScansHandler(IScanRepository scanRepository, IMapper mapper)
-    {
-        _scanRepository = scanRepository;
-        _mapper = mapper;
-    }
+    private readonly IScanRepository _scanRepository = scanRepository;
+    private readonly IMapper _mapper = mapper;
 
     public async Task<IReadOnlyList<RecentScanDto>> Handle(GetRecentScansQuery request, CancellationToken cancellationToken)
     {

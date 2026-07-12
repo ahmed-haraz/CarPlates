@@ -7,27 +7,18 @@ using MediatR;
 
 namespace CarPlates.Application.Scanner.Handlers;
 
-public class ScanVehicleCommandHandler : IRequestHandler<ScanVehicleCommand, ScanVehicleResult>
+public class ScanVehicleCommandHandler(
+    IScanRepository scanRepository,
+    IVehicleLookupService vehicleLookupService,
+    IUnitOfWork unitOfWork,
+    IMapper mapper,
+    ILoggingService loggingService) : IRequestHandler<ScanVehicleCommand, ScanVehicleResult>
 {
-    private readonly IScanRepository _scanRepository;
-    private readonly IVehicleLookupService _vehicleLookupService;
-    private readonly IUnitOfWork _unitOfWork;
-    private readonly IMapper _mapper;
-    private readonly ILoggingService _loggingService;
-
-    public ScanVehicleCommandHandler(
-        IScanRepository scanRepository,
-        IVehicleLookupService vehicleLookupService,
-        IUnitOfWork unitOfWork,
-        IMapper mapper,
-        ILoggingService loggingService)
-    {
-        _scanRepository = scanRepository;
-        _vehicleLookupService = vehicleLookupService;
-        _unitOfWork = unitOfWork;
-        _mapper = mapper;
-        _loggingService = loggingService;
-    }
+    private readonly IScanRepository _scanRepository = scanRepository;
+    private readonly IVehicleLookupService _vehicleLookupService = vehicleLookupService;
+    private readonly IUnitOfWork _unitOfWork = unitOfWork;
+    private readonly IMapper _mapper = mapper;
+    private readonly ILoggingService _loggingService = loggingService;
 
     public async Task<ScanVehicleResult> Handle(ScanVehicleCommand request, CancellationToken cancellationToken)
     {

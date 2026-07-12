@@ -74,10 +74,28 @@ public record RecentScanDto(
 
 // Sync DTOs
 public record SyncBatchRequestDto(List<ScanRecordSyncDto> Records);
+
+public record OwnerDto(
+
+    int ID,
+    string Name_ar,
+    string Name_En,
+    string Phone1,
+    string Phone2,
+    string Mobile,
+    string email,
+    string Address
+
+
+    );
+
+
 public record ScanRecordSyncDto(
     string PlateNumber,
     string PlateType,
     float Confidence,
     DateTime ScanTime,
     string? PhotoUrl);
+
+
 public record SyncBatchResponseDto(int SyncedCount, int FailedCount, List<string> Errors);

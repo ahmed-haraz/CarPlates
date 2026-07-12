@@ -31,6 +31,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
 
         builder.Entity<Vehicle>(entity =>
         {
+
             entity.HasKey(v => v.Id);
             entity.HasIndex(v => v.PlateNumber).IsUnique();
             entity.HasIndex(v => v.AccessStatus);
