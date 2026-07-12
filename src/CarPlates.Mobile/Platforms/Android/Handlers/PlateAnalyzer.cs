@@ -19,6 +19,13 @@ public class PlateAnalyzer : Java.Lang.Object, ImageAnalysis.IAnalyzer
         _textRecognizer = TextRecognition.GetClient(TextRecognizerOptions.DefaultOptions);
     }
 
+    // CameraX's ImageAnalysis.Analyzer interface declares this as a Java default method.
+    // The .NET binding does not forward Java default methods automatically, so without
+    // an explicit implementation here CameraX throws AbstractMethodError when it calls
+    // getDefaultTargetResolution() during bindToLifecycle(). Returning null tells CameraX
+    // to fall back to its own default resolution selection.
+    public global::Android.Util.Size? DefaultTargetResolution => null;
+
     public void Analyze(IImageProxy imageProxy)
     {
         var now = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();

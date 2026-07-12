@@ -28,7 +28,7 @@ public class ScanRepository : IScanRepository
         await _context.EnsureInitializedAsync(cancellationToken);
 
         var records = await _database.Table<ScanRecord>()
-            .Where(r => !r.IsDeleted)
+            .Where(r => r.IsDeleted == false)
             .OrderByDescending(r => r.ScanTime)
             .ToListAsync();
         return records.AsReadOnly();
@@ -39,7 +39,7 @@ public class ScanRepository : IScanRepository
         await _context.EnsureInitializedAsync(cancellationToken);
 
         var records = await _database.Table<ScanRecord>()
-            .Where(r => !r.IsDeleted)
+            .Where(r => r.IsDeleted == false)
             .OrderByDescending(r => r.ScanTime)
             .Take(count)
             .ToListAsync();
@@ -51,7 +51,7 @@ public class ScanRepository : IScanRepository
         await _context.EnsureInitializedAsync(cancellationToken);
 
         var records = await _database.Table<ScanRecord>()
-            .Where(r => r.ScanTime >= start && r.ScanTime <= end && !r.IsDeleted)
+            .Where(r => r.ScanTime >= start && r.ScanTime <= end && r.IsDeleted == false)
             .OrderByDescending(r => r.ScanTime)
             .ToListAsync();
         return records.AsReadOnly();
@@ -62,7 +62,7 @@ public class ScanRepository : IScanRepository
         await _context.EnsureInitializedAsync(cancellationToken);
 
         var records = await _database.Table<ScanRecord>()
-            .Where(r => r.PlateNumber.Contains(query) && !r.IsDeleted)
+            .Where(r => r.PlateNumber.Contains(query) && r.IsDeleted == false)
             .OrderByDescending(r => r.ScanTime)
             .ToListAsync();
         return records.AsReadOnly();
@@ -73,7 +73,7 @@ public class ScanRepository : IScanRepository
         await _context.EnsureInitializedAsync(cancellationToken);
 
         var records = await _database.Table<ScanRecord>()
-            .Where(r => r.SyncStatus == Domain.Enums.SyncStatus.Pending && !r.IsDeleted)
+            .Where(r => r.SyncStatus == Domain.Enums.SyncStatus.Pending && r.IsDeleted == false)
             .ToListAsync();
         return records.AsReadOnly();
     }
@@ -83,7 +83,7 @@ public class ScanRepository : IScanRepository
         await _context.EnsureInitializedAsync(cancellationToken);
 
         return await _database.Table<ScanRecord>()
-            .Where(r => r.PlateNumber == plateNumber && !r.IsDeleted)
+            .Where(r => r.PlateNumber == plateNumber && r.IsDeleted == false)
             .OrderByDescending(r => r.ScanTime)
             .FirstOrDefaultAsync();
     }
@@ -93,7 +93,7 @@ public class ScanRepository : IScanRepository
         await _context.EnsureInitializedAsync(cancellationToken);
 
         var records = await _database.Table<ScanRecord>()
-            .Where(r => r.PlateNumber == plateNumber && !r.IsDeleted)
+            .Where(r => r.PlateNumber == plateNumber && r.IsDeleted == false)
             .OrderByDescending(r => r.ScanTime)
             .ToListAsync();
         return records.AsReadOnly();
@@ -130,7 +130,7 @@ public class ScanRepository : IScanRepository
         await _context.EnsureInitializedAsync(cancellationToken);
 
         return await _database.Table<ScanRecord>()
-            .Where(r => !r.IsDeleted)
+            .Where(r => r.IsDeleted == false)
             .CountAsync();
     }
 
@@ -140,7 +140,7 @@ public class ScanRepository : IScanRepository
 
         var today = DateTime.UtcNow.Date;
         return await _database.Table<ScanRecord>()
-            .Where(r => r.ScanTime >= today && !r.IsDeleted)
+            .Where(r => r.ScanTime >= today && r.IsDeleted == false)
             .CountAsync();
     }
 
