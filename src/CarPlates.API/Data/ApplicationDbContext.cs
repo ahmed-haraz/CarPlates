@@ -31,7 +31,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
 
         builder.Entity<Vehicle>(entity =>
         {
-
+            entity.ToView("VW_WH_VEHICLES");
             entity.HasKey(v => v.Id);
             entity.HasIndex(v => v.PlateNumber).IsUnique();
             entity.HasIndex(v => v.AccessStatus);
@@ -47,14 +47,12 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
 
         builder.Entity<ScanRecord>(entity =>
         {
+            entity.ToView("vw_CarsPlatesDashBoard");
             entity.HasKey(s => s.Id);
             entity.HasIndex(s => s.PlateNumber);
             entity.HasIndex(s => s.ScanTime);
             entity.Property(s => s.PlateNumber).HasMaxLength(50);
-            entity.HasOne(s => s.Vehicle)
-                  .WithMany(v => v.ScanRecords)
-                  .HasForeignKey(s => s.VehicleId)
-                  .OnDelete(DeleteBehavior.Cascade);
+            
         });
 
         builder.Entity<RefreshTokens>(entity =>

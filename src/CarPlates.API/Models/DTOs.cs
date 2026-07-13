@@ -5,7 +5,7 @@ public record LoginRequestDto(string Username, string Password);
 public record LoginResponseDto(string AccessToken, string RefreshToken, UserDto User);
 public record RefreshTokenRequestDto(string RefreshToken);
 public record LogoutRequestDto(string RefreshToken);
-public record UserDto(string Id, string Username, string Email, string FullName, int BranchId,int CashboxID,int CarId,int StoreId,int SalesRepID,int Usertype);
+public record UserDto(string Id, string Username, string Email, string FullName, int BranchId, int CashboxID, int CarId, int StoreId, int SalesRepID, int Usertype);
 public record RegisterRequestDto(string Username, string Email, string Password, string FullName);
 
 // Vehicle DTOs
@@ -44,8 +44,7 @@ public record ScanRecordDto(
     Guid Id,
     string PlateNumber,
     float Confidence,
-    DateTime ScanTime,
-    VehicleDto? Vehicle);
+    DateTime ScanTime);
 
 public record ScanRecordCreateDto(
     string PlateNumber,
@@ -68,8 +67,6 @@ public record DashboardStatisticsDto(
 public record RecentScanDto(
     Guid Id,
     string PlateNumber,
-    string? VehicleBrand,
-    string AccessStatus,
     DateTime ScanTime);
 
 // Sync DTOs

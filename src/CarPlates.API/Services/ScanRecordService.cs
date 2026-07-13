@@ -14,7 +14,6 @@ public class ScanRecordService(ApplicationDbContext context, IVehicleService veh
     {
         var record = await _context.ScanRecords
             .AsNoTracking()
-            .Include(s => s.Vehicle)
             .FirstOrDefaultAsync(s => s.Id == id);
 
         return record == null ? null : MapToDto(record);
@@ -22,7 +21,7 @@ public class ScanRecordService(ApplicationDbContext context, IVehicleService veh
 
     public async Task<IReadOnlyList<ScanRecordDto>> GetAllAsync(string? plateNumber = null, DateTime? startDate = null, DateTime? endDate = null)
     {
-        IQueryable<ScanRecord> query = _context.ScanRecords.AsNoTracking().Include(s => s.Vehicle);
+        IQueryable<ScanRecord> query = _context.ScanRecords.AsNoTracking();
 
         if (!string.IsNullOrWhiteSpace(plateNumber))
             query = query.Where(s => s.PlateNumber.Contains(plateNumber));
@@ -41,17 +40,14 @@ public class ScanRecordService(ApplicationDbContext context, IVehicleService veh
     {
         var records = await _context.ScanRecords
             .AsNoTracking()
-            .Include(s => s.Vehicle)
             .OrderByDescending(s => s.ScanTime)
             .Take(count)
             .ToListAsync();
 
-        return records.Select(r => new RecentScanDto(
+        return [.. records.Select(r => new RecentScanDto(
             r.Id,
             r.PlateNumber,
-            r.Vehicle?.Brand,
-            r.Vehicle?.AccessStatus ?? "Unknown",
-            r.ScanTime)).ToList();
+            r.ScanTime))];
     }
 
     public async Task<ScanRecordDto> CreateAsync(ScanRecordCreateDto dto, string? userId = null)
@@ -88,7 +84,6 @@ public class ScanRecordService(ApplicationDbContext context, IVehicleService veh
         await _context.SaveChangesAsync();
 
         // Reload with vehicle
-        record.Vehicle = vehicle;
         return MapToDto(record);
     }
 
@@ -137,14 +132,5 @@ public class ScanRecordService(ApplicationDbContext context, IVehicleService veh
         s.Id,
         s.PlateNumber,
         s.Confidence,
-        s.ScanTime,
-        s.Vehicle == null ? null : new VehicleDto(
-            s.Vehicle.Id,
-            s.Vehicle.PlateNumber,
-            s.Vehicle.PlateType,
-            s.Vehicle.Brand,
-            s.Vehicle.Model,
-            s.Vehicle.Color,
-            s.Vehicle.OwnerName,
-            s.Vehicle.AccessStatus));
+        s.ScanTime);
 }

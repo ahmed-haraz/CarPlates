@@ -35,24 +35,32 @@ public partial class DashboardViewModel : BaseViewModel
     [RelayCommand]
     private async Task LoadDataAsync()
     {
-        await ExecuteAsync(async () =>
+        try
         {
-            // Load statistics
-            var statsQuery = new GetDashboardStatisticsQuery();
-            Statistics = await _mediator.Send(statsQuery) ?? new DashboardStatisticsDto(0, 0, 0, 0, 0);
-
-            // Load recent scans
-            var recentQuery = new GetRecentScansQuery(5);
-            var recent = await _mediator.Send(recentQuery);
-            RecentScans = recent?.ToList() ?? [];
-
-            // Load user info
-            var user = await _authService.GetCurrentUserAsync();
-            if (user != null)
+            await ExecuteAsync(async () =>
             {
-                UserName = user.Username;
-            }
-        });
+                // Load statistics
+                var statsQuery = new GetDashboardStatisticsQuery();
+                Statistics = await _mediator.Send(statsQuery) ?? new DashboardStatisticsDto(0, 0, 0, 0, 0);
+
+                // Load recent scans
+                var recentQuery = new GetRecentScansQuery(5);
+                var recent = await _mediator.Send(recentQuery);
+                RecentScans = recent?.ToList() ?? [];
+
+                // Load user info
+                var user = await _authService.GetCurrentUserAsync();
+                if (user != null)
+                {
+                    UserName = user.Username;
+                }
+            });
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+        }
+        
     }
 
     [RelayCommand]

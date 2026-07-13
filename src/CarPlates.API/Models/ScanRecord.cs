@@ -13,7 +13,15 @@ public class ScanRecord
     public double? Latitude { get; set; }
     public double? Longitude { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-
-    // Navigation property
-    public Vehicle Vehicle { get; set; } = null!;
+    public string PlateType { get; set; } = string.Empty; // Egyptian, English, etc.
+    public string? Brand { get; set; }
+    public string? Model { get; set; }
+    public string? Color { get; set; }
+    public string? OwnerName { get; set; }
+    public string? OwnerPhone { get; set; }
+    public string? OwnerNationalId { get; set; }
+    public string AccessStatus { get; set; } = "Allowed"; // Allowed, Denied, Pending
+    public string? Notes { get; set; }
+    public DateTime? UpdatedAt { get; set; }
+    public bool IsDeleted { get; set; } = false;
 }
