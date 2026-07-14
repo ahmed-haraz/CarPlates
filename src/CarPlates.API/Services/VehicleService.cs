@@ -38,11 +38,7 @@ public class VehicleService(ApplicationDbContext context) : IVehicleService
                                      (v.OwnerName != null && v.OwnerName.Contains(search)));
         }
 
-        if (!string.IsNullOrWhiteSpace(status))
-        {
-            query = query.Where(v => v.AccessStatus == status);
-        }
-
+       
         var vehicles = await query.OrderByDescending(v => v.CreatedAt).ToListAsync();
         return vehicles.Select(MapToDto).ToList();
     }
@@ -52,14 +48,11 @@ public class VehicleService(ApplicationDbContext context) : IVehicleService
         var vehicle = new Vehicle
         {
             PlateNumber = dto.PlateNumber.ToUpperInvariant(),
-            PlateType = dto.PlateType,
             Brand = dto.Brand,
             Model = dto.Model,
             Color = dto.Color,
             OwnerName = dto.OwnerName,
-            OwnerPhone = dto.OwnerPhone,
-            OwnerNationalId = dto.OwnerNationalId,
-            AccessStatus = dto.AccessStatus
+            OwnerPhone = dto.OwnerPhone
         };
 
         _context.Vehicles.Add(vehicle);
@@ -77,7 +70,6 @@ public class VehicleService(ApplicationDbContext context) : IVehicleService
         vehicle.Color = dto.Color ?? vehicle.Color;
         vehicle.OwnerName = dto.OwnerName ?? vehicle.OwnerName;
         vehicle.OwnerPhone = dto.OwnerPhone ?? vehicle.OwnerPhone;
-        vehicle.AccessStatus = dto.AccessStatus ?? vehicle.AccessStatus;
         vehicle.Notes = dto.Notes ?? vehicle.Notes;
         vehicle.UpdatedAt = DateTime.UtcNow;
 
@@ -104,10 +96,8 @@ public class VehicleService(ApplicationDbContext context) : IVehicleService
     private static VehicleDto MapToDto(Vehicle v) => new(
         v.Id,
         v.PlateNumber,
-        v.PlateType,
         v.Brand,
         v.Model,
         v.Color,
-        v.OwnerName,
-        v.AccessStatus);
+        v.OwnerName);
 }

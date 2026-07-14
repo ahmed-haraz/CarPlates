@@ -12,12 +12,10 @@ public record RegisterRequestDto(string Username, string Email, string Password,
 public record VehicleDto(
     int Id,
     string PlateNumber,
-    string PlateType,
     string? Brand,
     string? Model,
     string? Color,
-    string? OwnerName,
-    string AccessStatus);
+    string? OwnerName);
 
 public record VehicleCreateDto(
     string PlateNumber,
@@ -27,7 +25,6 @@ public record VehicleCreateDto(
     string? Color,
     string? OwnerName,
     string? OwnerPhone,
-    string? OwnerNationalId,
     string AccessStatus);
 
 public record VehicleUpdateDto(

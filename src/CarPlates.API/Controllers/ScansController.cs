@@ -8,10 +8,9 @@ namespace CarPlates.API.Controllers;
 [ApiController]
 [Route("api/v1/[controller]")]
 [Authorize]
-public class ScansController(IScanRecordService scanService, ILogger<ScansController> logger) : ControllerBase
+public class ScansController(IScanRecordService scanService) : ControllerBase
 {
     private readonly IScanRecordService _scanService = scanService;
-    private readonly ILogger<ScansController> _logger = logger;
 
     [HttpGet]
     public async Task<ActionResult<IReadOnlyList<ScanRecordDto>>> GetAll(

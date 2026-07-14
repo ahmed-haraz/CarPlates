@@ -34,21 +34,13 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
             entity.ToView("VW_WH_VEHICLES");
             entity.HasKey(v => v.Id);
             entity.HasIndex(v => v.PlateNumber).IsUnique();
-            entity.HasIndex(v => v.AccessStatus);
             entity.Property(v => v.PlateNumber).HasMaxLength(50);
-            entity.Property(v => v.PlateType).HasMaxLength(20);
             entity.Property(v => v.Brand).HasMaxLength(100);
             entity.Property(v => v.Model).HasMaxLength(100);
             entity.Property(v => v.Color).HasMaxLength(50);
             entity.Property(v => v.OwnerName).HasMaxLength(200);
-            entity.Property(v => v.AccessStatus).HasMaxLength(20);
             entity.HasQueryFilter(v => !v.IsDeleted);
-            // The Vehicle entity exposes a navigation collection to ScanRecord
-            // but ScanRecord is mapped to a database view (vw_CarsPlatesDashBoard)
-            // that does not contain a foreign-key column. Prevent EF Core from
-            // creating a shadow FK and trying to read a VehicleId column from
-            // the view by ignoring the navigation on the Vehicle side.
-            entity.Ignore(v => v.ScanRecords);
+            
         });
 
         builder.Entity<ScanRecord>(entity =>
