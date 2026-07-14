@@ -1,4 +1,3 @@
-using AutoMapper;
 using CarPlates.Application.Common.DTOs;
 using CarPlates.Application.Common.Interfaces;
 using CarPlates.Application.Vehicle.Queries;
@@ -6,18 +5,12 @@ using MediatR;
 
 namespace CarPlates.Application.Vehicle.Handlers;
 
-public class GetVehicleDetailsHandler : IRequestHandler<GetVehicleDetailsQuery, VehicleDetailsDto?>
+public class GetVehicleDetailsHandler(
+    IScanRepository scanRepository,
+    IVehicleLookupService vehicleLookupService) : IRequestHandler<GetVehicleDetailsQuery, VehicleDetailsDto?>
 {
-    private readonly IScanRepository _scanRepository;
-    private readonly IVehicleLookupService _vehicleLookupService;
-
-    public GetVehicleDetailsHandler(
-        IScanRepository scanRepository,
-        IVehicleLookupService vehicleLookupService)
-    {
-        _scanRepository = scanRepository;
-        _vehicleLookupService = vehicleLookupService;
-    }
+    private readonly IScanRepository _scanRepository = scanRepository;
+    private readonly IVehicleLookupService _vehicleLookupService = vehicleLookupService;
 
     public async Task<VehicleDetailsDto?> Handle(GetVehicleDetailsQuery request, CancellationToken cancellationToken)
     {

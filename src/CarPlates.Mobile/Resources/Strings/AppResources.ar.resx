@@ -137,11 +137,11 @@
   <data name="TotalScansLabel" xml:space="preserve">
     <value>إجمالي عمليات المسح</value>
   </data>
-  <data name="PendingSync" xml:space="preserve">
-    <value>بانتظار المزامنة</value>
+  <data name="PendingVehicles" xml:space="preserve">
+    <value>بانتظار الموافقة</value>
   </data>
-  <data name="UniqueVehicles" xml:space="preserve">
-    <value>مركبات فريدة</value>
+  <data name="TotalVehiclesLabel" xml:space="preserve">
+    <value>إجمالي المركبات</value>
   </data>
   <data name="RecentScans" xml:space="preserve">
     <value>عمليات المسح الأخيرة</value>
@@ -194,9 +194,6 @@
   <data name="Export" xml:space="preserve">
     <value>تصدير</value>
   </data>
-  <data name="DeleteRecord" xml:space="preserve">
-    <value>حذف السجل</value>
-  </data>
   <data name="NoScanRecordsFound" xml:space="preserve">
     <value>لا توجد سجلات مسح</value>
   </data>
@@ -236,9 +233,6 @@
   <data name="ApiUrl" xml:space="preserve">
     <value>رابط الواجهة البرمجية</value>
   </data>
-  <data name="SyncNow" xml:space="preserve">
-    <value>مزامنة الآن</value>
-  </data>
   <data name="Notifications" xml:space="preserve">
     <value>الإشعارات</value>
   </data>
@@ -247,9 +241,6 @@
   </data>
   <data name="DataManagement" xml:space="preserve">
     <value>إدارة البيانات</value>
-  </data>
-  <data name="ClearCache" xml:space="preserve">
-    <value>مسح ذاكرة التخزين</value>
   </data>
   <data name="ViewLogs" xml:space="preserve">
     <value>عرض السجلات</value>
@@ -263,9 +254,6 @@
   <data name="Logout" xml:space="preserve">
     <value>تسجيل الخروج</value>
   </data>
-  <data name="ClearCacheConfirmMessage" xml:space="preserve">
-    <value>سيؤدي هذا إلى حذف كل سجل المسح المحلي. متابعة؟</value>
-  </data>
   <data name="Clear" xml:space="preserve">
     <value>مسح</value>
   </data>
@@ -274,15 +262,6 @@
   </data>
   <data name="SettingsSaved" xml:space="preserve">
     <value>تم حفظ الإعدادات</value>
-  </data>
-  <data name="NoInternetConnection" xml:space="preserve">
-    <value>لا يوجد اتصال بالإنترنت</value>
-  </data>
-  <data name="SyncComplete" xml:space="preserve">
-    <value>اكتملت المزامنة</value>
-  </data>
-  <data name="CacheCleared" xml:space="preserve">
-    <value>تم مسح ذاكرة التخزين</value>
   </data>
   <data name="LogViewerComingSoon" xml:space="preserve">
     <value>عارض السجلات قريباً</value>
@@ -371,17 +350,11 @@
   <data name="FeatureVehicleLookup" xml:space="preserve">
     <value>• بحث عن المركبة عبر REST API</value>
   </data>
-  <data name="FeatureOfflineSync" xml:space="preserve">
-    <value>• تخزين ومزامنة دون اتصال</value>
-  </data>
   <data name="FeatureHistoryExport" xml:space="preserve">
     <value>• سجل المسح والتصدير</value>
   </data>
   <data name="Copyright" xml:space="preserve">
     <value>© 2026 أركان للصيانة. جميع الحقوق محفوظة.</value>
-  </data>
-  <data name="SyncResultFormat" xml:space="preserve">
-    <value>تمت مزامنة: {0}، فشل: {1}</value>
   </data>
   <data name="DetectedFormat" xml:space="preserve">
     <value>تم الكشف: {0}</value>
@@ -391,9 +364,6 @@
   </data>
   <data name="ExportButton" xml:space="preserve">
     <value>📤 تصدير</value>
-  </data>
-  <data name="ClearCacheButton" xml:space="preserve">
-    <value>🗑 مسح ذاكرة التخزين</value>
   </data>
   <data name="ViewLogsButton" xml:space="preserve">
     <value>📋 عرض السجلات</value>
@@ -421,9 +391,6 @@
   </data>
   <data name="ShareButton" xml:space="preserve">
     <value>📤 مشاركة</value>
-  </data>
-  <data name="SyncNowButton" xml:space="preserve">
-    <value>🔄 مزامنة الآن</value>
   </data>
   <data name="ScanLicensePlateButton" xml:space="preserve">
     <value>📷 مسح لوحة السيارة</value>

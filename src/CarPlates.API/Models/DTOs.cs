@@ -10,7 +10,7 @@ public record RegisterRequestDto(string Username, string Email, string Password,
 
 // Vehicle DTOs
 public record VehicleDto(
-    Guid Id,
+    int Id,
     string PlateNumber,
     string PlateType,
     string? Brand,
@@ -41,10 +41,17 @@ public record VehicleUpdateDto(
 
 // Scan Record DTOs
 public record ScanRecordDto(
-    Guid Id,
+    int Id,
     string PlateNumber,
+    string PlateType,
     float Confidence,
-    DateTime ScanTime);
+    string? PhotoUrl,
+    DateTime ScanTime,
+    string? Brand,
+    string? Model,
+    string? Color,
+    string? OwnerName,
+    string? AccessStatus);
 
 public record ScanRecordCreateDto(
     string PlateNumber,
@@ -65,8 +72,10 @@ public record DashboardStatisticsDto(
     int PendingVehicles);
 
 public record RecentScanDto(
-    Guid Id,
+    int Id,
     string PlateNumber,
+    string? VehicleBrand,
+    string? AccessStatus,
     DateTime ScanTime);
 
 // Sync DTOs

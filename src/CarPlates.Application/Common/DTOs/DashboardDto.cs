@@ -3,9 +3,10 @@ namespace CarPlates.Application.Common.DTOs;
 public record DashboardStatisticsDto(
     int TotalScans,
     int TodayScans,
-    int PendingSync,
-    int FailedSync,
-    int UniqueVehicles);
+    int TotalVehicles,
+    int AllowedVehicles,
+    int DeniedVehicles,
+    int PendingVehicles);
 
 public record RecentScanDto(
     Guid Id,

@@ -12,7 +12,6 @@ namespace CarPlates.Mobile.ViewModels;
 public partial class HistoryViewModel : BaseViewModel
 {
     private readonly IMediator _mediator;
-    private readonly IScanRepository _scanRepository;
 
     [ObservableProperty]
     private List<ScanRecordListDto> _scanRecords = new();
@@ -26,10 +25,9 @@ public partial class HistoryViewModel : BaseViewModel
     [ObservableProperty]
     private int _totalCount;
 
-    public HistoryViewModel(IMediator mediator, IScanRepository scanRepository, INavigationService navigation) : base(navigation)
+    public HistoryViewModel(IMediator mediator, INavigationService navigation) : base(navigation)
     {
         _mediator = mediator;
-        _scanRepository = scanRepository;
         Title = AppResources.History;
     }
 
@@ -73,21 +71,6 @@ public partial class HistoryViewModel : BaseViewModel
         {
             ["plateNumber"] = record.PlateNumber
         });
-    }
-
-    [RelayCommand]
-    private async Task DeleteAsync(ScanRecordListDto record)
-    {
-        var confirm = await Navigation.DisplayConfirmAsync(
-            AppResources.DeleteRecord,
-            $"{AppResources.Delete} {record.PlateNumber}?",
-            AppResources.Delete, AppResources.Cancel);
-
-        if (confirm)
-        {
-            await _scanRepository.DeleteAsync(record.Id);
-            await LoadHistoryAsync();
-        }
     }
 
     [RelayCommand]

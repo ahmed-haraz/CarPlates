@@ -43,6 +43,12 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
             entity.Property(v => v.OwnerName).HasMaxLength(200);
             entity.Property(v => v.AccessStatus).HasMaxLength(20);
             entity.HasQueryFilter(v => !v.IsDeleted);
+            // The Vehicle entity exposes a navigation collection to ScanRecord
+            // but ScanRecord is mapped to a database view (vw_CarsPlatesDashBoard)
+            // that does not contain a foreign-key column. Prevent EF Core from
+            // creating a shadow FK and trying to read a VehicleId column from
+            // the view by ignoring the navigation on the Vehicle side.
+            entity.Ignore(v => v.ScanRecords);
         });
 
         builder.Entity<ScanRecord>(entity =>

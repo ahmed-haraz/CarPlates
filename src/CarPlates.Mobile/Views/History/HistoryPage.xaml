@@ -10,7 +10,7 @@
              Title="{Binding Title}">
 
     <ContentPage.Resources>
-        <converters:SyncStatusToColorConverter x:Key="SyncStatusToColorConverter" />
+        <converters:AccessStatusToColorConverter x:Key="AccessStatusToColorConverter" />
         <converters:PlateFormatConverter x:Key="PlateFormatConverter" />
     </ContentPage.Resources>
 
@@ -68,50 +68,40 @@
 
                 <CollectionView.ItemTemplate x:DataType="dtos:ScanRecordListDto">
                     <DataTemplate>
-                        <SwipeView>
-                            <SwipeView.RightItems>
-                                <SwipeItems>
-                                    <SwipeItem Text="Delete"
-                                               BackgroundColor="{StaticResource Error}"
-                                               Command="{Binding Source={RelativeSource AncestorType={x:Type vm:HistoryViewModel}}, Path=DeleteCommand}"
-                                               CommandParameter="{Binding .}" />
-                                </SwipeItems>
-                            </SwipeView.RightItems>
-                            <Border Style="{StaticResource Card}"
-                                    Margin="12,4">
-                                <Grid ColumnDefinitions="Auto,*,Auto">
-                                    <VerticalStackLayout Grid.Column="0"
-                                                         WidthRequest="48">
-                                        <Label Text="🚗"
-                                               FontSize="24"
-                                               HorizontalOptions="Center" />
-                                    </VerticalStackLayout>
-                                    <VerticalStackLayout Grid.Column="1"
-                                                         Padding="8,0">
-                                        <Label Text="{Binding PlateNumber, Converter={StaticResource PlateFormatConverter}}"
-                                               Style="{StaticResource Body}"
-                                               FontAttributes="Bold" />
-                                        <Label Text="{Binding VehicleBrand}"
-                                               Style="{StaticResource Caption}" />
-                                        <Label Text="{Binding ScanTime, StringFormat='{0:MMM dd, yyyy HH:mm}'}"
-                                               Style="{StaticResource Caption}" />
-                                    </VerticalStackLayout>
-                                    <VerticalStackLayout Grid.Column="2"
-                                                         HorizontalOptions="End">
-                                        <Label Text="{Binding SyncStatus}"
-                                               TextColor="{Binding SyncStatus, Converter={StaticResource SyncStatusToColorConverter}}"
-                                               FontSize="11"
-                                               FontAttributes="Bold" />
-                                        <Label Text="{Binding Confidence, StringFormat='{0:P0}'}"
-                                               Style="{StaticResource Caption}" />
-                                    </VerticalStackLayout>
-                                </Grid>
-                                <Border.GestureRecognizers>
-                                    <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:HistoryViewModel}}, Path=ViewDetailsCommand}"
-                                                          CommandParameter="{Binding .}" />
-                                </Border.GestureRecognizers>
-                            </Border>
-                        </SwipeView>
+                        <Border Style="{StaticResource Card}"
+                                Margin="12,4">
+                            <Grid ColumnDefinitions="Auto,*,Auto">
+                                <VerticalStackLayout Grid.Column="0"
+                                                     WidthRequest="48">
+                                    <Label Text="🚗"
+                                           FontSize="24"
+                                           HorizontalOptions="Center" />
+                                </VerticalStackLayout>
+                                <VerticalStackLayout Grid.Column="1"
+                                                     Padding="8,0">
+                                    <Label Text="{Binding PlateNumber, Converter={StaticResource PlateFormatConverter}}"
+                                           Style="{StaticResource Body}"
+                                           FontAttributes="Bold" />
+                                    <Label Text="{Binding VehicleBrand}"
+                                           Style="{StaticResource Caption}" />
+                                    <Label Text="{Binding ScanTime, StringFormat='{0:MMM dd, yyyy HH:mm}'}"
+                                           Style="{StaticResource Caption}" />
+                                </VerticalStackLayout>
+                                <VerticalStackLayout Grid.Column="2"
+                                                     HorizontalOptions="End">
+                                    <Label Text="{Binding AccessStatus}"
+                                           TextColor="{Binding AccessStatus, Converter={StaticResource AccessStatusToColorConverter}}"
+                                           FontSize="11"
+                                           FontAttributes="Bold" />
+                                    <Label Text="{Binding Confidence, StringFormat='{0:P0}'}"
+                                           Style="{StaticResource Caption}" />
+                                </VerticalStackLayout>
+                            </Grid>
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:HistoryViewModel}}, Path=ViewDetailsCommand}"
+                                                      CommandParameter="{Binding .}" />
+                            </Border.GestureRecognizers>
+                        </Border>
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
             </CollectionView>

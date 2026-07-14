@@ -11,9 +11,7 @@ public record ScanRecordDto(
     string? VehicleModel,
     string? VehicleColor,
     string? OwnerName,
-    string? AccessStatus,
-    string SyncStatus,
-    int RetryCount);
+    string? AccessStatus);
 
 public record ScanRecordListDto(
     Guid Id,
@@ -22,8 +20,7 @@ public record ScanRecordListDto(
     float Confidence,
     DateTime ScanTime,
     string? VehicleBrand,
-    string? AccessStatus,
-    string SyncStatus);
+    string? AccessStatus);
 
 public record CreateScanRecordDto(
     string PlateNumber,

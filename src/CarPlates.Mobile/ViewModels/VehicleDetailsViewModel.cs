@@ -1,4 +1,3 @@
-using AutoMapper;
 using CarPlates.Application.Common.DTOs;
 using CarPlates.Application.Common.Interfaces;
 using CarPlates.Application.Vehicle.Queries;
@@ -14,7 +13,6 @@ public partial class VehicleDetailsViewModel : BaseViewModel, IQueryAttributable
 {
     private readonly IMediator _mediator;
     private readonly IScanRepository _scanRepository;
-    private readonly IMapper _mapper;
 
     [ObservableProperty]
     private string _plateNumber = string.Empty;
@@ -25,11 +23,10 @@ public partial class VehicleDetailsViewModel : BaseViewModel, IQueryAttributable
     [ObservableProperty]
     private List<ScanRecordDto> _scanHistory = new();
 
-    public VehicleDetailsViewModel(IMediator mediator, IScanRepository scanRepository, IMapper mapper, INavigationService navigation) : base(navigation)
+    public VehicleDetailsViewModel(IMediator mediator, IScanRepository scanRepository, INavigationService navigation) : base(navigation)
     {
         _mediator = mediator;
         _scanRepository = scanRepository;
-        _mapper = mapper;
         Title = AppResources.VehicleDetails;
     }
 
@@ -60,8 +57,7 @@ public partial class VehicleDetailsViewModel : BaseViewModel, IQueryAttributable
             VehicleDetails = await _mediator.Send(query);
 
             // Load scan history for this plate
-            var scans = await _scanRepository.GetAllByPlateNumberAsync(PlateNumber);
-            ScanHistory = _mapper.Map<List<ScanRecordDto>>(scans);
+            ScanHistory = (await _scanRepository.GetAllByPlateNumberAsync(PlateNumber)).ToList();
         });
     }
 

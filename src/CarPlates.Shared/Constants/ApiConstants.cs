@@ -11,7 +11,6 @@ public static class ApiConstants
 
 public static class StorageConstants
 {
-    public const string DatabaseName = "carplates.db3";
     public const string LogsDirectory = "logs";
     public const string PhotosDirectory = "photos";
     public const int MaxCacheDays = 30;

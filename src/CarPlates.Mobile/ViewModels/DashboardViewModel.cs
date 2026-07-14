@@ -13,10 +13,9 @@ public partial class DashboardViewModel : BaseViewModel
 {
     private readonly IMediator _mediator;
     private readonly IAuthenticationService _authService;
-    private readonly IScanRepository _scanRepository;
 
     [ObservableProperty]
-    private DashboardStatisticsDto _statistics = new(0, 0, 0, 0, 0);
+    private DashboardStatisticsDto _statistics = new(0, 0, 0, 0, 0, 0);
 
     [ObservableProperty]
     private List<RecentScanDto> _recentScans = new();
@@ -24,11 +23,10 @@ public partial class DashboardViewModel : BaseViewModel
     [ObservableProperty]
     private string _userName = "User";
 
-    public DashboardViewModel(IMediator mediator, IAuthenticationService authService, IScanRepository scanRepository, INavigationService navigation) : base(navigation)
+    public DashboardViewModel(IMediator mediator, IAuthenticationService authService, INavigationService navigation) : base(navigation)
     {
         _mediator = mediator;
         _authService = authService;
-        _scanRepository = scanRepository;
         Title = AppResources.Dashboard;
     }
 
@@ -41,7 +39,7 @@ public partial class DashboardViewModel : BaseViewModel
             {
                 // Load statistics
                 var statsQuery = new GetDashboardStatisticsQuery();
-                Statistics = await _mediator.Send(statsQuery) ?? new DashboardStatisticsDto(0, 0, 0, 0, 0);
+                Statistics = await _mediator.Send(statsQuery) ?? new DashboardStatisticsDto(0, 0, 0, 0, 0, 0);
 
                 // Load recent scans
                 var recentQuery = new GetRecentScansQuery(5);

@@ -2,6 +2,7 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:CarPlates.Mobile.ViewModels"
+             xmlns:dtos="clr-namespace:CarPlates.Application.Common.DTOs;assembly=CarPlates.Application"
              xmlns:loc="clr-namespace:CarPlates.Mobile.Localization"
              x:Class="CarPlates.Mobile.Views.Vehicle.VehicleDetailsPage"
              x:DataType="vm:VehicleDetailsViewModel"
@@ -49,7 +50,7 @@
             <CollectionView ItemsSource="{Binding ScanHistory}"
                           EmptyView="{loc:Translate Key=NoScanHistoryAvailable}">
                 <CollectionView.ItemTemplate>
-                    <DataTemplate x:DataType="vm:ScanRecordDto">
+                    <DataTemplate x:DataType="dtos:ScanRecordDto">
                         <Border Style="{StaticResource Card}" Margin="0,4">
                             <Grid ColumnDefinitions="*,Auto">
                                 <Label Grid.Column="0" 

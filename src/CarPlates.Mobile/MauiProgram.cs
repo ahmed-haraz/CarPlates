@@ -52,15 +52,12 @@ public static class MauiProgram
                 fonts.AddFont("MaterialIcons-Regular.ttf", "MaterialIcons");
             });
 
-        // Database path
-        var dbPath = Path.Combine(FileSystem.AppDataDirectory, StorageConstants.DatabaseName);
-
         //Preferences.Remove("api_url");
 
         var apiUrl = Preferences.Get("api_url", ApiConstants.DefaultApiUrl);
 
         // Infrastructure services
-        builder.Services.AddInfrastructureServices(dbPath, apiUrl);
+        builder.Services.AddInfrastructureServices(apiUrl);
 
         // MediatR
         builder.Services.AddMediatR(cfg =>

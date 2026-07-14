@@ -195,11 +195,11 @@
   <data name="TotalScansLabel" xml:space="preserve">
     <value>Total Scans</value>
   </data>
-  <data name="PendingSync" xml:space="preserve">
-    <value>Pending Sync</value>
+  <data name="PendingVehicles" xml:space="preserve">
+    <value>Pending Access</value>
   </data>
-  <data name="UniqueVehicles" xml:space="preserve">
-    <value>Unique Vehicles</value>
+  <data name="TotalVehiclesLabel" xml:space="preserve">
+    <value>Total Vehicles</value>
   </data>
   <data name="RecentScans" xml:space="preserve">
     <value>Recent Scans</value>
@@ -252,9 +252,6 @@
   <data name="Export" xml:space="preserve">
     <value>Export</value>
   </data>
-  <data name="DeleteRecord" xml:space="preserve">
-    <value>Delete Record</value>
-  </data>
   <data name="NoScanRecordsFound" xml:space="preserve">
     <value>No scan records found</value>
   </data>
@@ -294,9 +291,6 @@
   <data name="ApiUrl" xml:space="preserve">
     <value>API URL</value>
   </data>
-  <data name="SyncNow" xml:space="preserve">
-    <value>Sync Now</value>
-  </data>
   <data name="Notifications" xml:space="preserve">
     <value>Notifications</value>
   </data>
@@ -305,9 +299,6 @@
   </data>
   <data name="DataManagement" xml:space="preserve">
     <value>Data Management</value>
-  </data>
-  <data name="ClearCache" xml:space="preserve">
-    <value>Clear Cache</value>
   </data>
   <data name="ViewLogs" xml:space="preserve">
     <value>View Logs</value>
@@ -321,9 +312,6 @@
   <data name="Logout" xml:space="preserve">
     <value>Logout</value>
   </data>
-  <data name="ClearCacheConfirmMessage" xml:space="preserve">
-    <value>This will delete all local scan history. Continue?</value>
-  </data>
   <data name="Clear" xml:space="preserve">
     <value>Clear</value>
   </data>
@@ -332,15 +320,6 @@
   </data>
   <data name="SettingsSaved" xml:space="preserve">
     <value>Settings saved</value>
-  </data>
-  <data name="NoInternetConnection" xml:space="preserve">
-    <value>No internet connection</value>
-  </data>
-  <data name="SyncComplete" xml:space="preserve">
-    <value>Sync Complete</value>
-  </data>
-  <data name="CacheCleared" xml:space="preserve">
-    <value>Cache cleared</value>
   </data>
   <data name="LogViewerComingSoon" xml:space="preserve">
     <value>Log viewer coming soon</value>
@@ -429,17 +408,11 @@
   <data name="FeatureVehicleLookup" xml:space="preserve">
     <value>• Vehicle Lookup via REST API</value>
   </data>
-  <data name="FeatureOfflineSync" xml:space="preserve">
-    <value>• Offline Cache and Sync</value>
-  </data>
   <data name="FeatureHistoryExport" xml:space="preserve">
     <value>• Scan History and Export</value>
   </data>
   <data name="Copyright" xml:space="preserve">
     <value>© 2026 ArkanMaintenance. All rights reserved.</value>
-  </data>
-  <data name="SyncResultFormat" xml:space="preserve">
-    <value>Synced: {0}, Failed: {1}</value>
   </data>
   <data name="DetectedFormat" xml:space="preserve">
     <value>Detected: {0}</value>
@@ -449,9 +422,6 @@
   </data>
   <data name="ExportButton" xml:space="preserve">
     <value>📤 Export</value>
-  </data>
-  <data name="ClearCacheButton" xml:space="preserve">
-    <value>🗑 Clear Cache</value>
   </data>
   <data name="ViewLogsButton" xml:space="preserve">
     <value>📋 View Logs</value>
@@ -479,9 +449,6 @@
   </data>
   <data name="ShareButton" xml:space="preserve">
     <value>📤 Share</value>
-  </data>
-  <data name="SyncNowButton" xml:space="preserve">
-    <value>🔄 Sync Now</value>
   </data>
   <data name="ScanLicensePlateButton" xml:space="preserve">
     <value>📷 Scan License Plate</value>

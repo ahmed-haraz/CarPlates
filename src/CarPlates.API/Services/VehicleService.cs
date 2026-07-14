@@ -18,7 +18,7 @@ public class VehicleService(ApplicationDbContext context) : IVehicleService
         return vehicle == null ? null : MapToDto(vehicle);
     }
 
-    public async Task<VehicleDto?> GetByIdAsync(Guid id)
+    public async Task<VehicleDto?> GetByIdAsync(int id)
     {
         var vehicle = await _context.Vehicles
             .AsNoTracking()
@@ -67,7 +67,7 @@ public class VehicleService(ApplicationDbContext context) : IVehicleService
         return MapToDto(vehicle);
     }
 
-    public async Task<VehicleDto?> UpdateAsync(Guid id, VehicleUpdateDto dto)
+    public async Task<VehicleDto?> UpdateAsync(int id, VehicleUpdateDto dto)
     {
         var vehicle = await _context.Vehicles.FindAsync(id);
         if (vehicle == null || vehicle.IsDeleted) return null;
@@ -85,7 +85,7 @@ public class VehicleService(ApplicationDbContext context) : IVehicleService
         return MapToDto(vehicle);
     }
 
-    public async Task<bool> DeleteAsync(Guid id)
+    public async Task<bool> DeleteAsync(int id)
     {
         var vehicle = await _context.Vehicles.FindAsync(id);
         if (vehicle == null) return false;

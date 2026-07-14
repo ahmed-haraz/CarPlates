@@ -2,7 +2,7 @@ namespace CarPlates.API.Models;
 
 public class Vehicle
 {
-    public Guid Id { get; set; } = Guid.NewGuid();
+    public int Id { get; set; }
     public string PlateNumber { get; set; } = string.Empty;
     public string PlateType { get; set; } = string.Empty; // Egyptian, English, etc.
     public string? Brand { get; set; }

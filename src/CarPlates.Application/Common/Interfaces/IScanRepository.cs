@@ -1,21 +1,25 @@
-using CarPlates.Domain.Entities;
+using CarPlates.Application.Common.DTOs;
 
 namespace CarPlates.Application.Common.Interfaces;
 
+// Backed entirely by the CarPlates API - there is no local database. Every
+// call goes over the network, so callers should expect API-shaped exceptions
+// (timeouts, connectivity failures) rather than local storage errors.
 public interface IScanRepository
 {
-    Task<ScanRecord?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
-    Task<IReadOnlyList<ScanRecord>> GetAllAsync(CancellationToken cancellationToken = default);
-    Task<IReadOnlyList<ScanRecord>> GetRecentAsync(int count, CancellationToken cancellationToken = default);
-    Task<IReadOnlyList<ScanRecord>> GetByDateRangeAsync(DateTime start, DateTime end, CancellationToken cancellationToken = default);
-    Task<IReadOnlyList<ScanRecord>> SearchAsync(string query, CancellationToken cancellationToken = default);
-    Task<IReadOnlyList<ScanRecord>> GetPendingSyncAsync(CancellationToken cancellationToken = default);
-    Task<ScanRecord?> GetByPlateNumberAsync(string plateNumber, CancellationToken cancellationToken = default);
-    Task<IReadOnlyList<ScanRecord>> GetAllByPlateNumberAsync(string plateNumber, CancellationToken cancellationToken = default);
-    Task AddAsync(ScanRecord scanRecord, CancellationToken cancellationToken = default);
-    Task UpdateAsync(ScanRecord scanRecord, CancellationToken cancellationToken = default);
-    Task DeleteAsync(Guid id, CancellationToken cancellationToken = default);
-    Task<int> GetTotalCountAsync(CancellationToken cancellationToken = default);
-    Task<int> GetTodayCountAsync(CancellationToken cancellationToken = default);
-    Task ClearAllAsync(CancellationToken cancellationToken = default);
+    Task<ScanRecordDto?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
+
+    Task<IReadOnlyList<ScanRecordDto>> GetAllAsync(
+        string? plateNumber = null,
+        DateTime? startDate = null,
+        DateTime? endDate = null,
+        CancellationToken cancellationToken = default);
+
+    Task<IReadOnlyList<RecentScanDto>> GetRecentAsync(int count, CancellationToken cancellationToken = default);
+
+    Task<IReadOnlyList<ScanRecordDto>> GetAllByPlateNumberAsync(string plateNumber, CancellationToken cancellationToken = default);
+
+    Task<ScanRecordDto> CreateAsync(CreateScanRecordDto dto, CancellationToken cancellationToken = default);
+
+    Task<DashboardStatisticsDto> GetStatisticsAsync(CancellationToken cancellationToken = default);
 }

@@ -30,8 +30,8 @@ public class ScansController(IScanRecordService scanService, ILogger<ScansContro
         return Ok(records);
     }
 
-    [HttpGet("{id:guid}")]
-    public async Task<ActionResult<ScanRecordDto>> GetById(Guid id)
+    [HttpGet("{id:int}")]
+    public async Task<ActionResult<ScanRecordDto>> GetById(int id)
     {
         var record = await _scanService.GetByIdAsync(id);
         if (record == null) return NotFound();

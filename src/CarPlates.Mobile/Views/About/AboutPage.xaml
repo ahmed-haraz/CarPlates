@@ -49,7 +49,6 @@
                 <Label Text="{loc:Translate Key=FeatureAutoRecognition}" Style="{StaticResource Caption}"/>
                 <Label Text="{loc:Translate Key=FeatureEgyptEnglishPlates}" Style="{StaticResource Caption}"/>
                 <Label Text="{loc:Translate Key=FeatureVehicleLookup}" Style="{StaticResource Caption}"/>
-                <Label Text="{loc:Translate Key=FeatureOfflineSync}" Style="{StaticResource Caption}"/>
                 <Label Text="{loc:Translate Key=FeatureHistoryExport}" Style="{StaticResource Caption}"/>
             </VerticalStackLayout>
 

@@ -2,15 +2,11 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:CarPlates.Mobile.ViewModels"
-             xmlns:converters="clr-namespace:CarPlates.Mobile.Converters"
+             xmlns:dtos="clr-namespace:CarPlates.Application.Common.DTOs;assembly=CarPlates.Application"
              xmlns:loc="clr-namespace:CarPlates.Mobile.Localization"
              x:Class="CarPlates.Mobile.Views.Dashboard.DashboardPage"
              x:DataType="vm:DashboardViewModel"
              Title="{Binding Title}">
-
-    <ContentPage.Resources>
-        <converters:SyncStatusToColorConverter x:Key="SyncStatusToColorConverter"/>
-    </ContentPage.Resources>
 
     <RefreshView Command="{Binding LoadDataCommand}" IsRefreshing="{Binding IsBusy}">
         <ScrollView>
@@ -67,22 +63,22 @@
                 <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
                     <Border Style="{StaticResource ElevatedCard}" Grid.Column="0">
                         <VerticalStackLayout HorizontalOptions="Center">
-                            <Label Text="{Binding Statistics.PendingSync}"
+                            <Label Text="{Binding Statistics.PendingVehicles}"
                                    Style="{StaticResource Headline}"
                                    TextColor="{StaticResource Warning}"
                                    HorizontalOptions="Center"/>
-                            <Label Text="{loc:Translate Key=PendingSync}"
+                            <Label Text="{loc:Translate Key=PendingVehicles}"
                                    Style="{StaticResource Caption}"
                                    HorizontalOptions="Center"/>
                         </VerticalStackLayout>
                     </Border>
                     <Border Style="{StaticResource ElevatedCard}" Grid.Column="1">
                         <VerticalStackLayout HorizontalOptions="Center">
-                            <Label Text="{Binding Statistics.UniqueVehicles}"
+                            <Label Text="{Binding Statistics.TotalVehicles}"
                                    Style="{StaticResource Headline}"
                                    TextColor="{StaticResource Success}"
                                    HorizontalOptions="Center"/>
-                            <Label Text="{loc:Translate Key=UniqueVehicles}"
+                            <Label Text="{loc:Translate Key=TotalVehiclesLabel}"
                                    Style="{StaticResource Caption}"
                                    HorizontalOptions="Center"/>
                         </VerticalStackLayout>
@@ -95,7 +91,7 @@
                 <CollectionView ItemsSource="{Binding RecentScans}"
                                EmptyView="{loc:Translate Key=NoRecentScans}">
                     <CollectionView.ItemTemplate>
-                        <DataTemplate x:DataType="vm:RecentScanDto">
+                        <DataTemplate x:DataType="dtos:RecentScanDto">
                             <Border Style="{StaticResource Card}" Margin="0,6">
                                 <Grid ColumnDefinitions="Auto,*,Auto">
                                     <Label Grid.Column="0"

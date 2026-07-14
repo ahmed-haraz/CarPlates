@@ -35,8 +35,8 @@ public class VehiclesController(IVehicleService vehicleService, ILogger<Vehicles
         return Ok(vehicle);
     }
 
-    [HttpGet("id/{id:guid}")]
-    public async Task<ActionResult<VehicleDto>> GetById(Guid id)
+    [HttpGet("id/{id:int}")]
+    public async Task<ActionResult<VehicleDto>> GetById(int id)
     {
         var vehicle = await _vehicleService.GetByIdAsync(id);
         if (vehicle == null) return NotFound();
@@ -56,18 +56,18 @@ public class VehiclesController(IVehicleService vehicleService, ILogger<Vehicles
         return CreatedAtAction(nameof(GetById), new { id = vehicle.Id }, vehicle);
     }
 
-    [HttpPut("{id:guid}")]
+    [HttpPut("{id:int}")]
     [Authorize(Roles = "Admin,Operator")]
-    public async Task<ActionResult<VehicleDto>> Update(Guid id, [FromBody] VehicleUpdateDto dto)
+    public async Task<ActionResult<VehicleDto>> Update(int id, [FromBody] VehicleUpdateDto dto)
     {
         var vehicle = await _vehicleService.UpdateAsync(id, dto);
         if (vehicle == null) return NotFound();
         return Ok(vehicle);
     }
 
-    [HttpDelete("{id:guid}")]
+    [HttpDelete("{id:int}")]
     [Authorize(Roles = "Admin")]
-    public async Task<ActionResult> Delete(Guid id)
+    public async Task<ActionResult> Delete(int id)
     {
         var result = await _vehicleService.DeleteAsync(id);
         if (!result) return NotFound();

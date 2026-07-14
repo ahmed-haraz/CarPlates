@@ -5,12 +5,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CarPlates.API.Services;
 
-public class ScanRecordService(ApplicationDbContext context, IVehicleService vehicleService) : IScanRecordService
+public class ScanRecordService(ApplicationDbContext context) : IScanRecordService
 {
     private readonly ApplicationDbContext _context = context;
-    private readonly IVehicleService _vehicleService = vehicleService;
 
-    public async Task<ScanRecordDto?> GetByIdAsync(Guid id)
+    public async Task<ScanRecordDto?> GetByIdAsync(int id)
     {
         var record = await _context.ScanRecords
             .AsNoTracking()
@@ -47,6 +46,8 @@ public class ScanRecordService(ApplicationDbContext context, IVehicleService veh
         return [.. records.Select(r => new RecentScanDto(
             r.Id,
             r.PlateNumber,
+            r.Brand,
+            r.AccessStatus,
             r.ScanTime))];
     }
 
@@ -70,14 +71,19 @@ public class ScanRecordService(ApplicationDbContext context, IVehicleService veh
 
         var record = new ScanRecord
         {
-            VehicleId = vehicle.Id,
             PlateNumber = dto.PlateNumber.ToUpperInvariant(),
+            PlateType = dto.PlateType,
             Confidence = dto.Confidence,
             PhotoUrl = dto.PhotoUrl,
             ScannedByUserId = userId,
             DeviceId = dto.DeviceId,
             Latitude = dto.Latitude,
-            Longitude = dto.Longitude
+            Longitude = dto.Longitude,
+            Brand = vehicle.Brand,
+            Model = vehicle.Model,
+            Color = vehicle.Color,
+            OwnerName = vehicle.OwnerName,
+            AccessStatus = vehicle.AccessStatus
         };
 
         _context.ScanRecords.Add(record);
@@ -131,6 +137,13 @@ public class ScanRecordService(ApplicationDbContext context, IVehicleService veh
     private static ScanRecordDto MapToDto(ScanRecord s) => new(
         s.Id,
         s.PlateNumber,
+        s.PlateType,
         s.Confidence,
-        s.ScanTime);
+        s.PhotoUrl,
+        s.ScanTime,
+        s.Brand,
+        s.Model,
+        s.Color,
+        s.OwnerName,
+        s.AccessStatus);
 }

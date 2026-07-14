@@ -17,9 +17,6 @@ public partial class SettingsViewModel : BaseViewModel
     private readonly IMediator _mediator;
     private readonly ISettingsService _settingsService;
     private readonly IAuthenticationService _authService;
-    private readonly ISyncService _syncService;
-    private readonly IScanRepository _scanRepository;
-    private readonly IPendingUploadRepository _pendingUploadRepository;
     private readonly IThemeService _themeService;
     private readonly IApiConnectivityService _connectivityService;
 
@@ -41,18 +38,12 @@ public partial class SettingsViewModel : BaseViewModel
     [ObservableProperty]
     private bool _notificationsEnabled = true;
 
-    [ObservableProperty]
-    private int _pendingSyncCount;
-
     public List<string> AvailableLanguages { get; } = new() { "English", "العربية" };
 
     public SettingsViewModel(
         IMediator mediator,
         ISettingsService settingsService,
         IAuthenticationService authService,
-        ISyncService syncService,
-        IScanRepository scanRepository,
-        IPendingUploadRepository pendingUploadRepository,
         IThemeService themeService,
         IApiConnectivityService connectivityService,
         INavigationService navigation) : base(navigation)
@@ -60,9 +51,6 @@ public partial class SettingsViewModel : BaseViewModel
         _mediator = mediator;
         _settingsService = settingsService;
         _authService = authService;
-        _syncService = syncService;
-        _scanRepository = scanRepository;
-        _pendingUploadRepository = pendingUploadRepository;
         _themeService = themeService;
         _connectivityService = connectivityService;
         Title = AppResources.Settings;
@@ -127,44 +115,6 @@ public partial class SettingsViewModel : BaseViewModel
                 await Navigation.DisplayAlertAsync(AppResources.ConnectionFailed, result.ErrorMessage ?? AppResources.ConnectionFailed);
             }
         });
-    }
-
-    [RelayCommand]
-    private async Task SyncNowAsync()
-    {
-        await ExecuteAsync(async () =>
-        {
-            if (!await _syncService.IsOnlineAsync())
-            {
-                await Navigation.DisplayAlertAsync(AppResources.Offline, AppResources.NoInternetConnection);
-                return;
-            }
-
-            var result = await _syncService.SyncPendingAsync();
-            await Navigation.DisplayAlertAsync(
-                AppResources.SyncComplete,
-                string.Format(AppResources.SyncResultFormat, result.SyncedCount, result.FailedCount));
-        });
-    }
-
-    [RelayCommand]
-    private async Task ClearCacheAsync()
-    {
-        var confirm = await Navigation.DisplayConfirmAsync(
-            AppResources.ClearCache,
-            AppResources.ClearCacheConfirmMessage,
-            AppResources.Clear, AppResources.Cancel);
-
-        if (confirm)
-        {
-            await ExecuteAsync(async () =>
-            {
-                await _scanRepository.ClearAllAsync();
-                await _pendingUploadRepository.ClearAllAsync();
-                PendingSyncCount = 0;
-            });
-            await Navigation.DisplayAlertAsync(AppResources.Success, AppResources.CacheCleared);
-        }
     }
 
     [RelayCommand]

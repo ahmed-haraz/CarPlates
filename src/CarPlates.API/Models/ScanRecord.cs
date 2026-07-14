@@ -2,8 +2,7 @@ namespace CarPlates.API.Models;
 
 public class ScanRecord
 {
-    public Guid Id { get; set; } = Guid.NewGuid();
-    public Guid VehicleId { get; set; }
+    public int Id { get; set; } 
     public string PlateNumber { get; set; } = string.Empty;
     public float Confidence { get; set; }
     public string? PhotoUrl { get; set; }
@@ -19,7 +18,6 @@ public class ScanRecord
     public string? Color { get; set; }
     public string? OwnerName { get; set; }
     public string? OwnerPhone { get; set; }
-    public string? OwnerNationalId { get; set; }
     public string AccessStatus { get; set; } = "Allowed"; // Allowed, Denied, Pending
     public string? Notes { get; set; }
     public DateTime? UpdatedAt { get; set; }
