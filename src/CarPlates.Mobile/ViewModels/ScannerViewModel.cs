@@ -287,6 +287,9 @@ public partial class ScannerViewModel : BaseViewModel
         // ProcessScanAsync owns its own busy/error state, since it performs
         // the actual vehicle-lookup API call - continue on to it either way
         // so manual entry always reaches the API, not just camera scans.
-        await ProcessScanAsync(recognitionResult.PlateNumber);
+
+        await Navigation.GoToMainDataAsync();
+
+        // await ProcessScanAsync(recognitionResult.PlateNumber);
     }
 }

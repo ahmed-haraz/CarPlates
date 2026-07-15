@@ -13,6 +13,7 @@ using CarPlates.Mobile.Views.Login;
 using CarPlates.Mobile.Views.Main;
 using CarPlates.Mobile.Views.Profile;
 using CarPlates.Mobile.Views.Scanner;
+using CarPlates.Mobile.Views.Actions;
 using CarPlates.Mobile.Views.Settings;
 using CarPlates.Mobile.Views.Splash;
 using CarPlates.Mobile.Views.Vehicle;
@@ -93,6 +94,7 @@ public static class MauiProgram
         builder.Services.AddTransient<VehicleDetailsViewModel>();
         builder.Services.AddTransient<SettingsViewModel>();
         builder.Services.AddTransient<ProfileViewModel>();
+        builder.Services.AddTransient<NewOrderViewModel>();
 
         // Views
         builder.Services.AddTransient<SplashPage>();
@@ -104,6 +106,7 @@ public static class MauiProgram
         builder.Services.AddTransient<SettingsPage>();
         builder.Services.AddTransient<ProfilePage>();
         builder.Services.AddTransient<AboutPage>();
+        builder.Services.AddTransient<NewOrderPage>();
         builder.Services.AddTransient<MainTabbedPage>();
 
         // Logging

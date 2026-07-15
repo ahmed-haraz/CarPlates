@@ -15,6 +15,14 @@ public interface INavigationService
     /// <summary>Swaps the app's root to the main tabbed experience (post-login/splash) and clears any back stack.</summary>
     Task GoToMainRootAsync();
 
+
+    Task GoToCarDataAsync();
+
+    Task GoToCustomerDataAsync();
+
+    Task GoToMainDataAsync();
+
+
     /// <summary>Pushes the page paired with <typeparamref name="TViewModel"/> (by naming convention) onto the active navigation stack.</summary>
     Task PushAsync<TViewModel>(IDictionary<string, object>? parameters = null) where TViewModel : BaseViewModel;
 

@@ -1,3 +1,4 @@
+using CarPlates.Mobile.Views.Actions;
 using CarPlates.Mobile.Views.Login;
 using CarPlates.Mobile.Views.Main;
 
@@ -124,5 +125,23 @@ public class NavigationService(IServiceProvider serviceProvider) : INavigationSe
 
         PageTypeCache[viewModelType] = pageType;
         return pageType;
+    }
+
+    public Task GoToCarDataAsync()
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task GoToCustomerDataAsync()
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task GoToMainDataAsync()
+    {
+        var mainPage = _serviceProvider.GetRequiredService<NewOrderPage>();
+        mainPage.FlowDirection = Localization.LocalizationResourceManager.Instance.FlowDirection;
+        CurrentWindow.Page = mainPage;
+        return Task.CompletedTask;
     }
 }
