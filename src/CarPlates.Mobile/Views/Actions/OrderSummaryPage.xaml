@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:CarPlates.Mobile.ViewModels"
+             x:Class="CarPlates.Mobile.Views.Actions.OrderSummaryPage"
+             x:DataType="vm:NewOrderViewModel"
+             FlowDirection="RightToLeft"
+             Title="سلة طلباتي"
+             BackgroundColor="#F5F5F5">
+
+    <Grid RowDefinitions="Auto,*,Auto">
+        <!-- Header -->
+        <Grid Grid.Row="0" BackgroundColor="White" Padding="16,12" ColumnDefinitions="Auto,*,Auto">
+            <ImageButton Grid.Column="0" 
+                         Source="dots_vertical.png" 
+                         WidthRequest="24" HeightRequest="24"/>
+            <Label Grid.Column="1" 
+                   Text="سلة طلباتي" 
+                   FontSize="18" FontAttributes="Bold"
+                   HorizontalOptions="Center" VerticalOptions="Center"/>
+            <ImageButton Grid.Column="2" 
+                         Source="arrow_left.png" 
+                         WidthRequest="24" HeightRequest="24"/>
+        </Grid>
+
+        <!-- Cart Items -->
+        <CollectionView Grid.Row="1" ItemsSource="{Binding CartItems}">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Frame BackgroundColor="White" CornerRadius="12" Padding="16" Margin="16,4">
+                        <Grid ColumnDefinitions="Auto,*,Auto,Auto,Auto">
+                            <ImageButton Grid.Column="0" Source="dots_vertical.png" WidthRequest="24" HeightRequest="24"/>
+                            <VerticalStackLayout Grid.Column="1" Spacing="4">
+                                <Label Text="{Binding ServiceItem.Name}" FontSize="16" FontAttributes="Bold"/>
+                                <Label Text="{Binding ServiceItem.TotalPrice, StringFormat='{0:N2}'}" 
+                                       FontSize="14" TextColor="Gray"/>
+                            </VerticalStackLayout>
+                            <Button Grid.Column="2" Text="+" WidthRequest="36" HeightRequest="36"
+                                    CornerRadius="18" BackgroundColor="#E0E0E0" TextColor="Black"
+                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:NewOrderViewModel}}, Path=IncrementQuantityCommand}"
+                                    CommandParameter="{Binding .}"/>
+                            <Label Grid.Column="3" Text="{Binding Quantity}" FontSize="16" 
+                                   WidthRequest="30" HorizontalTextAlignment="Center" VerticalOptions="Center"/>
+                            <Button Grid.Column="4" Text="-" WidthRequest="36" HeightRequest="36"
+                                    CornerRadius="18" BackgroundColor="#E0E0E0" TextColor="Black"
+                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:NewOrderViewModel}}, Path=DecrementQuantityCommand}"
+                                    CommandParameter="{Binding .}"/>
+                        </Grid>
+                    </Frame>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+        <!-- Totals -->
+        <Frame Grid.Row="2" BackgroundColor="White" CornerRadius="24" Padding="20" Margin="0,0,0,0">
+            <VerticalStackLayout Spacing="12">
+                <Grid ColumnDefinitions="*,Auto">
+                    <Label Grid.Column="0" Text="إجمالي المبلغ" FontSize="16" FontAttributes="Bold"/>
+                    <Label Grid.Column="1" Text="{Binding Total, StringFormat='{0:N2} ر.س'}" FontSize="18" FontAttributes="Bold"/>
+                </Grid>
+                <Grid ColumnDefinitions="*,Auto">
+                    <Label Grid.Column="0" Text="الإجمالي" FontSize="14"/>
+                    <Label Grid.Column="1" Text="{Binding SubTotal, StringFormat='{0:N2} ر.س'}" FontSize="14"/>
+                </Grid>
+                <Grid ColumnDefinitions="*,Auto">
+                    <Label Grid.Column="0" Text="ضريبة القيمة المضافة 15%" FontSize="14"/>
+                    <Label Grid.Column="1" Text="{Binding TaxTotal, StringFormat='{0:N2} ر.س'}" FontSize="14"/>
+                </Grid>
+                <Button Text="التالي"
+                        BackgroundColor="#4CAF50"
+                        TextColor="White"
+                        FontSize="18"
+                        FontAttributes="Bold"
+                        CornerRadius="24"
+                        HeightRequest="56"
+                        Command="{Binding SubmitOrderCommand}"/>
+            </VerticalStackLayout>
+        </Frame>
+    </Grid>
+</ContentPage>

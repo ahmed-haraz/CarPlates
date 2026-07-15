@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:CarPlates.Mobile.ViewModels"
+             xmlns:models="clr-namespace:CarPlates.Domain.Entities"
+             x:Class="CarPlates.Mobile.Views.Actions.CashierPage"
+             x:DataType="vm:CashierViewModel"
+             FlowDirection="RightToLeft"
+             Title="{Binding Title}"
+             BackgroundColor="#F5F5F5">
+
+    <Grid RowDefinitions="Auto,Auto,Auto,*">
+        <!-- Header -->
+        <Grid Grid.Row="0" BackgroundColor="White" Padding="16,12" ColumnDefinitions="Auto,*,Auto">
+            <ImageButton Grid.Column="0" 
+                         Source="arrow_right.png" 
+                         WidthRequest="24" HeightRequest="24"/>
+            <Label Grid.Column="1" 
+                   Text="الكاشير" 
+                   FontSize="18" FontAttributes="Bold"
+                   HorizontalOptions="Center" VerticalOptions="Center"/>
+            <ImageButton Grid.Column="2" 
+                         Source="arrow_left.png" 
+                         WidthRequest="24" HeightRequest="24"/>
+        </Grid>
+
+        <!-- Search Bar -->
+        <SearchBar Grid.Row="1" 
+                   Placeholder="البحث عن مركبة"
+                   Text="{Binding SearchText}"
+                   Margin="16,8"
+                   BackgroundColor="White"/>
+
+        <!-- Filter Chips -->
+        <ScrollView Grid.Row="2" Orientation="Horizontal" Margin="16,0,16,8">
+            <HorizontalStackLayout Spacing="8" BindableLayout.ItemsSource="{Binding Filters}">
+                <BindableLayout.ItemTemplate>
+                    <DataTemplate x:DataType="x:String">
+                        <Frame BackgroundColor="{Binding ., Converter={StaticResource FilterToColorConverter}, ConverterParameter={Binding Source={RelativeSource AncestorType={x:Type vm:CashierViewModel}}, Path=SelectedFilter}}"
+                               CornerRadius="16" Padding="12,6"
+                               BorderColor="Transparent">
+                            <Frame.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:CashierViewModel}}, Path=SelectFilterCommand}"
+                                                      CommandParameter="{Binding .}"/>
+                            </Frame.GestureRecognizers>
+                            <Label Text="{Binding .}" FontSize="12" TextColor="{Binding ., Converter={StaticResource FilterToTextColorConverter}}"/>
+                        </Frame>
+                    </DataTemplate>
+                </BindableLayout.ItemTemplate>
+            </HorizontalStackLayout>
+        </ScrollView>
+
+        <!-- Orders List -->
+        <CollectionView Grid.Row="3" ItemsSource="{Binding FilteredOrders}">
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="models:Order">
+                    <Frame BackgroundColor="White" CornerRadius="16" Padding="16" Margin="16,4">
+                        <Frame.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:CashierViewModel}}, Path=ViewOrderDetailsCommand}"
+                                                  CommandParameter="{Binding .}"/>
+                        </Frame.GestureRecognizers>
+                        <Grid ColumnDefinitions="Auto,*,Auto">
+                            <VerticalStackLayout Grid.Column="0" Spacing="4" WidthRequest="40">
+                                <Label Text="{Binding Id, StringFormat='#{0}'}" FontSize="12" TextColor="Gray"/>
+                            </VerticalStackLayout>
+                            <VerticalStackLayout Grid.Column="1" Spacing="4">
+                                <HorizontalStackLayout Spacing="8">
+                                    <Ellipse WidthRequest="12" HeightRequest="12" Fill="{Binding Status, Converter={StaticResource StatusToColorConverter}}"/>
+                                    <Label Text="{Binding Vehicle.Brand, StringFormat='{0} {1}', Source={RelativeSource Self}}" 
+                                           FontSize="16" FontAttributes="Bold"/>
+                                </HorizontalStackLayout>
+                                <Label Text="{Binding Vehicle.PlateNumber}" FontSize="14" TextColor="Gray"/>
+                            </VerticalStackLayout>
+                            <Frame Grid.Column="2" BackgroundColor="#FFEBEE" CornerRadius="12" Padding="8,4" VerticalOptions="Start">
+                                <Label Text="{Binding Status}" FontSize="11" TextColor="#C62828"/>
+                            </Frame>
+                        </Grid>
+                    </Frame>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+        <!-- FAB Add Button -->
+        <Button Grid.Row="3"
+                Text="+"
+                FontSize="28"
+                BackgroundColor="#4CAF50"
+                TextColor="White"
+                CornerRadius="28"
+                WidthRequest="56" HeightRequest="56"
+                Margin="24"
+                HorizontalOptions="Start" VerticalOptions="End"
+                Command="{Binding NewOrderCommand}"/>
+    </Grid>
+</ContentPage>

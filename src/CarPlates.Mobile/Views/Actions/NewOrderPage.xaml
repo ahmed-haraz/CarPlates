@@ -1,0 +1,501 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:CarPlates.Mobile.ViewModels"
+             xmlns:models="clr-namespace:CarPlates.Domain.Entities;assembly=CarPlates.Domain"
+             x:Class="CarPlates.Mobile.Views.Actions.NewOrderPage"
+             x:DataType="vm:NewOrderViewModel"
+             FlowDirection="RightToLeft"
+             Title="{Binding Title}"
+             BackgroundColor="#F5F5F5">
+
+    <Grid RowDefinitions="Auto,*">
+        <!-- Header -->
+        <Grid Grid.Row="0" BackgroundColor="White" Padding="16,12" ColumnDefinitions="Auto,*,Auto">
+            <ImageButton Grid.Column="0" 
+                         Source="arrow_right.png" 
+                         WidthRequest="24" HeightRequest="24"
+                         Command="{Binding GoBackCommand}"/>
+            <Label Grid.Column="1" 
+                   Text="إضافة سيارة جديدة" 
+                   FontSize="18" FontAttributes="Bold"
+                   HorizontalOptions="Center" VerticalOptions="Center"/>
+            <ImageButton Grid.Column="2" 
+                         Source="arrow_left.png" 
+                         WidthRequest="24" HeightRequest="24"/>
+        </Grid>
+
+        <!-- Scrollable Content -->
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout Spacing="12" Padding="16">
+
+                <!-- Add Customer Section -->
+                <Frame BackgroundColor="White" CornerRadius="16" Padding="16" HasShadow="False">
+                    <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
+                        <ImageButton Grid.Column="0"
+                                     Source="plus_circle.png"
+                                     WidthRequest="40" HeightRequest="40"
+                                     BackgroundColor="Transparent"
+                                     Command="{Binding ShowCustomerPopupCommand}"/>
+                        <Label Grid.Column="1" 
+                               Text="إضافة عميل" 
+                               FontSize="18" FontAttributes="Bold"
+                               VerticalOptions="Center"/>
+                    </Grid>
+                </Frame>
+
+                <!-- Customer Info Display -->
+                <Frame BackgroundColor="White" CornerRadius="16" Padding="16" 
+                       IsVisible="{Binding SelectedCustomer, Converter={StaticResource IsNotNullConverter}}">
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="{Binding SelectedCustomer.FirstName, StringFormat='{0} {1}', 
+                                      Source={RelativeSource AncestorType={x:Type vm:NewOrderViewModel}}}"
+                               FontSize="16" FontAttributes="Bold"/>
+                        <Label Text="{Binding SelectedCustomer.PhoneNumber}" 
+                               FontSize="14" TextColor="Gray"/>
+                    </VerticalStackLayout>
+                </Frame>
+
+                <!-- Add Vehicle Section -->
+                <Frame BackgroundColor="White" CornerRadius="16" Padding="16" HasShadow="False">
+                    <Grid ColumnDefinitions="Auto,Auto,*" ColumnSpacing="12">
+                        <ImageButton Grid.Column="0"
+                                     Source="plus_circle_green.png"
+                                     WidthRequest="40" HeightRequest="40"
+                                     BackgroundColor="Transparent"
+                                     Command="{Binding ShowVehiclePopupCommand}"/>
+                        <Frame Grid.Column="1" BackgroundColor="#F0F0F0" CornerRadius="20" Padding="12,6">
+                            <Label Text="Add Vehicle" FontSize="12" TextColor="Green"/>
+                        </Frame>
+                        <Label Grid.Column="2" 
+                               Text="إضافة مركبة" 
+                               FontSize="18" FontAttributes="Bold"
+                               VerticalOptions="Center"/>
+                    </Grid>
+                </Frame>
+
+                <!-- Vehicle Info Display -->
+                <Frame BackgroundColor="White" CornerRadius="16" Padding="16"
+                       IsVisible="{Binding SelectedVehicle, Converter={StaticResource IsNotNullConverter}}">
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="{Binding SelectedVehicle.Brand}" 
+                               FontSize="16" FontAttributes="Bold"/>
+                        <Label Text="{Binding SelectedVehicle.PlateNumber}" 
+                               FontSize="14" TextColor="Gray"/>
+                    </VerticalStackLayout>
+                </Frame>
+
+                <!-- Add Items Section -->
+                <Frame BackgroundColor="White" CornerRadius="16" Padding="16" HasShadow="False">
+                    <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
+                        <Frame Grid.Column="0" BackgroundColor="#F0F0F0" CornerRadius="20" Padding="12,6">
+                            <Label Text="Add Items" FontSize="12" TextColor="Green"/>
+                        </Frame>
+                        <Label Grid.Column="1" 
+                               Text="إضافة أصناف" 
+                               FontSize="18" FontAttributes="Bold"
+                               VerticalOptions="Center"/>
+                    </Grid>
+                </Frame>
+
+                <!-- Cart Items List -->
+                <CollectionView ItemsSource="{Binding CartItems}"
+                              IsVisible="{Binding CartItems.Count, Converter={StaticResource CountToBoolConverter}}">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="models:CartItem">
+                            <Frame BackgroundColor="White" CornerRadius="12" Padding="12" Margin="0,4">
+                                <Grid ColumnDefinitions="*,Auto,Auto,Auto,Auto">
+                                    <VerticalStackLayout Grid.Column="0">
+                                        <Label Text="{Binding ServiceItem.Name}" FontSize="14" FontAttributes="Bold"/>
+                                        <Label Text="{Binding ServiceItem.Category}" FontSize="12" TextColor="Gray"/>
+                                    </VerticalStackLayout>
+                                    <Label Grid.Column="1" 
+                                           Text="{Binding ServiceItem.TotalPrice, StringFormat='{0:N2} SAR'}" 
+                                           FontSize="14" VerticalOptions="Center"/>
+                                    <Stepper Grid.Column="2" 
+                                             Value="{Binding Quantity}" 
+                                             Minimum="1" Maximum="99"
+                                             WidthRequest="80"/>
+                                    <Label Grid.Column="3" 
+                                           Text="{Binding Quantity}" 
+                                           FontSize="14" WidthRequest="30" HorizontalTextAlignment="Center"/>
+                                    <ImageButton Grid.Column="4"
+                                                 Source="trash.png"
+                                                 WidthRequest="24" HeightRequest="24"
+                                                 Command="{Binding Source={RelativeSource AncestorType={x:Type vm:NewOrderViewModel}}, Path=RemoveCartItemCommand}"
+                                                 CommandParameter="{Binding .}"/>
+                                </Grid>
+                            </Frame>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+
+                <!-- Order Notes -->
+                <Frame BackgroundColor="White" CornerRadius="16" Padding="16" HasShadow="False">
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="ملاحظة الطلب" FontSize="16" FontAttributes="Bold"/>
+                        <Editor Placeholder="اكتب هنا..."
+                                Text="{Binding OrderNotes}"
+                                HeightRequest="120"
+                                BackgroundColor="Transparent"/>
+                        <Label Text="٢٠٠/٠" FontSize="12" TextColor="Gray" HorizontalOptions="End"/>
+                        <HorizontalStackLayout Spacing="12" HorizontalOptions="End">
+                            <Button Text="التوقيع" 
+                                    ImageSource="signature.png"
+                                    BackgroundColor="White" TextColor="Black"
+                                    BorderColor="Gray" BorderWidth="1"
+                                    CornerRadius="20" Padding="12,8"
+                                    Command="{Binding ShowSignaturePadCommand}"/>
+                            <Button Text="إضافة صور" 
+                                    ImageSource="camera.png"
+                                    BackgroundColor="White" TextColor="Black"
+                                    BorderColor="Gray" BorderWidth="1"
+                                    CornerRadius="20" Padding="12,8"/>
+                        </HorizontalStackLayout>
+                    </VerticalStackLayout>
+                </Frame>
+
+                <!-- Service Assignment -->
+                <Frame BackgroundColor="White" CornerRadius="16" Padding="16" HasShadow="False">
+                    <VerticalStackLayout Spacing="12">
+                        <Label Text="تعيين الخدمة" FontSize="16" FontAttributes="Bold"/>
+                        <HorizontalStackLayout Spacing="12">
+                            <Button Text="+ حدد مكان العمل"
+                                    BackgroundColor="White" TextColor="Black"
+                                    BorderColor="Gray" BorderWidth="1"
+                                    CornerRadius="20" Padding="12,8"
+                                    Command="{Binding ShowLocationPopupCommand}"/>
+                            <Button Text="+ اختيار الفني"
+                                    BackgroundColor="White" TextColor="Black"
+                                    BorderColor="Gray" BorderWidth="1"
+                                    CornerRadius="20" Padding="12,8"
+                                    Command="{Binding ShowTechnicianPopupCommand}"/>
+                        </HorizontalStackLayout>
+                        <CollectionView ItemsSource="{Binding SelectedLocation, Converter={StaticResource ObjectToListConverter}}"
+                                        IsVisible="{Binding SelectedLocation, Converter={StaticResource IsNotNullConverter}}">
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate x:DataType="models:WorkLocation">
+                                    <Frame BackgroundColor="#E8F5E9" CornerRadius="20" Padding="8,4">
+                                        <Label Text="{Binding Name}" TextColor="Green" FontSize="12"/>
+                                    </Frame>
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
+                        </CollectionView>
+                        <CollectionView ItemsSource="{Binding SelectedTechnician, Converter={StaticResource ObjectToListConverter}}"
+                                        IsVisible="{Binding SelectedTechnician, Converter={StaticResource IsNotNullConverter}}">
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate x:DataType="models:Technician">
+                                    <Frame BackgroundColor="#E8F5E9" CornerRadius="20" Padding="8,4">
+                                        <Label Text="{Binding Name, StringFormat='Tech: {0}'}" TextColor="Green" FontSize="12"/>
+                                    </Frame>
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
+                        </CollectionView>
+                    </VerticalStackLayout>
+                </Frame>
+
+                <!-- Signature Preview -->
+                <Frame BackgroundColor="White" CornerRadius="16" Padding="16"
+                       IsVisible="{Binding SignatureData, Converter={StaticResource IsNotNullConverter}}">
+                    <Image Source="{Binding SignatureData}" 
+                           HeightRequest="100" Aspect="AspectFit"
+                           HorizontalOptions="End"/>
+                </Frame>
+
+                <!-- Spacer -->
+                <BoxView HeightRequest="20" BackgroundColor="Transparent"/>
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <!-- Bottom Submit Button -->
+        <Button Grid.Row="1"
+                Text="التالي"
+                BackgroundColor="#4CAF50"
+                TextColor="White"
+                FontSize="18"
+                FontAttributes="Bold"
+                CornerRadius="24"
+                HeightRequest="56"
+                Margin="16,0,16,16"
+                VerticalOptions="End"
+                Command="{Binding SubmitOrderCommand}"/>
+
+        <!-- Customer Search Popup -->
+        <Grid Grid.Row="1" BackgroundColor="#80000000"
+              IsVisible="{Binding IsCustomerPopupVisible}">
+            <Frame BackgroundColor="White" CornerRadius="24" Padding="24" 
+                   VerticalOptions="Center" HorizontalOptions="Center"
+                   WidthRequest="320">
+                <VerticalStackLayout Spacing="16">
+                    <Label Text="البحث عن عميل" FontSize="18" FontAttributes="Bold" HorizontalOptions="Center"/>
+                    <Frame BorderColor="LightGray" CornerRadius="12" Padding="8">
+                        <Grid ColumnDefinitions="Auto,*">
+                            <Label Grid.Column="0" Text="+966" FontSize="16" VerticalOptions="Center" Margin="8,0"/>
+                            <Entry Grid.Column="1" 
+                                   Placeholder="رقم الجوال"
+                                   Text="{Binding SearchPhoneNumber}"
+                                   Keyboard="Telephone"/>
+                        </Grid>
+                    </Frame>
+                    <Button Text="بحث"
+                            BackgroundColor="#4CAF50"
+                            TextColor="White"
+                            CornerRadius="12"
+                            HeightRequest="48"
+                            Command="{Binding SearchCustomerCommand}"/>
+
+                    <!-- New Customer Form -->
+                    <VerticalStackLayout Spacing="12" IsVisible="{Binding NewCustomerPhone, Converter={StaticResource IsNotNullConverter}}">
+                        <Label Text="عميل جديد" FontSize="16" FontAttributes="Bold" HorizontalOptions="Center"/>
+                        <Frame BorderColor="LightGray" CornerRadius="12" Padding="8">
+                            <Entry Placeholder="الاسم الأول" Text="{Binding NewCustomerFirstName}"/>
+                        </Frame>
+                        <Frame BorderColor="LightGray" CornerRadius="12" Padding="8">
+                            <Entry Placeholder="الاسم الأخير" Text="{Binding NewCustomerLastName}"/>
+                        </Frame>
+                        <HorizontalStackLayout Spacing="24" HorizontalOptions="Center">
+                            <HorizontalStackLayout Spacing="8">
+                                <RadioButton Content="ذكر" 
+                                             IsChecked="{Binding NewCustomerGender, Converter={StaticResource StringToBoolConverter}, ConverterParameter=ذكر}"/>
+                            </HorizontalStackLayout>
+                            <HorizontalStackLayout Spacing="8">
+                                <RadioButton Content="أنثى"
+                                             IsChecked="{Binding NewCustomerGender, Converter={StaticResource StringToBoolConverter}, ConverterParameter=أنثى}"/>
+                            </HorizontalStackLayout>
+                        </HorizontalStackLayout>
+                        <Button Text="حفظ"
+                                BackgroundColor="#4CAF50"
+                                TextColor="White"
+                                CornerRadius="12"
+                                HeightRequest="48"
+                                Command="{Binding SaveNewCustomerCommand}"/>
+                    </VerticalStackLayout>
+                </VerticalStackLayout>
+            </Frame>
+        </Grid>
+
+        <!-- Vehicle Registration Popup -->
+        <Grid Grid.Row="1" BackgroundColor="#80000000"
+              IsVisible="{Binding IsVehiclePopupVisible}">
+            <Frame BackgroundColor="White" CornerRadius="24" Padding="20"
+                   VerticalOptions="Center" HorizontalOptions="Center"
+                   WidthRequest="360" MaximumHeightRequest="600">
+                <ScrollView>
+                    <VerticalStackLayout Spacing="12">
+                        <Grid ColumnDefinitions="*,Auto,Auto">
+                            <Label Grid.Column="0" Text="تفاصيل المركبة" FontSize="18" FontAttributes="Bold"/>
+                            <Frame Grid.Column="1" BackgroundColor="#E0E0E0" CornerRadius="8" Padding="8,4">
+                                <Label Text="Karage" FontSize="12"/>
+                            </Frame>
+                            <ImageButton Grid.Column="2" Source="pencil.png" WidthRequest="24" HeightRequest="24"/>
+                        </Grid>
+
+                        <Label Text="اللوحة" FontSize="16" FontAttributes="Bold" HorizontalOptions="End"/>
+
+                        <Frame BorderColor="LightGray" CornerRadius="12" Padding="8">
+                            <Entry Placeholder="رقم اللوحة" Text="{Binding NewPlateNumber}"/>
+                        </Frame>
+                        <Frame BorderColor="LightGray" CornerRadius="12" Padding="8">
+                            <Grid ColumnDefinitions="Auto,*">
+                                <Label Grid.Column="0" Text="17 خانة" TextColor="Green" FontSize="12" VerticalOptions="Center"/>
+                                <Entry Grid.Column="1" Placeholder="رقم هيكل المركبة (VIN)" Text="{Binding NewVin}"/>
+                            </Grid>
+                        </Frame>
+                        <Picker Title="نوع المركبة" ItemsSource="{Binding VehicleTypes}" SelectedItem="{Binding SelectedVehicleType}"/>
+                        <Picker Title="نوع المحرك" ItemsSource="{Binding EngineTypes}" SelectedItem="{Binding SelectedEngineType}"/>
+                        <Frame BorderColor="LightGray" CornerRadius="12" Padding="8">
+                            <Grid ColumnDefinitions="*,Auto">
+                                <Entry Grid.Column="0" Placeholder="أدخل عدد المسافة" Text="{Binding NewMileage}" Keyboard="Numeric"/>
+                                <Label Grid.Column="1" Text="0" VerticalOptions="Center" Margin="8,0"/>
+                            </Grid>
+                        </Frame>
+                        <Picker Title="سنة المركبة">
+                            <Picker.ItemsSource>
+                                <x:Array Type="{x:Type x:Int32}">
+                                    <x:Int32>2025</x:Int32>
+                                    <x:Int32>2024</x:Int32>
+                                    <x:Int32>2023</x:Int32>
+                                    <x:Int32>2022</x:Int32>
+                                    <x:Int32>2021</x:Int32>
+                                </x:Array>
+                            </Picker.ItemsSource>
+                        </Picker>
+                        <Picker Title="لون المركبة" ItemsSource="{Binding Colors}" SelectedItem="{Binding SelectedColor}"/>
+
+                        <Button Text="التالي"
+                                BackgroundColor="#4CAF50"
+                                TextColor="White"
+                                CornerRadius="12"
+                                HeightRequest="48"
+                                Command="{Binding SaveNewVehicleCommand}"/>
+                    </VerticalStackLayout>
+                </ScrollView>
+            </Frame>
+        </Grid>
+
+        <!-- Service Selection Popup -->
+        <Grid Grid.Row="1" BackgroundColor="#80000000"
+              IsVisible="{Binding IsServicePopupVisible}">
+            <Frame BackgroundColor="White" CornerRadius="24" Padding="16"
+                   VerticalOptions="Center" HorizontalOptions="Center"
+                   WidthRequest="380" MaximumHeightRequest="700">
+                <Grid RowDefinitions="Auto,Auto,Auto,*">
+                    <Label Grid.Row="0" Text="اختر الفئة" FontSize="18" FontAttributes="Bold" HorizontalOptions="Center"/>
+
+                    <SearchBar Grid.Row="1" 
+                               Placeholder="بحث عن صنف"
+                               Text="{Binding ServiceSearchText}"
+                               SearchCommand="{Binding FilterServicesCommand}"/>
+
+                    <HorizontalStackLayout Grid.Row="2" Spacing="8" Margin="0,8">
+                        <Button Text="إنشاء صنف جديد" 
+                                BackgroundColor="#4CAF50" TextColor="White"
+                                CornerRadius="8" Padding="12,4"
+                                Command="{Binding ShowNewServiceFormCommand}"/>
+                    </HorizontalStackLayout>
+
+                    <CollectionView Grid.Row="3" ItemsSource="{Binding FilteredServices}">
+                        <CollectionView.ItemsLayout>
+                            <GridItemsLayout Orientation="Vertical" Span="3" HorizontalItemSpacing="8" VerticalItemSpacing="8"/>
+                        </CollectionView.ItemsLayout>
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="models:ServiceItem">
+                                <Frame BackgroundColor="White" BorderColor="#E0E0E0" CornerRadius="12" Padding="12">
+                                    <Frame.GestureRecognizers>
+                                        <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:NewOrderViewModel}}, Path=AddServiceToCartCommand}"
+                                                              CommandParameter="{Binding .}"/>
+                                    </Frame.GestureRecognizers>
+                                    <VerticalStackLayout Spacing="8" HorizontalOptions="Center">
+                                        <Image Source="{Binding Icon}" 
+                                               WidthRequest="48" HeightRequest="48"
+                                               Aspect="AspectFit"/>
+                                        <Label Text="{Binding Name}" FontSize="12" HorizontalOptions="Center"/>
+                                    </VerticalStackLayout>
+                                </Frame>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </Grid>
+            </Frame>
+        </Grid>
+
+        <!-- New Service Form Popup -->
+        <Grid Grid.Row="1" BackgroundColor="#80000000"
+              IsVisible="{Binding NewServiceItem, Converter={StaticResource IsNotNullConverter}}">
+            <Frame BackgroundColor="White" CornerRadius="24" Padding="20"
+                   VerticalOptions="Center" HorizontalOptions="Center"
+                   WidthRequest="340">
+                <ScrollView>
+                    <VerticalStackLayout Spacing="12">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <Label Grid.Column="0" Text="إنشاء صنف جديد" FontSize="18" FontAttributes="Bold"/>
+                            <ImageButton Grid.Column="1" Source="close.png" WidthRequest="24" HeightRequest="24"
+                                         Command="{Binding CloseServicePopupCommand}"/>
+                        </Grid>
+
+                        <Label Text="تفاصيل الصنف" FontSize="14" FontAttributes="Bold"/>
+                        <Frame BorderColor="LightGray" CornerRadius="12" Padding="8">
+                            <Entry Placeholder="اسم المنتج" Text="{Binding NewServiceName}"/>
+                        </Frame>
+                        <Picker Title="الفئة" ItemsSource="{Binding Categories}" SelectedItem="{Binding NewServiceCategory}"/>
+                        <Picker Title="نوع الصنف">
+                            <Picker.ItemsSource>
+                                <x:Array Type="{x:Type x:String}">
+                                    <x:String>Product</x:String>
+                                    <x:String>Service</x:String>
+                                </x:Array>
+                            </Picker.ItemsSource>
+                        </Picker>
+
+                        <Label Text="التسعير:" FontSize="14" FontAttributes="Bold"/>
+                        <HorizontalStackLayout Spacing="8">
+                            <CheckBox IsChecked="{Binding NewServiceIsTaxable}"/>
+                            <Label Text="صنف مفتوح" VerticalOptions="Center"/>
+                        </HorizontalStackLayout>
+                        <Frame BorderColor="LightGray" CornerRadius="12" Padding="8">
+                            <Grid ColumnDefinitions="Auto,*">
+                                <Label Grid.Column="0" Text="SAR" TextColor="Green" VerticalOptions="Center" Margin="0,0,8,0"/>
+                                <Entry Grid.Column="1" Placeholder="السعر" Text="{Binding NewServicePrice}" Keyboard="Numeric"/>
+                            </Grid>
+                        </Frame>
+                        <Frame BorderColor="Green" CornerRadius="12" Padding="8">
+                            <Grid ColumnDefinitions="Auto,*">
+                                <Label Grid.Column="0" Text="SAR" TextColor="Green" VerticalOptions="Center" Margin="0,0,8,0"/>
+                                <Entry Grid.Column="1" Placeholder="التكلفة" Text="{Binding NewServiceCost}" Keyboard="Numeric"/>
+                            </Grid>
+                        </Frame>
+                        <HorizontalStackLayout Spacing="8">
+                            <CheckBox IsChecked="{Binding NewServiceIsTaxable}"/>
+                            <Label Text="تطبيق الضريبة على هذا المنتج" VerticalOptions="Center"/>
+                        </HorizontalStackLayout>
+                        <Picker Title="الضريبة" ItemsSource="{Binding TaxTypes}" SelectedItem="{Binding NewServiceTaxType}"/>
+                        <Grid ColumnDefinitions="*,*">
+                            <Label Grid.Column="0" Text="{Binding NewServicePrice, StringFormat='{0:N2} SAR'}" TextColor="Gray"/>
+                            <Label Grid.Column="1" Text="السعر قبل الضريبة" HorizontalOptions="End" TextColor="Gray"/>
+                        </Grid>
+                        <Grid ColumnDefinitions="*,*">
+                            <Label Grid.Column="0" Text="{Binding NewServiceTotalPrice, StringFormat='{0:N2} SAR'}" TextColor="Gray"/>
+                            <Label Grid.Column="1" Text="السعر شامل الضريبة" HorizontalOptions="End" TextColor="Gray"/>
+                        </Grid>
+
+                        <Button Text="حفظ"
+                                BackgroundColor="#4CAF50"
+                                TextColor="White"
+                                CornerRadius="12"
+                                HeightRequest="48"
+                                Command="{Binding SaveNewServiceCommand}"/>
+                    </VerticalStackLayout>
+                </ScrollView>
+            </Frame>
+        </Grid>
+
+        <!-- Location Selection Popup -->
+        <Grid Grid.Row="1" BackgroundColor="#80000000"
+              IsVisible="{Binding IsLocationPopupVisible}">
+            <Frame BackgroundColor="White" CornerRadius="24" Padding="20"
+                   VerticalOptions="Center" HorizontalOptions="Center"
+                   WidthRequest="300">
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="لون المركبة" FontSize="18" FontAttributes="Bold" HorizontalOptions="Center"/>
+                    <SearchBar Placeholder="البحث عن مركبة"/>
+                    <CollectionView ItemsSource="{Binding Colors}">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate>
+                                <Frame BorderColor="Transparent" Padding="12">
+                                    <Frame.GestureRecognizers>
+                                        <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:NewOrderViewModel}}, Path=SelectLocationCommand}"
+                                                              CommandParameter="{Binding .}"/>
+                                    </Frame.GestureRecognizers>
+                                    <Grid ColumnDefinitions="*,Auto">
+                                        <Label Grid.Column="0" Text="{Binding .}" FontSize="16"/>
+                                        <Ellipse Grid.Column="1" WidthRequest="24" HeightRequest="24" Fill="{Binding ., Converter={StaticResource ColorNameToBrushConverter}}"/>
+                                    </Grid>
+                                </Frame>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </VerticalStackLayout>
+            </Frame>
+        </Grid>
+
+        <!-- Signature Pad -->
+        <Grid Grid.Row="1" BackgroundColor="White"
+              IsVisible="{Binding IsSignaturePadVisible}">
+            <Grid RowDefinitions="Auto,*,Auto">
+                <Label Grid.Row="0" Text="فضلاً، اكتب توقيعك" FontSize="18" 
+                       HorizontalOptions="Center" Margin="0,20"/>
+                <BoxView Grid.Row="1" Color="White"/>
+                <!-- SignaturePad would go here - using a placeholder -->
+                <Editor Grid.Row="1" BackgroundColor="White" Text="{Binding SignatureData}"/>
+                <Grid Grid.Row="2" ColumnDefinitions="*,*" Padding="16">
+                    <Button Grid.Column="0" Text="مسح التوقيع"
+                            BackgroundColor="Transparent" TextColor="Gray"
+                            Command="{Binding ClearSignatureCommand}"/>
+                    <Button Grid.Column="1" Text="حفظ التوقيع"
+                            BackgroundColor="Transparent" TextColor="Green"
+                            Command="{Binding SaveSignatureCommand}"/>
+                </Grid>
+            </Grid>
+        </Grid>
+    </Grid>
+</ContentPage>

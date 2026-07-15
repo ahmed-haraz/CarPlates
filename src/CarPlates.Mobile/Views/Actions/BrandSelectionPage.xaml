@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:CarPlates.Mobile.ViewModels"
+             x:Class="CarPlates.Mobile.Views.Actions.BrandSelectionPage"
+             x:DataType="vm:NewOrderViewModel"
+             FlowDirection="RightToLeft"
+             Title="علامة المركبة"
+             BackgroundColor="White">
+
+    <Grid RowDefinitions="Auto,Auto,*">
+        <Grid Grid.Row="0" Padding="16,12" ColumnDefinitions="Auto,*,Auto">
+            <ImageButton Grid.Column="0" Source="arrow_right.png" WidthRequest="24" HeightRequest="24"/>
+            <Label Grid.Column="1" Text="علامة المركبة" FontSize="18" FontAttributes="Bold" HorizontalOptions="Center"/>
+            <ImageButton Grid.Column="2" Source="arrow_left.png" WidthRequest="24" HeightRequest="24"/>
+        </Grid>
+
+        <SearchBar Grid.Row="1" Placeholder="بحث" Margin="16,8"/>
+
+        <CollectionView Grid.Row="2" ItemsSource="{Binding Brands}">
+            <CollectionView.ItemsLayout>
+                <GridItemsLayout Orientation="Vertical" Span="3" HorizontalItemSpacing="12" VerticalItemSpacing="12"/>
+            </CollectionView.ItemsLayout>
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Frame BorderColor="#E0E0E0" CornerRadius="12" Padding="16" BackgroundColor="White">
+                        <Frame.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:NewOrderViewModel}}, Path=SelectBrandCommand}"
+                                                  CommandParameter="{Binding .}"/>
+                        </Frame.GestureRecognizers>
+                        <VerticalStackLayout Spacing="8" HorizontalOptions="Center">
+                            <Image Source="{Binding ., Converter={StaticResource BrandToImageConverter}}" 
+                                   WidthRequest="48" HeightRequest="48" Aspect="AspectFit"/>
+                            <Label Text="{Binding .}" FontSize="12" HorizontalOptions="Center" HorizontalTextAlignment="Center"/>
+                        </VerticalStackLayout>
+                    </Frame>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </Grid>
+</ContentPage>

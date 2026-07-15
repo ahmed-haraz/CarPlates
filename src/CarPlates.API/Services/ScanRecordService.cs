@@ -47,7 +47,6 @@ public class ScanRecordService(ApplicationDbContext context) : IScanRecordServic
             r.Id,
             r.PlateNumber,
             r.Brand,
-            r.AccessStatus,
             r.ScanTime))];
     }
 
@@ -62,8 +61,7 @@ public class ScanRecordService(ApplicationDbContext context) : IScanRecordServic
             vehicle = new Vehicle
             {
                 PlateNumber = dto.PlateNumber.ToUpperInvariant(),
-                PlateType = dto.PlateType,
-                AccessStatus = "Pending"
+                
             };
             _context.Vehicles.Add(vehicle);
             await _context.SaveChangesAsync();
@@ -72,8 +70,6 @@ public class ScanRecordService(ApplicationDbContext context) : IScanRecordServic
         var record = new ScanRecord
         {
             PlateNumber = dto.PlateNumber.ToUpperInvariant(),
-            PlateType = dto.PlateType,
-            Confidence = dto.Confidence,
             PhotoUrl = dto.PhotoUrl,
             ScannedByUserId = userId,
             DeviceId = dto.DeviceId,
@@ -82,8 +78,7 @@ public class ScanRecordService(ApplicationDbContext context) : IScanRecordServic
             Brand = vehicle.Brand,
             Model = vehicle.Model,
             Color = vehicle.Color,
-            OwnerName = vehicle.OwnerName,
-            AccessStatus = vehicle.AccessStatus
+            OwnerName = vehicle.OwnerName
         };
 
         _context.ScanRecords.Add(record);
@@ -99,11 +94,9 @@ public class ScanRecordService(ApplicationDbContext context) : IScanRecordServic
         var totalScans = await _context.ScanRecords.CountAsync();
         var todayScans = await _context.ScanRecords.CountAsync(s => s.ScanTime >= today);
         var totalVehicles = await _context.Vehicles.CountAsync(v => !v.IsDeleted);
-        var allowed = await _context.Vehicles.CountAsync(v => v.AccessStatus == "Allowed" && !v.IsDeleted);
-        var denied = await _context.Vehicles.CountAsync(v => v.AccessStatus == "Denied" && !v.IsDeleted);
-        var pending = await _context.Vehicles.CountAsync(v => v.AccessStatus == "Pending" && !v.IsDeleted);
+        
 
-        return new DashboardStatisticsDto(totalScans, todayScans, totalVehicles, allowed, denied, pending);
+        return new DashboardStatisticsDto(totalScans, todayScans, totalVehicles);
     }
 
     public async Task<SyncBatchResponseDto> SyncBatchAsync(SyncBatchRequestDto dto, string? userId = null)
@@ -117,8 +110,6 @@ public class ScanRecordService(ApplicationDbContext context) : IScanRecordServic
             {
                 var createDto = new ScanRecordCreateDto(
                     recordDto.PlateNumber,
-                    recordDto.PlateType,
-                    recordDto.Confidence,
                     recordDto.PhotoUrl,
                     null, null, null);
 
@@ -137,13 +128,10 @@ public class ScanRecordService(ApplicationDbContext context) : IScanRecordServic
     private static ScanRecordDto MapToDto(ScanRecord s) => new(
         s.Id,
         s.PlateNumber,
-        s.PlateType,
-        s.Confidence,
         s.PhotoUrl,
         s.ScanTime,
         s.Brand,
         s.Model,
         s.Color,
-        s.OwnerName,
-        s.AccessStatus);
+        s.OwnerName);
 }
