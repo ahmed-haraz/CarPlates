@@ -38,7 +38,7 @@ public record ScanRecordDto(
     int Id,
     string PlateNumber,
     string? PhotoUrl,
-    DateTime ScanTime,
+    DateTime? ScanTime,
     string? Brand,
     string? Model,
     string? Color,
@@ -61,7 +61,7 @@ public record RecentScanDto(
     int Id,
     string PlateNumber,
     string? VehicleBrand,
-    DateTime ScanTime);
+    DateTime? ScanTime);
 
 // Sync DTOs
 public record SyncBatchRequestDto(List<ScanRecordSyncDto> Records);
@@ -83,7 +83,7 @@ public record OwnerDto(
 
 public record ScanRecordSyncDto(
     string PlateNumber,
-    DateTime ScanTime,
+    DateTime? ScanTime,
     string? PhotoUrl);
 
 
