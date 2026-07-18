@@ -5,9 +5,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CarPlates.API.Services;
 
-public class ScanRecordService(ApplicationDbContext context) : IScanRecordService
+public class ScanRecordService(ApplicationDbContext context, ICustomerCarService customerCarService) : IScanRecordService
 {
     private readonly ApplicationDbContext _context = context;
+    private readonly ICustomerCarService _customerCarService = customerCarService;
 
     public async Task<ScanRecordDto?> GetByIdAsync(int id)
     {
@@ -52,47 +53,68 @@ public class ScanRecordService(ApplicationDbContext context) : IScanRecordServic
 
     public async Task<ScanRecordDto> CreateAsync(ScanRecordCreateDto dto, string? userId = null)
     {
-        // Find or create vehicle
-        var vehicle = await _context.Vehicles
-            .FirstOrDefaultAsync(v => v.PlateNumber == dto.PlateNumber && !v.IsDeleted);
+        var plateNumber = dto.PlateNumber.ToUpperInvariant();
+        var userIdLong = long.TryParse(userId, out var uid) ? (long?)uid : null;
+        var now = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
 
-        if (vehicle == null)
+        // Same lookup/registration path as POST customercars/scan, so a plate scanned via
+        // /scans is registered the exact same way (find-or-create customer/branch/car).
+        long? customerCarId = null;
+
+        var existingCar = await _customerCarService.GetByPlateAsync(plateNumber);
+        if (existingCar != null)
         {
-            vehicle = new Vehicle
-            {
-                PlateNumber = dto.PlateNumber.ToUpperInvariant(),
-                
-            };
-            _context.Vehicles.Add(vehicle);
-            await _context.SaveChangesAsync();
+            customerCarId = existingCar.Id;
         }
-
-        var record = new ScanRecord
+        else if (dto.BranchID.HasValue)
         {
-            PlateNumber = dto.PlateNumber.ToUpperInvariant(),
+            var scanDto = new CustomerCarScanDto(
+                plateNumber,
+                dto.BranchID.Value,
+                dto.VIN,
+                dto.Color,
+                dto.VehicleYear,
+                dto.CarMakesID,
+                dto.CarModelID,
+                dto.VehicleType,
+                dto.EngineType,
+                dto.CustomerName_Ar,
+                dto.CustomerName_En,
+                dto.CustomerMobile,
+                dto.CustomerPhone1);
+
+            var registerResult = await _customerCarService.ScanOrRegisterAsync(scanDto, userId);
+            customerCarId = registerResult.Car.Id;
+        }
+        // else: no BranchID supplied, so there's not enough to register a new car - the
+        // scan still gets logged, just with CustomerCarID left null (unregistered plate).
+
+        var scanEvent = new ScanEvent
+        {
+            PlateNumber = plateNumber,
+            CustomerCarID = customerCarId,
             PhotoUrl = dto.PhotoUrl,
-            ScannedByUserId = userId,
             DeviceId = dto.DeviceId,
+            BranchID = dto.BranchID,
             Latitude = dto.Latitude,
             Longitude = dto.Longitude,
-            Brand = vehicle.Brand,
-            Model = vehicle.Model,
-            Color = vehicle.Color,
-            OwnerName = vehicle.OwnerName
+            ScanTime = DateTime.UtcNow,
+            InsertUserID = userIdLong,
+            InsertDateTime = now,
         };
 
-        _context.ScanRecords.Add(record);
+        _context.ScanEvents.Add(scanEvent);
         await _context.SaveChangesAsync();
 
-        // Reload with vehicle
+        var record = await _context.ScanRecords.AsNoTracking().FirstAsync(s => s.Id == scanEvent.Id);
         return MapToDto(record);
     }
 
     public async Task<DashboardStatisticsDto> GetStatisticsAsync()
     {
         var today = DateTime.UtcNow.Date;
-        var totalScans = await _context.ScanRecords.CountAsync();
-        var todayScans = await _context.ScanRecords.CountAsync(s => s.ScanTime >= today);
+        var totalScans = await _context.ScanEvents.CountAsync(s => s.Status == 1);
+        var todayScans = await _context.ScanEvents.CountAsync(s => s.Status == 1 && s.ScanTime >= today);
         var totalVehicles = await _context.Vehicles.CountAsync(v => !v.IsDeleted);
         var totalRegisteredCars = await _context.CustomerCars.CountAsync(c => c.Status == 1);
         var totalCustomers = await _context.WhCustomers.CountAsync(c => !c.Inactive);

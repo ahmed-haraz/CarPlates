@@ -134,6 +134,26 @@ public class EngineTypeLookup
     public int? Status { get; set; }
 }
 
+// ---- dbo.wh_ScanRecords (writable table backing vw_CarsPlatesDashBoard) ----
+public class ScanEvent
+{
+    public long Id { get; set; }
+    public string PlateNumber { get; set; } = string.Empty;
+    public long? CustomerCarID { get; set; }
+    public string? PhotoUrl { get; set; }
+    public DateTime ScanTime { get; set; } = DateTime.UtcNow;
+    public string? DeviceId { get; set; }
+    public int? BranchID { get; set; }
+    public double? Latitude { get; set; }
+    public double? Longitude { get; set; }
+    public string? Notes { get; set; }
+    public byte Status { get; set; } = 1;
+    public long? InsertUserID { get; set; }
+    public long? UpdateUserID { get; set; }
+    public long? InsertDateTime { get; set; }
+    public long? UpdateDateTime { get; set; }
+}
+
 // ---- dbo.VW_WH_CustomerCarsFull (read-only view, see database/002_VW_WH_CustomerCarsFull.sql) ----
 public class CustomerCarFull
 {

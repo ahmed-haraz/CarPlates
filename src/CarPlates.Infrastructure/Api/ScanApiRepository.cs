@@ -94,7 +94,7 @@ public class ScanApiRepository(
         response.EnsureSuccessStatusCode();
 
         var stats = await response.Content.ReadFromJsonAsync<DashboardStatisticsDto>(cancellationToken);
-        return stats ?? new DashboardStatisticsDto(0, 0, 0, 0, 0, 0, 0, 0);
+        return stats ?? new DashboardStatisticsDto(0, 0, 0, 0, 0, 0);
     }
 
     // Shape returned by GET /scans and /scans/{id} - kept private since it's

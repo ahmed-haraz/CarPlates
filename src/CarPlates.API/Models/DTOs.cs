@@ -49,7 +49,21 @@ public record ScanRecordCreateDto(
     string? PhotoUrl,
     string? DeviceId,
     double? Latitude,
-    double? Longitude);
+    double? Longitude,
+    // Optional: only used when the plate isn't in wh_CustomerCars yet, to register it
+    // (via ICustomerCarService.ScanOrRegisterAsync) as part of logging the scan.
+    int? BranchID = null,
+    string? VIN = null,
+    string? Color = null,
+    int? VehicleYear = null,
+    int? CarMakesID = null,
+    int? CarModelID = null,
+    int? VehicleType = null,
+    int? EngineType = null,
+    string? CustomerName_Ar = null,
+    string? CustomerName_En = null,
+    string? CustomerMobile = null,
+    string? CustomerPhone1 = null);
 
 // Dashboard/Stats DTOs
 public record DashboardStatisticsDto(

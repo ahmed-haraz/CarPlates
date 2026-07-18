@@ -22,6 +22,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     public DbSet<VehicleStatusLookup> VehicleStatuses { get; set; } = null!;
     public DbSet<EngineTypeLookup> EngineTypes { get; set; } = null!;
     public DbSet<CustomerCarFull> CustomerCarsFull { get; set; } = null!;
+    public DbSet<ScanEvent> ScanEvents { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -150,6 +151,16 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
             entity.ToView("VW_WH_CustomerCarsFull");
             entity.HasKey(c => c.Id);
             entity.HasIndex(c => c.PlateNumber);
+        });
+
+        builder.Entity<ScanEvent>(entity =>
+        {
+            entity.ToTable("wh_ScanRecords", t => t.ExcludeFromMigrations());
+            entity.HasKey(s => s.Id);
+            entity.Property(s => s.PlateNumber).HasMaxLength(50).IsRequired();
+            entity.Property(s => s.DeviceId).HasMaxLength(200);
+            entity.HasIndex(s => s.PlateNumber);
+            entity.HasIndex(s => s.ScanTime);
         });
     }
 }
