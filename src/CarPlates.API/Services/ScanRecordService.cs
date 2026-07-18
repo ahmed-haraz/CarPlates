@@ -94,9 +94,10 @@ public class ScanRecordService(ApplicationDbContext context) : IScanRecordServic
         var totalScans = await _context.ScanRecords.CountAsync();
         var todayScans = await _context.ScanRecords.CountAsync(s => s.ScanTime >= today);
         var totalVehicles = await _context.Vehicles.CountAsync(v => !v.IsDeleted);
-        
+        var totalRegisteredCars = await _context.CustomerCars.CountAsync(c => c.Status == 1);
+        var totalCustomers = await _context.WhCustomers.CountAsync(c => !c.Inactive);
 
-        return new DashboardStatisticsDto(totalScans, todayScans, totalVehicles);
+        return new DashboardStatisticsDto(totalScans, todayScans, totalVehicles, totalRegisteredCars, totalCustomers);
     }
 
     public async Task<SyncBatchResponseDto> SyncBatchAsync(SyncBatchRequestDto dto, string? userId = null)

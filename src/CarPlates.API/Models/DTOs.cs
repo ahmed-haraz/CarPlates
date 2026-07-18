@@ -55,7 +55,9 @@ public record ScanRecordCreateDto(
 public record DashboardStatisticsDto(
     int TotalScans,
     int TodayScans,
-    int TotalVehicles);
+    int TotalVehicles,
+    int TotalRegisteredCars,
+    int TotalCustomers);
 
 public record RecentScanDto(
     int Id,
@@ -88,3 +90,59 @@ public record ScanRecordSyncDto(
 
 
 public record SyncBatchResponseDto(int SyncedCount, int FailedCount, List<string> Errors);
+
+// ---- Customer Cars (wh_CustomerCars / wh_Customers / wh_CustomersBranch) ----
+
+public record CarMakeDto(int MakeID, string MakeName);
+
+public record CarModelDto(int ModelID, int MakeID, string ModelName);
+
+public record CustomerCarLookupDto(
+    long Id,
+    string? PlateNumber,
+    string? VIN,
+    string? Color,
+    int? VehicleYear,
+    int? CarMakesID,
+    string? MakeName,
+    int? CarModelID,
+    string? ModelName,
+    int? VehicleTypeID,
+    string? VehicleTypeName_En,
+    string? VehicleTypeName_Ar,
+    int? VehicleStatusID,
+    string? VehicleStatusName_En,
+    string? VehicleStatusName_Ar,
+    int? EngineTypeID,
+    string? EngineTypeName_En,
+    string? EngineTypeName_Ar,
+    int? CustomerID,
+    string? CustomerCode,
+    string? CustomerName_Ar,
+    string? CustomerName_En,
+    string? CustomerPhone1,
+    string? CustomerMobile,
+    string? CustomerEmail);
+
+// Sent by the mobile app after a plate scan. PlateNumber is required; everything else
+// is only used if the plate isn't registered yet and a new car/customer must be created.
+public record CustomerCarScanDto(
+    string PlateNumber,
+    int BranchID,
+    string? VIN,
+    string? Color,
+    int? VehicleYear,
+    int? CarMakesID,
+    int? CarModelID,
+    int? VehicleType,
+    int? EngineType,
+    string? CustomerName_Ar,
+    string? CustomerName_En,
+    string? CustomerMobile,
+    string? CustomerPhone1);
+
+public record CustomerCarScanResultDto(
+    CustomerCarLookupDto Car,
+    bool WasNewCar,
+    bool WasNewCustomer,
+    bool WasNewBranchLink);

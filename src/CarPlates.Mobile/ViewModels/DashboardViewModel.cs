@@ -15,10 +15,10 @@ public partial class DashboardViewModel : BaseViewModel
     private readonly IAuthenticationService _authService;
 
     [ObservableProperty]
-    private DashboardStatisticsDto _statistics = new(0, 0, 0, 0, 0, 0);
+    private DashboardStatisticsDto _statistics = new(0, 0, 0, 0, 0, 0, 0, 0);
 
     [ObservableProperty]
-    private List<RecentScanDto> _recentScans = new();
+    private List<RecentScanDto> _recentScans = [];
 
     [ObservableProperty]
     private string _userName = "User";
@@ -39,7 +39,7 @@ public partial class DashboardViewModel : BaseViewModel
             {
                 // Load statistics
                 var statsQuery = new GetDashboardStatisticsQuery();
-                Statistics = await _mediator.Send(statsQuery) ?? new DashboardStatisticsDto(0, 0, 0, 0, 0, 0);
+                Statistics = await _mediator.Send(statsQuery) ?? new DashboardStatisticsDto(0, 0, 0, 0, 0, 0, 0, 0);
 
                 // Load recent scans
                 var recentQuery = new GetRecentScansQuery(5);
@@ -58,7 +58,7 @@ public partial class DashboardViewModel : BaseViewModel
         {
             Console.WriteLine(ex.Message);
         }
-        
+
     }
 
     [RelayCommand]

@@ -6,7 +6,9 @@ public record DashboardStatisticsDto(
     int TotalVehicles,
     int AllowedVehicles,
     int DeniedVehicles,
-    int PendingVehicles);
+    int PendingVehicles,
+    int TotalRegisteredCars,
+    int TotalCustomers);
 
 public record RecentScanDto(
     Guid Id,

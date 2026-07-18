@@ -54,6 +54,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.AddJwtAuthentication(builder.Configuration);
 builder.Services.AddScoped<IVehicleService, VehicleService>();
 builder.Services.AddScoped<IScanRecordService, ScanRecordService>();
+builder.Services.AddScoped<ICustomerCarService, CustomerCarService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IJwtService, JwtService>();
 
