@@ -9,6 +9,11 @@
             <converters:InvertedBoolConverter x:Key="InvertedBoolConverter" />
             <converters:BoolToEyeIconConverter x:Key="BoolToEyeIconConverter" />
             <converters:TorchIconConverter x:Key="TorchIconConverter" />
+            <converters:IsNotNullConverter x:Key="IsNotNullConverter" />
+            <converters:CountToBoolConverter x:Key="CountToBoolConverter" />
+            <converters:ObjectToListConverter x:Key="ObjectToListConverter" />
+            <converters:StringToBoolConverter x:Key="StringToBoolConverter" />
+            <converters:ColorNameToBrushConverter x:Key="ColorNameToBrushConverter" />
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="Resources/Styles/Colors.xaml" />
                 <ResourceDictionary Source="Resources/Styles/Theme.xaml" />

@@ -92,47 +92,6 @@
                     BackgroundColor="{DynamicResource Surface}"
                     Opacity="0.9" />
         </Grid>
-
-        <!-- Vehicle Info Bottom Sheet -->
-        <Border Grid.Row="0"
-                Style="{StaticResource ElevatedCard}"
-                VerticalOptions="End"
-                Margin="16,0,16,80"
-                IsVisible="{Binding ShowVehicleInfo}">
-
-            <Border.GestureRecognizers>
-                <TapGestureRecognizer Command="{Binding DismissVehicleInfoCommand}" />
-            </Border.GestureRecognizers>
-
-            <Grid RowDefinitions="Auto,Auto,Auto,Auto"
-                  ColumnDefinitions="*,Auto">
-                <Label Grid.Row="0"
-                       Grid.Column="0"
-                       Text="{Binding VehicleInfo.PlateNumber}"
-                       Style="{StaticResource Title}" />
-                <Label Grid.Row="0"
-                       Grid.Column="1"
-                       Text="{Binding VehicleInfo.AccessStatus}"
-                       TextColor="{StaticResource Success}"
-                       FontAttributes="Bold" />
-
-                <Label Grid.Row="1"
-                       Grid.Column="0"
-                       Grid.ColumnSpan="2"
-                       Text="{Binding VehicleInfo.Brand}"
-                       Style="{StaticResource Body}" />
-                <Label Grid.Row="2"
-                       Grid.Column="0"
-                       Grid.ColumnSpan="2"
-                       Text="{Binding VehicleInfo.Model}"
-                       Style="{StaticResource Caption}" />
-                <Label Grid.Row="3"
-                       Grid.Column="0"
-                       Grid.ColumnSpan="2"
-                       Text="{Binding VehicleInfo.OwnerName}"
-                       Style="{StaticResource Caption}" />
-            </Grid>
-        </Border>
     </Grid>
 
 </ContentPage>

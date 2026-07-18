@@ -6,7 +6,7 @@ using System.Collections.ObjectModel;
 
 namespace CarPlates.Mobile.ViewModels;
 
-public partial class NewOrderViewModel : BaseViewModel
+public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
 {
     [ObservableProperty] private Vehicle _selectedVehicle;
     [ObservableProperty] private Customer _selectedCustomer;
@@ -59,6 +59,7 @@ public partial class NewOrderViewModel : BaseViewModel
     public ObservableCollection<string> EngineTypes => AppData.EngineTypes;
     public ObservableCollection<string> Colors => AppData.Colors;
     public ObservableCollection<string> Categories => AppData.ServiceCategories;
+    public ObservableCollection<string> TaxTypes { get; } = new() { "VAT", "معفى من الضريبة" };
     public ObservableCollection<Vehicle> Vehicles => AppData.Vehicles;
     public ObservableCollection<Customer> Customers => AppData.Customers;
     public ObservableCollection<ServiceItem> ServiceItems => AppData.ServiceItems;
@@ -67,6 +68,17 @@ public partial class NewOrderViewModel : BaseViewModel
     {
         Title = "إضافة سيارة جديدة";
         LoadInitialData();
+    }
+
+    // Replaces Shell's [QueryProperty]/routing-based parameter passing. When the scanner
+    // couldn't find a vehicle for the detected plate, it navigates here with the plate
+    // number already known so the user doesn't have to retype it in the "Add Vehicle" form.
+    public virtual void ApplyQueryAttributes(IDictionary<string, object> query)
+    {
+        if (query.TryGetValue("plateNumber", out var value) && value is string plate && !string.IsNullOrWhiteSpace(plate))
+        {
+            NewPlateNumber = plate;
+        }
     }
 
     private void LoadInitialData()

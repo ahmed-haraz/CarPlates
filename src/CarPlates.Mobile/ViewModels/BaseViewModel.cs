@@ -1,11 +1,19 @@
 using CarPlates.Mobile.Navigation;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 
 namespace CarPlates.Mobile.ViewModels;
 
 public abstract partial class BaseViewModel(INavigationService navigation) : ObservableObject
 {
     protected readonly INavigationService Navigation = navigation;
+
+    // Used by the header back-arrow on pages that swap the app's root (e.g. the
+    // scan-outcome screens), since those pages aren't pushed onto a navigation
+    // stack and so can't simply be popped.
+    [RelayCommand]
+    private async Task GoBack() => await Navigation.GoToMainRootAsync();
+
     [ObservableProperty]
     private bool _isBusy;
 

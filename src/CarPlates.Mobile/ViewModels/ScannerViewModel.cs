@@ -1,4 +1,3 @@
-using CarPlates.Application.Common.DTOs;
 using CarPlates.Application.Common.Interfaces;
 using CarPlates.Application.Scanner.Commands;
 using CarPlates.Domain.ValueObjects;
@@ -33,12 +32,6 @@ public partial class ScannerViewModel : BaseViewModel
 
     [ObservableProperty]
     private CameraFacing _cameraFacing = CameraFacing.Back;
-
-    [ObservableProperty]
-    private bool _showVehicleInfo;
-
-    [ObservableProperty]
-    private VehicleDetailsDto? _vehicleInfo;
 
     [ObservableProperty]
     private string _detectedPlate = string.Empty;
@@ -81,7 +74,6 @@ public partial class ScannerViewModel : BaseViewModel
         }
 
         IsScanning = true;
-        ShowVehicleInfo = false;
         ScanStatus = AppResources.PointCameraAtPlate;
         await _cameraService.StartPreviewAsync();
     }
@@ -166,6 +158,14 @@ public partial class ScannerViewModel : BaseViewModel
 
     private async Task ProcessScanAsync(PlateNumber plateNumber)
     {
+        // Hard gate: never call the lookup API unless the scanned/typed value
+        // actually matches a recognized car-plate format.
+        if (!_plateRecognitionService.IsValidPlate(plateNumber.Value))
+        {
+            ScanStatus = AppResources.InvalidPlateNumber;
+            return;
+        }
+
         await ExecuteAsync(async () =>
         {
             var command = new ScanVehicleCommand(
@@ -176,24 +176,17 @@ public partial class ScannerViewModel : BaseViewModel
 
             var result = await _mediator.Send(command);
 
+            await StopScanningAsync();
+
             if (result.Success && result.VehicleInfo != null)
             {
-                VehicleInfo = result.VehicleInfo;
-                ShowVehicleInfo = true;
                 _loggingService.LogScanner(plateNumber.Value, plateNumber.Confidence, true);
-
-                // Auto-resume if enabled
-                var autoResume = await _settingsService.GetAutoResumeAsync();
-                if (autoResume)
-                {
-                    await Task.Delay(3000);
-                    ShowVehicleInfo = false;
-                }
+                await Navigation.GoToCarDataAsync(result.VehicleInfo);
             }
             else
             {
                 _loggingService.LogScanner(plateNumber.Value, plateNumber.Confidence, false);
-                ScanStatus = result.ErrorMessage ?? AppResources.VehicleNotFound;
+                await Navigation.GoToCustomerDataAsync(plateNumber.Value);
             }
         });
     }
@@ -256,13 +249,6 @@ public partial class ScannerViewModel : BaseViewModel
     }
 
     [RelayCommand]
-    private void DismissVehicleInfo()
-    {
-        ShowVehicleInfo = false;
-        ScanStatus = AppResources.PointCameraAtPlate;
-    }
-
-    [RelayCommand]
     private async Task ManualEntryAsync()
     {
         if (IsBusy) return;
@@ -284,12 +270,9 @@ public partial class ScannerViewModel : BaseViewModel
         DetectionConfidence = recognitionResult.PlateNumber.Confidence;
         ScanStatus = string.Format(AppResources.DetectedFormat, DetectedPlate);
 
-        // ProcessScanAsync owns its own busy/error state, since it performs
-        // the actual vehicle-lookup API call - continue on to it either way
-        // so manual entry always reaches the API, not just camera scans.
-
-        await Navigation.GoToMainDataAsync();
-
-        // await ProcessScanAsync(recognitionResult.PlateNumber);
+        // ProcessScanAsync owns its own busy/error state and re-validates the
+        // plate format before ever calling the API, so manual entry goes
+        // through the exact same gated path as camera/document scans.
+        await ProcessScanAsync(recognitionResult.PlateNumber);
     }
 }

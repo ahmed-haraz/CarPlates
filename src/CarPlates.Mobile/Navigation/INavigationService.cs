@@ -1,3 +1,4 @@
+using CarPlates.Application.Common.DTOs;
 using CarPlates.Mobile.ViewModels;
 
 namespace CarPlates.Mobile.Navigation;
@@ -16,11 +17,15 @@ public interface INavigationService
     Task GoToMainRootAsync();
 
 
-    Task GoToCarDataAsync();
+    /// <summary>Swaps the app's root to the "vehicle found" screen, pre-filled with the
+    /// details returned by the plate lookup API (matches the design where the vehicle
+    /// card is already known/populated).</summary>
+    Task GoToCarDataAsync(VehicleDetailsDto vehicleInfo);
 
-    Task GoToCustomerDataAsync();
-
-    Task GoToMainDataAsync();
+    /// <summary>Swaps the app's root to the manual "add customer / add vehicle" screen,
+    /// used when the plate lookup found no matching vehicle. The detected plate number
+    /// (if any) is pre-filled so the user doesn't have to retype it.</summary>
+    Task GoToCustomerDataAsync(string? plateNumber = null);
 
 
     /// <summary>Pushes the page paired with <typeparamref name="TViewModel"/> (by naming convention) onto the active navigation stack.</summary>

@@ -95,6 +95,7 @@ public static class MauiProgram
         builder.Services.AddTransient<SettingsViewModel>();
         builder.Services.AddTransient<ProfileViewModel>();
         builder.Services.AddTransient<NewOrderViewModel>();
+        builder.Services.AddTransient<CarDataViewModel>();
 
         // Views
         builder.Services.AddTransient<SplashPage>();
@@ -107,6 +108,7 @@ public static class MauiProgram
         builder.Services.AddTransient<ProfilePage>();
         builder.Services.AddTransient<AboutPage>();
         builder.Services.AddTransient<NewOrderPage>();
+        builder.Services.AddTransient<CarDataPage>();
         builder.Services.AddTransient<MainTabbedPage>();
 
         // Logging

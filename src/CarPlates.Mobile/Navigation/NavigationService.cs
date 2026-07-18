@@ -1,3 +1,4 @@
+using CarPlates.Application.Common.DTOs;
 using CarPlates.Mobile.Views.Actions;
 using CarPlates.Mobile.Views.Login;
 using CarPlates.Mobile.Views.Main;
@@ -127,21 +128,31 @@ public class NavigationService(IServiceProvider serviceProvider) : INavigationSe
         return pageType;
     }
 
-    public Task GoToCarDataAsync()
+    public Task GoToCarDataAsync(VehicleDetailsDto vehicleInfo)
     {
-        throw new NotImplementedException();
+        var carDataPage = _serviceProvider.GetRequiredService<Views.Actions.CarDataPage>();
+        carDataPage.FlowDirection = Localization.LocalizationResourceManager.Instance.FlowDirection;
+
+        if (carDataPage.BindingContext is IQueryAttributable queryAware)
+        {
+            queryAware.ApplyQueryAttributes(new Dictionary<string, object> { ["vehicleInfo"] = vehicleInfo });
+        }
+
+        CurrentWindow.Page = carDataPage;
+        return Task.CompletedTask;
     }
 
-    public Task GoToCustomerDataAsync()
+    public Task GoToCustomerDataAsync(string? plateNumber = null)
     {
-        throw new NotImplementedException();
-    }
+        var newOrderPage = _serviceProvider.GetRequiredService<NewOrderPage>();
+        newOrderPage.FlowDirection = Localization.LocalizationResourceManager.Instance.FlowDirection;
 
-    public Task GoToMainDataAsync()
-    {
-        var mainPage = _serviceProvider.GetRequiredService<NewOrderPage>();
-        mainPage.FlowDirection = Localization.LocalizationResourceManager.Instance.FlowDirection;
-        CurrentWindow.Page = mainPage;
+        if (!string.IsNullOrWhiteSpace(plateNumber) && newOrderPage.BindingContext is IQueryAttributable queryAware)
+        {
+            queryAware.ApplyQueryAttributes(new Dictionary<string, object> { ["plateNumber"] = plateNumber });
+        }
+
+        CurrentWindow.Page = newOrderPage;
         return Task.CompletedTask;
     }
 }
