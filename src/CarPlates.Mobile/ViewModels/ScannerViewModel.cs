@@ -181,7 +181,10 @@ public partial class ScannerViewModel : BaseViewModel
             if (result.Success && result.VehicleInfo != null)
             {
                 _loggingService.LogScanner(plateNumber.Value, plateNumber.Confidence, true);
-                await Navigation.GoToCarDataAsync(result.VehicleInfo);
+                await Navigation.PushAsync<VehicleDetailsViewModel>(new Dictionary<string, object>
+                {
+                    ["plateNumber"] = plateNumber.Value
+                });
             }
             else
             {

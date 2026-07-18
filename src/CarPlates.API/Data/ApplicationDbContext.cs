@@ -6,7 +6,6 @@ namespace CarPlates.API.Data;
 public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
     : DbContext(options)
 {
-    public DbSet<Vehicle> Vehicles { get; set; } = null!;
     public DbSet<ScanRecord> ScanRecords { get; set; } = null!;
     public DbSet<fw_Users> FwUsers { get; set; } = null!;
 
@@ -39,20 +38,6 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
             entity.Property(u => u.UserFullName_Ar).HasMaxLength(256);
             entity.Property(u => u.UserFullName_En).HasMaxLength(256);
             entity.Property(u => u.email).HasMaxLength(256);
-        });
-
-        builder.Entity<Vehicle>(entity =>
-        {
-            entity.ToView("VW_WH_VEHICLES");
-            entity.HasKey(v => v.Id);
-            entity.HasIndex(v => v.PlateNumber).IsUnique();
-            entity.Property(v => v.PlateNumber).HasMaxLength(50);
-            entity.Property(v => v.Brand).HasMaxLength(100);
-            entity.Property(v => v.Model).HasMaxLength(100);
-            entity.Property(v => v.Color).HasMaxLength(50);
-            entity.Property(v => v.OwnerName).HasMaxLength(200);
-            entity.HasQueryFilter(v => !v.IsDeleted);
-            
         });
 
         builder.Entity<ScanRecord>(entity =>

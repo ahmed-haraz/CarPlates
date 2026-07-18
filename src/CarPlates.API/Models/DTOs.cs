@@ -10,7 +10,7 @@ public record RegisterRequestDto(string Username, string Email, string Password,
 
 // Vehicle DTOs
 public record VehicleDto(
-    int Id,
+    long Id,
     string PlateNumber,
     string? Brand,
     string? Model,
@@ -36,7 +36,7 @@ public record VehicleUpdateDto(
 
 // Scan Record DTOs
 public record ScanRecordDto(
-    int Id,
+    long Id,
     string PlateNumber,
     string? PhotoUrl,
     DateTime? ScanTime,
@@ -75,7 +75,7 @@ public record DashboardStatisticsDto(
     int TotalCustomers);
 
 public record RecentScanDto(
-    int Id,
+    long Id,
     string PlateNumber,
     string? VehicleBrand,
     DateTime? ScanTime);

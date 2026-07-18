@@ -2,7 +2,7 @@ namespace CarPlates.API.Models;
 
 public class ScanRecord
 {
-    public int Id { get; set; } 
+    public long Id { get; set; } 
     public string PlateNumber { get; set; } = string.Empty;
     public string? PhotoUrl { get; set; }
     public DateTime? ScanTime { get; set; } = DateTime.UtcNow;

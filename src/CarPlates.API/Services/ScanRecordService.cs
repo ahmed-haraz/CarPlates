@@ -10,7 +10,7 @@ public class ScanRecordService(ApplicationDbContext context, ICustomerCarService
     private readonly ApplicationDbContext _context = context;
     private readonly ICustomerCarService _customerCarService = customerCarService;
 
-    public async Task<ScanRecordDto?> GetByIdAsync(int id)
+    public async Task<ScanRecordDto?> GetByIdAsync(long id)
     {
         var record = await _context.ScanRecords
             .AsNoTracking()
@@ -115,7 +115,7 @@ public class ScanRecordService(ApplicationDbContext context, ICustomerCarService
         var today = DateTime.UtcNow.Date;
         var totalScans = await _context.ScanEvents.CountAsync(s => s.Status == 1);
         var todayScans = await _context.ScanEvents.CountAsync(s => s.Status == 1 && s.ScanTime >= today);
-        var totalVehicles = await _context.Vehicles.CountAsync(v => !v.IsDeleted);
+        var totalVehicles = await _context.CustomerCarsFull.CountAsync(c => c.CarStatus != 0);
         var totalRegisteredCars = await _context.CustomerCars.CountAsync(c => c.Status == 1);
         var totalCustomers = await _context.WhCustomers.CountAsync(c => !c.Inactive);
 
