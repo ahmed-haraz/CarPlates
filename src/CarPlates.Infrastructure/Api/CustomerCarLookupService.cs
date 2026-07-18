@@ -1,4 +1,5 @@
 using CarPlates.Application.Common.Interfaces;
+using CarPlates.Shared.Constants;
 using Microsoft.Extensions.Logging;
 using System.Net.Http.Json;
 
@@ -22,7 +23,7 @@ public class CustomerCarLookupService(
         {
             _logger.LogInformation("Scanning customer car: {PlateNumber}", request.PlateNumber);
 
-            var response = await Client.PostAsJsonAsync("customercars/scan", request, cancellationToken);
+            var response = await Client.PostAsJsonAsync("customercars/scan", request, ApiJsonOptions.Default, cancellationToken);
             stopwatch.Stop();
 
             if (!response.IsSuccessStatusCode)
@@ -32,7 +33,7 @@ public class CustomerCarLookupService(
                 return new CustomerCarScanResult(false, request.PlateNumber, null, null, null, null, null, null, null, false, false, false, $"API error: {error}");
             }
 
-            var result = await response.Content.ReadFromJsonAsync<ScanApiResponse>(cancellationToken);
+            var result = await response.Content.ReadFromJsonAsync<ScanApiResponse>(ApiJsonOptions.Default, cancellationToken);
             _loggingService.LogApi("customercars/scan", true, stopwatch.ElapsedMilliseconds);
 
             if (result?.Car == null)
@@ -67,13 +68,13 @@ public class CustomerCarLookupService(
 
     public async Task<IReadOnlyList<CarMakeResult>> GetMakesAsync(CancellationToken cancellationToken = default)
     {
-        var makes = await Client.GetFromJsonAsync<List<MakeApiResponse>>("customercars/makes", cancellationToken);
+        var makes = await Client.GetFromJsonAsync<List<MakeApiResponse>>("customercars/makes", ApiJsonOptions.Default, cancellationToken);
         return makes?.Select(m => new CarMakeResult(m.MakeID, m.MakeName)).ToList() ?? [];
     }
 
     public async Task<IReadOnlyList<CarModelResult>> GetModelsAsync(int makeId, CancellationToken cancellationToken = default)
     {
-        var models = await Client.GetFromJsonAsync<List<ModelApiResponse>>($"customercars/models/{makeId}", cancellationToken);
+        var models = await Client.GetFromJsonAsync<List<ModelApiResponse>>($"customercars/models/{makeId}", ApiJsonOptions.Default, cancellationToken);
         return models?.Select(m => new CarModelResult(m.ModelID, m.MakeID, m.ModelName)).ToList() ?? [];
     }
 

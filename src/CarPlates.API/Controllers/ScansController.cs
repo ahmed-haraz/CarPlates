@@ -29,8 +29,8 @@ public class ScansController(IScanRecordService scanService) : ControllerBase
         return Ok(records);
     }
 
-    [HttpGet("{id:long}")]
-    public async Task<ActionResult<ScanRecordDto>> GetById(long id)
+    [HttpGet("{id:int}")]
+    public async Task<ActionResult<ScanRecordDto>> GetById(int id)
     {
         var record = await _scanService.GetByIdAsync(id);
         if (record == null) return NotFound();

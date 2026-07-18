@@ -3,6 +3,7 @@ using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using CarPlates.Application.Common.DTOs;
 using CarPlates.Application.Common.Interfaces;
+using CarPlates.Shared.Constants;
 
 namespace CarPlates.Infrastructure.Api.Authentication;
 
@@ -70,7 +71,7 @@ public class AuthDelegatingHandler(ITokenStorage tokenStorage, IApiUrlProvider a
                 return response;
             }
 
-            var result = await refreshResponse.Content.ReadFromJsonAsync<LoginResponseDto>(cancellationToken);
+            var result = await refreshResponse.Content.ReadFromJsonAsync<LoginResponseDto>(ApiJsonOptions.Default, cancellationToken);
             if (result == null)
             {
                 await _tokenStorage.ClearTokensAsync();
@@ -97,7 +98,7 @@ public class AuthDelegatingHandler(ITokenStorage tokenStorage, IApiUrlProvider a
         var refreshUri = new Uri(apiBaseUri, "auth/refresh");
         return new HttpRequestMessage(HttpMethod.Post, refreshUri)
         {
-            Content = JsonContent.Create(new RefreshTokenRequestDto(refreshToken))
+            Content = JsonContent.Create(new RefreshTokenRequestDto(refreshToken), options: ApiJsonOptions.Default)
         };
     }
 

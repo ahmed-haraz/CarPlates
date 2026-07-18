@@ -1,5 +1,6 @@
 using CarPlates.Application.Common.DTOs;
 using CarPlates.Application.Common.Interfaces;
+using CarPlates.Shared.Constants;
 using Microsoft.Extensions.Logging;
 using System.Net.Http.Json;
 using System.Web;
@@ -25,7 +26,7 @@ public class ScanApiRepository(
         if (response.StatusCode == System.Net.HttpStatusCode.NotFound) return null;
         response.EnsureSuccessStatusCode();
 
-        var api = await response.Content.ReadFromJsonAsync<ApiScanRecordDto>(cancellationToken);
+        var api = await response.Content.ReadFromJsonAsync<ApiScanRecordDto>(ApiJsonOptions.Default, cancellationToken);
         return api?.ToScanRecordDto();
     }
 
@@ -43,7 +44,7 @@ public class ScanApiRepository(
         var response = await Client.GetAsync($"scans?{query}", cancellationToken);
         response.EnsureSuccessStatusCode();
 
-        var api = await response.Content.ReadFromJsonAsync<List<ApiScanRecordDto>>(cancellationToken) ?? [];
+        var api = await response.Content.ReadFromJsonAsync<List<ApiScanRecordDto>>(ApiJsonOptions.Default, cancellationToken) ?? [];
         return api.Select(s => s.ToScanRecordDto()).ToList();
     }
 
@@ -52,7 +53,7 @@ public class ScanApiRepository(
         var response = await Client.GetAsync($"scans/recent?count={count}", cancellationToken);
         response.EnsureSuccessStatusCode();
 
-        var api = await response.Content.ReadFromJsonAsync<List<ApiRecentScanDto>>(cancellationToken) ?? [];
+        var api = await response.Content.ReadFromJsonAsync<List<ApiRecentScanDto>>(ApiJsonOptions.Default, cancellationToken) ?? [];
         return api.Select(s => new RecentScanDto(s.Id, s.PlateNumber, s.VehicleBrand, s.AccessStatus, s.ScanTime)).ToList();
     }
 
@@ -80,10 +81,10 @@ public class ScanApiRepository(
             Longitude = (double?)null
         };
 
-        var response = await Client.PostAsJsonAsync("scans", request, cancellationToken);
+        var response = await Client.PostAsJsonAsync("scans", request, ApiJsonOptions.Default, cancellationToken);
         response.EnsureSuccessStatusCode();
 
-        var api = await response.Content.ReadFromJsonAsync<ApiScanRecordDto>(cancellationToken);
+        var api = await response.Content.ReadFromJsonAsync<ApiScanRecordDto>(ApiJsonOptions.Default, cancellationToken);
         return api?.ToScanRecordDto()
             ?? new ScanRecordDto(Guid.Empty, dto.PlateNumber, dto.PlateType, dto.Confidence, dto.PhotoPath, DateTime.UtcNow, null, null, null, null, null);
     }
@@ -93,7 +94,7 @@ public class ScanApiRepository(
         var response = await Client.GetAsync("dashboard/statistics", cancellationToken);
         response.EnsureSuccessStatusCode();
 
-        var stats = await response.Content.ReadFromJsonAsync<DashboardStatisticsDto>(cancellationToken);
+        var stats = await response.Content.ReadFromJsonAsync<DashboardStatisticsDto>(ApiJsonOptions.Default, cancellationToken);
         return stats ?? new DashboardStatisticsDto(0, 0, 0, 0, 0, 0,0,0);
     }
 

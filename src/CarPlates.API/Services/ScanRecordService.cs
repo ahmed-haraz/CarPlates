@@ -10,7 +10,7 @@ public class ScanRecordService(ApplicationDbContext context, ICustomerCarService
     private readonly ApplicationDbContext _context = context;
     private readonly ICustomerCarService _customerCarService = customerCarService;
 
-    public async Task<ScanRecordDto?> GetByIdAsync(long id)
+    public async Task<ScanRecordDto?> GetByIdAsync(int id)
     {
         var record = await _context.ScanRecords
             .AsNoTracking()

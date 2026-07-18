@@ -1,5 +1,6 @@
 using CarPlates.Application.Common.DTOs;
 using CarPlates.Application.Common.Interfaces;
+using CarPlates.Shared.Constants;
 using Microsoft.Extensions.Logging;
 using System.Net.Http.Json;
 
@@ -27,7 +28,7 @@ public class AuthenticationService(
             _logger.LogInformation("Attempting login for user: {Username}", username);
 
             var request = new LoginRequestDto(username, password);
-            var response = await Client.PostAsJsonAsync("Auth/login", request, cancellationToken);
+            var response = await Client.PostAsJsonAsync("Auth/login", request, ApiJsonOptions.Default, cancellationToken);
 
             if (!response.IsSuccessStatusCode)
             {
@@ -36,7 +37,7 @@ public class AuthenticationService(
                 return new AuthResult(false, null, null, $"Login failed: {error}", null!);
             }
 
-            var result = await response.Content.ReadFromJsonAsync<LoginResponseDto>(cancellationToken);
+            var result = await response.Content.ReadFromJsonAsync<LoginResponseDto>(ApiJsonOptions.Default, cancellationToken);
             if (result == null)
             {
                 return new AuthResult(false, null, null, "Invalid response from server", null!);
@@ -60,7 +61,7 @@ public class AuthenticationService(
         try
         {
             var request = new RefreshTokenRequestDto(refreshToken);
-            var response = await Client.PostAsJsonAsync("auth/refresh", request, cancellationToken);
+            var response = await Client.PostAsJsonAsync("auth/refresh", request, ApiJsonOptions.Default, cancellationToken);
 
             if (!response.IsSuccessStatusCode)
             {
@@ -68,7 +69,7 @@ public class AuthenticationService(
                 return new AuthResult(false, null, null, "Token refresh failed", null!);
             }
 
-            var result = await response.Content.ReadFromJsonAsync<LoginResponseDto>(cancellationToken);
+            var result = await response.Content.ReadFromJsonAsync<LoginResponseDto>(ApiJsonOptions.Default, cancellationToken);
             if (result == null) return new AuthResult(false, null, null, "Invalid refresh response", null!);
 
             await _tokenStorage.SaveTokenAsync(result.AccessToken, result.RefreshToken);
@@ -112,7 +113,7 @@ public class AuthenticationService(
                 return null;
             }
 
-            var user = await response.Content.ReadFromJsonAsync<UserDto>(cancellationToken);
+            var user = await response.Content.ReadFromJsonAsync<UserDto>(ApiJsonOptions.Default, cancellationToken);
             if (user != null)
             {
                 await _tokenStorage.SaveCurrentUserAsync(user);
@@ -136,6 +137,7 @@ public class AuthenticationService(
                 await Client.PostAsJsonAsync(
                     "Auth/logout",
                     new RefreshTokenRequestDto(refreshToken),
+                    ApiJsonOptions.Default,
                     cancellationToken);
             }
         }

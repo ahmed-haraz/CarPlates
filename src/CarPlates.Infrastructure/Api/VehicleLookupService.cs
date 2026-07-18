@@ -1,4 +1,5 @@
 using CarPlates.Application.Common.Interfaces;
+using CarPlates.Shared.Constants;
 using Microsoft.Extensions.Logging;
 using System.Net.Http.Json;
 
@@ -40,7 +41,7 @@ public class VehicleLookupService(
                 return new VehicleLookupResult(false, plateNumber, null, null, null, null, null, $"API error: {error}");
             }
 
-            var vehicle = await response.Content.ReadFromJsonAsync<VehicleApiResponse>(cancellationToken);
+            var vehicle = await response.Content.ReadFromJsonAsync<VehicleApiResponse>(ApiJsonOptions.Default, cancellationToken);
             _loggingService.LogApi($"vehicles/{plateNumber}", true, stopwatch.ElapsedMilliseconds);
 
             if (vehicle == null)

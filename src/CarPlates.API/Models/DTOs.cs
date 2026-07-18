@@ -10,7 +10,7 @@ public record RegisterRequestDto(string Username, string Email, string Password,
 
 // Vehicle DTOs
 public record VehicleDto(
-    long Id,
+    int Id,
     string PlateNumber,
     string? Brand,
     string? Model,
