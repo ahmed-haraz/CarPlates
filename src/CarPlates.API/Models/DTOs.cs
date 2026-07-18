@@ -19,6 +19,7 @@ public record VehicleDto(
 
 public record VehicleCreateDto(
     string PlateNumber,
+    int BranchID,
     string? Brand,
     string? Model,
     string? Color,

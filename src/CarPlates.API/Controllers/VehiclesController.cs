@@ -47,6 +47,11 @@ public class VehiclesController(IVehicleService vehicleService, ILogger<Vehicles
     [Authorize(Roles = "Admin,Operator")]
     public async Task<ActionResult<VehicleDto>> Create([FromBody] VehicleCreateDto dto)
     {
+        if (dto.BranchID <= 0)
+        {
+            return BadRequest(new { Message = "BranchID is required" });
+        }
+
         if (await _vehicleService.ExistsAsync(dto.PlateNumber))
         {
             return Conflict(new { Message = "Vehicle with this plate number already exists" });
@@ -73,4 +78,6 @@ public class VehiclesController(IVehicleService vehicleService, ILogger<Vehicles
         if (!result) return NotFound();
         return NoContent();
     }
+
+    
 }
