@@ -14,11 +14,13 @@ public class VehiclesController(IVehicleService vehicleService, ILogger<Vehicles
     private readonly ILogger<VehiclesController> _logger = logger;
 
     [HttpGet]
-    public async Task<ActionResult<IReadOnlyList<VehicleDto>>> GetAll(
+    public async Task<ActionResult<PagedResult<VehicleDto>>> GetAll(
         [FromQuery] string? search = null,
-        [FromQuery] string? status = null)
+        [FromQuery] string? status = null,
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 20)
     {
-        var vehicles = await _vehicleService.GetAllAsync(search, status);
+        var vehicles = await _vehicleService.GetAllAsync(search, status, page, pageSize);
         return Ok(vehicles);
     }
 

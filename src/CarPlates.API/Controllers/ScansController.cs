@@ -13,12 +13,14 @@ public class ScansController(IScanRecordService scanService) : ControllerBase
     private readonly IScanRecordService _scanService = scanService;
 
     [HttpGet]
-    public async Task<ActionResult<IReadOnlyList<ScanRecordDto>>> GetAll(
+    public async Task<ActionResult<PagedResult<ScanRecordDto>>> GetAll(
         [FromQuery] string? plateNumber = null,
         [FromQuery] DateTime? startDate = null,
-        [FromQuery] DateTime? endDate = null)
+        [FromQuery] DateTime? endDate = null,
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 20)
     {
-        var records = await _scanService.GetAllAsync(plateNumber, startDate, endDate);
+        var records = await _scanService.GetAllAsync(plateNumber, startDate, endDate, page, pageSize);
         return Ok(records);
     }
 

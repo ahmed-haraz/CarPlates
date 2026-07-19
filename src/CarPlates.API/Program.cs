@@ -55,6 +55,9 @@ builder.Services.AddJwtAuthentication(builder.Configuration);
 builder.Services.AddScoped<IVehicleService, VehicleService>();
 builder.Services.AddScoped<IScanRecordService, ScanRecordService>();
 builder.Services.AddScoped<ICustomerCarService, CustomerCarService>();
+builder.Services.AddScoped<IWorkshopLookupService, WorkshopLookupService>();
+builder.Services.AddScoped<IItemService, ItemService>();
+builder.Services.AddScoped<IBillService, BillService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IJwtService, JwtService>();
 

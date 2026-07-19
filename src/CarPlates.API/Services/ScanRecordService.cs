@@ -1,3 +1,4 @@
+using CarPlates.API.Common;
 using CarPlates.API.Data;
 using CarPlates.API.Interface;
 using CarPlates.API.Models;
@@ -19,7 +20,7 @@ public class ScanRecordService(ApplicationDbContext context, ICustomerCarService
         return record == null ? null : MapToDto(record);
     }
 
-    public async Task<IReadOnlyList<ScanRecordDto>> GetAllAsync(string? plateNumber = null, DateTime? startDate = null, DateTime? endDate = null)
+    public async Task<PagedResult<ScanRecordDto>> GetAllAsync(string? plateNumber = null, DateTime? startDate = null, DateTime? endDate = null, int page = 1, int pageSize = 20)
     {
         IQueryable<ScanRecord> query = _context.ScanRecords.AsNoTracking();
 
@@ -32,8 +33,12 @@ public class ScanRecordService(ApplicationDbContext context, ICustomerCarService
         if (endDate.HasValue)
             query = query.Where(s => s.ScanTime <= endDate.Value);
 
-        var records = await query.OrderByDescending(s => s.ScanTime).ToListAsync();
-        return records.Select(MapToDto).ToList();
+        query = query.OrderByDescending(s => s.ScanTime);
+
+        var paged = await query.ToPagedResultAsync(page, pageSize);
+        var items = paged.Items.Select(MapToDto).ToList();
+
+        return new PagedResult<ScanRecordDto>(items, paged.TotalCount, paged.Page, paged.PageSize, paged.TotalPages);
     }
 
     public async Task<IReadOnlyList<RecentScanDto>> GetRecentAsync(int count = 10)

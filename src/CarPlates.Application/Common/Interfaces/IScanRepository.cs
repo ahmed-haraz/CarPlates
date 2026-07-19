@@ -9,10 +9,12 @@ public interface IScanRepository
 {
     Task<ScanRecordDto?> GetByIdAsync(int id, CancellationToken cancellationToken = default);
 
-    Task<IReadOnlyList<ScanRecordDto>> GetAllAsync(
+    Task<PaginatedResult<ScanRecordDto>> GetAllAsync(
         string? plateNumber = null,
         DateTime? startDate = null,
         DateTime? endDate = null,
+        int page = 1,
+        int pageSize = 20,
         CancellationToken cancellationToken = default);
 
     Task<IReadOnlyList<RecentScanDto>> GetRecentAsync(int count, CancellationToken cancellationToken = default);

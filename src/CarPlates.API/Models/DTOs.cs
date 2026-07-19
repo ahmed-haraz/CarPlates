@@ -151,3 +151,74 @@ public record CustomerCarScanResultDto(
     bool WasNewCar,
     bool WasNewCustomer,
     bool WasNewBranchLink);
+
+// ---- Workshop lookups (wh_CarsTechnicians / wh_Cars_WorkLocations) ----
+
+public record TechnicianDto(int Id, int? Code, string? Name_Ar, string? Name_En);
+
+public record WorkLocationDto(int Id, int? Code, string? Name_Ar, string? Name_En);
+
+// ---- Items (vw_wh_ItemBarCodes) ----
+
+public record ItemBarCodeDto(
+    long Id,
+    int? Code,
+    string? Name_Ar,
+    string? Name_En,
+    string ItemBarCode,
+    int? Package,
+    string? PackageName,
+    double? PackagePrice,
+    int? ItemGroupId,
+    string? ItemGroupName_Ar,
+    string? ItemGroupName_En,
+    double? ItemTax,
+    byte? Status);
+
+// ---- Bills (wh_TransHeader / wh_TransDetails) ----
+
+public record CreateBillDetailDto(
+    string ItemBarCode,
+    long ItemID,
+    int? Package,
+    double Qty,
+    double Price,
+    double? DetailDiscount1 = null,
+    double? DetailTax = null,
+    string? DetailNotes = null);
+
+public record CreateBillDto(
+    int? BranchID,
+    int? CustomerId,
+    int? EngineerId,
+    int? CarHeaderId,
+    int? StoreId,
+    byte? PayType,
+    string? Notes,
+    IReadOnlyList<CreateBillDetailDto> Details);
+
+public record BillDetailDto(
+    long DetailId,
+    long ItemID,
+    string ItemBarCode,
+    int? Package,
+    double Qty,
+    double Price,
+    double? DetailDiscount1,
+    double? DetailTax,
+    double? Value);
+
+public record BillDto(
+    long HeaderId,
+    string? DocTransNo,
+    int? BranchID,
+    int? CustomerId,
+    int? EngineerId,
+    int? CarHeaderId,
+    double Total,
+    double NetTotal,
+    double Paid,
+    double Balance,
+    byte? PayType,
+    string? Notes,
+    IReadOnlyList<BillDetailDto> Details);

@@ -5,7 +5,7 @@ namespace CarPlates.API.Interface;
 public interface IScanRecordService
 {
     Task<ScanRecordDto?> GetByIdAsync(int id);
-    Task<IReadOnlyList<ScanRecordDto>> GetAllAsync(string? plateNumber = null, DateTime? startDate = null, DateTime? endDate = null);
+    Task<PagedResult<ScanRecordDto>> GetAllAsync(string? plateNumber = null, DateTime? startDate = null, DateTime? endDate = null, int page = 1, int pageSize = 20);
     Task<IReadOnlyList<RecentScanDto>> GetRecentAsync(int count = 10);
     Task<ScanRecordDto> CreateAsync(ScanRecordCreateDto dto, string? userId = null);
     Task<DashboardStatisticsDto> GetStatisticsAsync();

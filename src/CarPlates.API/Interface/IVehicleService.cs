@@ -6,7 +6,7 @@ public interface IVehicleService
 {
     Task<VehicleDto?> GetByPlateNumberAsync(string plateNumber);
     Task<VehicleDto?> GetByIdAsync(int id);
-    Task<IReadOnlyList<VehicleDto>> GetAllAsync(string? search = null, string? status = null);
+    Task<PagedResult<VehicleDto>> GetAllAsync(string? search = null, string? status = null, int page = 1, int pageSize = 20);
     Task<VehicleDto> CreateAsync(VehicleCreateDto dto);
     Task<VehicleDto?> UpdateAsync(int id, VehicleUpdateDto dto);
     Task<bool> DeleteAsync(int id);

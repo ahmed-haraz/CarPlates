@@ -30,22 +30,36 @@ public class ScanApiRepository(
         return api?.ToScanRecordDto();
     }
 
-    public async Task<IReadOnlyList<ScanRecordDto>> GetAllAsync(
+    public async Task<PaginatedResult<ScanRecordDto>> GetAllAsync(
         string? plateNumber = null,
         DateTime? startDate = null,
         DateTime? endDate = null,
+        int page = 1,
+        int pageSize = 20,
         CancellationToken cancellationToken = default)
     {
         var query = HttpUtility.ParseQueryString(string.Empty);
         if (!string.IsNullOrWhiteSpace(plateNumber)) query["plateNumber"] = plateNumber;
         if (startDate.HasValue) query["startDate"] = startDate.Value.ToString("o");
         if (endDate.HasValue) query["endDate"] = endDate.Value.ToString("o");
+        query["page"] = page.ToString();
+        query["pageSize"] = pageSize.ToString();
 
         var response = await Client.GetAsync($"scans?{query}", cancellationToken);
         response.EnsureSuccessStatusCode();
 
-        var api = await response.Content.ReadFromJsonAsync<List<ApiScanRecordDto>>(ApiJsonOptions.Default, cancellationToken) ?? [];
-        return api.Select(s => s.ToScanRecordDto()).ToList();
+        var api = await response.Content.ReadFromJsonAsync<ApiPagedResult<ApiScanRecordDto>>(ApiJsonOptions.Default, cancellationToken);
+        if (api == null)
+        {
+            return new PaginatedResult<ScanRecordDto>([], 0, page, pageSize, 0);
+        }
+
+        return new PaginatedResult<ScanRecordDto>(
+            api.Items.Select(s => s.ToScanRecordDto()).ToList(),
+            api.TotalCount,
+            api.Page,
+            api.PageSize,
+            api.TotalPages);
     }
 
     public async Task<IReadOnlyList<RecentScanDto>> GetRecentAsync(int count, CancellationToken cancellationToken = default)
@@ -60,9 +74,11 @@ public class ScanApiRepository(
     public async Task<IReadOnlyList<ScanRecordDto>> GetAllByPlateNumberAsync(string plateNumber, CancellationToken cancellationToken = default)
     {
         // The API's plate filter is a "contains" match, so narrow down to
-        // exact matches for a specific vehicle's scan history here.
-        var all = await GetAllAsync(plateNumber, cancellationToken: cancellationToken);
-        return all
+        // exact matches for a specific vehicle's scan history here. This is a bounded,
+        // single-vehicle lookup rather than a paged list surface, so pull one generously
+        // sized page (the server's max) instead of exposing paging here too.
+        var page = await GetAllAsync(plateNumber, page: 1, pageSize: 100, cancellationToken: cancellationToken);
+        return page.Items
             .Where(s => string.Equals(s.PlateNumber, plateNumber, StringComparison.OrdinalIgnoreCase))
             .OrderByDescending(s => s.ScanTime)
             .ToList();
@@ -118,4 +134,7 @@ public class ScanApiRepository(
     }
 
     private record ApiRecentScanDto(int Id, string PlateNumber, string? VehicleBrand, string? AccessStatus, DateTime ScanTime);
+
+    // Shape returned by the server's PagedResult<T> wrapper (see CarPlates.API.Models.PagedResult).
+    private record ApiPagedResult<T>(List<T> Items, int TotalCount, int Page, int PageSize, int TotalPages);
 }

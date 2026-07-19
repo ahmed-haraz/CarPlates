@@ -23,6 +23,12 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     public DbSet<CustomerCarFull> CustomerCarsFull { get; set; } = null!;
     public DbSet<ScanEvent> ScanEvents { get; set; } = null!;
 
+    public DbSet<CarsTechnician> CarsTechnicians { get; set; } = null!;
+    public DbSet<WorkLocation> WorkLocations { get; set; } = null!;
+    public DbSet<ItemBarCodeView> ItemBarCodes { get; set; } = null!;
+    public DbSet<TransHeader> TransHeaders { get; set; } = null!;
+    public DbSet<TransDetail> TransDetails { get; set; } = null!;
+
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
@@ -146,6 +152,46 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
             entity.Property(s => s.DeviceId).HasMaxLength(200);
             entity.HasIndex(s => s.PlateNumber);
             entity.HasIndex(s => s.ScanTime);
+        });
+
+        builder.Entity<CarsTechnician>(entity =>
+        {
+            entity.ToView("wh_CarsTechnicians");
+            entity.HasKey(t => t.Id);
+        });
+
+        builder.Entity<WorkLocation>(entity =>
+        {
+            entity.ToView("wh_Cars_WorkLocations");
+            entity.HasKey(w => w.Id);
+        });
+
+        builder.Entity<ItemBarCodeView>(entity =>
+        {
+            entity.ToView("vw_wh_ItemBarCodes");
+            entity.HasNoKey();
+        });
+
+        builder.Entity<TransHeader>(entity =>
+        {
+            entity.ToTable("wh_TransHeader", t => t.ExcludeFromMigrations());
+            entity.HasKey(h => h.HeaderId);
+            entity.Property(h => h.Terminal_ID).HasMaxLength(200);
+            entity.Property(h => h.DocTransNo).HasMaxLength(50);
+            entity.Property(h => h.Notes).HasMaxLength(200);
+            entity.HasIndex(h => h.CustomerId);
+            entity.HasIndex(h => h.CarHeaderId);
+            entity.HasMany(h => h.Details)
+                  .WithOne(d => d.Header)
+                  .HasForeignKey(d => d.HeaderId);
+        });
+
+        builder.Entity<TransDetail>(entity =>
+        {
+            entity.ToTable("wh_TransDetails", t => t.ExcludeFromMigrations());
+            entity.HasKey(d => d.DetailId);
+            entity.Property(d => d.ItemBarCode).HasMaxLength(25).IsRequired();
+            entity.HasIndex(d => d.HeaderId);
         });
     }
 }

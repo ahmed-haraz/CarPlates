@@ -16,12 +16,10 @@ public class GetScanHistoryHandler(IScanRepository scanRepository)
         var endDate = request.EndDate;
         var plateFilter = string.IsNullOrWhiteSpace(request.SearchQuery) ? null : request.SearchQuery;
 
-        var scans = await _scanRepository.GetAllAsync(plateFilter, startDate, endDate, cancellationToken);
-        var totalCount = scans.Count;
+        var scans = await _scanRepository.GetAllAsync(
+            plateFilter, startDate, endDate, request.Page, request.PageSize, cancellationToken);
 
-        var paged = scans
-            .Skip((request.Page - 1) * request.PageSize)
-            .Take(request.PageSize)
+        var items = scans.Items
             .Select(s => new ScanRecordListDto(
                 s.Id,
                 s.PlateNumber,
@@ -32,8 +30,6 @@ public class GetScanHistoryHandler(IScanRepository scanRepository)
                 s.AccessStatus))
             .ToList();
 
-        var totalPages = (int)Math.Ceiling((double)totalCount / request.PageSize);
-
-        return new PaginatedResult<ScanRecordListDto>(paged, totalCount, request.Page, request.PageSize, totalPages);
+        return new PaginatedResult<ScanRecordListDto>(items, scans.TotalCount, scans.Page, scans.PageSize, scans.TotalPages);
     }
 }

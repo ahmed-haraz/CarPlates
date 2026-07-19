@@ -9,10 +9,3 @@ public record GetScanHistoryQuery(
     DateTime? EndDate = null,
     int Page = 1,
     int PageSize = 20) : IRequest<PaginatedResult<ScanRecordListDto>>;
-
-public record PaginatedResult<T>(
-    IReadOnlyList<T> Items,
-    int TotalCount,
-    int Page,
-    int PageSize,
-    int TotalPages);

@@ -1,3 +1,4 @@
+using CarPlates.API.Common;
 using CarPlates.API.Data;
 using CarPlates.API.Interface;
 using CarPlates.API.Models;
@@ -29,7 +30,7 @@ public class VehicleService(ApplicationDbContext context, ICustomerCarService cu
         return car == null ? null : MapToDto(car);
     }
 
-    public async Task<IReadOnlyList<VehicleDto>> GetAllAsync(string? search = null, string? status = null)
+    public async Task<PagedResult<VehicleDto>> GetAllAsync(string? search = null, string? status = null, int page = 1, int pageSize = 20)
     {
         var query = _context.CustomerCarsFull.AsNoTracking().Where(c => c.CarStatus != 0);
 
@@ -47,8 +48,12 @@ public class VehicleService(ApplicationDbContext context, ICustomerCarService cu
             query = query.Where(c => c.VehicleStatusName_En == status || c.VehicleStatusName_Ar == status);
         }
 
-        var cars = await query.OrderByDescending(c => c.InsertDateTime).ToListAsync();
-        return cars.Select(MapToDto).ToList();
+        query = query.OrderByDescending(c => c.InsertDateTime);
+
+        var paged = await query.ToPagedResultAsync(page, pageSize);
+        var items = paged.Items.Select(MapToDto).ToList();
+
+        return new PagedResult<VehicleDto>(items, paged.TotalCount, paged.Page, paged.PageSize, paged.TotalPages);
     }
 
     public async Task<VehicleDto> CreateAsync(VehicleCreateDto dto)
