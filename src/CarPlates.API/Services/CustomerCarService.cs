@@ -41,7 +41,28 @@ public class CustomerCarService(ApplicationDbContext context) : ICustomerCarServ
         return [.. models.Select(m => new CarModelDto(m.ModelID, m.MakeID, m.ModelName))];
     }
 
-    public async Task<CustomerCarScanResultDto> ScanOrRegisterAsync(CustomerCarScanDto dto, string? userId)
+    public async Task<CustomerCarScanResultDto> ScanAsync(CustomerCarScanDto dto, string? userId)
+    {
+        var normalizedPlate = dto.PlateNumber.Trim().ToUpperInvariant();
+
+        var existing = await _context.CustomerCarsFull
+            .AsNoTracking()
+            .FirstOrDefaultAsync(c => c.PlateNumber == normalizedPlate);
+
+        if (existing != null)
+        {
+            return new CustomerCarScanResultDto(MapToDto(existing), WasNewCar: false, WasNewCustomer: false, WasNewBranchLink: false);
+        }
+
+        // Unregistered plate: no wh_Customers/wh_CustomersBranch/wh_CustomerCars rows are
+        // created here anymore. The scan is still recorded, but only in wh_ScanRecords via
+        // the separate scans endpoint - registering a customer/car is now a deliberate,
+        // separate action (RegisterAsync below) rather than an automatic side effect of
+        // scanning.
+        return new CustomerCarScanResultDto(Car: null, WasNewCar: false, WasNewCustomer: false, WasNewBranchLink: false);
+    }
+
+    public async Task<CustomerCarScanResultDto> RegisterAsync(CustomerCarScanDto dto, string? userId)
     {
         var normalizedPlate = dto.PlateNumber.Trim().ToUpperInvariant();
         var userIdLong = long.TryParse(userId, out var uid) ? (long?)uid : null;

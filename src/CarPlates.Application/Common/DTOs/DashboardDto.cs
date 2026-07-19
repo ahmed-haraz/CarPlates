@@ -11,7 +11,7 @@ public record DashboardStatisticsDto(
     int TotalCustomers);
 
 public record RecentScanDto(
-    Guid Id,
+    int Id,
     string PlateNumber,
     string? VehicleBrand,
     string? AccessStatus,

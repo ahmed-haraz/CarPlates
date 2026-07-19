@@ -45,26 +45,16 @@ public record ScanRecordDto(
     string? Color,
     string? OwnerName);
 
+// Scanning a plate only ever writes a wh_ScanRecords row (see ScanRecordService.CreateAsync).
+// It never creates/updates wh_Customers, wh_CustomersBranch, or wh_CustomerCars - registering
+// a car is a separate, deliberate action via CustomerCarsController's "scan"+RegisterAsync path.
 public record ScanRecordCreateDto(
     string PlateNumber,
     string? PhotoUrl,
     string? DeviceId,
     double? Latitude,
     double? Longitude,
-    // Optional: only used when the plate isn't in wh_CustomerCars yet, to register it
-    // (via ICustomerCarService.ScanOrRegisterAsync) as part of logging the scan.
-    int? BranchID = null,
-    string? VIN = null,
-    string? Color = null,
-    int? VehicleYear = null,
-    int? CarMakesID = null,
-    int? CarModelID = null,
-    int? VehicleType = null,
-    int? EngineType = null,
-    string? CustomerName_Ar = null,
-    string? CustomerName_En = null,
-    string? CustomerMobile = null,
-    string? CustomerPhone1 = null);
+    int BranchID);
 
 // Dashboard/Stats DTOs
 public record DashboardStatisticsDto(
@@ -157,7 +147,7 @@ public record CustomerCarScanDto(
     string? CustomerPhone1);
 
 public record CustomerCarScanResultDto(
-    CustomerCarLookupDto Car,
+    CustomerCarLookupDto? Car,
     bool WasNewCar,
     bool WasNewCustomer,
     bool WasNewBranchLink);

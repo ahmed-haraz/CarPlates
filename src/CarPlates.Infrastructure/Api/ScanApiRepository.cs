@@ -20,7 +20,7 @@ public class ScanApiRepository(
     private HttpClient Client => _httpClientFactory.CreateClient("CarPlatesApi");
     private readonly ILogger<ScanApiRepository> _logger = logger;
 
-    public async Task<ScanRecordDto?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
+    public async Task<ScanRecordDto?> GetByIdAsync(int id, CancellationToken cancellationToken = default)
     {
         var response = await Client.GetAsync($"scans/{id}", cancellationToken);
         if (response.StatusCode == System.Net.HttpStatusCode.NotFound) return null;
@@ -86,7 +86,7 @@ public class ScanApiRepository(
 
         var api = await response.Content.ReadFromJsonAsync<ApiScanRecordDto>(ApiJsonOptions.Default, cancellationToken);
         return api?.ToScanRecordDto()
-            ?? new ScanRecordDto(Guid.Empty, dto.PlateNumber, dto.PlateType, dto.Confidence, dto.PhotoPath, DateTime.UtcNow, null, null, null, null, null);
+            ?? new ScanRecordDto(0, dto.PlateNumber, dto.PlateType, dto.Confidence, dto.PhotoPath, DateTime.UtcNow, null, null, null, null, null);
     }
 
     public async Task<DashboardStatisticsDto> GetStatisticsAsync(CancellationToken cancellationToken = default)
@@ -101,7 +101,7 @@ public class ScanApiRepository(
     // Shape returned by GET /scans and /scans/{id} - kept private since it's
     // purely a wire format, mapped straight into the app's ScanRecordDto.
     private record ApiScanRecordDto(
-        Guid Id,
+        int Id,
         string PlateNumber,
         string PlateType,
         float Confidence,
@@ -117,5 +117,5 @@ public class ScanApiRepository(
             Id, PlateNumber, PlateType, Confidence, PhotoUrl, ScanTime, Brand, Model, Color, OwnerName, AccessStatus);
     }
 
-    private record ApiRecentScanDto(Guid Id, string PlateNumber, string? VehicleBrand, string? AccessStatus, DateTime ScanTime);
+    private record ApiRecentScanDto(int Id, string PlateNumber, string? VehicleBrand, string? AccessStatus, DateTime ScanTime);
 }

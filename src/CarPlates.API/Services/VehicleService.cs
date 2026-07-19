@@ -73,7 +73,7 @@ public class VehicleService(ApplicationDbContext context, ICustomerCarService cu
             CustomerMobile: dto.OwnerPhone,
             CustomerPhone1: dto.OwnerPhone);
 
-        var result = await _customerCarService.ScanOrRegisterAsync(scanDto, userId: null);
+        var result = await _customerCarService.RegisterAsync(scanDto, userId: null);
         return MapToDto(result.Car);
     }
 

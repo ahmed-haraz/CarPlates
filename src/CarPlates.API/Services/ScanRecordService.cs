@@ -57,8 +57,10 @@ public class ScanRecordService(ApplicationDbContext context, ICustomerCarService
         var userIdLong = long.TryParse(userId, out var uid) ? (long?)uid : null;
         var now = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
 
-        // Same lookup/registration path as POST customercars/scan, so a plate scanned via
-        // /scans is registered the exact same way (find-or-create customer/branch/car).
+        // Plain lookup only - if the plate is already registered in wh_CustomerCars, link
+        // the scan to it. If it isn't, CustomerCarID is left null: scanning an unregistered
+        // plate never creates a wh_Customers/wh_CustomersBranch/wh_CustomerCars row anymore,
+        // it only ever writes the wh_ScanRecords row below.
         long? customerCarId = null;
 
         var existingCar = await _customerCarService.GetByPlateAsync(plateNumber);
@@ -66,28 +68,6 @@ public class ScanRecordService(ApplicationDbContext context, ICustomerCarService
         {
             customerCarId = existingCar.Id;
         }
-        else if (dto.BranchID.HasValue)
-        {
-            var scanDto = new CustomerCarScanDto(
-                plateNumber,
-                dto.BranchID.Value,
-                dto.VIN,
-                dto.Color,
-                dto.VehicleYear,
-                dto.CarMakesID,
-                dto.CarModelID,
-                dto.VehicleType,
-                dto.EngineType,
-                dto.CustomerName_Ar,
-                dto.CustomerName_En,
-                dto.CustomerMobile,
-                dto.CustomerPhone1);
-
-            var registerResult = await _customerCarService.ScanOrRegisterAsync(scanDto, userId);
-            customerCarId = registerResult.Car.Id;
-        }
-        // else: no BranchID supplied, so there's not enough to register a new car - the
-        // scan still gets logged, just with CustomerCarID left null (unregistered plate).
 
         var scanEvent = new ScanEvent
         {
@@ -134,7 +114,7 @@ public class ScanRecordService(ApplicationDbContext context, ICustomerCarService
                 var createDto = new ScanRecordCreateDto(
                     recordDto.PlateNumber,
                     recordDto.PhotoUrl,
-                    null, null, null);
+                    null, null, null,100);
 
                 await CreateAsync(createDto, userId);
                 synced++;

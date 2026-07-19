@@ -1,7 +1,7 @@
 namespace CarPlates.Application.Common.DTOs;
 
 public record ScanRecordDto(
-    Guid Id,
+    int Id,
     string PlateNumber,
     string PlateType,
     float Confidence,
@@ -14,7 +14,7 @@ public record ScanRecordDto(
     string? AccessStatus);
 
 public record ScanRecordListDto(
-    Guid Id,
+    int Id,
     string PlateNumber,
     string PlateType,
     float Confidence,

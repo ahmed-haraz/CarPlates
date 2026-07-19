@@ -28,22 +28,15 @@ public class CustomerCarsController(ICustomerCarService customerCarService, ILog
 
     /// <summary>
     /// Main mobile entry point: scan a plate. Returns the existing car+customer if the plate
-    /// is already registered, otherwise registers the customer (if new), the branch link
-    /// (if new), and the car, then returns the result with flags describing what was created.
+    /// is already registered. If it isn't, Car comes back null and nothing is written to
+    /// wh_Customers/wh_CustomersBranch/wh_CustomerCars - the scan itself is recorded
+    /// separately, in wh_ScanRecords only, by the caller.
     /// </summary>
     [HttpPost("scan")]
     public async Task<ActionResult<CustomerCarScanResultDto>> Scan([FromBody] CustomerCarScanDto dto)
     {
         var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
-        var result = await _customerCarService.ScanOrRegisterAsync(dto, userId);
-
-        if (result.WasNewCar)
-        {
-            _logger.LogInformation(
-                "Registered new car {PlateNumber} (newCustomer={NewCustomer}, newBranchLink={NewBranchLink})",
-                dto.PlateNumber, result.WasNewCustomer, result.WasNewBranchLink);
-        }
-
+        var result = await _customerCarService.ScanAsync(dto, userId);
         return Ok(result);
     }
 

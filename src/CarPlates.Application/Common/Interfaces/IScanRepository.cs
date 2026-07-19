@@ -7,7 +7,7 @@ namespace CarPlates.Application.Common.Interfaces;
 // (timeouts, connectivity failures) rather than local storage errors.
 public interface IScanRepository
 {
-    Task<ScanRecordDto?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
+    Task<ScanRecordDto?> GetByIdAsync(int id, CancellationToken cancellationToken = default);
 
     Task<IReadOnlyList<ScanRecordDto>> GetAllAsync(
         string? plateNumber = null,

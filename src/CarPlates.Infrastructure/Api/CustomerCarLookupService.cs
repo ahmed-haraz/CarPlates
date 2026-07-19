@@ -36,9 +36,16 @@ public class CustomerCarLookupService(
             var result = await response.Content.ReadFromJsonAsync<ScanApiResponse>(ApiJsonOptions.Default, cancellationToken);
             _loggingService.LogApi("customercars/scan", true, stopwatch.ElapsedMilliseconds);
 
-            if (result?.Car == null)
+            if (result == null)
             {
                 return new CustomerCarScanResult(false, request.PlateNumber, null, null, null, null, null, null, null, false, false, false, "Invalid response");
+            }
+
+            if (result.Car == null)
+            {
+                // Legitimate "not registered" outcome, not an error - scanning no longer
+                // auto-registers a customer/car, so an unmatched plate is expected here.
+                return new CustomerCarScanResult(false, request.PlateNumber, null, null, null, null, null, null, null, false, false, false, null);
             }
 
             var car = result.Car;
@@ -78,7 +85,7 @@ public class CustomerCarLookupService(
         return models?.Select(m => new CarModelResult(m.ModelID, m.MakeID, m.ModelName)).ToList() ?? [];
     }
 
-    private record ScanApiResponse(CarApiResponse Car, bool WasNewCar, bool WasNewCustomer, bool WasNewBranchLink);
+    private record ScanApiResponse(CarApiResponse? Car, bool WasNewCar, bool WasNewCustomer, bool WasNewBranchLink);
 
     private record CarApiResponse(
         long Id,
