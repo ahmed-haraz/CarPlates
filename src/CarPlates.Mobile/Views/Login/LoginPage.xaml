@@ -7,21 +7,28 @@
              x:DataType="vm:LoginViewModel"
              NavigationPage.HasNavigationBar="False">
 
-    <Grid RowDefinitions="Auto,*" BackgroundColor="{DynamicResource Background}">
+    <Grid RowDefinitions="Auto,*"
+          BackgroundColor="{DynamicResource Background}">
         <Border Grid.Row="0"
-               Style="{StaticResource HeroCard}"
-               Margin="20,24,20,0">
+                Style="{StaticResource HeroCard}"
+                Margin="20,24,20,0">
             <Grid RowDefinitions="*,Auto">
-                <VerticalStackLayout VerticalOptions="Center" Spacing="10">
+                <VerticalStackLayout VerticalOptions="Center"
+                                     Spacing="10">
                     <Border BackgroundColor="{StaticResource AccentSoft}"
-                           WidthRequest="76"
-                           HeightRequest="76"
-                           StrokeShape="RoundRectangle 24"
-                           Padding="0"
-                           HorizontalOptions="Start">
-                        <Label Text="🚘" FontSize="40" HorizontalOptions="Center" VerticalOptions="Center" />
+                            WidthRequest="76"
+                            HeightRequest="76"
+                            StrokeShape="RoundRectangle 24"
+                            Padding="0"
+                            HorizontalOptions="Start">
+                        <Label Text="🚘"
+                               FontSize="40"
+                               HorizontalOptions="Center"
+                               VerticalOptions="Center" />
                     </Border>
-                    <Label Text="SMART PLATE ACCESS" Style="{StaticResource Eyebrow}" TextColor="{StaticResource Accent}" />
+                    <Label Text="SMART PLATE ACCESS"
+                           Style="{StaticResource Eyebrow}"
+                           TextColor="{StaticResource Accent}" />
                     <Label Text="{loc:Translate Key=AppName}"
                            Style="{StaticResource Headline}"
                            TextColor="White" />
@@ -33,23 +40,29 @@
         </Border>
 
         <ScrollView Grid.Row="1">
-            <VerticalStackLayout Padding="20,28" Spacing="18">
+            <VerticalStackLayout Padding="20,28"
+                                 Spacing="18">
                 <VerticalStackLayout Spacing="4">
-                    <Label Text="{loc:Translate Key=WelcomeBack}" Style="{StaticResource Title}" />
-                    <Label Text="Securely continue to your vehicle scanning workspace." Style="{StaticResource Subtitle}" />
+                    <Label Text="{loc:Translate Key=WelcomeBack}"
+                           Style="{StaticResource Title}" />
+                    <Label Text="Securely continue to your vehicle scanning workspace."
+                           Style="{StaticResource Subtitle}" />
                 </VerticalStackLayout>
 
                 <Border BackgroundColor="{StaticResource Error}"
-                       Padding="14"
-                       IsVisible="{Binding HasError}"
-                       StrokeShape="RoundRectangle 18">
-                    <Label Text="{Binding ErrorMessage}" TextColor="White" FontSize="14" />
+                        Padding="14"
+                        IsVisible="{Binding HasError}"
+                        StrokeShape="RoundRectangle 18">
+                    <Label Text="{Binding ErrorMessage}"
+                           TextColor="White"
+                           FontSize="14" />
                 </Border>
 
                 <Border Style="{StaticResource Card}">
                     <VerticalStackLayout Spacing="14">
                         <VerticalStackLayout Spacing="4">
-                            <Label Text="{loc:Translate Key=Username}" Style="{StaticResource Eyebrow}" />
+                            <Label Text="{loc:Translate Key=Username}"
+                                   Style="{StaticResource Eyebrow}" />
                             <Entry Text="{Binding Username}"
                                    Placeholder="{loc:Translate Key=EnterUsername}"
                                    Style="{StaticResource FormEntry}"
@@ -57,8 +70,10 @@
                         </VerticalStackLayout>
 
                         <VerticalStackLayout Spacing="4">
-                            <Label Text="{loc:Translate Key=Password}" Style="{StaticResource Eyebrow}" />
-                            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                            <Label Text="{loc:Translate Key=Password}"
+                                   Style="{StaticResource Eyebrow}" />
+                            <Grid ColumnDefinitions="*,Auto"
+                                  ColumnSpacing="8">
                                 <Entry Grid.Column="0"
                                        Text="{Binding Password}"
                                        Placeholder="{loc:Translate Key=EnterPassword}"

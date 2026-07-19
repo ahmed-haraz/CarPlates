@@ -64,11 +64,32 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
     public ObservableCollection<Customer> Customers => AppData.Customers;
     public ObservableCollection<ServiceItem> ServiceItems => AppData.ServiceItems;
 
+    public ObservableCollection<int> VehicleYears { get; } = new();
+
+    [ObservableProperty]
+    private int selectedVehicleYear;
+
     public NewOrderViewModel(INavigationService navigation) : base(navigation)
     {
         Title = "إضافة سيارة جديدة";
         LoadInitialData();
     }
+
+
+    private void LoadVehicleYears()
+    {
+        VehicleYears.Clear();
+
+        var currentYear = DateTime.Now.Year;
+
+        for (int year = currentYear; year >= 1950; year--)
+        {
+            VehicleYears.Add(year);
+        }
+
+        SelectedVehicleYear = currentYear;
+    }
+
 
     // Replaces Shell's [QueryProperty]/routing-based parameter passing. When the scanner
     // couldn't find a vehicle for the detected plate, it navigates here with the plate
@@ -86,6 +107,7 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
         Locations.Add(new WorkLocation { Id = "1", Name = "كراج", Type = "كراج" });
         Locations.Add(new WorkLocation { Id = "2", Name = "محل", Type = "محل" });
         Technicians.Add(new Technician { Id = "1", Name = "bakr ibrahim" });
+        LoadVehicleYears();
         FilteredServices = new ObservableCollection<ServiceItem>(ServiceItems);
     }
 
