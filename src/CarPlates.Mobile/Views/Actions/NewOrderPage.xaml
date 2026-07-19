@@ -13,7 +13,6 @@
 
         <!-- Header -->
         <Grid Grid.Row="0"
-              BackgroundColor="White"
               Padding="16,12"
               ColumnDefinitions="Auto,*">
 
