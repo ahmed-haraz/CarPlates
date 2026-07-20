@@ -158,6 +158,36 @@ public record TechnicianDto(int Id, int? Code, string? Name_Ar, string? Name_En)
 
 public record WorkLocationDto(int Id, int? Code, string? Name_Ar, string? Name_En);
 
+// ---- Categories (vw_wh_ItemSubGroups) ----
+
+public record CategoryDto(
+    int Id,
+    int? Code,
+    string? Name_Ar,
+    string? Name_En,
+    string? GroupName,
+    int? ParentID,
+    int? BranchID,
+    string? Image);
+
+// ---- Customers (wh_Customers), for search/lookup rather than the full registration flow ----
+
+public record CustomerDto(
+    int Id,
+    string Code,
+    string Name_Ar,
+    string Name_En,
+    string? Mobile,
+    string? Phone1,
+    string? Email,
+    string? Address);
+
+// ---- Vehicle attribute lookups (wh_VehicleType / wh_CarsEngineType) ----
+
+public record VehicleTypeDto(int Id, int? Code, string? Name_Ar, string? Name_En);
+
+public record EngineTypeDto(int Id, int? Code, string? Name_Ar, string? Name_En);
+
 // ---- Items (vw_wh_ItemBarCodes) ----
 
 public record ItemBarCodeDto(

@@ -7,6 +7,8 @@ public interface ICustomerCarService
     Task<CustomerCarLookupDto?> GetByPlateAsync(string plateNumber);
     Task<IReadOnlyList<CarMakeDto>> GetMakesAsync();
     Task<IReadOnlyList<CarModelDto>> GetModelsAsync(int makeId);
+    Task<IReadOnlyList<VehicleTypeDto>> GetVehicleTypesAsync();
+    Task<IReadOnlyList<EngineTypeDto>> GetEngineTypesAsync();
 
     /// <summary>
     /// Looks the plate up in VW_WH_CustomerCarsFull. If it's already registered, returns it

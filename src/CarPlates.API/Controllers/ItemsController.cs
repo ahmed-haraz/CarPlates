@@ -28,10 +28,23 @@ public class ItemsController(IItemService itemService) : ControllerBase
     [HttpGet]
     public async Task<ActionResult<PagedResult<ItemBarCodeDto>>> GetAll(
         [FromQuery] string? search = null,
+        [FromQuery] int? categoryId = null,
         [FromQuery] int page = 1,
         [FromQuery] int pageSize = 20,
         CancellationToken cancellationToken = default)
     {
-        return Ok(await _itemService.GetAllAsync(search, page, pageSize, cancellationToken));
+        return Ok(await _itemService.GetAllAsync(search, categoryId, page, pageSize, cancellationToken));
+    }
+
+    /// <summary>All items belonging to one category (ItemSubGroupId), paginated.</summary>
+    [HttpGet("category/{categoryId:int}")]
+    public async Task<ActionResult<PagedResult<ItemBarCodeDto>>> GetByCategory(
+        int categoryId,
+        [FromQuery] string? search = null,
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 20,
+        CancellationToken cancellationToken = default)
+    {
+        return Ok(await _itemService.GetAllAsync(search, categoryId, page, pageSize, cancellationToken));
     }
 }

@@ -1,3 +1,4 @@
+using CarPlates.Application.Common.Interfaces;
 using CarPlates.Domain.Entities;
 using CarPlates.Mobile.Navigation;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -8,6 +9,14 @@ namespace CarPlates.Mobile.ViewModels;
 
 public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
 {
+    private readonly ICustomerCarLookupService _customerCarLookupService;
+    private readonly IWorkshopLookupService _workshopLookupService;
+    private readonly ICustomerLookupService _customerLookupService;
+    private readonly IItemLookupService _itemLookupService;
+
+    // MakeName -> MakeID, so picking a brand can resolve the real ID needed to fetch models.
+    private readonly Dictionary<string, int> _makeIdsByName = new();
+
     [ObservableProperty] private Vehicle _selectedVehicle;
     [ObservableProperty] private Customer _selectedCustomer;
     [ObservableProperty] private ObservableCollection<CartItem> _cartItems = new();
@@ -50,31 +59,57 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
     [ObservableProperty] private string _newServiceTaxType = "VAT";
     [ObservableProperty] private decimal _newServiceTaxAmount;
     [ObservableProperty] private decimal _newServiceTotalPrice;
+
+    // Loaded from the API instead of seeded locally.
     [ObservableProperty] private ObservableCollection<WorkLocation> _locations = new();
     [ObservableProperty] private ObservableCollection<Technician> _technicians = new();
     [ObservableProperty] private ObservableCollection<string> _availableModels = new();
+    [ObservableProperty] private ObservableCollection<string> _brands = new();
+    [ObservableProperty] private ObservableCollection<string> _vehicleTypes = new();
+    [ObservableProperty] private ObservableCollection<string> _engineTypes = new();
+    [ObservableProperty] private ObservableCollection<Customer> _customers = new();
+    [ObservableProperty] private ObservableCollection<ServiceItem> _serviceItems = new();
+    [ObservableProperty] private ObservableCollection<ItemCategoryOption> _itemCategories = new();
+    [ObservableProperty] private ItemCategoryOption? _selectedItemCategory;
 
-    public ObservableCollection<string> Brands => AppData.VehicleBrands;
-    public ObservableCollection<string> VehicleTypes => AppData.VehicleTypes;
-    public ObservableCollection<string> EngineTypes => AppData.EngineTypes;
-    public ObservableCollection<string> Colors => AppData.Colors;
-    public ObservableCollection<string> Categories => AppData.ServiceCategories;
+    // No API source for a generic color list (wh_CustomerCars.Color is free text) or the
+    // "add a custom service" category list, so these stay local.
+    public ObservableCollection<string> Colors { get; } = new()
+    {
+        "Beige", "Black", "Blue", "Bronze", "Brown", "Gold", "Gray", "Green",
+        "Orange", "Pink", "Purple", "Red", "Silver", "White", "Yellow"
+    };
+    public ObservableCollection<string> Categories { get; } = new()
+    {
+        "منتج التحويل", "الفنين", "فحص", "الميكانيك", "بانزين", "اختبار كاراجي",
+        "قطع غيار", "السمكرة و البويا", "الكهربا", "سيارة صغيرة", "سيارة وسط", "سيارة كبيرة",
+        "ماء الردياتر", "خدمات", "زيوت القير", "اطارات المركبة", "زيوت المحرك", "فلتر الزيت",
+        "فلتر الهواء", "البطاريات", "العناية بالمركبة"
+    };
     public ObservableCollection<string> TaxTypes { get; } = new() { "VAT", "معفى من الضريبة" };
-    public ObservableCollection<Vehicle> Vehicles => AppData.Vehicles;
-    public ObservableCollection<Customer> Customers => AppData.Customers;
-    public ObservableCollection<ServiceItem> ServiceItems => AppData.ServiceItems;
+    public ObservableCollection<Vehicle> Vehicles { get; } = new();
 
     public ObservableCollection<int> VehicleYears { get; } = new();
 
     [ObservableProperty]
     private int selectedVehicleYear;
 
-    public NewOrderViewModel(INavigationService navigation) : base(navigation)
+    public NewOrderViewModel(
+        INavigationService navigation,
+        ICustomerCarLookupService customerCarLookupService,
+        IWorkshopLookupService workshopLookupService,
+        ICustomerLookupService customerLookupService,
+        IItemLookupService itemLookupService) : base(navigation)
     {
-        Title = "إضافة سيارة جديدة";
-        LoadInitialData();
-    }
+        _customerCarLookupService = customerCarLookupService;
+        _workshopLookupService = workshopLookupService;
+        _customerLookupService = customerLookupService;
+        _itemLookupService = itemLookupService;
 
+        Title = "إضافة سيارة جديدة";
+        LoadVehicleYears();
+        _ = LoadInitialDataAsync();
+    }
 
     private void LoadVehicleYears()
     {
@@ -90,7 +125,6 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
         SelectedVehicleYear = currentYear;
     }
 
-
     // Replaces Shell's [QueryProperty]/routing-based parameter passing. When the scanner
     // couldn't find a vehicle for the detected plate, it navigates here with the plate
     // number already known so the user doesn't have to retype it in the "Add Vehicle" form.
@@ -102,18 +136,75 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
         }
     }
 
-    private void LoadInitialData()
+    // Pulls every reference list this form needs straight from the API: car makes,
+    // vehicle/engine types, workshop technicians and locations, item categories, and an
+    // unfiltered first page of the item catalog - nothing here is hardcoded any more.
+    [RelayCommand]
+    private async Task LoadInitialDataAsync()
     {
-        Locations.Add(new WorkLocation { Id = "1", Name = "كراج", Type = "كراج" });
-        Locations.Add(new WorkLocation { Id = "2", Name = "محل", Type = "محل" });
-        Technicians.Add(new Technician { Id = "1", Name = "bakr ibrahim" });
-        LoadVehicleYears();
-        FilteredServices = new ObservableCollection<ServiceItem>(ServiceItems);
+        await ExecuteAsync(async () =>
+        {
+            var makesTask = _customerCarLookupService.GetMakesAsync();
+            var vehicleTypesTask = _customerCarLookupService.GetVehicleTypesAsync();
+            var engineTypesTask = _customerCarLookupService.GetEngineTypesAsync();
+            var techniciansTask = _workshopLookupService.GetTechniciansAsync(pageSize: 100);
+            var locationsTask = _workshopLookupService.GetWorkLocationsAsync(pageSize: 100);
+            var categoriesTask = _itemLookupService.GetCategoriesAsync(pageSize: 100);
+            var itemsTask = _itemLookupService.SearchAsync(pageSize: 50);
+
+            await Task.WhenAll(makesTask, vehicleTypesTask, engineTypesTask, techniciansTask, locationsTask, categoriesTask, itemsTask);
+
+            _makeIdsByName.Clear();
+            Brands.Clear();
+            foreach (var make in makesTask.Result)
+            {
+                Brands.Add(make.MakeName);
+                _makeIdsByName[make.MakeName] = make.MakeID;
+            }
+
+            VehicleTypes.Clear();
+            foreach (var type in vehicleTypesTask.Result)
+            {
+                VehicleTypes.Add(type.Name_En ?? type.Name_Ar ?? string.Empty);
+            }
+
+            EngineTypes.Clear();
+            foreach (var type in engineTypesTask.Result)
+            {
+                EngineTypes.Add(type.Name_En ?? type.Name_Ar ?? string.Empty);
+            }
+
+            Technicians.Clear();
+            foreach (var tech in techniciansTask.Result.Items)
+            {
+                Technicians.Add(new Technician { Id = tech.Id.ToString(), Name = tech.Name_En ?? tech.Name_Ar ?? string.Empty });
+            }
+
+            Locations.Clear();
+            foreach (var location in locationsTask.Result.Items)
+            {
+                Locations.Add(new WorkLocation { Id = location.Id.ToString(), Name = location.Name_En ?? location.Name_Ar ?? string.Empty, Type = location.Name_Ar ?? string.Empty });
+            }
+
+            ItemCategories.Clear();
+            ItemCategories.Add(new ItemCategoryOption(null, "الكل")); // "All" - clears the category filter
+            foreach (var category in categoriesTask.Result.Items)
+            {
+                ItemCategories.Add(new ItemCategoryOption(category.Id, category.Name_En ?? category.Name_Ar ?? string.Empty));
+            }
+
+            ApplyItemResults(itemsTask.Result.Items);
+        });
     }
 
     partial void OnSelectedBrandChanged(string value)
     {
-        UpdateModelsForBrand(value);
+        _ = UpdateModelsForBrandAsync(value);
+    }
+
+    partial void OnSelectedItemCategoryChanged(ItemCategoryOption? value)
+    {
+        _ = FilterServicesAsync();
     }
 
     partial void OnNewServicePriceChanged(decimal value)
@@ -139,31 +230,23 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
         NewServiceTotalPrice = NewServicePrice + NewServiceTaxAmount;
     }
 
-    private void UpdateModelsForBrand(string brand)
+    private async Task UpdateModelsForBrandAsync(string brand)
     {
         AvailableModels.Clear();
-        if (brand == "بي ام دبليو")
+
+        if (string.IsNullOrWhiteSpace(brand) || !_makeIdsByName.TryGetValue(brand, out var makeId))
         {
-            AvailableModels.Add("1 - Series");
-            AvailableModels.Add("2 - Series");
-            AvailableModels.Add("3 - Series");
-            AvailableModels.Add("4 - Series");
-            AvailableModels.Add("5 - Series");
-            AvailableModels.Add("218 اي");
-            AvailableModels.Add("320 اي");
-            AvailableModels.Add("318 اي");
-            AvailableModels.Add("335 اي");
-            AvailableModels.Add("330 اي");
-            AvailableModels.Add("440i");
-            AvailableModels.Add("420 دي");
-            AvailableModels.Add("523 اي");
-            AvailableModels.Add("520i");
-            AvailableModels.Add("520");
+            return;
         }
-        else
+
+        await ExecuteAsync(async () =>
         {
-            AvailableModels.Add("Standard");
-        }
+            var models = await _customerCarLookupService.GetModelsAsync(makeId);
+            foreach (var model in models)
+            {
+                AvailableModels.Add(model.ModelName);
+            }
+        });
     }
 
     [RelayCommand]
@@ -178,20 +261,40 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
         IsCustomerPopupVisible = false;
     }
 
+    // Searches wh_Customers by mobile/phone/name via the API instead of filtering a
+    // hardcoded local list. Multiple matches are left in Customers for the popup to list;
+    // an exact phone match is selected immediately.
     [RelayCommand]
-    private void SearchCustomer()
+    private async Task SearchCustomerAsync()
     {
-        var customer = Customers.FirstOrDefault(c => c.PhoneNumber == SearchPhoneNumber);
-        if (customer != null)
+        await ExecuteAsync(async () =>
         {
-            SelectedCustomer = customer;
-            IsCustomerPopupVisible = false;
-        }
-        else
-        {
-            // Show new customer form within popup
-            NewCustomerPhone = SearchPhoneNumber;
-        }
+            var results = await _customerLookupService.SearchAsync(SearchPhoneNumber, pageSize: 20);
+
+            Customers.Clear();
+            foreach (var c in results.Items)
+            {
+                Customers.Add(new Customer
+                {
+                    FirstName = c.Name_En,
+                    LastName = string.Empty,
+                    PhoneNumber = c.Mobile ?? c.Phone1 ?? string.Empty,
+                    Gender = string.Empty
+                });
+            }
+
+            var exactMatch = Customers.FirstOrDefault(c => c.PhoneNumber == SearchPhoneNumber);
+            if (exactMatch != null)
+            {
+                SelectedCustomer = exactMatch;
+                IsCustomerPopupVisible = false;
+            }
+            else
+            {
+                // No exact match on the server either - offer the new-customer form.
+                NewCustomerPhone = SearchPhoneNumber;
+            }
+        });
     }
 
     [RelayCommand]
@@ -239,7 +342,7 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
             Color = SelectedColor,
             CustomerId = SelectedCustomer?.PhoneNumber
         };
-        AppData.Vehicles.Add(vehicle);
+        Vehicles.Add(vehicle);
         SelectedVehicle = vehicle;
         IsVehiclePopupVisible = false;
         ClearNewVehicleFields();
@@ -249,7 +352,7 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
     private void ShowServicePopup()
     {
         IsServicePopupVisible = true;
-        FilterServices();
+        _ = FilterServicesAsync();
     }
 
     [RelayCommand]
@@ -258,18 +361,48 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
         IsServicePopupVisible = false;
     }
 
+    // Searches the real item catalog (vw_wh_ItemBarCodes) by name/barcode, optionally
+    // narrowed to the selected category (vw_wh_ItemSubGroups), instead of filtering an
+    // in-memory list.
     [RelayCommand]
-    private void FilterServices()
+    private async Task FilterServicesAsync()
     {
-        if (string.IsNullOrWhiteSpace(ServiceSearchText))
+        await ExecuteAsync(async () =>
         {
-            FilteredServices = new ObservableCollection<ServiceItem>(ServiceItems);
-        }
-        else
+            var categoryId = SelectedItemCategory?.Id;
+            var search = string.IsNullOrWhiteSpace(ServiceSearchText) ? null : ServiceSearchText;
+
+            var results = await _itemLookupService.SearchAsync(search, categoryId, pageSize: 50);
+            ApplyItemResults(results.Items);
+        });
+    }
+
+    private void ApplyItemResults(IReadOnlyList<ItemLookupResult> items)
+    {
+        var mapped = items.Select(ToServiceItem).ToList();
+        ServiceItems = new ObservableCollection<ServiceItem>(mapped);
+        FilteredServices = new ObservableCollection<ServiceItem>(mapped);
+    }
+
+    private static ServiceItem ToServiceItem(ItemLookupResult item)
+    {
+        var price = (decimal)(item.PackagePrice ?? 0);
+        var taxRate = (decimal)(item.ItemTax ?? 0) / 100m;
+        var taxAmount = price * taxRate;
+
+        return new ServiceItem
         {
-            var filtered = ServiceItems.Where(s => s.Name.Contains(ServiceSearchText) || s.Category.Contains(ServiceSearchText));
-            FilteredServices = new ObservableCollection<ServiceItem>(filtered);
-        }
+            Id = item.ItemBarCode,
+            Name = item.Name_En ?? item.Name_Ar ?? item.ItemBarCode,
+            Category = item.ItemGroupName_En ?? item.ItemGroupName_Ar ?? string.Empty,
+            ItemType = "Product",
+            Price = price,
+            Cost = 0,
+            IsTaxable = taxRate > 0,
+            TaxType = "VAT",
+            TaxAmount = taxAmount,
+            TotalPrice = price + taxAmount
+        };
     }
 
     [RelayCommand]
@@ -425,15 +558,15 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
     {
         return category switch
         {
-            "فحص" => "",
-            "الميكانيك" => "",
-            "بانزين" => "",
-            "الكهربا" => "",
-            "قطع غيار" => "",
-            "السمكرة و البويا" => "",
-            "زيوت المحرك" => "",
-            "البطاريات" => "",
-            _ => ""
+            "فحص" => "",
+            "الميكانيك" => "",
+            "بانزين" => "",
+            "الكهربا" => "",
+            "قطع غيار" => "",
+            "السمكرة و البويا" => "",
+            "زيوت المحرك" => "",
+            "البطاريات" => "",
+            _ => ""
         };
     }
 
@@ -470,3 +603,6 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
         NewServiceTotalPrice = 0;
     }
 }
+
+// Wraps a category for the item-search filter picker; Id is null for the "All" entry.
+public record ItemCategoryOption(int? Id, string Name);

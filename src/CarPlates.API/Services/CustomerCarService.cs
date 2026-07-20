@@ -41,6 +41,28 @@ public class CustomerCarService(ApplicationDbContext context) : ICustomerCarServ
         return [.. models.Select(m => new CarModelDto(m.ModelID, m.MakeID, m.ModelName))];
     }
 
+    public async Task<IReadOnlyList<VehicleTypeDto>> GetVehicleTypesAsync()
+    {
+        var types = await _context.VehicleTypes
+            .AsNoTracking()
+            .Where(v => v.Status == 1)
+            .OrderBy(v => v.Name_en ?? v.Name_ar)
+            .ToListAsync();
+
+        return [.. types.Select(v => new VehicleTypeDto(v.Id, v.Code, v.Name_ar, v.Name_en))];
+    }
+
+    public async Task<IReadOnlyList<EngineTypeDto>> GetEngineTypesAsync()
+    {
+        var types = await _context.EngineTypes
+            .AsNoTracking()
+            .Where(v => v.Status == 1)
+            .OrderBy(v => v.Name_en ?? v.Name_ar)
+            .ToListAsync();
+
+        return [.. types.Select(v => new EngineTypeDto(v.Id, v.Code, v.Name_ar, v.Name_en))];
+    }
+
     public async Task<CustomerCarScanResultDto> ScanAsync(CustomerCarScanDto dto, string? userId)
     {
         var normalizedPlate = dto.PlateNumber.Trim().ToUpperInvariant();

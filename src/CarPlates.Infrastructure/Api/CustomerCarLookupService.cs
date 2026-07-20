@@ -85,6 +85,18 @@ public class CustomerCarLookupService(
         return models?.Select(m => new CarModelResult(m.ModelID, m.MakeID, m.ModelName)).ToList() ?? [];
     }
 
+    public async Task<IReadOnlyList<VehicleTypeResult>> GetVehicleTypesAsync(CancellationToken cancellationToken = default)
+    {
+        var types = await Client.GetFromJsonAsync<List<VehicleTypeApiResponse>>("customercars/vehicletypes", ApiJsonOptions.Default, cancellationToken);
+        return types?.Select(v => new VehicleTypeResult(v.Id, v.Name_Ar, v.Name_En)).ToList() ?? [];
+    }
+
+    public async Task<IReadOnlyList<EngineTypeResult>> GetEngineTypesAsync(CancellationToken cancellationToken = default)
+    {
+        var types = await Client.GetFromJsonAsync<List<EngineTypeApiResponse>>("customercars/enginetypes", ApiJsonOptions.Default, cancellationToken);
+        return types?.Select(v => new EngineTypeResult(v.Id, v.Name_Ar, v.Name_En)).ToList() ?? [];
+    }
+
     private record ScanApiResponse(CarApiResponse? Car, bool WasNewCar, bool WasNewCustomer, bool WasNewBranchLink);
 
     private record CarApiResponse(
@@ -101,4 +113,6 @@ public class CustomerCarLookupService(
 
     private record MakeApiResponse(int MakeID, string MakeName);
     private record ModelApiResponse(int ModelID, int MakeID, string ModelName);
+    private record VehicleTypeApiResponse(int Id, int? Code, string? Name_Ar, string? Name_En);
+    private record EngineTypeApiResponse(int Id, int? Code, string? Name_Ar, string? Name_En);
 }

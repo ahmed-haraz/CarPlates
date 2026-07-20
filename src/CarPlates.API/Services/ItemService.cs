@@ -22,9 +22,14 @@ public class ItemService(ApplicationDbContext context) : IItemService
     }
 
     public async Task<PagedResult<ItemBarCodeDto>> GetAllAsync(
-        string? search, int page, int pageSize, CancellationToken cancellationToken = default)
+        string? search, int? categoryId, int page, int pageSize, CancellationToken cancellationToken = default)
     {
         var query = _context.ItemBarCodes.AsNoTracking().AsQueryable();
+
+        if (categoryId.HasValue)
+        {
+            query = query.Where(i => i.ItemSubGroupId == categoryId);
+        }
 
         if (!string.IsNullOrWhiteSpace(search))
         {

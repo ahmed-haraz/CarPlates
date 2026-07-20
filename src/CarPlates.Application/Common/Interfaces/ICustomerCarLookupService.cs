@@ -5,6 +5,8 @@ public interface ICustomerCarLookupService
     Task<CustomerCarScanResult> ScanAsync(CustomerCarScanRequest request, CancellationToken cancellationToken = default);
     Task<IReadOnlyList<CarMakeResult>> GetMakesAsync(CancellationToken cancellationToken = default);
     Task<IReadOnlyList<CarModelResult>> GetModelsAsync(int makeId, CancellationToken cancellationToken = default);
+    Task<IReadOnlyList<VehicleTypeResult>> GetVehicleTypesAsync(CancellationToken cancellationToken = default);
+    Task<IReadOnlyList<EngineTypeResult>> GetEngineTypesAsync(CancellationToken cancellationToken = default);
 }
 
 public record CustomerCarScanRequest(
@@ -40,3 +42,7 @@ public record CustomerCarScanResult(
 public record CarMakeResult(int MakeID, string MakeName);
 
 public record CarModelResult(int ModelID, int MakeID, string ModelName);
+
+public record VehicleTypeResult(int Id, string? Name_Ar, string? Name_En);
+
+public record EngineTypeResult(int Id, string? Name_Ar, string? Name_En);

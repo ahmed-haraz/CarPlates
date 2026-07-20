@@ -24,6 +24,9 @@ public static class ServiceRegistration
         services.AddScoped<IAuthenticationService, AuthenticationService>();
         services.AddScoped<IVehicleLookupService, VehicleLookupService>();
         services.AddScoped<ICustomerCarLookupService, CustomerCarLookupService>();
+        services.AddScoped<IWorkshopLookupService, WorkshopLookupService>();
+        services.AddScoped<ICustomerLookupService, CustomerLookupService>();
+        services.AddScoped<IItemLookupService, ItemLookupService>();
         services.AddScoped<IPlateRecognitionService, PlateRecognitionService>();
         services.AddScoped<ICameraService, CameraService>();
         services.AddScoped<ISettingsService, SettingsService>();

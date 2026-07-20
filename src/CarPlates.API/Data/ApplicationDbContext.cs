@@ -28,6 +28,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     public DbSet<ItemBarCodeView> ItemBarCodes { get; set; } = null!;
     public DbSet<TransHeader> TransHeaders { get; set; } = null!;
     public DbSet<TransDetail> TransDetails { get; set; } = null!;
+    public DbSet<ItemSubGroupView> Categories { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -192,6 +193,12 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
             entity.HasKey(d => d.DetailId);
             entity.Property(d => d.ItemBarCode).HasMaxLength(25).IsRequired();
             entity.HasIndex(d => d.HeaderId);
+        });
+
+        builder.Entity<ItemSubGroupView>(entity =>
+        {
+            entity.ToView("vw_wh_ItemSubGroups");
+            entity.HasNoKey();
         });
     }
 }

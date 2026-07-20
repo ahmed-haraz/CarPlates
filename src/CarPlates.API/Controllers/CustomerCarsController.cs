@@ -51,4 +51,16 @@ public class CustomerCarsController(ICustomerCarService customerCarService, ILog
     {
         return Ok(await _customerCarService.GetModelsAsync(makeId));
     }
+
+    [HttpGet("vehicletypes")]
+    public async Task<ActionResult<IReadOnlyList<VehicleTypeDto>>> GetVehicleTypes()
+    {
+        return Ok(await _customerCarService.GetVehicleTypesAsync());
+    }
+
+    [HttpGet("enginetypes")]
+    public async Task<ActionResult<IReadOnlyList<EngineTypeDto>>> GetEngineTypes()
+    {
+        return Ok(await _customerCarService.GetEngineTypesAsync());
+    }
 }

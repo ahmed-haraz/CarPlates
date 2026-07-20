@@ -57,6 +57,8 @@ builder.Services.AddScoped<IScanRecordService, ScanRecordService>();
 builder.Services.AddScoped<ICustomerCarService, CustomerCarService>();
 builder.Services.AddScoped<IWorkshopLookupService, WorkshopLookupService>();
 builder.Services.AddScoped<IItemService, ItemService>();
+builder.Services.AddScoped<ICategoryService, CategoryService>();
+builder.Services.AddScoped<ICustomerService, CustomerService>();
 builder.Services.AddScoped<IBillService, BillService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IJwtService, JwtService>();
