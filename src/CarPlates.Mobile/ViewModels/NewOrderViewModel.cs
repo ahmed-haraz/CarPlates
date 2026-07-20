@@ -17,48 +17,48 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
     // MakeName -> MakeID, so picking a brand can resolve the real ID needed to fetch models.
     private readonly Dictionary<string, int> _makeIdsByName = new();
 
-    [ObservableProperty] private Vehicle _selectedVehicle;
-    [ObservableProperty] private Customer _selectedCustomer;
+    [ObservableProperty] private Vehicle _selectedVehicle = null!;
+    [ObservableProperty] private Customer _selectedCustomer = null!;
     [ObservableProperty] private ObservableCollection<CartItem> _cartItems = new();
-    [ObservableProperty] private WorkLocation _selectedLocation;
-    [ObservableProperty] private Technician _selectedTechnician;
-    [ObservableProperty] private string _orderNotes;
-    [ObservableProperty] private string _signatureData;
-    [ObservableProperty] private decimal _subTotal;
-    [ObservableProperty] private decimal _taxTotal;
-    [ObservableProperty] private decimal _total;
-    [ObservableProperty] private bool _isCustomerPopupVisible;
-    [ObservableProperty] private bool _isVehiclePopupVisible;
-    [ObservableProperty] private bool _isServicePopupVisible;
-    [ObservableProperty] private bool _isLocationPopupVisible;
-    [ObservableProperty] private bool _isTechnicianPopupVisible;
-    [ObservableProperty] private bool _isSignaturePadVisible;
-    [ObservableProperty] private string _searchPhoneNumber;
-    [ObservableProperty] private string _newCustomerFirstName;
-    [ObservableProperty] private string _newCustomerLastName;
-    [ObservableProperty] private string _newCustomerPhone;
+    [ObservableProperty] private WorkLocation _selectedLocation = null!;
+    [ObservableProperty] private Technician _selectedTechnician = null!;
+    [ObservableProperty] private string _orderNotes = string.Empty;
+    [ObservableProperty] private string _signatureData = string.Empty;
+    [ObservableProperty] private decimal _subTotal = 0;
+    [ObservableProperty] private decimal _taxTotal = 0;
+    [ObservableProperty] private decimal _total = 0;
+    [ObservableProperty] private bool _isCustomerPopupVisible = false;
+    [ObservableProperty] private bool _isVehiclePopupVisible = false;
+    [ObservableProperty] private bool _isServicePopupVisible = false;
+    [ObservableProperty] private bool _isLocationPopupVisible = false;
+    [ObservableProperty] private bool _isTechnicianPopupVisible = false;
+    [ObservableProperty] private bool _isSignaturePadVisible = false;
+    [ObservableProperty] private string _searchPhoneNumber = string.Empty;
+    [ObservableProperty] private string _newCustomerFirstName = string.Empty;
+    [ObservableProperty] private string _newCustomerLastName = string.Empty;
+    [ObservableProperty] private string _newCustomerPhone = string.Empty;
     [ObservableProperty] private string _newCustomerGender = "ذكر";
-    [ObservableProperty] private string _newPlateNumber;
-    [ObservableProperty] private string _newVin;
-    [ObservableProperty] private string _selectedBrand;
-    [ObservableProperty] private string _selectedModel;
-    [ObservableProperty] private string _selectedVehicleType;
-    [ObservableProperty] private string _selectedEngineType;
-    [ObservableProperty] private int _newMileage;
+    [ObservableProperty] private string _newPlateNumber = string.Empty;
+    [ObservableProperty] private string _newVin = string.Empty;
+    [ObservableProperty] private string _selectedBrand = string.Empty;
+    [ObservableProperty] private string _selectedModel = string.Empty;
+    [ObservableProperty] private string _selectedVehicleType = string.Empty;
+    [ObservableProperty] private string _selectedEngineType = string.Empty;
+    [ObservableProperty] private int _newMileage = 0;
     [ObservableProperty] private int _newYear = 2025;
     [ObservableProperty] private string _selectedColor = "Blue";
-    [ObservableProperty] private string _serviceSearchText;
+    [ObservableProperty] private string _serviceSearchText = string.Empty;
     [ObservableProperty] private ObservableCollection<ServiceItem> _filteredServices = new();
-    [ObservableProperty] private ServiceItem _newServiceItem;
-    [ObservableProperty] private string _newServiceName;
+    [ObservableProperty] private ServiceItem _newServiceItem = null!;
+    [ObservableProperty] private string _newServiceName = string.Empty;
     [ObservableProperty] private string _newServiceCategory = "بانزين";
     [ObservableProperty] private string _newServiceType = "Product";
-    [ObservableProperty] private decimal _newServicePrice;
-    [ObservableProperty] private decimal _newServiceCost;
+    [ObservableProperty] private decimal _newServicePrice = 0;
+    [ObservableProperty] private decimal _newServiceCost = 0;
     [ObservableProperty] private bool _newServiceIsTaxable = true;
     [ObservableProperty] private string _newServiceTaxType = "VAT";
-    [ObservableProperty] private decimal _newServiceTaxAmount;
-    [ObservableProperty] private decimal _newServiceTotalPrice;
+    [ObservableProperty] private decimal _newServiceTaxAmount = 0;
+    [ObservableProperty] private decimal _newServiceTotalPrice = 0;
 
     // Loaded from the API instead of seeded locally.
     [ObservableProperty] private ObservableCollection<WorkLocation> _locations = new();
@@ -79,7 +79,7 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
         "Beige", "Black", "Blue", "Bronze", "Brown", "Gold", "Gray", "Green",
         "Orange", "Pink", "Purple", "Red", "Silver", "White", "Yellow"
     };
-   
+
     public ObservableCollection<string> TaxTypes { get; } = new() { "VAT", "معفى من الضريبة" };
     public ObservableCollection<Vehicle> Vehicles { get; } = new();
 
@@ -324,7 +324,7 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
     {
         var vehicle = new Vehicle
         {
-            Id = System.Guid.NewGuid().ToString(),
+            Id = Guid.NewGuid().ToString(),
             PlateNumber = NewPlateNumber,
             Vin = NewVin,
             Brand = SelectedBrand,
@@ -334,7 +334,7 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
             Mileage = NewMileage,
             Year = NewYear,
             Color = SelectedColor,
-            CustomerId = SelectedCustomer?.PhoneNumber
+            CustomerId = SelectedCustomer.Id
         };
         Vehicles.Add(vehicle);
         SelectedVehicle = vehicle;
@@ -512,7 +512,7 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
     [RelayCommand]
     private void ClearSignature()
     {
-        SignatureData = null;
+        SignatureData = null!;
     }
 
     [RelayCommand]
@@ -527,7 +527,7 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
 
         var order = new Order
         {
-            Id = System.Guid.NewGuid().ToString(),
+            Id = Guid.NewGuid().ToString(),
             Vehicle = SelectedVehicle,
             Customer = SelectedCustomer,
             Items = new ObservableCollection<CartItem>(CartItems),
@@ -576,10 +576,10 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
     {
         NewPlateNumber = string.Empty;
         NewVin = string.Empty;
-        SelectedBrand = null;
-        SelectedModel = null;
-        SelectedVehicleType = null;
-        SelectedEngineType = null;
+        SelectedBrand = null!;
+        SelectedModel = null!;
+        SelectedVehicleType = null!;
+        SelectedEngineType = null!;
         NewMileage = 0;
         NewYear = 2025;
         SelectedColor = "Blue";
