@@ -322,6 +322,14 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
     [RelayCommand]
     private void SaveNewVehicle()
     {
+        if (SelectedCustomer == null)
+        {
+            // Consistent with SubmitOrder validation: surface an error instead of throwing
+            ErrorMessage = "الرجاء اختيار عميل";
+            HasError = true;
+            return;
+        }
+
         var vehicle = new Vehicle
         {
             Id = Guid.NewGuid().ToString(),
@@ -336,6 +344,7 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
             Color = SelectedColor,
             CustomerId = SelectedCustomer.Id
         };
+
         Vehicles.Add(vehicle);
         SelectedVehicle = vehicle;
         IsVehiclePopupVisible = false;
