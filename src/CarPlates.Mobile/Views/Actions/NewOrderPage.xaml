@@ -115,9 +115,16 @@
                         Padding="16"
                         IsVisible="{Binding SelectedVehicle, Converter={StaticResource IsNotNullConverter}}">
                     <VerticalStackLayout Spacing="8">
-                        <Label Text="{Binding SelectedVehicle.Brand}"
-                               FontSize="16"
-                               FontAttributes="Bold" />
+                        <Label FontSize="16"
+                               FontAttributes="Bold">
+                            <Label.FormattedText>
+                                <FormattedString>
+                                    <Span Text="{Binding SelectedVehicle.Brand}" />
+                                    <Span Text=" " />
+                                    <Span Text="{Binding SelectedVehicle.Model}" />
+                                </FormattedString>
+                            </Label.FormattedText>
+                        </Label>
                         <Label Text="{Binding SelectedVehicle.PlateNumber}"
                                FontSize="14"
                                TextColor="Gray" />
@@ -454,6 +461,48 @@
                                 ItemsSource="{Binding EngineTypes}"
                                 SelectedItem="{Binding SelectedEngineType}" />
 
+                        <!-- Brand: tappable field opening an image-grid popup (a native Picker can't show a logo) -->
+                        <Label Text="{loc:Translate Key=Brand}"
+                               FontSize="12"
+                               TextColor="Green" />
+                        <Border Style="{StaticResource Card}"
+                                Padding="8">
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding ShowBrandPopupCommand}" />
+                            </Border.GestureRecognizers>
+                            <Grid ColumnDefinitions="Auto,*">
+                                <Image Grid.Column="0"
+                                       Source="car.svg"
+                                       WidthRequest="24"
+                                       HeightRequest="24" />
+                                <Label Grid.Column="1"
+                                       Text="{Binding SelectedBrand}"
+                                       Margin="8,0"
+                                       VerticalOptions="Center" />
+                            </Grid>
+                        </Border>
+
+                        <!-- Model: tappable field opening an image-grid popup, scoped to the selected brand -->
+                        <Label Text="{loc:Translate Key=Model}"
+                               FontSize="12"
+                               TextColor="Green" />
+                        <Border Style="{StaticResource Card}"
+                                Padding="8">
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding ShowModelPopupCommand}" />
+                            </Border.GestureRecognizers>
+                            <Grid ColumnDefinitions="Auto,*">
+                                <Image Grid.Column="0"
+                                       Source="car.svg"
+                                       WidthRequest="24"
+                                       HeightRequest="24" />
+                                <Label Grid.Column="1"
+                                       Text="{Binding SelectedModel}"
+                                       Margin="8,0"
+                                       VerticalOptions="Center" />
+                            </Grid>
+                        </Border>
+
                         <Border Style="{StaticResource Card}"
                                 Padding="8">
                             <Grid ColumnDefinitions="*,Auto">
@@ -471,9 +520,24 @@
                                 ItemsSource="{Binding VehicleYears}"
                                 SelectedItem="{Binding SelectedVehicleYear}" />
 
-                        <Picker ItemsSource="{Binding Colors}"
-                                ItemDisplayBinding="{Binding DisplayName}"
-                                SelectedItem="{Binding SelectedColor}" />
+                        <!-- Color: tappable field showing the actual swatch, opening a color-grid popup -->
+                        <Border Style="{StaticResource Card}"
+                                Padding="8">
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding ShowColorPopupCommand}" />
+                            </Border.GestureRecognizers>
+                            <Grid ColumnDefinitions="Auto,*">
+                                <BoxView Grid.Column="0"
+                                         Color="{Binding SelectedColor.Swatch}"
+                                         WidthRequest="22"
+                                         HeightRequest="22"
+                                         CornerRadius="11" />
+                                <Label Grid.Column="1"
+                                       Text="{Binding SelectedColor.Name}"
+                                       Margin="8,0"
+                                       VerticalOptions="Center" />
+                            </Grid>
+                        </Border>
                         
                         <Button Text="{loc:Translate Key=Next}"
                                 BackgroundColor="#4CAF50"
@@ -705,6 +769,143 @@
                             </DataTemplate>
                         </CollectionView.ItemTemplate>
                     </CollectionView>
+                </VerticalStackLayout>
+            </Border>
+        </Grid>
+
+        <!-- Brand Selection Popup -->
+        <Grid Grid.Row="1"
+              BackgroundColor="#80000000"
+              IsVisible="{Binding IsBrandPopupVisible}">
+            <Border Style="{StaticResource Card}"
+                    Padding="20"
+                    VerticalOptions="Center"
+                    HorizontalOptions="Center"
+                    WidthRequest="300"
+                    MaximumHeightRequest="500">
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="{loc:Translate Key=Brand}"
+                           FontSize="18"
+                           FontAttributes="Bold"
+                           HorizontalOptions="Center" />
+                    <ScrollView MaximumHeightRequest="400">
+                        <CollectionView ItemsSource="{Binding Brands}">
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate x:DataType="x:String">
+                                    <Border Style="{StaticResource Card}"
+                                            Padding="12">
+                                        <Border.GestureRecognizers>
+                                            <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:NewOrderViewModel}}, Path=SelectBrandCommand}"
+                                                                  CommandParameter="{Binding .}" />
+                                        </Border.GestureRecognizers>
+                                        <Grid ColumnDefinitions="Auto,*">
+                                            <Image Grid.Column="0"
+                                                   Source="car.svg"
+                                                   WidthRequest="28"
+                                                   HeightRequest="28" />
+                                            <Label Grid.Column="1"
+                                                   Text="{Binding .}"
+                                                   Margin="10,0"
+                                                   FontSize="16"
+                                                   VerticalOptions="Center" />
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
+                        </CollectionView>
+                    </ScrollView>
+                </VerticalStackLayout>
+            </Border>
+        </Grid>
+
+        <!-- Model Selection Popup -->
+        <Grid Grid.Row="1"
+              BackgroundColor="#80000000"
+              IsVisible="{Binding IsModelPopupVisible}">
+            <Border Style="{StaticResource Card}"
+                    Padding="20"
+                    VerticalOptions="Center"
+                    HorizontalOptions="Center"
+                    WidthRequest="300"
+                    MaximumHeightRequest="500">
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="{loc:Translate Key=Model}"
+                           FontSize="18"
+                           FontAttributes="Bold"
+                           HorizontalOptions="Center" />
+                    <ScrollView MaximumHeightRequest="400">
+                        <CollectionView ItemsSource="{Binding AvailableModels}">
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate x:DataType="x:String">
+                                    <Border Style="{StaticResource Card}"
+                                            Padding="12">
+                                        <Border.GestureRecognizers>
+                                            <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:NewOrderViewModel}}, Path=SelectVehicleModelCommand}"
+                                                                  CommandParameter="{Binding .}" />
+                                        </Border.GestureRecognizers>
+                                        <Grid ColumnDefinitions="Auto,*">
+                                            <Image Grid.Column="0"
+                                                   Source="car.svg"
+                                                   WidthRequest="28"
+                                                   HeightRequest="28" />
+                                            <Label Grid.Column="1"
+                                                   Text="{Binding .}"
+                                                   Margin="10,0"
+                                                   FontSize="16"
+                                                   VerticalOptions="Center" />
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
+                        </CollectionView>
+                    </ScrollView>
+                </VerticalStackLayout>
+            </Border>
+        </Grid>
+
+        <!-- Color Selection Popup -->
+        <Grid Grid.Row="1"
+              BackgroundColor="#80000000"
+              IsVisible="{Binding IsColorPopupVisible}">
+            <Border Style="{StaticResource Card}"
+                    Padding="20"
+                    VerticalOptions="Center"
+                    HorizontalOptions="Center"
+                    WidthRequest="300"
+                    MaximumHeightRequest="500">
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="{loc:Translate Key=Color}"
+                           FontSize="18"
+                           FontAttributes="Bold"
+                           HorizontalOptions="Center" />
+                    <ScrollView MaximumHeightRequest="400">
+                        <CollectionView ItemsSource="{Binding Colors}">
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate x:DataType="vm:ColorOption">
+                                    <Border Style="{StaticResource Card}"
+                                            Padding="12">
+                                        <Border.GestureRecognizers>
+                                            <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:NewOrderViewModel}}, Path=SelectColorOptionCommand}"
+                                                                  CommandParameter="{Binding .}" />
+                                        </Border.GestureRecognizers>
+                                        <Grid ColumnDefinitions="Auto,*">
+                                            <Ellipse Grid.Column="0"
+                                                     Fill="{Binding Swatch}"
+                                                     WidthRequest="28"
+                                                     HeightRequest="28"
+                                                     Stroke="Gray"
+                                                     StrokeThickness="1" />
+                                            <Label Grid.Column="1"
+                                                   Text="{Binding Name}"
+                                                   Margin="10,0"
+                                                   FontSize="16"
+                                                   VerticalOptions="Center" />
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
+                        </CollectionView>
+                    </ScrollView>
                 </VerticalStackLayout>
             </Border>
         </Grid>

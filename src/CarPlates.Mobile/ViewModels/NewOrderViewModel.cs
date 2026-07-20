@@ -3,6 +3,7 @@ using CarPlates.Domain.Entities;
 using CarPlates.Mobile.Navigation;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.Maui.Graphics;
 using System.Collections.ObjectModel;
 
 namespace CarPlates.Mobile.ViewModels;
@@ -46,7 +47,7 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
     [ObservableProperty] private string _selectedEngineType = string.Empty;
     [ObservableProperty] private int _newMileage = 0;
     [ObservableProperty] private int _newYear = 2025;
-    [ObservableProperty] private string _selectedColor = "Blue";
+    [ObservableProperty] private ColorOption? _selectedColor;
     [ObservableProperty] private string _serviceSearchText = string.Empty;
     [ObservableProperty] private ObservableCollection<ServiceItem> _filteredServices = new();
     [ObservableProperty] private ServiceItem _newServiceItem = null!;
@@ -71,13 +72,30 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
     [ObservableProperty] private ObservableCollection<ServiceItem> _serviceItems = new();
     [ObservableProperty] private ObservableCollection<ItemCategoryOption> _itemCategories = new();
     [ObservableProperty] private ItemCategoryOption? _selectedItemCategory;
+    [ObservableProperty] private bool _isBrandPopupVisible;
+    [ObservableProperty] private bool _isModelPopupVisible;
+    [ObservableProperty] private bool _isColorPopupVisible;
 
     // No API source for a generic color list (wh_CustomerCars.Color is free text) or the
-    // "add a custom service" category list, so these stay local.
-    public ObservableCollection<string> Colors { get; } = new()
+    // "add a custom service" category list, so these stay local. Colors carry a real swatch
+    // so the picker can show a color circle, not just a name.
+    public ObservableCollection<ColorOption> Colors { get; } = new()
     {
-        "Beige", "Black", "Blue", "Bronze", "Brown", "Gold", "Gray", "Green",
-        "Orange", "Pink", "Purple", "Red", "Silver", "White", "Yellow"
+        new("Beige", Color.FromArgb("#F5F5DC")),
+        new("Black", Color.FromArgb("#000000")),
+        new("Blue", Color.FromArgb("#2196F3")),
+        new("Bronze", Color.FromArgb("#CD7F32")),
+        new("Brown", Color.FromArgb("#795548")),
+        new("Gold", Color.FromArgb("#FFD700")),
+        new("Gray", Color.FromArgb("#9E9E9E")),
+        new("Green", Color.FromArgb("#4CAF50")),
+        new("Orange", Color.FromArgb("#FF9800")),
+        new("Pink", Color.FromArgb("#E91E63")),
+        new("Purple", Color.FromArgb("#9C27B0")),
+        new("Red", Color.FromArgb("#F44336")),
+        new("Silver", Color.FromArgb("#C0C0C0")),
+        new("White", Color.FromArgb("#FFFFFF")),
+        new("Yellow", Color.FromArgb("#FFEB3B"))
     };
 
     public ObservableCollection<string> TaxTypes { get; } = new() { "VAT", "معفى من الضريبة" };
@@ -101,6 +119,7 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
         _itemLookupService = itemLookupService;
 
         Title = "إضافة سيارة جديدة";
+        SelectedColor = Colors.First();
         LoadVehicleYears();
         _ = LoadInitialDataAsync();
     }
@@ -193,7 +212,40 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
 
     partial void OnSelectedBrandChanged(string value)
     {
+        SelectedModel = null!;
         _ = UpdateModelsForBrandAsync(value);
+    }
+
+    // Brand/Model/Color use a custom image-grid popup instead of a native Picker, since a
+    // native Picker can't show an icon or swatch next to each option on any platform.
+    [RelayCommand]
+    private void ShowBrandPopup() => IsBrandPopupVisible = true;
+
+    [RelayCommand]
+    private void SelectBrand(string brand)
+    {
+        SelectedBrand = brand;
+        IsBrandPopupVisible = false;
+    }
+
+    [RelayCommand]
+    private void ShowModelPopup() => IsModelPopupVisible = true;
+
+    [RelayCommand]
+    private void SelectVehicleModel(string model)
+    {
+        SelectedModel = model;
+        IsModelPopupVisible = false;
+    }
+
+    [RelayCommand]
+    private void ShowColorPopup() => IsColorPopupVisible = true;
+
+    [RelayCommand]
+    private void SelectColorOption(ColorOption color)
+    {
+        SelectedColor = color;
+        IsColorPopupVisible = false;
     }
 
     partial void OnSelectedItemCategoryChanged(ItemCategoryOption? value)
@@ -341,7 +393,7 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
             EngineType = SelectedEngineType,
             Mileage = NewMileage,
             Year = NewYear,
-            Color = SelectedColor,
+            Color = SelectedColor?.Name,
             CustomerId = SelectedCustomer.Id
         };
 
@@ -591,7 +643,7 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
         SelectedEngineType = null!;
         NewMileage = 0;
         NewYear = 2025;
-        SelectedColor = "Blue";
+        SelectedColor = Colors.First();
     }
 
     private void ClearNewServiceFields()
@@ -609,3 +661,6 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
 
 // Wraps a category for the item-search filter picker; Id is null for the "All" entry.
 public record ItemCategoryOption(int? Id, string Name);
+
+// Pairs a color name with a real swatch so the color picker can show it, not just text.
+public record ColorOption(string Name, Color Swatch);
