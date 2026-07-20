@@ -4,9 +4,8 @@
              xmlns:vm="clr-namespace:CarPlates.Mobile.ViewModels"
              x:Class="CarPlates.Mobile.Views.Actions.BrandSelectionPage"
              x:DataType="vm:NewOrderViewModel"
-             FlowDirection="RightToLeft"
              Title="علامة المركبة"
-             BackgroundColor="White">
+             BackgroundColor="{DynamicResource Background}">
 
     <Grid RowDefinitions="Auto,Auto,*">
         <Grid Grid.Row="0" Padding="16,12" ColumnDefinitions="Auto,*,Auto">
@@ -23,7 +22,7 @@
             </CollectionView.ItemsLayout>
             <CollectionView.ItemTemplate>
                 <DataTemplate>
-                    <Frame BorderColor="#E0E0E0" CornerRadius="12" Padding="16" BackgroundColor="White">
+                    <Frame BorderColor="#E0E0E0" CornerRadius="12" Padding="16" BackgroundColor="{DynamicResource Background}">
                         <Frame.GestureRecognizers>
                             <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:NewOrderViewModel}}, Path=SelectBrandCommand}"
                                                   CommandParameter="{Binding .}"/>

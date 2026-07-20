@@ -1,3 +1,4 @@
+using CarPlates.Mobile.Views.Actions;
 using CarPlates.Domain.Entities;
 using CarPlates.Mobile.Navigation;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -64,17 +65,13 @@ public partial class CashierViewModel : BaseViewModel
     [RelayCommand]
     private async Task NewOrder()
     {
-        await Shell.Current.GoToAsync("NewOrderPage");
+        await Navigation.GoToCustomerDataAsync();
     }
 
     [RelayCommand]
     private async Task ViewOrderDetails(Order order)
     {
         if (order == null) return;
-        var navigationParameter = new Dictionary<string, object>
-        {
-            { "Order", order }
-        };
-        await Shell.Current.GoToAsync("OrderDetailsPage", navigationParameter);
+        await Navigation.PushPageAsync<OrderSummaryPage>();
     }
 }
