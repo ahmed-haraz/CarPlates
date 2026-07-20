@@ -4,13 +4,12 @@
              xmlns:vm="clr-namespace:CarPlates.Mobile.ViewModels"
              x:Class="CarPlates.Mobile.Views.Actions.OrderSummaryPage"
              x:DataType="vm:NewOrderViewModel"
-             FlowDirection="RightToLeft"
              Title="سلة طلباتي"
-             BackgroundColor="#F5F5F5">
+             BackgroundColor="{DynamicResource Background}">
 
     <Grid RowDefinitions="Auto,*,Auto">
         <!-- Header -->
-        <Grid Grid.Row="0" BackgroundColor="White" Padding="16,12" ColumnDefinitions="Auto,*,Auto">
+        <Grid Grid.Row="0" BackgroundColor="{DynamicResource Background}" Padding="16,12" ColumnDefinitions="Auto,*,Auto">
             <ImageButton Grid.Column="0" 
                          Source="dots_vertical.png" 
                          WidthRequest="24" HeightRequest="24"/>
@@ -27,7 +26,7 @@
         <CollectionView Grid.Row="1" ItemsSource="{Binding CartItems}">
             <CollectionView.ItemTemplate>
                 <DataTemplate>
-                    <Frame BackgroundColor="White" CornerRadius="12" Padding="16" Margin="16,4">
+                    <Frame BackgroundColor="{DynamicResource Background}" CornerRadius="12" Padding="16" Margin="16,4">
                         <Grid ColumnDefinitions="Auto,*,Auto,Auto,Auto">
                             <ImageButton Grid.Column="0" Source="dots_vertical.png" WidthRequest="24" HeightRequest="24"/>
                             <VerticalStackLayout Grid.Column="1" Spacing="4">
@@ -52,7 +51,7 @@
         </CollectionView>
 
         <!-- Totals -->
-        <Frame Grid.Row="2" BackgroundColor="White" CornerRadius="24" Padding="20" Margin="0,0,0,0">
+        <Frame Grid.Row="2" BackgroundColor="{DynamicResource Background}" CornerRadius="24" Padding="20" Margin="0,0,0,0">
             <VerticalStackLayout Spacing="12">
                 <Grid ColumnDefinitions="*,Auto">
                     <Label Grid.Column="0" Text="إجمالي المبلغ" FontSize="16" FontAttributes="Bold"/>

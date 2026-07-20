@@ -39,10 +39,22 @@ public class NavigationService(IServiceProvider serviceProvider) : INavigationSe
         return Task.CompletedTask;
     }
 
+    public Task GoToCashierRootAsync()
+    {
+        var cashierPage = _serviceProvider.GetRequiredService<CashierPage>();
+        cashierPage.FlowDirection = Localization.LocalizationResourceManager.Instance.FlowDirection;
+        CurrentWindow.Page = new NavigationPage(cashierPage)
+        {
+            FlowDirection = Localization.LocalizationResourceManager.Instance.FlowDirection
+        };
+        return Task.CompletedTask;
+    }
+
     public async Task PushAsync<TViewModel>(IDictionary<string, object>? parameters = null) where TViewModel : ViewModels.BaseViewModel
     {
         var pageType = ResolvePageType(typeof(TViewModel));
         var page = (Page)_serviceProvider.GetRequiredService(pageType);
+        page.FlowDirection = Localization.LocalizationResourceManager.Instance.FlowDirection;
 
         if (parameters != null && parameters.Count > 0 && page.BindingContext is IQueryAttributable queryAware)
         {
@@ -55,6 +67,7 @@ public class NavigationService(IServiceProvider serviceProvider) : INavigationSe
     public async Task PushPageAsync<TPage>() where TPage : Page
     {
         var page = _serviceProvider.GetRequiredService<TPage>();
+        page.FlowDirection = Localization.LocalizationResourceManager.Instance.FlowDirection;
         await CurrentNavigation.PushAsync(page);
     }
 
@@ -138,7 +151,10 @@ public class NavigationService(IServiceProvider serviceProvider) : INavigationSe
             queryAware.ApplyQueryAttributes(new Dictionary<string, object> { ["vehicleInfo"] = vehicleInfo });
         }
 
-        CurrentWindow.Page = carDataPage;
+        CurrentWindow.Page = new NavigationPage(carDataPage)
+        {
+            FlowDirection = Localization.LocalizationResourceManager.Instance.FlowDirection
+        };
         return Task.CompletedTask;
     }
 
@@ -152,7 +168,10 @@ public class NavigationService(IServiceProvider serviceProvider) : INavigationSe
             queryAware.ApplyQueryAttributes(new Dictionary<string, object> { ["plateNumber"] = plateNumber });
         }
 
-        CurrentWindow.Page = newOrderPage;
+        CurrentWindow.Page = new NavigationPage(newOrderPage)
+        {
+            FlowDirection = Localization.LocalizationResourceManager.Instance.FlowDirection
+        };
         return Task.CompletedTask;
     }
 }

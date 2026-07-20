@@ -52,6 +52,7 @@ public class ThemeService : IThemeService
 
         resources["Background"] = (Color)resources[$"Background{suffix}"];
         resources["Surface"] = (Color)resources[$"Surface{suffix}"];
+        resources["SurfaceMuted"] = (Color)resources[$"SurfaceMuted{suffix}"];
         resources["TextPrimary"] = (Color)resources[$"TextPrimary{suffix}"];
         resources["TextSecondary"] = (Color)resources[$"TextSecondary{suffix}"];
         resources["Border"] = (Color)resources[$"Border{suffix}"];

@@ -599,7 +599,7 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
             Status = "ملغاة"
         };
         AppData.Orders.Add(order);
-        await Shell.Current.GoToAsync("//CashierPage");
+        await Navigation.GoToCashierRootAsync();
     }
 
     private void RecalculateTotals()

@@ -224,7 +224,7 @@
                                                HorizontalOptions="End">
                             <Button Text="{loc:Translate Key=Signature}"
                                     ImageSource="signature.png"
-                                    BackgroundColor="White"
+                                    BackgroundColor="{DynamicResource Surface}"
                                     TextColor="Black"
                                     BorderColor="Gray"
                                     BorderWidth="1"
@@ -233,7 +233,7 @@
                                     Command="{Binding ShowSignaturePadCommand}" />
                             <Button Text="{loc:Translate Key=AddPhotos}"
                                     ImageSource="camera.png"
-                                    BackgroundColor="White"
+                                    BackgroundColor="{DynamicResource Surface}"
                                     TextColor="Black"
                                     BorderColor="Gray"
                                     BorderWidth="1"
@@ -253,7 +253,7 @@
                                FontAttributes="Bold" />
                         <HorizontalStackLayout Spacing="12">
                             <Button Text="{loc:Translate Key=SelectWorkLocation}"
-                                    BackgroundColor="White"
+                                    BackgroundColor="{DynamicResource Surface}"
                                     TextColor="Black"
                                     BorderColor="Gray"
                                     BorderWidth="1"
@@ -261,7 +261,7 @@
                                     Padding="12,8"
                                     Command="{Binding ShowLocationPopupCommand}" />
                             <Button Text="{loc:Translate Key=SelectTechnician}"
-                                    BackgroundColor="White"
+                                    BackgroundColor="{DynamicResource Surface}"
                                     TextColor="Black"
                                     BorderColor="Gray"
                                     BorderWidth="1"
@@ -912,7 +912,7 @@
 
         <!-- Signature Pad -->
         <Grid Grid.Row="1"
-              BackgroundColor="White"
+              BackgroundColor="{DynamicResource Surface}"
               IsVisible="{Binding IsSignaturePadVisible}">
             <Grid RowDefinitions="Auto,*,Auto">
                 <Label Grid.Row="0"
@@ -924,7 +924,7 @@
                          Color="White" />
                 <!-- SignaturePad would go here - using a placeholder -->
                 <Editor Grid.Row="1"
-                        BackgroundColor="White"
+                        BackgroundColor="{DynamicResource Surface}"
                         Text="{Binding SignatureData}" />
                 <Grid Grid.Row="2"
                       ColumnDefinitions="*,*"

@@ -1,27 +1,29 @@
 namespace CarPlates.Mobile.Helpers;
 
+/// <summary>
+/// Legacy helper kept for views that still need page-level dialogs. App navigation
+/// is handled by INavigationService/NavigationPage instead of Shell routes.
+/// </summary>
 public static class NavigationHelper
 {
-    public static async Task GoToAsync(string route, Dictionary<string, object>? parameters = null)
+    public static Task GoToAsync(string route, Dictionary<string, object>? parameters = null)
     {
-        if (parameters != null && parameters.Any())
+        throw new NotSupportedException(
+            $"Shell route navigation ('{route}') is no longer supported. Inject INavigationService and use NavigationPage-based navigation instead.");
+    }
+
+    public static async Task ShowAlertAsync(string title, string message)
+    {
+        var page = Microsoft.Maui.Controls.Application.Current?.Windows.FirstOrDefault()?.Page;
+        if (page != null)
         {
-            var query = string.Join("&", parameters.Select(p => $"{p.Key}={Uri.EscapeDataString(p.Value.ToString()!)}"));
-            await Shell.Current.GoToAsync($"{route}?{query}");
-        }
-        else
-        {
-            await Shell.Current.GoToAsync(route);
+            await page.DisplayAlertAsync(title, message, "OK");
         }
     }
 
-    public static async Task DisplayErrorAsync(string title, string message)
+    public static async Task<bool> ShowConfirmAsync(string title, string message)
     {
-        await Shell.Current.DisplayAlertAsync(title, message, "OK");
-    }
-
-    public static async Task<bool> DisplayConfirmAsync(string title, string message)
-    {
-        return await Shell.Current.DisplayAlertAsync(title, message, "Yes", "No");
+        var page = Microsoft.Maui.Controls.Application.Current?.Windows.FirstOrDefault()?.Page;
+        return page != null && await page.DisplayAlertAsync(title, message, "Yes", "No");
     }
 }
