@@ -79,13 +79,7 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
         "Beige", "Black", "Blue", "Bronze", "Brown", "Gold", "Gray", "Green",
         "Orange", "Pink", "Purple", "Red", "Silver", "White", "Yellow"
     };
-    public ObservableCollection<string> Categories { get; } = new()
-    {
-        "منتج التحويل", "الفنين", "فحص", "الميكانيك", "بانزين", "اختبار كاراجي",
-        "قطع غيار", "السمكرة و البويا", "الكهربا", "سيارة صغيرة", "سيارة وسط", "سيارة كبيرة",
-        "ماء الردياتر", "خدمات", "زيوت القير", "اطارات المركبة", "زيوت المحرك", "فلتر الزيت",
-        "فلتر الهواء", "البطاريات", "العناية بالمركبة"
-    };
+   
     public ObservableCollection<string> TaxTypes { get; } = new() { "VAT", "معفى من الضريبة" };
     public ObservableCollection<Vehicle> Vehicles { get; } = new();
 

@@ -1,4 +1,5 @@
 using CarPlates.Application.Common.DTOs;
+using CarPlates.Application.Common.Interfaces;
 using CarPlates.Domain.Entities;
 using CarPlates.Mobile.Navigation;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -17,7 +18,13 @@ public partial class CarDataViewModel : NewOrderViewModel
     [ObservableProperty]
     private VehicleDetailsDto? _scannedVehicle;
 
-    public CarDataViewModel(INavigationService navigation) : base(navigation)
+    public CarDataViewModel(
+        INavigationService navigation,
+        ICustomerCarLookupService customerCarLookupService,
+        IWorkshopLookupService workshopLookupService,
+        ICustomerLookupService customerLookupService,
+        IItemLookupService itemLookupService
+    ) : base(navigation, customerCarLookupService, workshopLookupService, customerLookupService, itemLookupService)
     {
         Title = "إضافة سيارة جديدة";
     }

@@ -191,12 +191,12 @@ public record EngineTypeDto(int Id, int? Code, string? Name_Ar, string? Name_En)
 // ---- Items (vw_wh_ItemBarCodes) ----
 
 public record ItemBarCodeDto(
-    long Id,
-    int? Code,
+    int Id,
+    string? Code,
     string? Name_Ar,
     string? Name_En,
     string ItemBarCode,
-    int? Package,
+    byte? Package,
     string? PackageName,
     double? PackagePrice,
     int? ItemGroupId,

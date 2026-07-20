@@ -8,13 +8,13 @@ namespace CarPlates.API.Models;
 // read-only lookup/search use it's for. Add more columns later if a screen needs them.
 public class ItemBarCodeView
 {
-    public long ID { get; set; }
-    public int? Code { get; set; }
+    public int ID { get; set; }
+    public string? Code { get; set; }
     public int? BranchID { get; set; }
     public string? Name_Ar { get; set; }
     public string? Name_En { get; set; }
     public string ItemBarCode { get; set; } = string.Empty;
-    public int? Package { get; set; }
+    public byte? Package { get; set; }
     public string? PackageName { get; set; }
     public double? PackagePrice { get; set; }
     public double? PackagePurchasePrice { get; set; }
@@ -24,7 +24,7 @@ public class ItemBarCodeView
     public int? ItemSubGroupId { get; set; }
     public string? ItemSubGroupName_AR { get; set; }
     public string? ItemSubGroupName_EN { get; set; }
-    public int? ItemType { get; set; }
+    public byte? ItemType { get; set; }
     public double? ItemTax { get; set; }
     public double? WarrantyTax { get; set; }
     public double? TableTax { get; set; }

@@ -470,10 +470,29 @@
                         <Picker Title="{loc:Translate Key=VehicleYear}"
                                 ItemsSource="{Binding VehicleYears}"
                                 SelectedItem="{Binding SelectedVehicleYear}" />
-                        
-                        <Picker Title="{loc:Translate Key=VehicleColor}"
-                                ItemsSource="{Binding Colors}"
-                                SelectedItem="{Binding SelectedColor}" />
+
+                        <CollectionView ItemsSource="{Binding Colors}"
+                                        SelectionMode="Single"
+                                        SelectedItem="{Binding SelectedColor}">
+
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid ColumnDefinitions="30,*"
+                                          Padding="8">
+                                        <BoxView WidthRequest="20"
+                                                 HeightRequest="20"
+                                                 CornerRadius="10"
+                                                 Color="{Binding Hex}"
+                                                 VerticalOptions="Center" />
+
+                                        <Label Grid.Column="1"
+                                               Text="{Binding Name}"
+                                               VerticalOptions="Center" />
+                                    </Grid>
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
+
+                        </CollectionView>
 
                         <Button Text="{loc:Translate Key=Next}"
                                 BackgroundColor="#4CAF50"
