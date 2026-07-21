@@ -24,7 +24,8 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
     [ObservableProperty] private WorkLocation _selectedLocation = null!;
     [ObservableProperty] private Technician _selectedTechnician = null!;
     [ObservableProperty] private string _orderNotes = string.Empty;
-    [ObservableProperty] private string _signatureData = string.Empty;
+    [ObservableProperty] private string? _signatureData;
+    [ObservableProperty] private ObservableCollection<OrderPhoto> _orderPhotos = new();
     [ObservableProperty] private decimal _subTotal = 0;
     [ObservableProperty] private decimal _taxTotal = 0;
     [ObservableProperty] private decimal _total = 0;
@@ -93,6 +94,7 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
     public bool CanGoToNextModelPage => ModelPage < ModelTotalPages;
     public bool CanGoToPreviousServicePage => ServicePage > 1;
     public bool CanGoToNextServicePage => ServicePage < ServiceTotalPages;
+    public bool HasSignature => !string.IsNullOrWhiteSpace(SignatureData);
 
     // No API source for a generic color list (wh_CustomerCars.Color is free text) or the
     // "add a custom service" category list, so these stay local. Colors carry a real swatch
@@ -560,7 +562,8 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
             IsTaxable = taxRate > 0,
             TaxType = "VAT",
             TaxAmount = taxAmount,
-            TotalPrice = price + taxAmount
+            TotalPrice = price + taxAmount,
+            Icon = "car.svg"
         };
     }
 
@@ -684,7 +687,63 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
     [RelayCommand]
     private void ClearSignature()
     {
-        SignatureData = null!;
+        SignatureData = null;
+    }
+
+    partial void OnSignatureDataChanged(string? value)
+    {
+        OnPropertyChanged(nameof(HasSignature));
+    }
+
+    [RelayCommand]
+    private void ClearLocation()
+    {
+        SelectedLocation = null!;
+    }
+
+    [RelayCommand]
+    private void ClearTechnician()
+    {
+        SelectedTechnician = null!;
+    }
+
+    [RelayCommand]
+    private void ClearServiceAssignment()
+    {
+        SelectedLocation = null!;
+        SelectedTechnician = null!;
+    }
+
+    [RelayCommand]
+    private async Task AddPhotoAsync()
+    {
+        await ExecuteAsync(async () =>
+        {
+            if (!MediaPicker.Default.IsCaptureSupported)
+            {
+                await Navigation.DisplayAlertAsync("Camera", "Camera capture is not supported on this device.");
+                return;
+            }
+
+            var photo = await MediaPicker.Default.CapturePhotoAsync();
+            if (photo == null) return;
+
+            var fileName = $"order-photo-{Guid.NewGuid():N}{Path.GetExtension(photo.FileName)}";
+            var localPath = Path.Combine(FileSystem.CacheDirectory, fileName);
+
+            await using var sourceStream = await photo.OpenReadAsync();
+            await using var localStream = File.OpenWrite(localPath);
+            await sourceStream.CopyToAsync(localStream);
+
+            OrderPhotos.Add(new OrderPhoto(localPath));
+        });
+    }
+
+    [RelayCommand]
+    private void RemovePhoto(OrderPhoto photo)
+    {
+        if (photo == null) return;
+        OrderPhotos.Remove(photo);
     }
 
     [RelayCommand]
@@ -707,6 +766,7 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
             Technician = SelectedTechnician,
             Notes = OrderNotes,
             Signature = SignatureData,
+            PhotoPaths = new ObservableCollection<string>(OrderPhotos.Select(photo => photo.Path)),
             Status = "ملغاة"
         };
         AppData.Orders.Add(order);
@@ -722,18 +782,71 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
 
     private string GetIconForCategory(string category)
     {
-        return category switch
-        {
-            "فحص" => "",
-            "الميكانيك" => "",
-            "بانزين" => "",
-            "الكهربا" => "",
-            "قطع غيار" => "",
-            "السمكرة و البويا" => "",
-            "زيوت المحرك" => "",
-            "البطاريات" => "",
-            _ => ""
-        };
+        return "car.svg";
+    }
+
+    private void ResetBrandPaging()
+    {
+        BrandPage = 1;
+        BrandTotalPages = Math.Max(1, (int)Math.Ceiling(Brands.Count / (double)PopupPageSize));
+        RefreshPagedBrands();
+    }
+
+    private void RefreshPagedBrands()
+    {
+        PagedBrands = new ObservableCollection<string>(Brands.Skip((BrandPage - 1) * PopupPageSize).Take(PopupPageSize));
+        OnPropertyChanged(nameof(CanGoToPreviousBrandPage));
+        OnPropertyChanged(nameof(CanGoToNextBrandPage));
+    }
+
+    private void ResetModelPaging()
+    {
+        ModelPage = 1;
+        ModelTotalPages = Math.Max(1, (int)Math.Ceiling(AvailableModels.Count / (double)PopupPageSize));
+        RefreshPagedModels();
+    }
+
+    private void RefreshPagedModels()
+    {
+        PagedModels = new ObservableCollection<string>(AvailableModels.Skip((ModelPage - 1) * PopupPageSize).Take(PopupPageSize));
+        OnPropertyChanged(nameof(CanGoToPreviousModelPage));
+        OnPropertyChanged(nameof(CanGoToNextModelPage));
+    }
+
+    partial void OnBrandPageChanged(int value)
+    {
+        OnPropertyChanged(nameof(CanGoToPreviousBrandPage));
+        OnPropertyChanged(nameof(CanGoToNextBrandPage));
+    }
+
+    partial void OnBrandTotalPagesChanged(int value)
+    {
+        OnPropertyChanged(nameof(CanGoToPreviousBrandPage));
+        OnPropertyChanged(nameof(CanGoToNextBrandPage));
+    }
+
+    partial void OnModelPageChanged(int value)
+    {
+        OnPropertyChanged(nameof(CanGoToPreviousModelPage));
+        OnPropertyChanged(nameof(CanGoToNextModelPage));
+    }
+
+    partial void OnModelTotalPagesChanged(int value)
+    {
+        OnPropertyChanged(nameof(CanGoToPreviousModelPage));
+        OnPropertyChanged(nameof(CanGoToNextModelPage));
+    }
+
+    partial void OnServicePageChanged(int value)
+    {
+        OnPropertyChanged(nameof(CanGoToPreviousServicePage));
+        OnPropertyChanged(nameof(CanGoToNextServicePage));
+    }
+
+    partial void OnServiceTotalPagesChanged(int value)
+    {
+        OnPropertyChanged(nameof(CanGoToPreviousServicePage));
+        OnPropertyChanged(nameof(CanGoToNextServicePage));
     }
 
     private void ResetBrandPaging()
@@ -839,3 +952,5 @@ public record ItemCategoryOption(int? Id, string Name);
 
 // Pairs a color name with a real swatch so the color picker can show it, not just text.
 public record ColorOption(string Name, Color Swatch);
+
+public record OrderPhoto(string Path);
