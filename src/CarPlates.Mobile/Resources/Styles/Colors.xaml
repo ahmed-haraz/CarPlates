@@ -39,5 +39,10 @@
     <Color x:Key="TextPrimary">#0F172A</Color>
     <Color x:Key="TextSecondary">#64748B</Color>
     <Color x:Key="Border">#DDE7F3</Color>
+    <Color x:Key="White">#FFFFFF</Color>
+    <Color x:Key="Black">#000000</Color>
+    <Color x:Key="IconLight">#1D4ED8</Color>
+    <Color x:Key="IconDark">#93C5FD</Color>
+    <Color x:Key="Overlay">#9907111F</Color>
 
 </ResourceDictionary>

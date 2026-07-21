@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:CarPlates.Mobile.ViewModels"
+             xmlns:models="clr-namespace:CarPlates.Domain.Entities;assembly=CarPlates.Domain"
+             xmlns:helpers="clr-namespace:CarPlates.Mobile.Helpers"
+             xmlns:loc="clr-namespace:CarPlates.Mobile.Localization"
+             x:Class="CarPlates.Mobile.Views.Actions.NewOrder.ItemOptionsView"
+             x:Name="Root"
+             x:DataType="vm:NewOrderViewModel">
+    <Grid RowDefinitions="Auto,Auto,Auto,*" RowSpacing="12">
+        <Label Grid.Row="0" Text="{loc:Translate Key=SelectCategory}" Style="{StaticResource Title}" HorizontalOptions="Center" />
+        <SearchBar Grid.Row="1" Placeholder="{loc:Translate Key=SearchItem}" Text="{Binding ServiceSearchText}" SearchCommand="{Binding FilterServicesCommand}" />
+        <Button Grid.Row="2" Text="{loc:Translate Key=CreateNewItem}" Style="{StaticResource SecondaryButton}" Command="{Binding ShowNewServiceFormCommand}" />
+        <CollectionView Grid.Row="3" ItemsSource="{Binding FilteredServices}" Style="{StaticResource DefaultCollectionView}">
+            <CollectionView.ItemsLayout>
+                <GridItemsLayout Orientation="Vertical" Span="2" HorizontalItemSpacing="12" VerticalItemSpacing="12" />
+            </CollectionView.ItemsLayout>
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="models:ServiceItem">
+                    <Border Style="{StaticResource ElevatedCard}" Padding="14">
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding Source={x:Reference Root}, Path=BindingContext.AddServiceToCartCommand}" CommandParameter="{Binding .}" />
+                        </Border.GestureRecognizers>
+                        <VerticalStackLayout Spacing="8">
+                            <Border Style="{StaticResource Pill}" HorizontalOptions="Start">
+                                <Image Source="{Binding Icon}" WidthRequest="28" HeightRequest="28" />
+                            </Border>
+                            <Label Text="{Binding Name}" FontAttributes="Bold" LineBreakMode="TailTruncation" />
+                            <Label Text="{Binding Category}" Style="{StaticResource Caption}" />
+                            <Label Text="{Binding TotalPrice, StringFormat='{0:N2} SAR'}" TextColor="{StaticResource Primary}" FontAttributes="Bold" />
+                        </VerticalStackLayout>
+                    </Border>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </Grid>
+</ContentView>

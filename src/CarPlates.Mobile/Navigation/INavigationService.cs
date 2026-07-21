@@ -27,6 +27,9 @@ public interface INavigationService
     /// (if any) is pre-filled so the user doesn't have to retype it.</summary>
     Task GoToCustomerDataAsync(string? plateNumber = null);
 
+    /// <summary>Swaps the app root to the cashier/order queue flow.</summary>
+    Task GoToCashierRootAsync();
+
 
     /// <summary>Pushes the page paired with <typeparamref name="TViewModel"/> (by naming convention) onto the active navigation stack.</summary>
     Task PushAsync<TViewModel>(IDictionary<string, object>? parameters = null) where TViewModel : BaseViewModel;

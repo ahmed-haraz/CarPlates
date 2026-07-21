@@ -4,9 +4,8 @@
              xmlns:vm="clr-namespace:CarPlates.Mobile.ViewModels"
              x:Class="CarPlates.Mobile.Views.Actions.ModelSelectionPage"
              x:DataType="vm:NewOrderViewModel"
-             FlowDirection="RightToLeft"
              Title="اختر الموديل"
-             BackgroundColor="White">
+             BackgroundColor="{DynamicResource Background}">
 
     <Grid RowDefinitions="Auto,Auto,*">
         <Grid Grid.Row="0" Padding="16,12" ColumnDefinitions="Auto,*,Auto">
@@ -23,7 +22,7 @@
             </CollectionView.ItemsLayout>
             <CollectionView.ItemTemplate>
                 <DataTemplate>
-                    <Frame BorderColor="#E0E0E0" CornerRadius="12" Padding="20" BackgroundColor="#F5F5F5">
+                    <Frame BorderColor="#E0E0E0" CornerRadius="12" Padding="20" BackgroundColor="{DynamicResource Background}">
                         <Frame.GestureRecognizers>
                             <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:NewOrderViewModel}}, Path=SelectModelCommand}"
                                                   CommandParameter="{Binding .}"/>

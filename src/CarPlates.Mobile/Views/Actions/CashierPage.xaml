@@ -5,13 +5,12 @@
              xmlns:models="clr-namespace:CarPlates.Domain.Entities"
              x:Class="CarPlates.Mobile.Views.Actions.CashierPage"
              x:DataType="vm:CashierViewModel"
-             FlowDirection="RightToLeft"
              Title="{Binding Title}"
-             BackgroundColor="#F5F5F5">
+             BackgroundColor="{DynamicResource Background}">
 
     <Grid RowDefinitions="Auto,Auto,Auto,*">
         <!-- Header -->
-        <Grid Grid.Row="0" BackgroundColor="White" Padding="16,12" ColumnDefinitions="Auto,*,Auto">
+        <Grid Grid.Row="0" BackgroundColor="{DynamicResource Background}" Padding="16,12" ColumnDefinitions="Auto,*,Auto">
             <ImageButton Grid.Column="0" 
                          Source="arrow_right.png" 
                          WidthRequest="24" HeightRequest="24"/>
@@ -29,7 +28,7 @@
                    Placeholder="البحث عن مركبة"
                    Text="{Binding SearchText}"
                    Margin="16,8"
-                   BackgroundColor="White"/>
+                   BackgroundColor="{DynamicResource Background}"/>
 
         <!-- Filter Chips -->
         <ScrollView Grid.Row="2" Orientation="Horizontal" Margin="16,0,16,8">
@@ -54,7 +53,7 @@
         <CollectionView Grid.Row="3" ItemsSource="{Binding FilteredOrders}">
             <CollectionView.ItemTemplate>
                 <DataTemplate x:DataType="models:Order">
-                    <Frame BackgroundColor="White" CornerRadius="16" Padding="16" Margin="16,4">
+                    <Frame BackgroundColor="{DynamicResource Background}" CornerRadius="16" Padding="16" Margin="16,4">
                         <Frame.GestureRecognizers>
                             <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:CashierViewModel}}, Path=ViewOrderDetailsCommand}"
                                                   CommandParameter="{Binding .}"/>

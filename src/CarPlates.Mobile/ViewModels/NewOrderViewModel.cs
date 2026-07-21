@@ -71,6 +71,7 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
     [ObservableProperty] private ObservableCollection<Customer> _customers = new();
     [ObservableProperty] private ObservableCollection<ServiceItem> _serviceItems = new();
     [ObservableProperty] private ObservableCollection<ItemCategoryOption> _itemCategories = new();
+    [ObservableProperty] private ObservableCollection<string> _categories = new();
     [ObservableProperty] private ItemCategoryOption? _selectedItemCategory;
     [ObservableProperty] private bool _isBrandPopupVisible;
     [ObservableProperty] private bool _isModelPopupVisible;
@@ -200,10 +201,13 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
             }
 
             ItemCategories.Clear();
+            Categories.Clear();
             ItemCategories.Add(new ItemCategoryOption(null, "الكل")); // "All" - clears the category filter
             foreach (var category in categoriesTask.Result.Items)
             {
-                ItemCategories.Add(new ItemCategoryOption(category.Id, category.Name_En ?? category.Name_Ar ?? string.Empty));
+                var categoryName = category.Name_En ?? category.Name_Ar ?? string.Empty;
+                ItemCategories.Add(new ItemCategoryOption(category.Id, categoryName));
+                Categories.Add(categoryName);
             }
 
             ApplyItemResults(itemsTask.Result.Items);
@@ -322,8 +326,8 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
             {
                 Customers.Add(new Customer
                 {
-                    FirstName = c.Name_En,
-                    LastName = string.Empty,
+                    FirstName = c.Name_Ar,
+                    LastName = c.Name_En,
                     PhoneNumber = c.Mobile ?? c.Phone1 ?? string.Empty,
                     Gender = string.Empty
                 });
@@ -599,7 +603,7 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
             Status = "ملغاة"
         };
         AppData.Orders.Add(order);
-        await Shell.Current.GoToAsync("//CashierPage");
+        await Navigation.GoToCashierRootAsync();
     }
 
     private void RecalculateTotals()
