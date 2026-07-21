@@ -5,6 +5,7 @@
              xmlns:models="clr-namespace:CarPlates.Domain.Entities;assembly=CarPlates.Domain"
              xmlns:helpers="clr-namespace:CarPlates.Mobile.Helpers"
              xmlns:loc="clr-namespace:CarPlates.Mobile.Localization"
+             NavigationPage.HasNavigationBar="False"
              x:Class="CarPlates.Mobile.Views.Actions.NewOrderPage"
              x:DataType="vm:NewOrderViewModel">
 
