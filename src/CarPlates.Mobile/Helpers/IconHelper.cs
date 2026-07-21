@@ -63,7 +63,7 @@ public static class IconHelper
     private static Color ResolveColor(string? resourceKey, Color fallback)
     {
         if (!string.IsNullOrWhiteSpace(resourceKey)
-            && Application.Current?.Resources.TryGetValue(resourceKey, out var resource) == true
+            && Microsoft.Maui.Controls.Application.Current?.Resources.TryGetValue(resourceKey, out var resource) == true
             && resource is Color color)
         {
             return color;
