@@ -849,6 +849,70 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
         OnPropertyChanged(nameof(CanGoToNextServicePage));
     }
 
+    private void ResetBrandPaging()
+    {
+        BrandPage = 1;
+        BrandTotalPages = Math.Max(1, (int)Math.Ceiling(Brands.Count / (double)PopupPageSize));
+        RefreshPagedBrands();
+    }
+
+    private void RefreshPagedBrands()
+    {
+        PagedBrands = new ObservableCollection<string>(Brands.Skip((BrandPage - 1) * PopupPageSize).Take(PopupPageSize));
+        OnPropertyChanged(nameof(CanGoToPreviousBrandPage));
+        OnPropertyChanged(nameof(CanGoToNextBrandPage));
+    }
+
+    private void ResetModelPaging()
+    {
+        ModelPage = 1;
+        ModelTotalPages = Math.Max(1, (int)Math.Ceiling(AvailableModels.Count / (double)PopupPageSize));
+        RefreshPagedModels();
+    }
+
+    private void RefreshPagedModels()
+    {
+        PagedModels = new ObservableCollection<string>(AvailableModels.Skip((ModelPage - 1) * PopupPageSize).Take(PopupPageSize));
+        OnPropertyChanged(nameof(CanGoToPreviousModelPage));
+        OnPropertyChanged(nameof(CanGoToNextModelPage));
+    }
+
+    partial void OnBrandPageChanged(int value)
+    {
+        OnPropertyChanged(nameof(CanGoToPreviousBrandPage));
+        OnPropertyChanged(nameof(CanGoToNextBrandPage));
+    }
+
+    partial void OnBrandTotalPagesChanged(int value)
+    {
+        OnPropertyChanged(nameof(CanGoToPreviousBrandPage));
+        OnPropertyChanged(nameof(CanGoToNextBrandPage));
+    }
+
+    partial void OnModelPageChanged(int value)
+    {
+        OnPropertyChanged(nameof(CanGoToPreviousModelPage));
+        OnPropertyChanged(nameof(CanGoToNextModelPage));
+    }
+
+    partial void OnModelTotalPagesChanged(int value)
+    {
+        OnPropertyChanged(nameof(CanGoToPreviousModelPage));
+        OnPropertyChanged(nameof(CanGoToNextModelPage));
+    }
+
+    partial void OnServicePageChanged(int value)
+    {
+        OnPropertyChanged(nameof(CanGoToPreviousServicePage));
+        OnPropertyChanged(nameof(CanGoToNextServicePage));
+    }
+
+    partial void OnServiceTotalPagesChanged(int value)
+    {
+        OnPropertyChanged(nameof(CanGoToPreviousServicePage));
+        OnPropertyChanged(nameof(CanGoToNextServicePage));
+    }
+
     private void ClearNewCustomerFields()
     {
         NewCustomerFirstName = string.Empty;
