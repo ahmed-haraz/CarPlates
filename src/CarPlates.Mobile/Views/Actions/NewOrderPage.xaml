@@ -341,10 +341,19 @@
                     HorizontalOptions="Center"
                     WidthRequest="320">
                 <VerticalStackLayout Spacing="16">
-                    <Label Text="{loc:Translate Key=SearchCustomer}"
-                           FontSize="18"
-                           FontAttributes="Bold"
-                           HorizontalOptions="Center" />
+                    <Grid ColumnDefinitions="*,Auto">
+                        <Label Grid.Column="0"
+                               Text="{loc:Translate Key=SearchCustomer}"
+                               FontSize="18"
+                               FontAttributes="Bold"
+                               HorizontalOptions="Center" />
+                        <Button Grid.Column="1"
+                                     Text="✕"
+                                     WidthRequest="28"
+                                     HeightRequest="28"
+                                     BackgroundColor="Transparent"
+                                     TextColor="{DynamicResource TextPrimary}" Padding="0" Command="{Binding CloseCustomerPopupCommand}" />
+                    </Grid>
                     <Border Style="{StaticResource Card}"
                             Padding="8">
                         <Grid ColumnDefinitions="Auto,*">
@@ -428,10 +437,12 @@
                                 <Label Text="Karage"
                                        FontSize="12" />
                             </Border>
-                            <ImageButton Grid.Column="2"
-                                         Source="pencil.png"
-                                         WidthRequest="24"
-                                         HeightRequest="24" />
+                            <Button Grid.Column="2"
+                                         Text="✕"
+                                         WidthRequest="28"
+                                         HeightRequest="28"
+                                         BackgroundColor="Transparent"
+                                         TextColor="{DynamicResource TextPrimary}" Padding="0" Command="{Binding CloseVehiclePopupCommand}" />
                         </Grid>
 
                         <Label Text="{loc:Translate Key=Plate}"
@@ -580,11 +591,11 @@
                                    Text="{loc:Translate Key=CreateNewItem}"
                                    FontSize="18"
                                    FontAttributes="Bold" />
-                            <ImageButton Grid.Column="1"
-                                         Source="close.png"
+                            <Button Grid.Column="1"
+                                         Text="✕"
                                          WidthRequest="24"
                                          HeightRequest="24"
-                                         Command="{Binding CloseServicePopupCommand}" />
+                                         TextColor="{DynamicResource TextPrimary}" BackgroundColor="Transparent" Padding="0" Command="{Binding CloseServicePopupCommand}" />
                         </Grid>
 
                         <Label Text="{loc:Translate Key=ItemDetails}"
@@ -692,10 +703,19 @@
                     HorizontalOptions="Center"
                     WidthRequest="300">
                 <VerticalStackLayout Spacing="12">
-                    <Label Text="لون المركبة"
-                           FontSize="18"
-                           FontAttributes="Bold"
-                           HorizontalOptions="Center" />
+                    <Grid ColumnDefinitions="*,Auto">
+                        <Label Grid.Column="0"
+                               Text="لون المركبة"
+                               FontSize="18"
+                               FontAttributes="Bold"
+                               HorizontalOptions="Center" />
+                        <Button Grid.Column="1"
+                                     Text="✕"
+                                     WidthRequest="28"
+                                     HeightRequest="28"
+                                     BackgroundColor="Transparent"
+                                     TextColor="{DynamicResource TextPrimary}" Padding="0" Command="{Binding CloseLocationPopupCommand}" />
+                    </Grid>
                     <SearchBar Placeholder="{loc:Translate Key=SearchLocation}" />
                     <!-- Use Locations (WorkLocation items) instead of Colors (string) -->
                     <CollectionView ItemsSource="{Binding Locations}">
@@ -731,12 +751,15 @@
                     WidthRequest="300"
                     MaximumHeightRequest="500">
                 <VerticalStackLayout Spacing="12">
-                    <Label Text="{loc:Translate Key=Brand}"
-                           FontSize="18"
-                           FontAttributes="Bold"
-                           HorizontalOptions="Center" />
-                    <ScrollView MaximumHeightRequest="400">
-                        <CollectionView ItemsSource="{Binding Brands}">
+                    <Grid ColumnDefinitions="*,Auto">
+                        <Label Grid.Column="0"
+                               Text="{loc:Translate Key=Brand}"
+                               FontSize="18"
+                               FontAttributes="Bold"
+                               HorizontalOptions="Center" />
+                        <Button Grid.Column="1" Text="✕" WidthRequest="28" HeightRequest="28" BackgroundColor="Transparent" TextColor="{DynamicResource TextPrimary}" Padding="0" Command="{Binding CloseBrandPopupCommand}" />
+                    </Grid>
+                    <CollectionView ItemsSource="{Binding PagedBrands}" HeightRequest="360">
                             <CollectionView.ItemTemplate>
                                 <DataTemplate x:DataType="x:String">
                                     <Border Style="{StaticResource Card}"
@@ -760,7 +783,11 @@
                                 </DataTemplate>
                             </CollectionView.ItemTemplate>
                         </CollectionView>
-                    </ScrollView>
+                    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+                        <Button Grid.Column="0" Text="‹" Command="{Binding PreviousBrandPageCommand}" IsEnabled="{Binding CanGoToPreviousBrandPage}" />
+                        <Label Grid.Column="1" Text="{Binding BrandPage, StringFormat='{0}'}" HorizontalOptions="Center" VerticalOptions="Center" />
+                        <Button Grid.Column="2" Text="›" Command="{Binding NextBrandPageCommand}" IsEnabled="{Binding CanGoToNextBrandPage}" />
+                    </Grid>
                 </VerticalStackLayout>
             </Border>
         </Grid>
@@ -776,12 +803,15 @@
                     WidthRequest="300"
                     MaximumHeightRequest="500">
                 <VerticalStackLayout Spacing="12">
-                    <Label Text="{loc:Translate Key=Model}"
-                           FontSize="18"
-                           FontAttributes="Bold"
-                           HorizontalOptions="Center" />
-                    <ScrollView MaximumHeightRequest="400">
-                        <CollectionView ItemsSource="{Binding AvailableModels}">
+                    <Grid ColumnDefinitions="*,Auto">
+                        <Label Grid.Column="0"
+                               Text="{loc:Translate Key=Model}"
+                               FontSize="18"
+                               FontAttributes="Bold"
+                               HorizontalOptions="Center" />
+                        <Button Grid.Column="1" Text="✕" WidthRequest="28" HeightRequest="28" BackgroundColor="Transparent" TextColor="{DynamicResource TextPrimary}" Padding="0" Command="{Binding CloseModelPopupCommand}" />
+                    </Grid>
+                    <CollectionView ItemsSource="{Binding PagedModels}" HeightRequest="360">
                             <CollectionView.ItemTemplate>
                                 <DataTemplate x:DataType="x:String">
                                     <Border Style="{StaticResource Card}"
@@ -805,7 +835,11 @@
                                 </DataTemplate>
                             </CollectionView.ItemTemplate>
                         </CollectionView>
-                    </ScrollView>
+                    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+                        <Button Grid.Column="0" Text="‹" Command="{Binding PreviousModelPageCommand}" IsEnabled="{Binding CanGoToPreviousModelPage}" />
+                        <Label Grid.Column="1" Text="{Binding ModelPage, StringFormat='{0}'}" HorizontalOptions="Center" VerticalOptions="Center" />
+                        <Button Grid.Column="2" Text="›" Command="{Binding NextModelPageCommand}" IsEnabled="{Binding CanGoToNextModelPage}" />
+                    </Grid>
                 </VerticalStackLayout>
             </Border>
         </Grid>
@@ -821,10 +855,10 @@
                     WidthRequest="300"
                     MaximumHeightRequest="500">
                 <VerticalStackLayout Spacing="12">
-                    <Label Text="{loc:Translate Key=Color}"
-                           FontSize="18"
-                           FontAttributes="Bold"
-                           HorizontalOptions="Center" />
+                    <Grid ColumnDefinitions="*,Auto">
+                        <Label Grid.Column="0" Text="{loc:Translate Key=Color}" FontSize="18" FontAttributes="Bold" HorizontalOptions="Center" />
+                        <Button Grid.Column="1" Text="✕" WidthRequest="28" HeightRequest="28" BackgroundColor="Transparent" TextColor="{DynamicResource TextPrimary}" Padding="0" Command="{Binding CloseColorPopupCommand}" />
+                    </Grid>
                     <ScrollView MaximumHeightRequest="400">
                         <CollectionView ItemsSource="{Binding Colors}">
                             <CollectionView.ItemTemplate>
@@ -862,11 +896,10 @@
               BackgroundColor="{DynamicResource Surface}"
               IsVisible="{Binding IsSignaturePadVisible}">
             <Grid RowDefinitions="Auto,*,Auto">
-                <Label Grid.Row="0"
-                       Text="{loc:Translate Key=WriteSignature}"
-                       FontSize="18"
-                       HorizontalOptions="Center"
-                       Margin="0,20" />
+                <Grid Grid.Row="0" ColumnDefinitions="*,Auto" Padding="20">
+                    <Label Grid.Column="0" Text="{loc:Translate Key=WriteSignature}" FontSize="18" HorizontalOptions="Center" />
+                    <Button Grid.Column="1" Text="✕" WidthRequest="28" HeightRequest="28" BackgroundColor="Transparent" TextColor="{DynamicResource TextPrimary}" Padding="0" Command="{Binding SaveSignatureCommand}" />
+                </Grid>
                 <BoxView Grid.Row="1"
                          Color="White" />
                 <!-- SignaturePad would go here - using a placeholder -->
