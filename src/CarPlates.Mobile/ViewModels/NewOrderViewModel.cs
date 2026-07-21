@@ -50,6 +50,8 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
     [ObservableProperty] private ColorOption? _selectedColor;
     [ObservableProperty] private string _serviceSearchText = string.Empty;
     [ObservableProperty] private ObservableCollection<ServiceItem> _filteredServices = new();
+    [ObservableProperty] private int _servicePage = 1;
+    [ObservableProperty] private int _serviceTotalPages = 1;
     [ObservableProperty] private ServiceItem _newServiceItem = null!;
     [ObservableProperty] private string _newServiceName = string.Empty;
     [ObservableProperty] private string _newServiceCategory = "بانزين";
@@ -61,11 +63,19 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
     [ObservableProperty] private decimal _newServiceTaxAmount = 0;
     [ObservableProperty] private decimal _newServiceTotalPrice = 0;
 
+    private const int PopupPageSize = 25;
+
     // Loaded from the API instead of seeded locally.
     [ObservableProperty] private ObservableCollection<WorkLocation> _locations = new();
     [ObservableProperty] private ObservableCollection<Technician> _technicians = new();
     [ObservableProperty] private ObservableCollection<string> _availableModels = new();
+    [ObservableProperty] private ObservableCollection<string> _pagedModels = new();
+    [ObservableProperty] private int _modelPage = 1;
+    [ObservableProperty] private int _modelTotalPages = 1;
     [ObservableProperty] private ObservableCollection<string> _brands = new();
+    [ObservableProperty] private ObservableCollection<string> _pagedBrands = new();
+    [ObservableProperty] private int _brandPage = 1;
+    [ObservableProperty] private int _brandTotalPages = 1;
     [ObservableProperty] private ObservableCollection<string> _vehicleTypes = new();
     [ObservableProperty] private ObservableCollection<string> _engineTypes = new();
     [ObservableProperty] private ObservableCollection<Customer> _customers = new();
@@ -76,6 +86,13 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
     [ObservableProperty] private bool _isBrandPopupVisible;
     [ObservableProperty] private bool _isModelPopupVisible;
     [ObservableProperty] private bool _isColorPopupVisible;
+
+    public bool CanGoToPreviousBrandPage => BrandPage > 1;
+    public bool CanGoToNextBrandPage => BrandPage < BrandTotalPages;
+    public bool CanGoToPreviousModelPage => ModelPage > 1;
+    public bool CanGoToNextModelPage => ModelPage < ModelTotalPages;
+    public bool CanGoToPreviousServicePage => ServicePage > 1;
+    public bool CanGoToNextServicePage => ServicePage < ServiceTotalPages;
 
     // No API source for a generic color list (wh_CustomerCars.Color is free text) or the
     // "add a custom service" category list, so these stay local. Colors carry a real swatch
@@ -175,6 +192,7 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
                 Brands.Add(make.MakeName);
                 _makeIdsByName[make.MakeName] = make.MakeID;
             }
+            ResetBrandPaging();
 
             VehicleTypes.Clear();
             foreach (var type in vehicleTypesTask.Result)
@@ -223,7 +241,30 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
     // Brand/Model/Color use a custom image-grid popup instead of a native Picker, since a
     // native Picker can't show an icon or swatch next to each option on any platform.
     [RelayCommand]
-    private void ShowBrandPopup() => IsBrandPopupVisible = true;
+    private void ShowBrandPopup()
+    {
+        ResetBrandPaging();
+        IsBrandPopupVisible = true;
+    }
+
+    [RelayCommand]
+    private void CloseBrandPopup() => IsBrandPopupVisible = false;
+
+    [RelayCommand]
+    private void NextBrandPage()
+    {
+        if (BrandPage >= BrandTotalPages) return;
+        BrandPage++;
+        RefreshPagedBrands();
+    }
+
+    [RelayCommand]
+    private void PreviousBrandPage()
+    {
+        if (BrandPage <= 1) return;
+        BrandPage--;
+        RefreshPagedBrands();
+    }
 
     [RelayCommand]
     private void SelectBrand(string brand)
@@ -233,7 +274,30 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
     }
 
     [RelayCommand]
-    private void ShowModelPopup() => IsModelPopupVisible = true;
+    private void ShowModelPopup()
+    {
+        ResetModelPaging();
+        IsModelPopupVisible = true;
+    }
+
+    [RelayCommand]
+    private void CloseModelPopup() => IsModelPopupVisible = false;
+
+    [RelayCommand]
+    private void NextModelPage()
+    {
+        if (ModelPage >= ModelTotalPages) return;
+        ModelPage++;
+        RefreshPagedModels();
+    }
+
+    [RelayCommand]
+    private void PreviousModelPage()
+    {
+        if (ModelPage <= 1) return;
+        ModelPage--;
+        RefreshPagedModels();
+    }
 
     [RelayCommand]
     private void SelectVehicleModel(string model)
@@ -244,6 +308,9 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
 
     [RelayCommand]
     private void ShowColorPopup() => IsColorPopupVisible = true;
+
+    [RelayCommand]
+    private void CloseColorPopup() => IsColorPopupVisible = false;
 
     [RelayCommand]
     private void SelectColorOption(ColorOption color)
@@ -283,6 +350,7 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
     private async Task UpdateModelsForBrandAsync(string brand)
     {
         AvailableModels.Clear();
+        ResetModelPaging();
 
         if (string.IsNullOrWhiteSpace(brand) || !_makeIdsByName.TryGetValue(brand, out var makeId))
         {
@@ -296,6 +364,7 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
             {
                 AvailableModels.Add(model.ModelName);
             }
+            ResetModelPaging();
         });
     }
 
@@ -418,6 +487,7 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
     private void CloseServicePopup()
     {
         IsServicePopupVisible = false;
+        NewServiceItem = null!;
     }
 
     // Searches the real item catalog (vw_wh_ItemBarCodes) by name/barcode, optionally
@@ -431,7 +501,37 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
             var categoryId = SelectedItemCategory?.Id;
             var search = string.IsNullOrWhiteSpace(ServiceSearchText) ? null : ServiceSearchText;
 
-            var results = await _itemLookupService.SearchAsync(search, categoryId, pageSize: 50);
+            ServicePage = 1;
+            var results = await _itemLookupService.SearchAsync(search, categoryId, ServicePage, PopupPageSize);
+            ServiceTotalPages = Math.Max(1, results.TotalPages);
+            ApplyItemResults(results.Items);
+        });
+    }
+
+    [RelayCommand]
+    private async Task NextServicePageAsync()
+    {
+        if (ServicePage >= ServiceTotalPages) return;
+        ServicePage++;
+        await LoadServicePageAsync();
+    }
+
+    [RelayCommand]
+    private async Task PreviousServicePageAsync()
+    {
+        if (ServicePage <= 1) return;
+        ServicePage--;
+        await LoadServicePageAsync();
+    }
+
+    private async Task LoadServicePageAsync()
+    {
+        await ExecuteAsync(async () =>
+        {
+            var categoryId = SelectedItemCategory?.Id;
+            var search = string.IsNullOrWhiteSpace(ServiceSearchText) ? null : ServiceSearchText;
+            var results = await _itemLookupService.SearchAsync(search, categoryId, ServicePage, PopupPageSize);
+            ServiceTotalPages = Math.Max(1, results.TotalPages);
             ApplyItemResults(results.Items);
         });
     }
@@ -534,6 +634,7 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
         ServiceItems.Add(item);
         FilteredServices.Add(item);
         ClearNewServiceFields();
+        NewServiceItem = null!;
     }
 
     [RelayCommand]
@@ -541,6 +642,9 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
     {
         IsLocationPopupVisible = true;
     }
+
+    [RelayCommand]
+    private void CloseLocationPopup() => IsLocationPopupVisible = false;
 
     [RelayCommand]
     private void SelectLocation(WorkLocation location)
@@ -554,6 +658,9 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
     {
         IsTechnicianPopupVisible = true;
     }
+
+    [RelayCommand]
+    private void CloseTechnicianPopup() => IsTechnicianPopupVisible = false;
 
     [RelayCommand]
     private void SelectTechnician(Technician tech)
@@ -627,6 +734,70 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
             "البطاريات" => "",
             _ => ""
         };
+    }
+
+    private void ResetBrandPaging()
+    {
+        BrandPage = 1;
+        BrandTotalPages = Math.Max(1, (int)Math.Ceiling(Brands.Count / (double)PopupPageSize));
+        RefreshPagedBrands();
+    }
+
+    private void RefreshPagedBrands()
+    {
+        PagedBrands = new ObservableCollection<string>(Brands.Skip((BrandPage - 1) * PopupPageSize).Take(PopupPageSize));
+        OnPropertyChanged(nameof(CanGoToPreviousBrandPage));
+        OnPropertyChanged(nameof(CanGoToNextBrandPage));
+    }
+
+    private void ResetModelPaging()
+    {
+        ModelPage = 1;
+        ModelTotalPages = Math.Max(1, (int)Math.Ceiling(AvailableModels.Count / (double)PopupPageSize));
+        RefreshPagedModels();
+    }
+
+    private void RefreshPagedModels()
+    {
+        PagedModels = new ObservableCollection<string>(AvailableModels.Skip((ModelPage - 1) * PopupPageSize).Take(PopupPageSize));
+        OnPropertyChanged(nameof(CanGoToPreviousModelPage));
+        OnPropertyChanged(nameof(CanGoToNextModelPage));
+    }
+
+    partial void OnBrandPageChanged(int value)
+    {
+        OnPropertyChanged(nameof(CanGoToPreviousBrandPage));
+        OnPropertyChanged(nameof(CanGoToNextBrandPage));
+    }
+
+    partial void OnBrandTotalPagesChanged(int value)
+    {
+        OnPropertyChanged(nameof(CanGoToPreviousBrandPage));
+        OnPropertyChanged(nameof(CanGoToNextBrandPage));
+    }
+
+    partial void OnModelPageChanged(int value)
+    {
+        OnPropertyChanged(nameof(CanGoToPreviousModelPage));
+        OnPropertyChanged(nameof(CanGoToNextModelPage));
+    }
+
+    partial void OnModelTotalPagesChanged(int value)
+    {
+        OnPropertyChanged(nameof(CanGoToPreviousModelPage));
+        OnPropertyChanged(nameof(CanGoToNextModelPage));
+    }
+
+    partial void OnServicePageChanged(int value)
+    {
+        OnPropertyChanged(nameof(CanGoToPreviousServicePage));
+        OnPropertyChanged(nameof(CanGoToNextServicePage));
+    }
+
+    partial void OnServiceTotalPagesChanged(int value)
+    {
+        OnPropertyChanged(nameof(CanGoToPreviousServicePage));
+        OnPropertyChanged(nameof(CanGoToNextServicePage));
     }
 
     private void ClearNewCustomerFields()
