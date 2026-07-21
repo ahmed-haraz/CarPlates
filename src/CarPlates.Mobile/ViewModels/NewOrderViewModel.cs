@@ -86,6 +86,13 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
     [ObservableProperty] private bool _isBrandPopupVisible;
     [ObservableProperty] private bool _isModelPopupVisible;
     [ObservableProperty] private bool _isColorPopupVisible;
+    [ObservableProperty] private bool _isItemCategoryPopupVisible;
+    [ObservableProperty] private ObservableCollection<ItemCategoryOption> _pagedItemCategories = new();
+    [ObservableProperty] private int _itemCategoryPage = 1;
+    [ObservableProperty] private int _itemCategoryTotalPages = 1;
+    [ObservableProperty] private ObservableCollection<ColorOption> _pagedColors = new();
+    [ObservableProperty] private int _colorPage = 1;
+    [ObservableProperty] private int _colorTotalPages = 1;
 
     public bool CanGoToPreviousBrandPage => BrandPage > 1;
     public bool CanGoToNextBrandPage => BrandPage < BrandTotalPages;
@@ -93,6 +100,10 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
     public bool CanGoToNextModelPage => ModelPage < ModelTotalPages;
     public bool CanGoToPreviousServicePage => ServicePage > 1;
     public bool CanGoToNextServicePage => ServicePage < ServiceTotalPages;
+    public bool CanGoToPreviousItemCategoryPage => ItemCategoryPage > 1;
+    public bool CanGoToNextItemCategoryPage => ItemCategoryPage < ItemCategoryTotalPages;
+    public bool CanGoToPreviousColorPage => ColorPage > 1;
+    public bool CanGoToNextColorPage => ColorPage < ColorTotalPages;
 
     // No API source for a generic color list (wh_CustomerCars.Color is free text) or the
     // "add a custom service" category list, so these stay local. Colors carry a real swatch
@@ -307,7 +318,11 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
     }
 
     [RelayCommand]
-    private void ShowColorPopup() => IsColorPopupVisible = true;
+    private void ShowColorPopup()
+    {
+        ResetColorPaging();
+        IsColorPopupVisible = true;
+    }
 
     [RelayCommand]
     private void CloseColorPopup() => IsColorPopupVisible = false;
@@ -317,6 +332,57 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
     {
         SelectedColor = color;
         IsColorPopupVisible = false;
+    }
+
+    [RelayCommand]
+    private void NextColorPage()
+    {
+        if (ColorPage >= ColorTotalPages) return;
+        ColorPage++;
+        RefreshPagedColors();
+    }
+
+    [RelayCommand]
+    private void PreviousColorPage()
+    {
+        if (ColorPage <= 1) return;
+        ColorPage--;
+        RefreshPagedColors();
+    }
+
+    [RelayCommand]
+    private void ShowItemCategoryPopup()
+    {
+        ResetItemCategoryPaging();
+        IsItemCategoryPopupVisible = true;
+    }
+
+    [RelayCommand]
+    private void CloseItemCategoryPopup() => IsItemCategoryPopupVisible = false;
+
+    [RelayCommand]
+    private void SelectItemCategory(ItemCategoryOption category)
+    {
+        SelectedItemCategory = category;
+        IsItemCategoryPopupVisible = false;
+        IsServicePopupVisible = true;
+        _ = FilterServicesAsync();
+    }
+
+    [RelayCommand]
+    private void NextItemCategoryPage()
+    {
+        if (ItemCategoryPage >= ItemCategoryTotalPages) return;
+        ItemCategoryPage++;
+        RefreshPagedItemCategories();
+    }
+
+    [RelayCommand]
+    private void PreviousItemCategoryPage()
+    {
+        if (ItemCategoryPage <= 1) return;
+        ItemCategoryPage--;
+        RefreshPagedItemCategories();
     }
 
     partial void OnSelectedItemCategoryChanged(ItemCategoryOption? value)
@@ -690,9 +756,39 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
     [RelayCommand]
     private async Task SubmitOrder()
     {
-        if (SelectedVehicle == null || CartItems.Count == 0)
+        var missing = new List<string>();
+
+        if (SelectedCustomer == null)
+            missing.Add("العميل");
+
+        if (SelectedVehicle == null)
         {
-            ErrorMessage = "الرجاء إكمال جميع البيانات المطلوبة";
+            missing.Add("المركبة");
+        }
+        else
+        {
+            if (string.IsNullOrWhiteSpace(SelectedVehicle.PlateNumber))
+                missing.Add("رقم اللوحة");
+            if (string.IsNullOrWhiteSpace(SelectedVehicle.Brand))
+                missing.Add("الماركة");
+            if (string.IsNullOrWhiteSpace(SelectedVehicle.Model))
+                missing.Add("الموديل");
+            if (SelectedColor == null || string.IsNullOrWhiteSpace(SelectedColor.Name))
+                missing.Add("اللون");
+        }
+
+        if (CartItems.Count == 0)
+            missing.Add("الأصناف");
+
+        if (SelectedLocation == null)
+            missing.Add("موقع العمل");
+
+        if (SelectedTechnician == null)
+            missing.Add("الفني");
+
+        if (missing.Count > 0)
+        {
+            ErrorMessage = "الرجاء إكمال البيانات التالية:\n• " + string.Join("\n• ", missing);
             HasError = true;
             return;
         }
@@ -764,6 +860,34 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
         OnPropertyChanged(nameof(CanGoToNextModelPage));
     }
 
+    private void ResetItemCategoryPaging()
+    {
+        ItemCategoryPage = 1;
+        ItemCategoryTotalPages = Math.Max(1, (int)Math.Ceiling(ItemCategories.Count / (double)PopupPageSize));
+        RefreshPagedItemCategories();
+    }
+
+    private void RefreshPagedItemCategories()
+    {
+        PagedItemCategories = new ObservableCollection<ItemCategoryOption>(ItemCategories.Skip((ItemCategoryPage - 1) * PopupPageSize).Take(PopupPageSize));
+        OnPropertyChanged(nameof(CanGoToPreviousItemCategoryPage));
+        OnPropertyChanged(nameof(CanGoToNextItemCategoryPage));
+    }
+
+    private void ResetColorPaging()
+    {
+        ColorPage = 1;
+        ColorTotalPages = Math.Max(1, (int)Math.Ceiling(Colors.Count / (double)PopupPageSize));
+        RefreshPagedColors();
+    }
+
+    private void RefreshPagedColors()
+    {
+        PagedColors = new ObservableCollection<ColorOption>(Colors.Skip((ColorPage - 1) * PopupPageSize).Take(PopupPageSize));
+        OnPropertyChanged(nameof(CanGoToPreviousColorPage));
+        OnPropertyChanged(nameof(CanGoToNextColorPage));
+    }
+
     partial void OnBrandPageChanged(int value)
     {
         OnPropertyChanged(nameof(CanGoToPreviousBrandPage));
@@ -798,6 +922,30 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
     {
         OnPropertyChanged(nameof(CanGoToPreviousServicePage));
         OnPropertyChanged(nameof(CanGoToNextServicePage));
+    }
+
+    partial void OnItemCategoryPageChanged(int value)
+    {
+        OnPropertyChanged(nameof(CanGoToPreviousItemCategoryPage));
+        OnPropertyChanged(nameof(CanGoToNextItemCategoryPage));
+    }
+
+    partial void OnItemCategoryTotalPagesChanged(int value)
+    {
+        OnPropertyChanged(nameof(CanGoToPreviousItemCategoryPage));
+        OnPropertyChanged(nameof(CanGoToNextItemCategoryPage));
+    }
+
+    partial void OnColorPageChanged(int value)
+    {
+        OnPropertyChanged(nameof(CanGoToPreviousColorPage));
+        OnPropertyChanged(nameof(CanGoToNextColorPage));
+    }
+
+    partial void OnColorTotalPagesChanged(int value)
+    {
+        OnPropertyChanged(nameof(CanGoToPreviousColorPage));
+        OnPropertyChanged(nameof(CanGoToNextColorPage));
     }
 
     private void ClearNewCustomerFields()
