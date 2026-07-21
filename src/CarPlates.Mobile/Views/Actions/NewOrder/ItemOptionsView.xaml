@@ -8,8 +8,11 @@
              x:Class="CarPlates.Mobile.Views.Actions.NewOrder.ItemOptionsView"
              x:Name="Root"
              x:DataType="vm:NewOrderViewModel">
-    <Grid RowDefinitions="Auto,Auto,Auto,*" RowSpacing="12">
-        <Label Grid.Row="0" Text="{loc:Translate Key=SelectCategory}" Style="{StaticResource Title}" HorizontalOptions="Center" />
+    <Grid RowDefinitions="Auto,Auto,Auto,*,Auto" RowSpacing="12">
+        <Grid Grid.Row="0" ColumnDefinitions="*,Auto">
+            <Label Grid.Column="0" Text="{loc:Translate Key=SelectCategory}" Style="{StaticResource Title}" HorizontalOptions="Center" />
+            <Button Grid.Column="1" Text="✕" WidthRequest="28" HeightRequest="28" BackgroundColor="Transparent" TextColor="{DynamicResource TextPrimary}" Padding="0" Command="{Binding CloseServicePopupCommand}" />
+        </Grid>
         <SearchBar Grid.Row="1" Placeholder="{loc:Translate Key=SearchItem}" Text="{Binding ServiceSearchText}" SearchCommand="{Binding FilterServicesCommand}" />
         <Button Grid.Row="2" Text="{loc:Translate Key=CreateNewItem}" Style="{StaticResource SecondaryButton}" Command="{Binding ShowNewServiceFormCommand}" />
         <CollectionView Grid.Row="3" ItemsSource="{Binding FilteredServices}" Style="{StaticResource DefaultCollectionView}">
@@ -34,5 +37,10 @@
                 </DataTemplate>
             </CollectionView.ItemTemplate>
         </CollectionView>
+        <Grid Grid.Row="4" ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+            <Button Grid.Column="0" Text="‹" Command="{Binding PreviousServicePageCommand}" IsEnabled="{Binding CanGoToPreviousServicePage}" />
+            <Label Grid.Column="1" Text="{Binding ServicePage, StringFormat='{0}'}" HorizontalOptions="Center" VerticalOptions="Center" />
+            <Button Grid.Column="2" Text="›" Command="{Binding NextServicePageCommand}" IsEnabled="{Binding CanGoToNextServicePage}" />
+        </Grid>
     </Grid>
 </ContentView>
