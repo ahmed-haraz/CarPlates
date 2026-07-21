@@ -1,4 +1,4 @@
-﻿namespace CarPlates.Mobile.Helpers;
+namespace CarPlates.Mobile.Helpers;
 
 public static class IconHelper
 {
@@ -10,11 +10,37 @@ public static class IconHelper
             default(string),
             propertyChanged: OnIconChanged);
 
+    public static readonly BindableProperty LightColorResourceKeyProperty =
+        BindableProperty.CreateAttached(
+            "LightColorResourceKey",
+            typeof(string),
+            typeof(IconHelper),
+            "IconLight");
+
+    public static readonly BindableProperty DarkColorResourceKeyProperty =
+        BindableProperty.CreateAttached(
+            "DarkColorResourceKey",
+            typeof(string),
+            typeof(IconHelper),
+            "IconDark");
+
     public static string GetGlyph(BindableObject view)
         => (string)view.GetValue(GlyphProperty);
 
     public static void SetGlyph(BindableObject view, string value)
         => view.SetValue(GlyphProperty, value);
+
+    public static string GetLightColorResourceKey(BindableObject view)
+        => (string)view.GetValue(LightColorResourceKeyProperty);
+
+    public static void SetLightColorResourceKey(BindableObject view, string value)
+        => view.SetValue(LightColorResourceKeyProperty, value);
+
+    public static string GetDarkColorResourceKey(BindableObject view)
+        => (string)view.GetValue(DarkColorResourceKeyProperty);
+
+    public static void SetDarkColorResourceKey(BindableObject view, string value)
+        => view.SetValue(DarkColorResourceKeyProperty, value);
 
     private static void OnIconChanged(BindableObject bindable, object oldValue, object newValue)
     {
@@ -27,28 +53,22 @@ public static class IconHelper
             FontFamily = "IcoMoon"
         };
 
-        // ✅ SAFE theme-aware colors
-        var resources = Microsoft.Maui.Controls.Application.Current?.Resources;
+        var lightColor = ResolveColor(GetLightColorResourceKey(image), Colors.Black);
+        var darkColor = ResolveColor(GetDarkColorResourceKey(image), Colors.White);
 
-        if (resources != null
-            && resources.TryGetValue("Primary", out var light)
-            && resources.TryGetValue("White", out var dark)
-            && light is Color lightColor
-            && dark is Color darkColor)
-        {
-            source.SetAppThemeColor(
-                FontImageSource.ColorProperty,
-                lightColor,
-                darkColor
-            );
-        }
-        else
-        {
-            // 🔁 Fallback (never invisible)
-            source.Color = Colors.Red;
-        }
-
+        source.SetAppThemeColor(FontImageSource.ColorProperty, lightColor, darkColor);
         image.Source = source;
     }
-}
 
+    private static Color ResolveColor(string? resourceKey, Color fallback)
+    {
+        if (!string.IsNullOrWhiteSpace(resourceKey)
+            && Application.Current?.Resources.TryGetValue(resourceKey, out var resource) == true
+            && resource is Color color)
+        {
+            return color;
+        }
+
+        return fallback;
+    }
+}
