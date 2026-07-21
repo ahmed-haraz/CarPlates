@@ -3,7 +3,6 @@ using CarPlates.Domain.Entities;
 using CarPlates.Mobile.Navigation;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using Microsoft.Maui.Graphics;
 using System.Collections.ObjectModel;
 
 namespace CarPlates.Mobile.ViewModels;
@@ -99,24 +98,124 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
     // No API source for a generic color list (wh_CustomerCars.Color is free text) or the
     // "add a custom service" category list, so these stay local. Colors carry a real swatch
     // so the picker can show a color circle, not just a name.
-    public ObservableCollection<ColorOption> Colors { get; } = new()
-    {
-        new("Beige", Color.FromArgb("#F5F5DC")),
+    public ObservableCollection<ColorOption> Colors { get; } =
+    [
         new("Black", Color.FromArgb("#000000")),
-        new("Blue", Color.FromArgb("#2196F3")),
-        new("Bronze", Color.FromArgb("#CD7F32")),
-        new("Brown", Color.FromArgb("#795548")),
-        new("Gold", Color.FromArgb("#FFD700")),
-        new("Gray", Color.FromArgb("#9E9E9E")),
-        new("Green", Color.FromArgb("#4CAF50")),
-        new("Orange", Color.FromArgb("#FF9800")),
-        new("Pink", Color.FromArgb("#E91E63")),
-        new("Purple", Color.FromArgb("#9C27B0")),
-        new("Red", Color.FromArgb("#F44336")),
+        new("Jet Black", Color.FromArgb("#0A0A0A")),
+        new("Obsidian Black", Color.FromArgb("#1C1C1C")),
+        new("Midnight Black", Color.FromArgb("#191970")),
+        new("Graphite", Color.FromArgb("#383838")),
+        new("Charcoal", Color.FromArgb("#36454F")),
+        new("Dark Gray", Color.FromArgb("#555555")),
+        new("Gray", Color.FromArgb("#808080")),
         new("Silver", Color.FromArgb("#C0C0C0")),
+        new("Brilliant Silver", Color.FromArgb("#C8C8C8")),
+        new("Aluminum", Color.FromArgb("#A9A9A9")),
+        new("Titanium", Color.FromArgb("#878681")),
+        new("Gunmetal", Color.FromArgb("#2A3439")),
+        new("Nardo Gray", Color.FromArgb("#8D9093")),
+
         new("White", Color.FromArgb("#FFFFFF")),
-        new("Yellow", Color.FromArgb("#FFEB3B"))
-    };
+        new("Pearl White", Color.FromArgb("#F8F8FF")),
+        new("Ivory White", Color.FromArgb("#FFFFF0")),
+        new("Snow White", Color.FromArgb("#FFFAFA")),
+        new("Cream", Color.FromArgb("#FFFDD0")),
+        new("Beige", Color.FromArgb("#F5F5DC")),
+        new("Champagne", Color.FromArgb("#F7E7CE")),
+
+        new("Gold", Color.FromArgb("#FFD700")),
+        new("Rose Gold", Color.FromArgb("#B76E79")),
+        new("Bronze", Color.FromArgb("#CD7F32")),
+        new("Copper", Color.FromArgb("#B87333")),
+
+        new("Brown", Color.FromArgb("#8B4513")),
+        new("Chocolate Brown", Color.FromArgb("#7B3F00")),
+        new("Mocha", Color.FromArgb("#967969")),
+        new("Mahogany", Color.FromArgb("#C04000")),
+
+        new("Red", Color.FromArgb("#FF0000")),
+        new("Bright Red", Color.FromArgb("#FF2400")),
+        new("Candy Red", Color.FromArgb("#D2042D")),
+        new("Ruby Red", Color.FromArgb("#9B111E")),
+        new("Crimson", Color.FromArgb("#DC143C")),
+        new("Burgundy", Color.FromArgb("#800020")),
+        new("Maroon", Color.FromArgb("#800000")),
+        new("Wine Red", Color.FromArgb("#722F37")),
+
+        new("Orange", Color.FromArgb("#FFA500")),
+        new("Burnt Orange", Color.FromArgb("#CC5500")),
+        new("Copper Orange", Color.FromArgb("#DA8A67")),
+
+        new("Yellow", Color.FromArgb("#FFFF00")),
+        new("Canary Yellow", Color.FromArgb("#FFEF00")),
+        new("Lemon Yellow", Color.FromArgb("#FFF44F")),
+        new("Mustard", Color.FromArgb("#E1AD01")),
+
+        new("Green", Color.FromArgb("#008000")),
+        new("British Racing Green", Color.FromArgb("#004225")),
+        new("Forest Green", Color.FromArgb("#228B22")),
+        new("Dark Green", Color.FromArgb("#006400")),
+        new("Olive Green", Color.FromArgb("#556B2F")),
+        new("Lime Green", Color.FromArgb("#32CD32")),
+        new("Mint Green", Color.FromArgb("#98FF98")),
+        new("Emerald Green", Color.FromArgb("#50C878")),
+
+        new("Blue", Color.FromArgb("#0000FF")),
+        new("Navy Blue", Color.FromArgb("#000080")),
+        new("Dark Blue", Color.FromArgb("#00008B")),
+        new("Royal Blue", Color.FromArgb("#4169E1")),
+        new("Electric Blue", Color.FromArgb("#7DF9FF")),
+        new("Sky Blue", Color.FromArgb("#87CEEB")),
+        new("Light Blue", Color.FromArgb("#ADD8E6")),
+        new("Aqua Blue", Color.FromArgb("#00FFFF")),
+        new("Teal", Color.FromArgb("#008080")),
+        new("Turquoise", Color.FromArgb("#40E0D0")),
+        new("Cyan", Color.FromArgb("#00FFFF")),
+
+        new("Purple", Color.FromArgb("#800080")),
+        new("Deep Purple", Color.FromArgb("#673AB7")),
+        new("Violet", Color.FromArgb("#8F00FF")),
+        new("Lavender", Color.FromArgb("#E6E6FA")),
+        new("Plum", Color.FromArgb("#8E4585")),
+        new("Magenta", Color.FromArgb("#FF00FF")),
+
+        new("Pink", Color.FromArgb("#FFC0CB")),
+        new("Hot Pink", Color.FromArgb("#FF69B4")),
+        new("Coral", Color.FromArgb("#FF7F50")),
+
+        new("Pearl Blue", Color.FromArgb("#6A8DFF")),
+        new("Pearl Black", Color.FromArgb("#1A1A1A")),
+        new("Pearl Red", Color.FromArgb("#AA0114")),
+        new("Pearl Gray", Color.FromArgb("#B0B0B0")),
+
+        new("Metallic Silver", Color.FromArgb("#BFC1C2")),
+        new("Metallic Gray", Color.FromArgb("#6E7072")),
+        new("Metallic Blue", Color.FromArgb("#3B6EA5")),
+        new("Metallic Green", Color.FromArgb("#2E8B57")),
+        new("Metallic Red", Color.FromArgb("#B22222")),
+        new("Metallic Brown", Color.FromArgb("#8B5A2B")),
+        new("Metallic Bronze", Color.FromArgb("#8C7853")),
+
+        new("Matte Black", Color.FromArgb("#121212")),
+        new("Matte Gray", Color.FromArgb("#696969")),
+        new("Matte White", Color.FromArgb("#F5F5F5")),
+        new("Matte Blue", Color.FromArgb("#1E3A8A")),
+        new("Matte Green", Color.FromArgb("#355E3B")),
+        new("Matte Red", Color.FromArgb("#8B0000")),
+
+        new("Satin Black", Color.FromArgb("#242424")),
+        new("Satin Silver", Color.FromArgb("#AFAFAF")),
+        new("Satin Blue", Color.FromArgb("#3A5FCD")),
+        new("Satin Gray", Color.FromArgb("#7E7F7F")),
+
+        new("Two-Tone Black/White", Color.FromArgb("#808080")),
+        new("Two-Tone Red/Black", Color.FromArgb("#990000")),
+        new("Two-Tone Blue/White", Color.FromArgb("#4F81BD")),
+
+        new("Custom", Color.FromArgb("#FFFFFF")),
+        new("Other", Color.FromArgb("#999999")),
+        new("Unknown", Color.FromArgb("#CCCCCC"))
+    ];
 
     public ObservableCollection<string> TaxTypes { get; } = new() { "VAT", "معفى من الضريبة" };
     public ObservableCollection<Vehicle> Vehicles { get; } = new();
