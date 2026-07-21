@@ -72,15 +72,25 @@
     <Style TargetType="Border" x:Key="Card">
         <Setter Property="BackgroundColor" Value="{DynamicResource Surface}" />
         <Setter Property="Stroke" Value="{DynamicResource Border}" />
-        <Setter Property="StrokeShape" Value="RoundRectangle 22" />
+        <Setter Property="StrokeShape" Value="RoundRectangle 24" />
         <Setter Property="Padding" Value="18" />
+        <Setter Property="Shadow">
+            <Setter.Value>
+                <Shadow Brush="#220F172A" Offset="0,8" Radius="18" Opacity="0.18" />
+            </Setter.Value>
+        </Setter>
     </Style>
 
     <Style TargetType="Border" x:Key="ElevatedCard">
         <Setter Property="BackgroundColor" Value="{DynamicResource Surface}" />
         <Setter Property="Stroke" Value="Transparent" />
-        <Setter Property="StrokeShape" Value="RoundRectangle 26" />
+        <Setter Property="StrokeShape" Value="RoundRectangle 28" />
         <Setter Property="Padding" Value="20" />
+        <Setter Property="Shadow">
+            <Setter.Value>
+                <Shadow Brush="#260F172A" Offset="0,12" Radius="24" Opacity="0.22" />
+            </Setter.Value>
+        </Setter>
     </Style>
 
     <Style TargetType="Border" x:Key="HeroCard">
@@ -95,6 +105,22 @@
         <Setter Property="Stroke" Value="Transparent" />
         <Setter Property="StrokeShape" Value="RoundRectangle 16" />
         <Setter Property="Padding" Value="10,6" />
+    </Style>
+
+
+    <Style TargetType="Border" x:Key="SelectableChip">
+        <Setter Property="BackgroundColor" Value="{DynamicResource SurfaceMuted}" />
+        <Setter Property="Stroke" Value="{DynamicResource Border}" />
+        <Setter Property="StrokeShape" Value="RoundRectangle 18" />
+        <Setter Property="Padding" Value="14,10" />
+        <Setter Property="MinimumHeightRequest" Value="44" />
+    </Style>
+
+    <Style TargetType="Label" x:Key="ChipLabel">
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="FontAttributes" Value="Bold" />
+        <Setter Property="TextColor" Value="{DynamicResource TextPrimary}" />
+        <Setter Property="VerticalTextAlignment" Value="Center" />
     </Style>
 
     <!-- Input Fields -->

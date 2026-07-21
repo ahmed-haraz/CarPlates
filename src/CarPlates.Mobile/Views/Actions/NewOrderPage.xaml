@@ -5,17 +5,20 @@
              xmlns:models="clr-namespace:CarPlates.Domain.Entities;assembly=CarPlates.Domain"
              xmlns:helpers="clr-namespace:CarPlates.Mobile.Helpers"
              xmlns:loc="clr-namespace:CarPlates.Mobile.Localization"
+             xmlns:newOrder="clr-namespace:CarPlates.Mobile.Views.Actions.NewOrder"
              NavigationPage.HasNavigationBar="False"
              x:Class="CarPlates.Mobile.Views.Actions.NewOrderPage"
              x:DataType="vm:NewOrderViewModel">
 
     <Grid RowDefinitions="Auto,*"
+          Padding="0"
           BackgroundColor="{DynamicResource Background}">
 
         <!-- Header -->
         <Grid Grid.Row="0"
-              Padding="16,12"
-              ColumnDefinitions="Auto,*">
+              Padding="20,18"
+              ColumnDefinitions="Auto,*"
+              BackgroundColor="{DynamicResource Surface}">
 
             <Image Grid.Column="0"
                    WidthRequest="24"
@@ -37,8 +40,8 @@
         <!-- Scrollable Content -->
         <ScrollView Grid.Row="1">
 
-            <VerticalStackLayout Spacing="12"
-                                 Padding="16">
+            <VerticalStackLayout Spacing="16"
+                                 Padding="20,18,20,96">
 
                 <!-- Add Customer Section -->
                 <Border Style="{StaticResource Card}"
@@ -74,7 +77,7 @@
                                FontAttributes="Bold" />
                         <Label Text="{Binding SelectedCustomer.PhoneNumber}"
                                FontSize="14"
-                               TextColor="Gray" />
+                               TextColor="{DynamicResource TextSecondary}" />
                     </VerticalStackLayout>
                 </Border>
 
@@ -101,7 +104,7 @@
 
                             <Label Text="{loc:Translate Key=AddVehicle}"
                                    FontSize="12"
-                                   TextColor="Green" />
+                                   TextColor="{StaticResource Success}" />
                         </Border>
                         <Label Grid.Column="2"
                                Text="{loc:Translate Key=AddVehicle}"
@@ -128,7 +131,7 @@
                         </Label>
                         <Label Text="{Binding SelectedVehicle.PlateNumber}"
                                FontSize="14"
-                               TextColor="Gray" />
+                               TextColor="{DynamicResource TextSecondary}" />
                     </VerticalStackLayout>
                 </Border>
 
@@ -144,7 +147,7 @@
 
                             <Label Text="{loc:Translate Key=AddItems}"
                                    FontSize="12"
-                                   TextColor="Green" />
+                                   TextColor="{StaticResource Success}" />
                         </Border>
                         <Label Grid.Column="1"
                                Text="{loc:Translate Key=AddItems}"
@@ -170,7 +173,7 @@
                                                FontAttributes="Bold" />
                                         <Label Text="{Binding ServiceItem.Category}"
                                                FontSize="12"
-                                               TextColor="Gray" />
+                                               TextColor="{DynamicResource TextSecondary}" />
                                     </VerticalStackLayout>
                                     <Label Grid.Column="1"
                                            Text="{Binding ServiceItem.TotalPrice, StringFormat='{0:N2} SAR'}"
@@ -218,7 +221,7 @@
                                 BackgroundColor="Transparent" />
                         <Label Text="٢٠٠/٠"
                                FontSize="12"
-                               TextColor="Gray"
+                               TextColor="{DynamicResource TextSecondary}"
                                HorizontalOptions="End" />
 
                         <HorizontalStackLayout Spacing="12"
@@ -226,8 +229,8 @@
                             <Button Text="{loc:Translate Key=Signature}"
                                     ImageSource="signature.png"
                                     BackgroundColor="{DynamicResource Surface}"
-                                    TextColor="Black"
-                                    BorderColor="Gray"
+                                    TextColor="{DynamicResource TextPrimary}"
+                                    BorderColor="{DynamicResource Border}"
                                     BorderWidth="1"
                                     CornerRadius="20"
                                     Padding="12,8"
@@ -235,8 +238,8 @@
                             <Button Text="{loc:Translate Key=AddPhotos}"
                                     ImageSource="camera.png"
                                     BackgroundColor="{DynamicResource Surface}"
-                                    TextColor="Black"
-                                    BorderColor="Gray"
+                                    TextColor="{DynamicResource TextPrimary}"
+                                    BorderColor="{DynamicResource Border}"
                                     BorderWidth="1"
                                     CornerRadius="20"
                                     Padding="12,8" />
@@ -255,16 +258,16 @@
                         <HorizontalStackLayout Spacing="12">
                             <Button Text="{loc:Translate Key=SelectWorkLocation}"
                                     BackgroundColor="{DynamicResource Surface}"
-                                    TextColor="Black"
-                                    BorderColor="Gray"
+                                    TextColor="{DynamicResource TextPrimary}"
+                                    BorderColor="{DynamicResource Border}"
                                     BorderWidth="1"
                                     CornerRadius="20"
                                     Padding="12,8"
                                     Command="{Binding ShowLocationPopupCommand}" />
                             <Button Text="{loc:Translate Key=SelectTechnician}"
                                     BackgroundColor="{DynamicResource Surface}"
-                                    TextColor="Black"
-                                    BorderColor="Gray"
+                                    TextColor="{DynamicResource TextPrimary}"
+                                    BorderColor="{DynamicResource Border}"
                                     BorderWidth="1"
                                     CornerRadius="20"
                                     Padding="12,8"
@@ -277,7 +280,7 @@
                                     <Border Style="{StaticResource Card}"
                                             Padding="8,4">
                                         <Label Text="{Binding Name}"
-                                               TextColor="Green"
+                                               TextColor="{StaticResource Success}"
                                                FontSize="12" />
                                     </Border>
                                 </DataTemplate>
@@ -290,7 +293,7 @@
                                     <Border Style="{StaticResource Card}"
                                             Padding="8,4">
                                         <Label Text="{Binding Name, StringFormat='Tech: {0}'}"
-                                               TextColor="Green"
+                                               TextColor="{StaticResource Success}"
                                                FontSize="12" />
                                     </Border>
                                 </DataTemplate>
@@ -318,7 +321,7 @@
         <!-- Bottom Submit Button -->
         <Button Grid.Row="1"
                 Text="{loc:Translate Key=Next}"
-                BackgroundColor="#4CAF50"
+                BackgroundColor="{StaticResource Primary}"
                 TextColor="White"
                 FontSize="18"
                 FontAttributes="Bold"
@@ -330,7 +333,7 @@
 
         <!-- Customer Search Popup -->
         <Grid Grid.Row="1"
-              BackgroundColor="#80000000"
+              BackgroundColor="{StaticResource Overlay}"
               IsVisible="{Binding IsCustomerPopupVisible}">
             <Border Style="{StaticResource Card}"
                     Padding="24"
@@ -357,7 +360,7 @@
                         </Grid>
                     </Border>
                     <Button Text="{loc:Translate Key=Search}"
-                            BackgroundColor="#4CAF50"
+                            BackgroundColor="{StaticResource Primary}"
                             TextColor="White"
                             CornerRadius="12"
                             HeightRequest="48"
@@ -392,7 +395,7 @@
                             </HorizontalStackLayout>
                         </HorizontalStackLayout>
                         <Button Text="{loc:Translate Key=Save}"
-                                BackgroundColor="#4CAF50"
+                                BackgroundColor="{StaticResource Primary}"
                                 TextColor="White"
                                 CornerRadius="12"
                                 HeightRequest="48"
@@ -404,7 +407,7 @@
 
         <!-- Vehicle Registration Popup -->
         <Grid Grid.Row="1"
-              BackgroundColor="#80000000"
+              BackgroundColor="{StaticResource Overlay}"
               IsVisible="{Binding IsVehiclePopupVisible}">
             <Border Style="{StaticResource Card}"
                     Padding="20"
@@ -447,7 +450,7 @@
                             <Grid ColumnDefinitions="Auto,*">
                                 <Label Grid.Column="0"
                                        Text="{loc:Translate Key=VIN17Digits}"
-                                       TextColor="Green"
+                                       TextColor="{StaticResource Success}"
                                        FontSize="12"
                                        VerticalOptions="Center" />
                                 <Entry Grid.Column="1"
@@ -455,17 +458,13 @@
                                        Text="{Binding NewVin}" />
                             </Grid>
                         </Border>
-                        <Picker Title="{loc:Translate Key=VehicleType}"
-                                ItemsSource="{Binding VehicleTypes}"
-                                SelectedItem="{Binding SelectedVehicleType}" />
-                        <Picker Title="{loc:Translate Key=EngineType}"
-                                ItemsSource="{Binding EngineTypes}"
-                                SelectedItem="{Binding SelectedEngineType}" />
+                        <newOrder:VehicleTypeOptionsView />
+                        <newOrder:EngineTypeOptionsView />
 
                         <!-- Brand: tappable field opening an image-grid popup (a native Picker can't show a logo) -->
                         <Label Text="{loc:Translate Key=Brand}"
                                FontSize="12"
-                               TextColor="Green" />
+                               TextColor="{StaticResource Success}" />
                         <Border Style="{StaticResource Card}"
                                 Padding="8">
                             <Border.GestureRecognizers>
@@ -486,7 +485,7 @@
                         <!-- Model: tappable field opening an image-grid popup, scoped to the selected brand -->
                         <Label Text="{loc:Translate Key=Model}"
                                FontSize="12"
-                               TextColor="Green" />
+                               TextColor="{StaticResource Success}" />
                         <Border Style="{StaticResource Card}"
                                 Padding="8">
                             <Border.GestureRecognizers>
@@ -541,7 +540,7 @@
                         </Border>
                         
                         <Button Text="{loc:Translate Key=Next}"
-                                BackgroundColor="#4CAF50"
+                                BackgroundColor="{StaticResource Primary}"
                                 TextColor="White"
                                 CornerRadius="12"
                                 HeightRequest="48"
@@ -553,74 +552,21 @@
 
         <!-- Service Selection Popup -->
         <Grid Grid.Row="1"
-              BackgroundColor="#80000000"
+              BackgroundColor="{StaticResource Overlay}"
               IsVisible="{Binding IsServicePopupVisible}">
             <Border Style="{StaticResource Card}"
-                    Padding="16"
+                    Padding="18"
                     VerticalOptions="Center"
                     HorizontalOptions="Center"
                     WidthRequest="380"
                     MaximumHeightRequest="700">
-                <Grid RowDefinitions="Auto,Auto,Auto,*">
-                    <Label Grid.Row="0"
-                           Text="{loc:Translate Key=SelectCategory}"
-                           FontSize="18"
-                           FontAttributes="Bold"
-                           HorizontalOptions="Center" />
-
-                    <SearchBar Grid.Row="1"
-                               Placeholder="{loc:Translate Key=SearchItem}"
-                               Text="{Binding ServiceSearchText}"
-                               SearchCommand="{Binding FilterServicesCommand}" />
-
-                    <HorizontalStackLayout Grid.Row="2"
-                                           Spacing="8"
-                                           Margin="0,8">
-                        <Button Text="{loc:Translate Key=CreateNewItem}"
-                                BackgroundColor="#4CAF50"
-                                TextColor="White"
-                                CornerRadius="8"
-                                Padding="12,4"
-                                Command="{Binding ShowNewServiceFormCommand}" />
-                    </HorizontalStackLayout>
-
-                    <CollectionView Grid.Row="3"
-                                    ItemsSource="{Binding FilteredServices}">
-                        <CollectionView.ItemsLayout>
-                            <GridItemsLayout Orientation="Vertical"
-                                             Span="3"
-                                             HorizontalItemSpacing="8"
-                                             VerticalItemSpacing="8" />
-                        </CollectionView.ItemsLayout>
-                        <CollectionView.ItemTemplate>
-                            <DataTemplate x:DataType="models:ServiceItem">
-                                <Border Style="{StaticResource Card}"
-                                        Padding="12">
-                                    <Border.GestureRecognizers>
-                                        <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:NewOrderViewModel}}, Path=AddServiceToCartCommand}"
-                                                              CommandParameter="{Binding .}" />
-                                    </Border.GestureRecognizers>
-                                    <VerticalStackLayout Spacing="8"
-                                                         HorizontalOptions="Center">
-                                        <Image Source="{Binding Icon}"
-                                               WidthRequest="48"
-                                               HeightRequest="48"
-                                               Aspect="AspectFit" />
-                                        <Label Text="{Binding Name}"
-                                               FontSize="12"
-                                               HorizontalOptions="Center" />
-                                    </VerticalStackLayout>
-                                </Border>
-                            </DataTemplate>
-                        </CollectionView.ItemTemplate>
-                    </CollectionView>
-                </Grid>
+                <newOrder:ItemOptionsView />
             </Border>
         </Grid>
 
         <!-- New Service Form Popup -->
         <Grid Grid.Row="1"
-              BackgroundColor="#80000000"
+              BackgroundColor="{StaticResource Overlay}"
               IsVisible="{Binding NewServiceItem, Converter={StaticResource IsNotNullConverter}}">
             <Border Style="{StaticResource Card}"
                     Padding="20"
@@ -675,7 +621,7 @@
                             <Grid ColumnDefinitions="Auto,*">
                                 <Label Grid.Column="0"
                                        Text="SAR"
-                                       TextColor="Green"
+                                       TextColor="{StaticResource Success}"
                                        VerticalOptions="Center"
                                        Margin="0,0,8,0" />
                                 <Entry Grid.Column="1"
@@ -689,7 +635,7 @@
                             <Grid ColumnDefinitions="Auto,*">
                                 <Label Grid.Column="0"
                                        Text="SAR"
-                                       TextColor="Green"
+                                       TextColor="{StaticResource Success}"
                                        VerticalOptions="Center"
                                        Margin="0,0,8,0" />
                                 <Entry Grid.Column="1"
@@ -709,24 +655,24 @@
                         <Grid ColumnDefinitions="*,*">
                             <Label Grid.Column="0"
                                    Text="{Binding NewServicePrice, StringFormat='{0:N2} SAR'}"
-                                   TextColor="Gray" />
+                                   TextColor="{DynamicResource TextSecondary}" />
                             <Label Grid.Column="1"
                                    Text="{loc:Translate Key=PriceBeforeTax}"
                                    HorizontalOptions="End"
-                                   TextColor="Gray" />
+                                   TextColor="{DynamicResource TextSecondary}" />
                         </Grid>
                         <Grid ColumnDefinitions="*,*">
                             <Label Grid.Column="0"
                                    Text="{Binding NewServiceTotalPrice, StringFormat='{0:N2} SAR'}"
-                                   TextColor="Gray" />
+                                   TextColor="{DynamicResource TextSecondary}" />
                             <Label Grid.Column="1"
                                    Text="{loc:Translate Key=PriceWithTax}"
                                    HorizontalOptions="End"
-                                   TextColor="Gray" />
+                                   TextColor="{DynamicResource TextSecondary}" />
                         </Grid>
 
                         <Button Text="{loc:Translate Key=Save}"
-                                BackgroundColor="#4CAF50"
+                                BackgroundColor="{StaticResource Primary}"
                                 TextColor="White"
                                 CornerRadius="12"
                                 HeightRequest="48"
@@ -738,7 +684,7 @@
 
         <!-- Location Selection Popup -->
         <Grid Grid.Row="1"
-              BackgroundColor="#80000000"
+              BackgroundColor="{StaticResource Overlay}"
               IsVisible="{Binding IsLocationPopupVisible}">
             <Border Style="{StaticResource Card}"
                     Padding="20"
@@ -776,7 +722,7 @@
 
         <!-- Brand Selection Popup -->
         <Grid Grid.Row="1"
-              BackgroundColor="#80000000"
+              BackgroundColor="{StaticResource Overlay}"
               IsVisible="{Binding IsBrandPopupVisible}">
             <Border Style="{StaticResource Card}"
                     Padding="20"
@@ -821,7 +767,7 @@
 
         <!-- Model Selection Popup -->
         <Grid Grid.Row="1"
-              BackgroundColor="#80000000"
+              BackgroundColor="{StaticResource Overlay}"
               IsVisible="{Binding IsModelPopupVisible}">
             <Border Style="{StaticResource Card}"
                     Padding="20"
@@ -866,7 +812,7 @@
 
         <!-- Color Selection Popup -->
         <Grid Grid.Row="1"
-              BackgroundColor="#80000000"
+              BackgroundColor="{StaticResource Overlay}"
               IsVisible="{Binding IsColorPopupVisible}">
             <Border Style="{StaticResource Card}"
                     Padding="20"
@@ -933,12 +879,12 @@
                     <Button Grid.Column="0"
                             Text="{loc:Translate Key=ClearSignature}"
                             BackgroundColor="Transparent"
-                            TextColor="Gray"
+                            TextColor="{DynamicResource TextSecondary}"
                             Command="{Binding ClearSignatureCommand}" />
                     <Button Grid.Column="1"
                             Text="{loc:Translate Key=SaveSignature}"
                             BackgroundColor="Transparent"
-                            TextColor="Green"
+                            TextColor="{StaticResource Success}"
                             Command="{Binding SaveSignatureCommand}" />
                 </Grid>
             </Grid>
