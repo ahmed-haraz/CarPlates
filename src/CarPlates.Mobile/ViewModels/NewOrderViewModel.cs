@@ -322,8 +322,8 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
             {
                 Customers.Add(new Customer
                 {
-                    FirstName = c.Name_En,
-                    LastName = string.Empty,
+                    FirstName = c.Name_Ar,
+                    LastName = c.Name_En,
                     PhoneNumber = c.Mobile ?? c.Phone1 ?? string.Empty,
                     Gender = string.Empty
                 });
