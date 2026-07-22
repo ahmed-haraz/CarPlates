@@ -132,4 +132,19 @@ public static class AppResources
     public static string TestConnectionButton => LocalizationResourceManager.Instance["TestConnectionButton"];
     public static string ConnectionSuccessful => LocalizationResourceManager.Instance["ConnectionSuccessful"];
     public static string ConnectionFailed => LocalizationResourceManager.Instance["ConnectionFailed"];
+    public static string Discounts => LocalizationResourceManager.Instance["Discounts"];
+    public static string AddToCart => LocalizationResourceManager.Instance["AddToCart"];
+    public static string OpenSaleBadge => LocalizationResourceManager.Instance["OpenSaleBadge"];
+    public static string SelectCustomerFirst => LocalizationResourceManager.Instance["SelectCustomerFirst"];
+    public static string SelectVehicleFirst => LocalizationResourceManager.Instance["SelectVehicleFirst"];
+    public static string PleaseCompleteData => LocalizationResourceManager.Instance["PleaseCompleteData"];
+    public static string CustomerField => LocalizationResourceManager.Instance["CustomerField"];
+    public static string VehicleField => LocalizationResourceManager.Instance["VehicleField"];
+    public static string PlateNumberField => LocalizationResourceManager.Instance["PlateNumberField"];
+    public static string BrandField => LocalizationResourceManager.Instance["BrandField"];
+    public static string ModelField => LocalizationResourceManager.Instance["ModelField"];
+    public static string ColorField => LocalizationResourceManager.Instance["ColorField"];
+    public static string ItemsField => LocalizationResourceManager.Instance["ItemsField"];
+    public static string LocationField => LocalizationResourceManager.Instance["LocationField"];
+    public static string TechnicianField => LocalizationResourceManager.Instance["TechnicianField"];
 }

@@ -8,14 +8,13 @@
              x:Class="CarPlates.Mobile.Views.Actions.NewOrder.ItemOptionsView"
              x:Name="Root"
              x:DataType="vm:NewOrderViewModel">
-    <Grid RowDefinitions="Auto,Auto,Auto,*,Auto" RowSpacing="12">
+    <Grid RowDefinitions="Auto,Auto,*,Auto" RowSpacing="12">
         <Grid Grid.Row="0" ColumnDefinitions="*,Auto">
             <Label Grid.Column="0" Text="{loc:Translate Key=SelectCategory}" Style="{StaticResource Title}" HorizontalOptions="Center" />
             <Button Grid.Column="1" Text="✕" WidthRequest="28" HeightRequest="28" BackgroundColor="Transparent" TextColor="{DynamicResource TextPrimary}" Padding="0" Command="{Binding CloseServicePopupCommand}" />
         </Grid>
         <SearchBar Grid.Row="1" Placeholder="{loc:Translate Key=SearchItem}" Text="{Binding ServiceSearchText}" SearchCommand="{Binding FilterServicesCommand}" />
-        <Button Grid.Row="2" Text="{loc:Translate Key=CreateNewItem}" Style="{StaticResource SecondaryButton}" Command="{Binding ShowNewServiceFormCommand}" />
-        <CollectionView Grid.Row="3" ItemsSource="{Binding FilteredServices}" Style="{StaticResource DefaultCollectionView}">
+        <CollectionView Grid.Row="2" ItemsSource="{Binding FilteredServices}" Style="{StaticResource DefaultCollectionView}">
             <CollectionView.ItemsLayout>
                 <GridItemsLayout Orientation="Vertical" Span="2" HorizontalItemSpacing="12" VerticalItemSpacing="12" />
             </CollectionView.ItemsLayout>
@@ -33,14 +32,14 @@
                             <Label Text="{Binding Category}" Style="{StaticResource Caption}" />
                             <Label Text="{Binding TotalPrice, StringFormat='{0:N2} SAR'}" TextColor="{StaticResource Primary}" FontAttributes="Bold" />
                             <HorizontalStackLayout Spacing="4" IsVisible="{Binding OpenSale}">
-                                <Label Text="OpenSale" FontSize="10" TextColor="{StaticResource Warning}" />
+                                <Label Text="{loc:Translate Key=OpenSaleBadge}" FontSize="10" TextColor="{StaticResource Warning}" />
                             </HorizontalStackLayout>
                         </VerticalStackLayout>
                     </Border>
                 </DataTemplate>
             </CollectionView.ItemTemplate>
         </CollectionView>
-        <Grid Grid.Row="4" ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+        <Grid Grid.Row="3" ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
             <Button Grid.Column="0" Text="‹" Command="{Binding PreviousServicePageCommand}" IsEnabled="{Binding CanGoToPreviousServicePage}" />
             <Label Grid.Column="1" Text="{Binding ServicePage, StringFormat='{0}'}" HorizontalOptions="Center" VerticalOptions="Center" />
             <Button Grid.Column="2" Text="›" Command="{Binding NextServicePageCommand}" IsEnabled="{Binding CanGoToNextServicePage}" />

@@ -168,44 +168,81 @@
                     <CollectionView.ItemTemplate>
                         <DataTemplate x:DataType="models:CartItem">
                             <Border Style="{StaticResource Card}"
-                                    Padding="12"
-                                    Margin="0,4">
+                                    Padding="16"
+                                    Margin="0,6">
+                                <Grid RowDefinitions="Auto,Auto"
+                                      ColumnDefinitions="*,Auto,Auto"
+                                      RowSpacing="8"
+                                      ColumnSpacing="12">
 
-                                <Grid ColumnDefinitions="*,Auto,Auto,Auto,Auto">
-                                    <VerticalStackLayout Grid.Column="0">
-                                        <Label Text="{Binding ServiceItem.Name}"
-                                               FontSize="14"
-                                               FontAttributes="Bold" />
-                                        <Label Text="{Binding ServiceItem.Category}"
-                                               FontSize="12"
-                                               TextColor="{DynamicResource TextSecondary}" />
-                                    </VerticalStackLayout>
-                                    <Label Grid.Column="1"
+                                    <Label Grid.Row="0" Grid.Column="0"
+                                           Text="{Binding ServiceItem.Name}"
+                                           FontSize="15"
+                                           FontAttributes="Bold"
+                                           LineBreakMode="TailTruncation" />
+
+                                    <Label Grid.Row="0" Grid.Column="1"
                                            Text="{Binding ServiceItem.TotalPrice, StringFormat='{0:N2} SAR'}"
                                            FontSize="14"
+                                           TextColor="{StaticResource Primary}"
+                                           FontAttributes="Bold"
                                            VerticalOptions="Center" />
-                                    <Stepper Grid.Column="2"
-                                             Value="{Binding Quantity}"
-                                             Minimum="1"
-                                             Maximum="99"
-                                             WidthRequest="80" />
-                                    <Label Grid.Column="3"
-                                           Text="{Binding Quantity}"
-                                           FontSize="14"
-                                           WidthRequest="30"
-                                           HorizontalTextAlignment="Center" />
 
-                                    <Image Grid.Column="4"
+                                    <Image Grid.Row="0" Grid.Column="2"
                                            WidthRequest="24"
                                            HeightRequest="24"
+                                           VerticalOptions="Center"
                                            helpers:IconHelper.Glyph="&#xe93b;">
-
                                         <Image.GestureRecognizers>
                                             <TapGestureRecognizer Command="{Binding Source={x:Reference RootPage}, Path=BindingContext.RemoveCartItemCommand}"
                                                                   CommandParameter="{Binding .}" />
                                         </Image.GestureRecognizers>
-
                                     </Image>
+
+                                    <HorizontalStackLayout Grid.Row="1" Grid.Column="0"
+                                                            Spacing="8"
+                                                            VerticalOptions="Center">
+                                        <Label Text="{loc:Translate Key=Quantity}"
+                                               FontSize="12"
+                                               TextColor="{DynamicResource TextSecondary}"
+                                               VerticalOptions="Center" />
+                                        <Label Text="{Binding Quantity}"
+                                               FontSize="14"
+                                               FontAttributes="Bold"
+                                               WidthRequest="24"
+                                               HorizontalTextAlignment="Center"
+                                               VerticalOptions="Center" />
+                                    </HorizontalStackLayout>
+
+                                    <HorizontalStackLayout Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2"
+                                                            Spacing="4"
+                                                            HorizontalOptions="End"
+                                                            VerticalOptions="Center">
+                                        <Button Text="-"
+                                                WidthRequest="36"
+                                                HeightRequest="36"
+                                                CornerRadius="18"
+                                                Padding="0"
+                                                FontSize="18"
+                                                FontAttributes="Bold"
+                                                BackgroundColor="{DynamicResource Surface}"
+                                                TextColor="{DynamicResource TextPrimary}"
+                                                BorderColor="{DynamicResource Border}"
+                                                BorderWidth="1"
+                                                Command="{Binding Source={RelativeSource AncestorType={x:Type vm:NewOrderViewModel}}, Path=DecrementQuantityCommand}"
+                                                CommandParameter="{Binding .}" />
+                                        <Button Text="+"
+                                                WidthRequest="36"
+                                                HeightRequest="36"
+                                                CornerRadius="18"
+                                                Padding="0"
+                                                FontSize="18"
+                                                FontAttributes="Bold"
+                                                BackgroundColor="{StaticResource Primary}"
+                                                TextColor="White"
+                                                Command="{Binding Source={RelativeSource AncestorType={x:Type vm:NewOrderViewModel}}, Path=IncrementQuantityCommand}"
+                                                CommandParameter="{Binding .}" />
+                                    </HorizontalStackLayout>
                                 </Grid>
                             </Border>
                         </DataTemplate>
@@ -1122,25 +1159,25 @@
                         </Border>
 
                         <VerticalStackLayout Spacing="8">
-                            <Label Text="الخصومات"
+                            <Label Text="{loc:Translate Key=Discounts}"
                                    FontSize="14"
                                    FontAttributes="Bold" />
                             <Grid ColumnDefinitions="*,Auto">
-                                <Label Text="خصم 1" FontSize="13" />
+                                <Label Text="{loc:Translate Key=Discount1}" FontSize="13" />
                                 <Label Grid.Column="1" Text="{Binding EditingServiceItem.Discount1, StringFormat='{0:N2} SAR'}" FontSize="13" />
                             </Grid>
                             <Grid ColumnDefinitions="*,Auto">
-                                <Label Text="خصم 2" FontSize="13" />
+                                <Label Text="{loc:Translate Key=Discount2}" FontSize="13" />
                                 <Label Grid.Column="1" Text="{Binding EditingServiceItem.Discount2, StringFormat='{0:N2} SAR'}" FontSize="13" />
                             </Grid>
                             <Grid ColumnDefinitions="*,Auto">
-                                <Label Text="خصم 3" FontSize="13" />
+                                <Label Text="{loc:Translate Key=Discount3}" FontSize="13" />
                                 <Label Grid.Column="1" Text="{Binding EditingServiceItem.Discount3, StringFormat='{0:N2} SAR'}" FontSize="13" />
                             </Grid>
                         </VerticalStackLayout>
 
                         <Grid ColumnDefinitions="*,Auto">
-                            <Label Text="الضريبة"
+                            <Label Text="{loc:Translate Key=Tax}"
                                    FontSize="13" />
                             <Label Grid.Column="1"
                                    Text="{Binding EditingServiceItem.TaxAmount, StringFormat='{0:N2} SAR'}"
@@ -1152,7 +1189,7 @@
                                  Color="{DynamicResource Border}" />
 
                         <Grid ColumnDefinitions="*,Auto">
-                            <Label Text="الإجمالي"
+                            <Label Text="{loc:Translate Key=TotalLabel}"
                                    FontSize="16"
                                    FontAttributes="Bold" />
                             <Label Grid.Column="1"
@@ -1162,7 +1199,7 @@
                                    TextColor="{StaticResource Primary}" />
                         </Grid>
 
-                        <Button Text="إضافة إلى السلة"
+                        <Button Text="{loc:Translate Key=AddToCart}"
                                 BackgroundColor="{StaticResource Primary}"
                                 TextColor="White"
                                 CornerRadius="12"
