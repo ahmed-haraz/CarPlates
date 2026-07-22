@@ -78,6 +78,7 @@ public partial class Order : ObservableObject
     [ObservableProperty] private Technician? _technician;
     [ObservableProperty] private string? _notes;
     [ObservableProperty] private string? _signature;
+    [ObservableProperty] private ObservableCollection<string> _photoPaths = new();
     [ObservableProperty] private DateTime _createdAt = DateTime.Now;
     [ObservableProperty] private string? _status = "ملغاة";
 
