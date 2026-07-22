@@ -6,8 +6,10 @@
              xmlns:helpers="clr-namespace:CarPlates.Mobile.Helpers"
              xmlns:loc="clr-namespace:CarPlates.Mobile.Localization"
              xmlns:newOrder="clr-namespace:CarPlates.Mobile.Views.Actions.NewOrder"
+             xmlns:controls="clr-namespace:CarPlates.Mobile.Controls"
              NavigationPage.HasNavigationBar="False"
              x:Class="CarPlates.Mobile.Views.Actions.NewOrderPage"
+             x:Name="RootPage"
              x:DataType="vm:NewOrderViewModel">
 
     <Grid RowDefinitions="Auto,*"
@@ -199,7 +201,7 @@
                                            helpers:IconHelper.Glyph="&#xe93b;">
 
                                         <Image.GestureRecognizers>
-                                            <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:NewOrderViewModel}}, Path=RemoveCartItemCommand}"
+                                            <TapGestureRecognizer Command="{Binding Source={x:Reference RootPage}, Path=BindingContext.RemoveCartItemCommand}"
                                                                   CommandParameter="{Binding .}" />
                                         </Image.GestureRecognizers>
 
@@ -245,7 +247,8 @@
                                     BorderColor="{DynamicResource Border}"
                                     BorderWidth="1"
                                     CornerRadius="20"
-                                    Padding="12,8" />
+                                    Padding="12,8"
+                                    Command="{Binding AddPhotoCommand}" />
                         </HorizontalStackLayout>
                     </VerticalStackLayout>
                 </Border>
@@ -254,66 +257,105 @@
                 <Border Style="{StaticResource Card}"
                         Padding="16">
 
-                    <VerticalStackLayout Spacing="12">
-                        <Label Text="{loc:Translate Key=AssignService}"
-                               FontSize="16"
-                               FontAttributes="Bold" />
-                        <HorizontalStackLayout Spacing="12">
-                            <Button Text="{loc:Translate Key=SelectWorkLocation}"
-                                    BackgroundColor="{DynamicResource Surface}"
-                                    TextColor="{DynamicResource TextPrimary}"
-                                    BorderColor="{DynamicResource Border}"
-                                    BorderWidth="1"
-                                    CornerRadius="20"
-                                    Padding="12,8"
-                                    Command="{Binding ShowLocationPopupCommand}" />
-                            <Button Text="{loc:Translate Key=SelectTechnician}"
-                                    BackgroundColor="{DynamicResource Surface}"
-                                    TextColor="{DynamicResource TextPrimary}"
-                                    BorderColor="{DynamicResource Border}"
-                                    BorderWidth="1"
-                                    CornerRadius="20"
-                                    Padding="12,8"
-                                    Command="{Binding ShowTechnicianPopupCommand}" />
-                        </HorizontalStackLayout>
-                        <CollectionView ItemsSource="{Binding SelectedLocation, Converter={StaticResource ObjectToListConverter}}"
+                    <VerticalStackLayout Spacing="14">
+                        <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="14">
+                            <Label Grid.Column="0"
+                                   Text="{loc:Translate Key=AssignService}"
+                                   FontSize="24"
+                                   FontAttributes="Bold"
+                                   HorizontalOptions="End" />
+                            <Label Grid.Column="1"
+                                   Text="اختياري"
+                                   FontSize="16"
+                                   TextColor="{DynamicResource TextSecondary}"
+                                   VerticalOptions="Center" />
+                            <Label Grid.Column="2"
+                                   Text="مسح الكل"
+                                   FontSize="16"
+                                   TextColor="{StaticResource Success}"
+                                   VerticalOptions="Center">
+                                <Label.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding ClearServiceAssignmentCommand}" />
+                                </Label.GestureRecognizers>
+                            </Label>
+                        </Grid>
+
+                        <ScrollView Orientation="Horizontal" HorizontalScrollBarVisibility="Never">
+                            <HorizontalStackLayout Spacing="10" HorizontalOptions="End">
+                                <Border Style="{StaticResource Pill}"
+                                        Padding="10,6"
                                         IsVisible="{Binding SelectedLocation, Converter={StaticResource IsNotNullConverter}}">
-                            <CollectionView.ItemTemplate>
-                                <DataTemplate x:DataType="models:WorkLocation">
-                                    <Border Style="{StaticResource Card}"
-                                            Padding="8,4">
-                                        <Label Text="{Binding Name}"
-                                               TextColor="{StaticResource Success}"
-                                               FontSize="12" />
-                                    </Border>
-                                </DataTemplate>
-                            </CollectionView.ItemTemplate>
-                        </CollectionView>
-                        <CollectionView ItemsSource="{Binding SelectedTechnician, Converter={StaticResource ObjectToListConverter}}"
+                                    <Grid ColumnDefinitions="Auto,Auto,Auto" ColumnSpacing="8">
+                                        <Button Grid.Column="0" Text="✕" WidthRequest="24" HeightRequest="24" Padding="0" BackgroundColor="Transparent" Command="{Binding ClearLocationCommand}" />
+                                        <Label Grid.Column="1" Text="{Binding SelectedLocation.Name}" FontSize="14" VerticalOptions="Center" />
+                                        <Image Grid.Column="2" Source="car.svg" WidthRequest="22" HeightRequest="22" />
+                                    </Grid>
+                                </Border>
+                                <Border Style="{StaticResource Pill}"
+                                        Padding="10,6"
                                         IsVisible="{Binding SelectedTechnician, Converter={StaticResource IsNotNullConverter}}">
-                            <CollectionView.ItemTemplate>
-                                <DataTemplate x:DataType="models:Technician">
-                                    <Border Style="{StaticResource Card}"
-                                            Padding="8,4">
-                                        <Label Text="{Binding Name, StringFormat='Tech: {0}'}"
-                                               TextColor="{StaticResource Success}"
-                                               FontSize="12" />
-                                    </Border>
-                                </DataTemplate>
-                            </CollectionView.ItemTemplate>
-                        </CollectionView>
+                                    <Grid ColumnDefinitions="Auto,Auto" ColumnSpacing="8">
+                                        <Button Grid.Column="0" Text="✕" WidthRequest="24" HeightRequest="24" Padding="0" BackgroundColor="Transparent" Command="{Binding ClearTechnicianCommand}" />
+                                        <Label Grid.Column="1" Text="{Binding SelectedTechnician.Name, StringFormat='Tech: {0}'}" FontSize="14" FontAttributes="Bold" VerticalOptions="Center" />
+                                    </Grid>
+                                </Border>
+                            </HorizontalStackLayout>
+                        </ScrollView>
+
+                        <ScrollView Orientation="Horizontal" HorizontalScrollBarVisibility="Never">
+                            <HorizontalStackLayout Spacing="12">
+                                <Button Text="+  حدد مكان العمل"
+                                        BackgroundColor="{DynamicResource Surface}"
+                                        TextColor="{DynamicResource TextSecondary}"
+                                        BorderColor="{DynamicResource Border}"
+                                        BorderWidth="1"
+                                        CornerRadius="22"
+                                        Padding="18,8"
+                                        Command="{Binding ShowLocationPopupCommand}" />
+                                <Button Text="+  اختيار الفني"
+                                        BackgroundColor="{DynamicResource Surface}"
+                                        TextColor="{DynamicResource TextSecondary}"
+                                        BorderColor="{DynamicResource Border}"
+                                        BorderWidth="1"
+                                        CornerRadius="22"
+                                        Padding="18,8"
+                                        Command="{Binding ShowTechnicianPopupCommand}" />
+                            </HorizontalStackLayout>
+                        </ScrollView>
                     </VerticalStackLayout>
                 </Border>
 
                 <!-- Signature Preview -->
                 <Border Style="{StaticResource Card}"
                         Padding="16"
-                        IsVisible="{Binding SignatureData, Converter={StaticResource IsNotNullConverter}}">
-                    <Image Source="{Binding SignatureData}"
-                           HeightRequest="100"
-                           Aspect="AspectFit"
-                           HorizontalOptions="End" />
+                        IsVisible="{Binding HasSignature}">
+                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+                        <Button Grid.Column="0" Text="✕" WidthRequest="30" HeightRequest="30" Padding="0" BackgroundColor="Transparent" Command="{Binding ClearSignatureCommand}" HorizontalOptions="Start" />
+                        <controls:SignaturePadView Grid.Column="1"
+                                                   SignatureData="{Binding SignatureData}"
+                                                   IsReadOnly="True"
+                                                   HeightRequest="110"
+                                                   WidthRequest="130" />
+                    </Grid>
                 </Border>
+
+                <CollectionView ItemsSource="{Binding OrderPhotos}"
+                                IsVisible="{Binding OrderPhotos.Count, Converter={StaticResource CountToBoolConverter}}"
+                                HeightRequest="120">
+                    <CollectionView.ItemsLayout>
+                        <LinearItemsLayout Orientation="Horizontal" ItemSpacing="12" />
+                    </CollectionView.ItemsLayout>
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="vm:OrderPhoto">
+                            <Grid WidthRequest="110" HeightRequest="110">
+                                <Border Style="{StaticResource Card}" Padding="0">
+                                    <Image Source="{Binding Path}" Aspect="AspectFill" />
+                                </Border>
+                                <Button Text="✕" WidthRequest="28" HeightRequest="28" Padding="0" BackgroundColor="#D32F2F" TextColor="White" HorizontalOptions="Start" VerticalOptions="Start" Command="{Binding Source={x:Reference RootPage}, Path=BindingContext.RemovePhotoCommand}" CommandParameter="{Binding .}" />
+                            </Grid>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
 
                 <!-- Spacer -->
                 <BoxView HeightRequest="20"
@@ -704,11 +746,12 @@
                     Padding="20"
                     VerticalOptions="Center"
                     HorizontalOptions="Center"
-                    WidthRequest="300">
+                    WidthRequest="300"
+                    MaximumHeightRequest="500">
                 <VerticalStackLayout Spacing="12">
                     <Grid ColumnDefinitions="*,Auto">
                         <Label Grid.Column="0"
-                               Text="لون المركبة"
+                               Text="{loc:Translate Key=SelectWorkLocation}"
                                FontSize="18"
                                FontAttributes="Bold"
                                HorizontalOptions="Center" />
@@ -727,14 +770,65 @@
                                 <Border Style="{StaticResource Card}"
                                         Padding="12">
                                     <Border.GestureRecognizers>
-                                        <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:NewOrderViewModel}}, Path=SelectLocationCommand}"
+                                        <TapGestureRecognizer Command="{Binding Source={x:Reference RootPage}, Path=BindingContext.SelectLocationCommand}"
                                                               CommandParameter="{Binding .}" />
                                     </Border.GestureRecognizers>
-                                    <Grid ColumnDefinitions="*,Auto">
-                                        <Label Grid.Column="0"
+                                    <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
+                                        <Image Grid.Column="0" Source="car.svg" WidthRequest="32" HeightRequest="32" />
+                                        <Label Grid.Column="1"
                                                Text="{Binding Name}"
-                                               FontSize="16" />
+                                               FontSize="16"
+                                               VerticalOptions="Center" />
                                     </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </VerticalStackLayout>
+            </Border>
+        </Grid>
+
+
+        <!-- Technician Selection Popup -->
+        <Grid Grid.Row="1"
+              BackgroundColor="{StaticResource Overlay}"
+              IsVisible="{Binding IsTechnicianPopupVisible}">
+            <Border Style="{StaticResource Card}"
+                    Padding="20"
+                    VerticalOptions="Center"
+                    HorizontalOptions="Center"
+                    WidthRequest="300"
+                    MaximumHeightRequest="500">
+                <VerticalStackLayout Spacing="12">
+                    <Grid ColumnDefinitions="*,Auto">
+                        <Label Grid.Column="0"
+                               Text="{loc:Translate Key=SelectTechnician}"
+                               FontSize="18"
+                               FontAttributes="Bold"
+                               HorizontalOptions="Center" />
+                        <Button Grid.Column="1"
+                                Text="✕"
+                                WidthRequest="28"
+                                HeightRequest="28"
+                                BackgroundColor="Transparent"
+                                TextColor="{DynamicResource TextPrimary}"
+                                Padding="0"
+                                Command="{Binding CloseTechnicianPopupCommand}" />
+                    </Grid>
+                    <CollectionView ItemsSource="{Binding Technicians}" HeightRequest="380">
+                        <CollectionView.ItemsLayout>
+                            <GridItemsLayout Orientation="Vertical" Span="2" HorizontalItemSpacing="12" VerticalItemSpacing="12" />
+                        </CollectionView.ItemsLayout>
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="models:Technician">
+                                <Border Style="{StaticResource Card}" Padding="12">
+                                    <Border.GestureRecognizers>
+                                        <TapGestureRecognizer Command="{Binding Source={x:Reference RootPage}, Path=BindingContext.SelectTechnicianCommand}" CommandParameter="{Binding .}" />
+                                    </Border.GestureRecognizers>
+                                    <VerticalStackLayout Spacing="8" HorizontalOptions="Center">
+                                        <Image Source="car.svg" WidthRequest="36" HeightRequest="36" />
+                                        <Label Text="{Binding Name}" FontSize="14" HorizontalOptions="Center" LineBreakMode="TailTruncation" />
+                                    </VerticalStackLayout>
                                 </Border>
                             </DataTemplate>
                         </CollectionView.ItemTemplate>
@@ -768,7 +862,7 @@
                                     <Border Style="{StaticResource Card}"
                                             Padding="12">
                                         <Border.GestureRecognizers>
-                                            <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:NewOrderViewModel}}, Path=SelectBrandCommand}"
+                                            <TapGestureRecognizer Command="{Binding Source={x:Reference RootPage}, Path=BindingContext.SelectBrandCommand}"
                                                                   CommandParameter="{Binding .}" />
                                         </Border.GestureRecognizers>
                                         <Grid ColumnDefinitions="Auto,*">
@@ -820,7 +914,7 @@
                                     <Border Style="{StaticResource Card}"
                                             Padding="12">
                                         <Border.GestureRecognizers>
-                                            <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:NewOrderViewModel}}, Path=SelectVehicleModelCommand}"
+                                            <TapGestureRecognizer Command="{Binding Source={x:Reference RootPage}, Path=BindingContext.SelectVehicleModelCommand}"
                                                                   CommandParameter="{Binding .}" />
                                         </Border.GestureRecognizers>
                                         <Grid ColumnDefinitions="Auto,*">
@@ -954,12 +1048,9 @@
                     <Label Grid.Column="0" Text="{loc:Translate Key=WriteSignature}" FontSize="18" HorizontalOptions="Center" />
                     <Button Grid.Column="1" Text="✕" WidthRequest="28" HeightRequest="28" BackgroundColor="Transparent" TextColor="{DynamicResource TextPrimary}" Padding="0" Command="{Binding SaveSignatureCommand}" />
                 </Grid>
-                <BoxView Grid.Row="1"
-                         Color="White" />
-                <!-- SignaturePad would go here - using a placeholder -->
-                <Editor Grid.Row="1"
-                        BackgroundColor="{DynamicResource Surface}"
-                        Text="{Binding SignatureData}" />
+                <Border Grid.Row="1" Style="{StaticResource Card}" Padding="0" Margin="16">
+                    <controls:SignaturePadView SignatureData="{Binding SignatureData}" />
+                </Border>
                 <Grid Grid.Row="2"
                       ColumnDefinitions="*,*"
                       Padding="16">
