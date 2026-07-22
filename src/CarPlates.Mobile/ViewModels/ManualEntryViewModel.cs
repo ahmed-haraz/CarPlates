@@ -7,34 +7,34 @@ namespace CarPlates.Mobile.ViewModels;
 
 public partial class ManualEntryViewModel : BaseViewModel
 {
-    private static readonly Dictionary<char, char> EnglishToArabic = new()
+    private static readonly Dictionary<char, string> EnglishToArabic = new()
     {
-        ['a'] = 'ا', ['A'] = 'ا',
-        ['b'] = 'ب', ['B'] = 'ب',
-        ['c'] = 'س', ['C'] = 'س',
-        ['d'] = 'د', ['D'] = 'د',
-        ['e'] = 'ي', ['E'] = 'ي',
-        ['f'] = 'ف', ['F'] = 'ف',
-        ['g'] = 'ق', ['G'] = 'ق',
-        ['h'] = 'ه', ['H'] = 'ه',
-        ['i'] = 'ي', ['I'] = 'ي',
-        ['j'] = 'ج', ['J'] = 'ج',
-        ['k'] = 'ك', ['K'] = 'ك',
-        ['l'] = 'ل', ['L'] = 'ل',
-        ['m'] = 'م', ['M'] = 'م',
-        ['n'] = 'ن', ['N'] = 'ن',
-        ['o'] = 'و', ['O'] = 'و',
-        ['p'] = 'ب', ['P'] = 'ب',
-        ['q'] = 'ق', ['Q'] = 'ق',
-        ['r'] = 'ر', ['R'] = 'ر',
-        ['s'] = 'س', ['S'] = 'س',
-        ['t'] = 'ت', ['T'] = 'ت',
-        ['u'] = 'و', ['U'] = 'و',
-        ['v'] = 'ف', ['V'] = 'ف',
-        ['w'] = 'و', ['W'] = 'و',
-        ['x'] = 'إكس', ['X'] = 'إكس',
-        ['y'] = 'ي', ['Y'] = 'ي',
-        ['z'] = 'ز', ['Z'] = 'ز',
+        ['a'] = "ا", ['A'] = "ا",
+        ['b'] = "ب", ['B'] = "ب",
+        ['c'] = "س", ['C'] = "س",
+        ['d'] = "د", ['D'] = "د",
+        ['e'] = "ي", ['E'] = "ي",
+        ['f'] = "ف", ['F'] = "ف",
+        ['g'] = "ق", ['G'] = "ق",
+        ['h'] = "ه", ['H'] = "ه",
+        ['i'] = "ي", ['I'] = "ي",
+        ['j'] = "ج", ['J'] = "ج",
+        ['k'] = "ك", ['K'] = "ك",
+        ['l'] = "ل", ['L'] = "ل",
+        ['m'] = "م", ['M'] = "م",
+        ['n'] = "ن", ['N'] = "ن",
+        ['o'] = "و", ['O'] = "و",
+        ['p'] = "ب", ['P'] = "ب",
+        ['q'] = "ق", ['Q'] = "ق",
+        ['r'] = "ر", ['R'] = "ر",
+        ['s'] = "س", ['S'] = "س",
+        ['t'] = "ت", ['T'] = "ت",
+        ['u'] = "و", ['U'] = "و",
+        ['v'] = "ف", ['V'] = "ف",
+        ['w'] = "و", ['W'] = "و",
+        ['x'] = "إكس", ['X'] = "إكس",
+        ['y'] = "ي", ['Y'] = "ي",
+        ['z'] = "ز", ['Z'] = "ز",
     };
 
     private static readonly HashSet<char> AllowedChars = new()
@@ -51,6 +51,10 @@ public partial class ManualEntryViewModel : BaseViewModel
     [ObservableProperty]
     private string _plateText = string.Empty;
 
+    public List<string> PlateChars => string.IsNullOrEmpty(PlateText)
+        ? new List<string>()
+        : PlateText.Select(c => c.ToString()).ToList();
+
     [ObservableProperty]
     private string _plateType = "خصوصي";
 
@@ -61,6 +65,32 @@ public partial class ManualEntryViewModel : BaseViewModel
     {
         "خصوصي", "نقل عام", "تجاري", "دبلوماسي", "لقة"
     };
+
+    public Color PlateTextColor => PlateType switch
+    {
+        "خصوصي" => Colors.Black,
+        "نقل عام" => Colors.Blue,
+        "تجاري" => Colors.Red,
+        "دبلوماسي" => Colors.Green,
+        "لقة" => Colors.Orange,
+        _ => Colors.Black
+    };
+
+    public Color PlateBorderColor => PlateType switch
+    {
+        "خصوصي" => Colors.Black,
+        "نقل عام" => Colors.Blue,
+        "تجاري" => Colors.Red,
+        "دبلوماسي" => Colors.Green,
+        "لقة" => Colors.Orange,
+        _ => Colors.Black
+    };
+
+    partial void OnPlateTypeChanged(string value)
+    {
+        OnPropertyChanged(nameof(PlateTextColor));
+        OnPropertyChanged(nameof(PlateBorderColor));
+    }
 
     public ManualEntryViewModel(INavigationService navigation) : base(navigation)
     {
@@ -81,6 +111,7 @@ public partial class ManualEntryViewModel : BaseViewModel
         if (key == "⌫" && PlateText.Length > 0)
         {
             PlateText = PlateText[..^1];
+            OnPropertyChanged(nameof(PlateChars));
             return;
         }
 
@@ -99,6 +130,8 @@ public partial class ManualEntryViewModel : BaseViewModel
                 PlateText += arabic;
             else
                 PlateText += c;
+
+            OnPropertyChanged(nameof(PlateChars));
         }
     }
 
@@ -139,5 +172,6 @@ public partial class ManualEntryViewModel : BaseViewModel
     private void ClearPlate()
     {
         PlateText = string.Empty;
+        OnPropertyChanged(nameof(PlateChars));
     }
 }
