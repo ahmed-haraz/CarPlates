@@ -59,13 +59,16 @@ public class ItemLookupService(IHttpClientFactory httpClientFactory) : IItemLook
     }
 
     private static ItemLookupResult ToResult(ItemApiResponse i) => new(
-        i.Id, i.Name_Ar, i.Name_En, i.ItemBarCode, i.PackagePrice, i.ItemGroupId, i.ItemGroupName_Ar, i.ItemGroupName_En, i.ItemTax);
+        i.Id, i.Name_Ar, i.Name_En, i.ItemBarCode, i.PackagePrice, i.ItemGroupId,
+        i.ItemGroupName_Ar, i.ItemGroupName_En, i.ItemTax,
+        i.OpenSale, i.Discount1, i.Discount2, i.Discount3);
 
     private record ItemApiResponse(
         long Id, int? Code, string? Name_Ar, string? Name_En, string ItemBarCode,
         int? Package, string? PackageName, double? PackagePrice,
         int? ItemGroupId, string? ItemGroupName_Ar, string? ItemGroupName_En,
-        double? ItemTax, byte? Status);
+        double? ItemTax, byte? Status,
+        bool OpenSale = false, double? Discount1 = null, double? Discount2 = null, double? Discount3 = null);
 
     private record CategoryApiResponse(int Id, int? Code, string? Name_Ar, string? Name_En, string? GroupName, int? ParentID, int? BranchID, string? Image);
 

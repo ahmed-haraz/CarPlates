@@ -60,5 +60,5 @@ public class ItemService(ApplicationDbContext context) : IItemService
         i.ItemGroupName_AR,
         i.ItemGroupName_En,
         i.ItemTax,
-        i.Status);
+        i.Status); // OpenSale/Discount fields default to false/null if not in the view yet
 }

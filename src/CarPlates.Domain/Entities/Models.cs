@@ -36,10 +36,14 @@ public partial class ServiceItem : ObservableObject
     [ObservableProperty] private string? _itemType; // نوع الصنف (Product/Service)
     [ObservableProperty] private decimal _price;
     [ObservableProperty] private decimal _cost;
+    [ObservableProperty] private decimal _discount1;
+    [ObservableProperty] private decimal _discount2;
+    [ObservableProperty] private decimal _discount3;
+    [ObservableProperty] private bool _openSale;
     [ObservableProperty] private bool _isTaxable;
     [ObservableProperty] private string? _taxType; // VAT
     [ObservableProperty] private decimal _taxAmount;
-    [ObservableProperty] private decimal _totalPrice; // Price + Tax
+    [ObservableProperty] private decimal _totalPrice; // Price - Discounts + Tax
     [ObservableProperty] private int _quantity = 1;
     [ObservableProperty] private string? _icon;
 }
@@ -48,7 +52,7 @@ public partial class CartItem : ObservableObject
 {
     [ObservableProperty] private ServiceItem _serviceItem = null!;
     [ObservableProperty] private int _quantity = 1;
-    public decimal LineTotal => (ServiceItem.TotalPrice) * Quantity;
+    public decimal LineTotal => ServiceItem.TotalPrice * Quantity;
 }
 
 public partial class WorkLocation : ObservableObject

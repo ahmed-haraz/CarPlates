@@ -203,7 +203,11 @@ public record ItemBarCodeDto(
     string? ItemGroupName_Ar,
     string? ItemGroupName_En,
     double? ItemTax,
-    byte? Status);
+    byte? Status,
+    bool OpenSale = false,
+    double? Discount1 = null,
+    double? Discount2 = null,
+    double? Discount3 = null);
 
 // ---- Bills (wh_TransHeader / wh_TransDetails) ----
 
