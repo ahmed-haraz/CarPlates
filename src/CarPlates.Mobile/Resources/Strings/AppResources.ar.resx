@@ -966,4 +966,19 @@
   <value>الفني</value>
 </data>
 
+	<data name="ReviewOrder"
+		  xml:space="preserve">
+  <value>مراجعة الطلب</value>
+</data>
+
+	<data name="ConfirmOrder"
+		  xml:space="preserve">
+  <value>تأكيد وإرسال</value>
+</data>
+
+	<data name="GoBack"
+		  xml:space="preserve">
+  <value>رجوع</value>
+</data>
+
 </root>

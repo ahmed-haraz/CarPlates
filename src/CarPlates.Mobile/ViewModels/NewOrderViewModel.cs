@@ -94,12 +94,18 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
     [ObservableProperty] private ObservableCollection<ColorOption> _pagedColors = new();
     [ObservableProperty] private int _colorPage = 1;
     [ObservableProperty] private int _colorTotalPages = 1;
+    [ObservableProperty] private string _colorSearchText = string.Empty;
+    [ObservableProperty] private string _itemCategorySearchText = string.Empty;
+    [ObservableProperty] private string _technicianSearchText = string.Empty;
+    [ObservableProperty] private ObservableCollection<Technician> _filteredTechnicians = new();
     [ObservableProperty] private bool _isItemDetailPopupVisible;
     [ObservableProperty] private ServiceItem _editingServiceItem = null!;
     [ObservableProperty] private string _editingPriceText = string.Empty;
     [ObservableProperty] private string _detailTotalText = string.Empty;
-    public bool HasSignature => !string.IsNullOrWhiteSpace(SignatureData);
+    [ObservableProperty] private bool _isCartReviewVisible;
 
+    // Indicates whether a signature has been captured.
+    public bool HasSignature => !string.IsNullOrWhiteSpace(SignatureData);
 
     public bool CanGoToPreviousBrandPage => BrandPage > 1;
     public bool CanGoToNextBrandPage => BrandPage < BrandTotalPages;
@@ -352,6 +358,7 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
             {
                 Technicians.Add(new Technician { Id = tech.Id.ToString(), Name = tech.Name_En ?? tech.Name_Ar ?? string.Empty });
             }
+            FilteredTechnicians = new ObservableCollection<Technician>(Technicians);
 
             Locations.Clear();
             foreach (var location in locationsTask.Result.Items)
@@ -457,6 +464,11 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
     [RelayCommand]
     private void CloseColorPopup() => IsColorPopupVisible = false;
 
+    partial void OnColorSearchTextChanged(string value)
+    {
+        ResetColorPaging();
+    }
+
     [RelayCommand]
     private void SelectColorOption(ColorOption color)
     {
@@ -494,6 +506,11 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
 
     [RelayCommand]
     private void CloseItemCategoryPopup() => IsItemCategoryPopupVisible = false;
+
+    partial void OnItemCategorySearchTextChanged(string value)
+    {
+        ResetItemCategoryPaging();
+    }
 
     [RelayCommand]
     private void SelectItemCategory(ItemCategoryOption category)
@@ -726,6 +743,11 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
             return;
         }
 
+        if (NewVin.Length > 17)
+        {
+            NewVin = NewVin[..17];
+        }
+
         var vehicle = new Vehicle
         {
             Id = Guid.NewGuid().ToString(),
@@ -736,7 +758,7 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
             VehicleType = SelectedVehicleType,
             EngineType = SelectedEngineType,
             Mileage = NewMileage,
-            Year = NewYear,
+            Year = SelectedVehicleYear,
             Color = SelectedColor?.Name,
             CustomerId = SelectedCustomer.Id
         };
@@ -945,11 +967,31 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
             await Navigation.DisplayAlertAsync(AppResources.SelectVehicleFirst, string.Empty, AppResources.OK);
             return;
         }
+        TechnicianSearchText = string.Empty;
+        FilterTechnicians();
         IsTechnicianPopupVisible = true;
     }
 
     [RelayCommand]
     private void CloseTechnicianPopup() => IsTechnicianPopupVisible = false;
+
+    partial void OnTechnicianSearchTextChanged(string value)
+    {
+        FilterTechnicians();
+    }
+
+    private void FilterTechnicians()
+    {
+        if (string.IsNullOrWhiteSpace(TechnicianSearchText))
+        {
+            FilteredTechnicians = new ObservableCollection<Technician>(Technicians);
+        }
+        else
+        {
+            FilteredTechnicians = new ObservableCollection<Technician>(
+                Technicians.Where(t => t.Name != null && t.Name.Contains(TechnicianSearchText, StringComparison.OrdinalIgnoreCase)));
+        }
+    }
 
     [RelayCommand]
     private void SelectTechnician(Technician tech)
@@ -1033,7 +1075,7 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
     }
 
     [RelayCommand]
-    private async Task SubmitOrder()
+    private async Task ReviewOrder()
     {
         var missing = new List<string>();
 
@@ -1072,6 +1114,20 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
             return;
         }
 
+        ErrorMessage = null;
+        HasError = false;
+        IsCartReviewVisible = true;
+    }
+
+    [RelayCommand]
+    private void CloseCartReview()
+    {
+        IsCartReviewVisible = false;
+    }
+
+    [RelayCommand]
+    private async Task SubmitOrder()
+    {
         var order = new Order
         {
             Id = Guid.NewGuid().ToString(),
@@ -1129,30 +1185,48 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
         OnPropertyChanged(nameof(CanGoToNextModelPage));
     }
 
+    private IEnumerable<ItemCategoryOption> GetFilteredItemCategories()
+    {
+        if (string.IsNullOrWhiteSpace(ItemCategorySearchText))
+            return ItemCategories;
+        return ItemCategories.Where(c => c.Name.Contains(ItemCategorySearchText, StringComparison.OrdinalIgnoreCase));
+    }
+
     private void ResetItemCategoryPaging()
     {
         ItemCategoryPage = 1;
-        ItemCategoryTotalPages = Math.Max(1, (int)Math.Ceiling(ItemCategories.Count / (double)PopupPageSize));
+        var filtered = GetFilteredItemCategories().ToList();
+        ItemCategoryTotalPages = Math.Max(1, (int)Math.Ceiling(filtered.Count / (double)PopupPageSize));
         RefreshPagedItemCategories();
     }
 
     private void RefreshPagedItemCategories()
     {
-        PagedItemCategories = new ObservableCollection<ItemCategoryOption>(ItemCategories.Skip((ItemCategoryPage - 1) * PopupPageSize).Take(PopupPageSize));
+        var filtered = GetFilteredItemCategories().ToList();
+        PagedItemCategories = new ObservableCollection<ItemCategoryOption>(filtered.Skip((ItemCategoryPage - 1) * PopupPageSize).Take(PopupPageSize));
         OnPropertyChanged(nameof(CanGoToPreviousItemCategoryPage));
         OnPropertyChanged(nameof(CanGoToNextItemCategoryPage));
+    }
+
+    private IEnumerable<ColorOption> GetFilteredColors()
+    {
+        if (string.IsNullOrWhiteSpace(ColorSearchText))
+            return Colors;
+        return Colors.Where(c => c.Name.Contains(ColorSearchText, StringComparison.OrdinalIgnoreCase));
     }
 
     private void ResetColorPaging()
     {
         ColorPage = 1;
-        ColorTotalPages = Math.Max(1, (int)Math.Ceiling(Colors.Count / (double)PopupPageSize));
+        var filtered = GetFilteredColors().ToList();
+        ColorTotalPages = Math.Max(1, (int)Math.Ceiling(filtered.Count / (double)PopupPageSize));
         RefreshPagedColors();
     }
 
     private void RefreshPagedColors()
     {
-        PagedColors = new ObservableCollection<ColorOption>(Colors.Skip((ColorPage - 1) * PopupPageSize).Take(PopupPageSize));
+        var filtered = GetFilteredColors().ToList();
+        PagedColors = new ObservableCollection<ColorOption>(filtered.Skip((ColorPage - 1) * PopupPageSize).Take(PopupPageSize));
         OnPropertyChanged(nameof(CanGoToPreviousColorPage));
         OnPropertyChanged(nameof(CanGoToNextColorPage));
     }
@@ -1249,6 +1323,8 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
         NewServiceTaxAmount = 0;
         NewServiceTotalPrice = 0;
     }
+
+    
 }
 
 // Wraps a category for the item-search filter picker; Id is null for the "All" entry.
