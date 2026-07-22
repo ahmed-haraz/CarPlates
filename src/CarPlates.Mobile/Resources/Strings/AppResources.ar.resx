@@ -498,139 +498,313 @@
   <data name="AddItems" xml:space="preserve">
     <value>إضافة صنف</value>
   </data>
-  <data name="OrderNotes" xml:space="preserve">
-    <value>ملاحظة الطلب</value>
-  </data>
-  <data name="WriteHere" xml:space="preserve">
-    <value>اكتب هنا...</value>
-  </data>
-  <data name="Signature" xml:space="preserve">
-    <value>التوقيع</value>
-  </data>
-  <data name="AddPhotos" xml:space="preserve">
-    <value>إضافة صور</value>
-  </data>
-  <data name="AssignService" xml:space="preserve">
-    <value>تعيين الخدمة</value>
-  </data>
-  <data name="SelectWorkLocation" xml:space="preserve">
-    <value>+ حدد مكان العمل</value>
-  </data>
-  <data name="SelectTechnician" xml:space="preserve">
-    <value>+ اختيار الفني</value>
-  </data>
-  <data name="Next" xml:space="preserve">
-    <value>التالي</value>
-  </data>
-  <data name="SearchCustomer" xml:space="preserve">
-    <value>البحث عن عميل</value>
-  </data>
-  <data name="PhoneNumber" xml:space="preserve">
-    <value>رقم الجوال</value>
-  </data>
-  <data name="NewCustomer" xml:space="preserve">
-    <value>عميل جديد</value>
-  </data>
-  <data name="FirstName" xml:space="preserve">
-    <value>الاسم الأول</value>
-  </data>
-  <data name="LastName" xml:space="preserve">
-    <value>الاسم الأخير</value>
-  </data>
-  <data name="Male" xml:space="preserve">
-    <value>ذكر</value>
-  </data>
-  <data name="Female" xml:space="preserve">
-    <value>أنثى</value>
-  </data>
-  <data name="Plate" xml:space="preserve">
-    <value>اللوحة</value>
-  </data>
-  <data name="PlateNumber" xml:space="preserve">
-    <value>رقم اللوحة</value>
-  </data>
-  <data name="VIN17Digits" xml:space="preserve">
-    <value>17 خانة</value>
-  </data>
-  <data name="VIN" xml:space="preserve">
-    <value>رقم هيكل المركبة (VIN)</value>
-  </data>
-  <data name="VehicleType" xml:space="preserve">
-    <value>نوع المركبة</value>
-  </data>
-  <data name="EngineType" xml:space="preserve">
-    <value>نوع المحرك</value>
-  </data>
-  <data name="Mileage" xml:space="preserve">
-    <value>أدخل عدد المسافة</value>
-  </data>
-  <data name="VehicleYear" xml:space="preserve">
-    <value>سنة المركبة</value>
-  </data>
-  <data name="VehicleColor" xml:space="preserve">
-    <value>لون المركبة</value>
-  </data>
-  <data name="SelectCategory" xml:space="preserve">
-    <value>اختر الفئة</value>
-  </data>
-  <data name="SearchItem" xml:space="preserve">
-    <value>بحث عن صنف</value>
-  </data>
-  <data name="CreateNewItem" xml:space="preserve">
-    <value>إنشاء صنف جديد</value>
-  </data>
-  <data name="ItemDetails" xml:space="preserve">
-    <value>تفاصيل الصنف</value>
-  </data>
-  <data name="ProductName" xml:space="preserve">
-    <value>اسم المنتج</value>
-  </data>
-  <data name="Category" xml:space="preserve">
-    <value>الفئة</value>
-  </data>
-  <data name="ItemType" xml:space="preserve">
-    <value>نوع الصنف</value>
-  </data>
-  <data name="Product" xml:space="preserve">
-    <value>منتج</value>
-  </data>
-  <data name="Service" xml:space="preserve">
-    <value>خدمة</value>
-  </data>
-  <data name="Pricing" xml:space="preserve">
-    <value>التسعير</value>
-  </data>
-  <data name="OpenItem" xml:space="preserve">
-    <value>صنف مفتوح</value>
-  </data>
-  <data name="Price" xml:space="preserve">
-    <value>السعر</value>
-  </data>
-  <data name="Cost" xml:space="preserve">
-    <value>التكلفة</value>
-  </data>
-  <data name="ApplyTax" xml:space="preserve">
-    <value>تطبيق الضريبة على هذا المنتج</value>
-  </data>
-  <data name="Tax" xml:space="preserve">
-    <value>الضريبة</value>
-  </data>
-  <data name="PriceBeforeTax" xml:space="preserve">
-    <value>السعر قبل الضريبة</value>
-  </data>
-  <data name="PriceWithTax" xml:space="preserve">
-    <value>السعر شامل الضريبة</value>
-  </data>
-  <data name="SearchLocation" xml:space="preserve">
-    <value>البحث</value>
-  </data>
-  <data name="WriteSignature" xml:space="preserve">
-    <value>فضلاً، اكتب توقيعك</value>
-  </data>
-  <data name="ClearSignature" xml:space="preserve">
-    <value>مسح التوقيع</value>
-  </data>
-  <data name="SaveSignature" xml:space="preserve">
-    <value>حفظ التوقيع</value>
-  </data>
+		  xml:space="preserve">
+  <value>إضافة صور</value>
+</data>
+
+	<data name="AssignService"
+		  xml:space="preserve">
+  <value>تعيين الخدمة</value>
+</data>
+
+	<data name="SelectWorkLocation"
+		  xml:space="preserve">
+  <value>+ حدد مكان العمل</value>
+</data>
+
+	<data name="SelectTechnician"
+		  xml:space="preserve">
+  <value>+ اختيار الفني</value>
+</data>
+
+	<data name="Next"
+		  xml:space="preserve">
+  <value>التالي</value>
+</data>
+
+	<data name="SearchCustomer"
+		  xml:space="preserve">
+  <value>البحث عن عميل</value>
+</data>
+
+	<data name="PhoneNumber"
+		  xml:space="preserve">
+  <value>رقم الجوال</value>
+</data>
+
+	<data name="NewCustomer"
+		  xml:space="preserve">
+  <value>عميل جديد</value>
+</data>
+
+	<data name="FirstName"
+		  xml:space="preserve">
+  <value>الاسم الأول</value>
+</data>
+
+	<data name="LastName"
+		  xml:space="preserve">
+  <value>الاسم الأخير</value>
+</data>
+
+	<data name="Male"
+		  xml:space="preserve">
+  <value>ذكر</value>
+</data>
+
+	<data name="Female"
+		  xml:space="preserve">
+  <value>أنثى</value>
+</data>
+
+	<data name="Plate"
+		  xml:space="preserve">
+  <value>اللوحة</value>
+</data>
+
+	<data name="PlateNumber"
+		  xml:space="preserve">
+  <value>رقم اللوحة</value>
+</data>
+
+	<data name="VIN17Digits"
+		  xml:space="preserve">
+  <value>17 خانة</value>
+</data>
+
+	<data name="VIN"
+		  xml:space="preserve">
+  <value>رقم هيكل المركبة (VIN)</value>
+</data>
+
+	<data name="VehicleType"
+		  xml:space="preserve">
+  <value>نوع المركبة</value>
+</data>
+
+	<data name="EngineType"
+		  xml:space="preserve">
+  <value>نوع المحرك</value>
+</data>
+
+	<data name="Mileage"
+		  xml:space="preserve">
+  <value>أدخل عدد المسافة</value>
+</data>
+
+	<data name="VehicleYear"
+		  xml:space="preserve">
+  <value>سنة المركبة</value>
+</data>
+
+	<data name="VehicleColor"
+		  xml:space="preserve">
+  <value>لون المركبة</value>
+</data>
+
+	<data name="SelectCategory"
+		  xml:space="preserve">
+  <value>اختر الفئة</value>
+</data>
+
+	<data name="SearchItem"
+		  xml:space="preserve">
+  <value>بحث عن صنف</value>
+</data>
+
+	<data name="CreateNewItem"
+		  xml:space="preserve">
+  <value>إنشاء صنف جديد</value>
+</data>
+
+	<data name="ItemDetails"
+		  xml:space="preserve">
+  <value>تفاصيل الصنف</value>
+</data>
+
+	<data name="ProductName"
+		  xml:space="preserve">
+  <value>اسم المنتج</value>
+</data>
+
+	<data name="Category"
+		  xml:space="preserve">
+  <value>الفئة</value>
+</data>
+
+	<data name="ItemType"
+		  xml:space="preserve">
+  <value>نوع الصنف</value>
+</data>
+
+	<data name="Product"
+		  xml:space="preserve">
+  <value>منتج</value>
+</data>
+
+	<data name="Service"
+		  xml:space="preserve">
+  <value>خدمة</value>
+</data>
+
+	<data name="Pricing"
+		  xml:space="preserve">
+  <value>التسعير</value>
+</data>
+
+	<data name="OpenItem"
+		  xml:space="preserve">
+  <value>صنف مفتوح</value>
+</data>
+
+	<data name="Price"
+		  xml:space="preserve">
+  <value>السعر</value>
+</data>
+
+	<data name="Cost"
+		  xml:space="preserve">
+  <value>التكلفة</value>
+</data>
+
+	<data name="ApplyTax"
+		  xml:space="preserve">
+  <value>تطبيق الضريبة على هذا المنتج</value>
+</data>
+
+	<data name="Tax"
+		  xml:space="preserve">
+  <value>الضريبة</value>
+</data>
+
+	<data name="PriceBeforeTax"
+		  xml:space="preserve">
+  <value>السعر قبل الضريبة</value>
+</data>
+
+	<data name="PriceWithTax"
+		  xml:space="preserve">
+  <value>السعر شامل الضريبة</value>
+</data>
+
+	<data name="SearchLocation"
+		  xml:space="preserve">
+  <value>البحث</value>
+</data>
+
+	<data name="WriteSignature"
+		  xml:space="preserve">
+  <value>فضلاً، اكتب توقيعك</value>
+</data>
+
+	<data name="ClearSignature"
+		  xml:space="preserve">
+  <value>مسح التوقيع</value>
+</data>
+
+	<data name="SaveSignature"
+		  xml:space="preserve">
+  <value>حفظ التوقيع</value>
+</data>
+
+	<data name="Discounts"
+		  xml:space="preserve">
+  <value>الخصومات</value>
+</data>
+
+	<data name="Discount1"
+		  xml:space="preserve">
+  <value>خصم 1</value>
+</data>
+
+	<data name="Discount2"
+		  xml:space="preserve">
+  <value>خصم 2</value>
+</data>
+
+	<data name="Discount3"
+		  xml:space="preserve">
+  <value>خصم 3</value>
+</data>
+
+	<data name="AddToCart"
+		  xml:space="preserve">
+  <value>إضافة إلى السلة</value>
+</data>
+
+	<data name="OpenSaleBadge"
+		  xml:space="preserve">
+  <value>سعر مفتوح</value>
+</data>
+
+	<data name="Quantity"
+		  xml:space="preserve">
+  <value>الكمية</value>
+</data>
+
+	<data name="TotalLabel"
+		  xml:space="preserve">
+  <value>الإجمالي</value>
+</data>
+
+	<data name="SelectCustomerFirst"
+		  xml:space="preserve">
+  <value>الرجاء اختيار عميل أولاً</value>
+</data>
+
+	<data name="SelectVehicleFirst"
+		  xml:space="preserve">
+  <value>الرجاء إضافة مركبة أولاً</value>
+</data>
+
+	<data name="PleaseCompleteData"
+		  xml:space="preserve">
+  <value>الرجاء إكمال البيانات التالية:</value>
+</data>
+
+	<data name="CustomerField"
+		  xml:space="preserve">
+  <value>العميل</value>
+</data>
+
+	<data name="VehicleField"
+		  xml:space="preserve">
+  <value>المركبة</value>
+</data>
+
+	<data name="PlateNumberField"
+		  xml:space="preserve">
+  <value>رقم اللوحة</value>
+</data>
+
+	<data name="BrandField"
+		  xml:space="preserve">
+  <value>الماركة</value>
+</data>
+
+	<data name="ModelField"
+		  xml:space="preserve">
+  <value>الموديل</value>
+</data>
+
+	<data name="ColorField"
+		  xml:space="preserve">
+  <value>اللون</value>
+</data>
+
+	<data name="ItemsField"
+		  xml:space="preserve">
+  <value>الأصناف</value>
+</data>
+
+	<data name="LocationField"
+		  xml:space="preserve">
+  <value>موقع العمل</value>
+</data>
+
+	<data name="TechnicianField"
+		  xml:space="preserve">
+  <value>الفني</value>
+</data>
+
 </root>

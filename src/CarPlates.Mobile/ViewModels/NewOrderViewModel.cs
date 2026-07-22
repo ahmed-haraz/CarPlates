@@ -1,5 +1,6 @@
 using CarPlates.Application.Common.Interfaces;
 using CarPlates.Domain.Entities;
+using CarPlates.Mobile.Localization;
 using CarPlates.Mobile.Navigation;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -252,10 +253,32 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
         _customerLookupService = customerLookupService;
         _itemLookupService = itemLookupService;
 
-        Title = "إضافة سيارة جديدة";
+        Title = LocalizationResourceManager.Instance["AddVehicle"];
         SelectedColor = Colors.First();
         LoadVehicleYears();
+        CartItems.CollectionChanged += OnCartItemsChanged;
         _ = LoadInitialDataAsync();
+    }
+
+    private void OnCartItemsChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+    {
+        if (e.NewItems != null)
+        {
+            foreach (CartItem item in e.NewItems)
+                item.PropertyChanged += OnCartItemPropertyChanged;
+        }
+        if (e.OldItems != null)
+        {
+            foreach (CartItem item in e.OldItems)
+                item.PropertyChanged -= OnCartItemPropertyChanged;
+        }
+        RecalculateTotals();
+    }
+
+    private void OnCartItemPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == nameof(CartItem.LineTotal) || e.PropertyName == nameof(CartItem.Quantity))
+            RecalculateTotals();
     }
 
     private void LoadVehicleYears()
@@ -456,8 +479,13 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
     }
 
     [RelayCommand]
-    private void ShowItemCategoryPopup()
+    private async Task ShowItemCategoryPopup()
     {
+        if (SelectedVehicle == null)
+        {
+            await Navigation.DisplayAlertAsync(AppResources.SelectVehicleFirst, string.Empty, AppResources.OK);
+            return;
+        }
         ResetItemCategoryPaging();
         IsItemCategoryPopupVisible = true;
     }
@@ -671,8 +699,13 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
     }
 
     [RelayCommand]
-    private void ShowVehiclePopup()
+    private async Task ShowVehiclePopup()
     {
+        if (SelectedCustomer == null)
+        {
+            await Navigation.DisplayAlertAsync(AppResources.SelectCustomerFirst, string.Empty, AppResources.OK);
+            return;
+        }
         IsVehiclePopupVisible = true;
     }
 
@@ -683,13 +716,11 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
     }
 
     [RelayCommand]
-    private void SaveNewVehicle()
+    private async Task SaveNewVehicle()
     {
         if (SelectedCustomer == null)
         {
-            // Consistent with SubmitOrder validation: surface an error instead of throwing
-            ErrorMessage = "الرجاء اختيار عميل";
-            HasError = true;
+            await Navigation.DisplayAlertAsync(AppResources.SelectCustomerFirst, string.Empty, AppResources.OK);
             return;
         }
 
@@ -884,8 +915,13 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
     }
 
     [RelayCommand]
-    private void ShowLocationPopup()
+    private async Task ShowLocationPopup()
     {
+        if (SelectedVehicle == null)
+        {
+            await Navigation.DisplayAlertAsync(AppResources.SelectVehicleFirst, string.Empty, AppResources.OK);
+            return;
+        }
         IsLocationPopupVisible = true;
     }
 
@@ -900,8 +936,13 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
     }
 
     [RelayCommand]
-    private void ShowTechnicianPopup()
+    private async Task ShowTechnicianPopup()
     {
+        if (SelectedVehicle == null)
+        {
+            await Navigation.DisplayAlertAsync(AppResources.SelectVehicleFirst, string.Empty, AppResources.OK);
+            return;
+        }
         IsTechnicianPopupVisible = true;
     }
 
@@ -995,36 +1036,36 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
         var missing = new List<string>();
 
         if (SelectedCustomer == null)
-            missing.Add("العميل");
+            missing.Add(AppResources.CustomerField);
 
         if (SelectedVehicle == null)
         {
-            missing.Add("المركبة");
+            missing.Add(AppResources.VehicleField);
         }
         else
         {
             if (string.IsNullOrWhiteSpace(SelectedVehicle.PlateNumber))
-                missing.Add("رقم اللوحة");
+                missing.Add(AppResources.PlateNumberField);
             if (string.IsNullOrWhiteSpace(SelectedVehicle.Brand))
-                missing.Add("الماركة");
+                missing.Add(AppResources.BrandField);
             if (string.IsNullOrWhiteSpace(SelectedVehicle.Model))
-                missing.Add("الموديل");
+                missing.Add(AppResources.ModelField);
             if (SelectedColor == null || string.IsNullOrWhiteSpace(SelectedColor.Name))
-                missing.Add("اللون");
+                missing.Add(AppResources.ColorField);
         }
 
         if (CartItems.Count == 0)
-            missing.Add("الأصناف");
+            missing.Add(AppResources.ItemsField);
 
         if (SelectedLocation == null)
-            missing.Add("موقع العمل");
+            missing.Add(AppResources.LocationField);
 
         if (SelectedTechnician == null)
-            missing.Add("الفني");
+            missing.Add(AppResources.TechnicianField);
 
         if (missing.Count > 0)
         {
-            ErrorMessage = "الرجاء إكمال البيانات التالية:\n• " + string.Join("\n• ", missing);
+            ErrorMessage = AppResources.PleaseCompleteData + "\n• " + string.Join("\n• ", missing);
             HasError = true;
             return;
         }

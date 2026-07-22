@@ -52,6 +52,12 @@ public partial class CartItem : ObservableObject
 {
     [ObservableProperty] private ServiceItem _serviceItem = null!;
     [ObservableProperty] private int _quantity = 1;
+
+    partial void OnQuantityChanged(int value)
+    {
+        OnPropertyChanged(nameof(LineTotal));
+    }
+
     public decimal LineTotal => ServiceItem.TotalPrice * Quantity;
 }
 
