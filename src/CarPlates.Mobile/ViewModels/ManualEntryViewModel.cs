@@ -7,6 +7,9 @@ namespace CarPlates.Mobile.ViewModels;
 
 public partial class ManualEntryViewModel : BaseViewModel
 {
+    private const string BackspaceKey = "backspace";
+    private const int MaxPlateLength = 10;
+
     private static readonly Dictionary<char, string> EnglishToArabic = new()
     {
         ['a'] = "ا", ['A'] = "ا",
@@ -131,39 +134,39 @@ public partial class ManualEntryViewModel : BaseViewModel
 
         char c = key[0];
 
-        string textToAppend;
-
         // English letter
         if (char.IsLetter(c) && c <= 127)
         {
             c = char.ToUpperInvariant(c);
 
-            if (!EnglishToArabic.TryGetValue(c, out textToAppend!))
+            if (!EnglishToArabic.TryGetValue(c, out var textToAppend))
                 return;
+
+            // Validate every generated character
+            if (!textToAppend.All(AllowedChars.Contains))
+                return;
+
+            // Respect max length
+            if (PlateText.Length + textToAppend.Length > MaxPlateLength)
+                return;
+
+            PlateText += textToAppend;
         }
         else
         {
             if (!AllowedChars.Contains(c))
                 return;
 
-            // Transliterate English to Arabic
+            if (PlateText.Length >= MaxPlateLength)
+                return;
+
             if (EnglishToArabic.TryGetValue(c, out var arabic))
                 PlateText += arabic;
             else
                 PlateText += c;
-
-            OnPropertyChanged(nameof(PlateChars));
         }
 
-        // Validate every generated character
-        if (!textToAppend.All(AllowedChars.Contains))
-            return;
-
-        // Respect max length
-        if (PlateText.Length + textToAppend.Length > MaxPlateLength)
-            return;
-
-        PlateText += textToAppend;
+        OnPropertyChanged(nameof(PlateChars));
     }
 
     [RelayCommand]
