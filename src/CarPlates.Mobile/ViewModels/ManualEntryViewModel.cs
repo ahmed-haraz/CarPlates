@@ -40,30 +40,39 @@ public partial class ManualEntryViewModel : BaseViewModel
     private static readonly HashSet<char> AllowedChars = new()
     {
         '0','1','2','3','4','5','6','7','8','9',
-        '-', '_',
-        'ا','أ','إ','ب','ت','ث','ج','ح','خ','د','ذ','ر','ز','س','ش','ص','ض',
-        'ط','ظ','ع','غ','ف','ق','ك','ل','م','ن','ه','و','ي','ة','ى','ء','ئ','ؤ',
-        ' ', 'X', 'x'
+        '-','_',' ',
+
+        'ا','أ','إ','آ',
+        'ب','ت','ث','ج','ح','خ',
+        'د','ذ','ر','ز','س','ش',
+        'ص','ض','ط','ظ',
+        'ع','غ',
+        'ف','ق','ك','ل','م','ن',
+        'ه','و','ي',
+        'ة','ى',
+        'ء','ئ','ؤ'
     };
 
-    private const int MaxPlateLength = 20;
-
     [ObservableProperty]
-    private string _plateText = string.Empty;
+    private string plateText = string.Empty;
 
     public List<string> PlateChars => string.IsNullOrEmpty(PlateText)
         ? new List<string>()
         : PlateText.Select(c => c.ToString()).ToList();
 
     [ObservableProperty]
-    private string _plateType = "خصوصي";
+    private string plateType = "خصوصي";
 
     [ObservableProperty]
-    private bool _isProcessing;
+    private bool isProcessing;
 
     public List<string> PlateTypes { get; } = new()
     {
-        "خصوصي", "نقل عام", "تجاري", "دبلوماسي", "لقة"
+        "خصوصي",
+        "نقل عام",
+        "تجاري",
+        "دبلوماسي",
+        "لقة"
     };
 
     public Color PlateTextColor => PlateType switch
@@ -106,24 +115,36 @@ public partial class ManualEntryViewModel : BaseViewModel
     [RelayCommand]
     private void KeyPress(string key)
     {
-        if (IsProcessing || PlateText.Length >= MaxPlateLength) return;
+        if (IsProcessing || string.IsNullOrWhiteSpace(key))
+            return;
 
-        if (key == "⌫" && PlateText.Length > 0)
+        // Backspace
+        if (key == BackspaceKey)
         {
             PlateText = PlateText[..^1];
             OnPropertyChanged(nameof(PlateChars));
             return;
         }
 
-        if (key.Length == 1)
-        {
-            var c = key[0];
-            // Convert to uppercase for English letters
-            if (char.IsLetter(c) && c < 128)
-                c = char.ToUpperInvariant(c);
+        if (key.Length != 1)
+            return;
 
-            // Only allow valid characters
-            if (!AllowedChars.Contains(c)) return;
+        char c = key[0];
+
+        string textToAppend;
+
+        // English letter
+        if (char.IsLetter(c) && c <= 127)
+        {
+            c = char.ToUpperInvariant(c);
+
+            if (!EnglishToArabic.TryGetValue(c, out textToAppend!))
+                return;
+        }
+        else
+        {
+            if (!AllowedChars.Contains(c))
+                return;
 
             // Transliterate English to Arabic
             if (EnglishToArabic.TryGetValue(c, out var arabic))
@@ -133,6 +154,16 @@ public partial class ManualEntryViewModel : BaseViewModel
 
             OnPropertyChanged(nameof(PlateChars));
         }
+
+        // Validate every generated character
+        if (!textToAppend.All(AllowedChars.Contains))
+            return;
+
+        // Respect max length
+        if (PlateText.Length + textToAppend.Length > MaxPlateLength)
+            return;
+
+        PlateText += textToAppend;
     }
 
     [RelayCommand]
@@ -144,28 +175,36 @@ public partial class ManualEntryViewModel : BaseViewModel
     [RelayCommand]
     private async Task SubmitPlate()
     {
-        if (string.IsNullOrWhiteSpace(PlateText)) return;
+        if (string.IsNullOrWhiteSpace(PlateText))
+            return;
 
         IsProcessing = true;
 
-        var trimmed = PlateText.Trim();
-
-        // Pop back to the scanner page
-        var nav = Application.Current?.Windows.FirstOrDefault()?.Page;
-        await Navigation.GoBackAsync();
-
-        // Find the ScannerViewModel on the page we just returned to
-        if (nav is NavigationPage navPage && navPage.CurrentPage?.BindingContext is ScannerViewModel svm)
+        try
         {
-            await svm.ProcessRecognizedTextCommand.ExecuteAsync(trimmed);
-        }
-        else
-        {
-            // Fallback: navigate directly to customer data with the plate
-            await Navigation.GoToCustomerDataAsync(trimmed);
-        }
+            var trimmed = PlateText.Trim();
 
-        IsProcessing = false;
+            await Navigation.GoBackAsync();
+
+            var rootPage = Microsoft.Maui.Controls.Application.Current?
+                .Windows
+                .FirstOrDefault()?
+                .Page;
+
+            if (rootPage is NavigationPage navigationPage &&
+                navigationPage.CurrentPage?.BindingContext is ScannerViewModel scanner)
+            {
+                await scanner.ProcessRecognizedTextCommand.ExecuteAsync(trimmed);
+            }
+            else
+            {
+                await Navigation.GoToCustomerDataAsync(trimmed);
+            }
+        }
+        finally
+        {
+            IsProcessing = false;
+        }
     }
 
     [RelayCommand]

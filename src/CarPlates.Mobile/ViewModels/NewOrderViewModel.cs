@@ -1439,6 +1439,8 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
         NewServiceTaxAmount = 0;
         NewServiceTotalPrice = 0;
     }
+
+    
 }
 
 // Wraps a category for the item-search filter picker; Id is null for the "All" entry.
