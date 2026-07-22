@@ -496,14 +496,15 @@
     <value>إضافة سيارة</value>
   </data>
   <data name="AddItems" xml:space="preserve">
-    <value>إضافة صنف</value>
+	<value>إضافة صنف</value>
   </data>
-		  xml:space="preserve">
-  <value>إضافة صور</value>
-</data>
+  <data name="AddPhotos" xml:space="preserve">
+	<value>إضافة صور</value>
+  </data>
 
 	<data name="AssignService"
-		  xml:space="preserve">
+		  xml:space="preserve">        
+
   <value>تعيين الخدمة</value>
 </data>
 
