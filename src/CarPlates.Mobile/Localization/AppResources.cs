@@ -147,4 +147,7 @@ public static class AppResources
     public static string ItemsField => LocalizationResourceManager.Instance["ItemsField"];
     public static string LocationField => LocalizationResourceManager.Instance["LocationField"];
     public static string TechnicianField => LocalizationResourceManager.Instance["TechnicianField"];
+    public static string ReviewOrder => LocalizationResourceManager.Instance["ReviewOrder"];
+    public static string ConfirmOrder => LocalizationResourceManager.Instance["ConfirmOrder"];
+    public static string GoBack => LocalizationResourceManager.Instance["GoBack"];
 }

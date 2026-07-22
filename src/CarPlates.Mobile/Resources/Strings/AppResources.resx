@@ -807,4 +807,19 @@
   <value>Technician</value>
 </data>
 
+	<data name="ReviewOrder"
+		  xml:space="preserve">
+  <value>Review Order</value>
+</data>
+
+	<data name="ConfirmOrder"
+		  xml:space="preserve">
+  <value>Confirm &amp; Submit</value>
+</data>
+
+	<data name="GoBack"
+		  xml:space="preserve">
+  <value>Go Back</value>
+</data>
+
 </root>
