@@ -205,9 +205,9 @@ public record ItemBarCodeDto(
     double? ItemTax,
     byte? Status,
     bool OpenSale = false,
-    double? Discount1 = null,
-    double? Discount2 = null,
-    double? Discount3 = null);
+    string? ItemDiscount1 = null,
+    string? ItemDiscount2 = null,
+    string? ItemDiscount3 = null);
 
 // ---- Bills (wh_TransHeader / wh_TransDetails) ----
 
