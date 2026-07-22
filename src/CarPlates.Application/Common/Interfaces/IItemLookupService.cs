@@ -22,6 +22,10 @@ public record ItemLookupResult(
     int? ItemGroupId,
     string? ItemGroupName_Ar,
     string? ItemGroupName_En,
-    double? ItemTax);
+    double? ItemTax,
+    bool OpenSale = false,
+    double? Discount1 = null,
+    double? Discount2 = null,
+    double? Discount3 = null);
 
 public record CategoryLookupResult(int Id, string? Name_Ar, string? Name_En, string? GroupName);

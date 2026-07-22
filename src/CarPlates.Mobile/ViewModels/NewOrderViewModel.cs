@@ -93,6 +93,10 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
     [ObservableProperty] private ObservableCollection<ColorOption> _pagedColors = new();
     [ObservableProperty] private int _colorPage = 1;
     [ObservableProperty] private int _colorTotalPages = 1;
+    [ObservableProperty] private bool _isItemDetailPopupVisible;
+    [ObservableProperty] private ServiceItem _editingServiceItem = null!;
+    [ObservableProperty] private string _editingPriceText = string.Empty;
+    [ObservableProperty] private string _detailTotalText = string.Empty;
 
     public bool CanGoToPreviousBrandPage => BrandPage > 1;
     public bool CanGoToNextBrandPage => BrandPage < BrandTotalPages;
@@ -104,6 +108,7 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
     public bool CanGoToNextItemCategoryPage => ItemCategoryPage < ItemCategoryTotalPages;
     public bool CanGoToPreviousColorPage => ColorPage > 1;
     public bool CanGoToNextColorPage => ColorPage < ColorTotalPages;
+    public bool IsPriceEditable => EditingServiceItem?.OpenSale == true;
 
     // No API source for a generic color list (wh_CustomerCars.Color is free text) or the
     // "add a custom service" category list, so these stay local. Colors carry a real swatch
@@ -485,6 +490,73 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
         RefreshPagedItemCategories();
     }
 
+    [RelayCommand]
+    private void ShowItemDetail(ServiceItem item)
+    {
+        if (item == null) return;
+        EditingServiceItem = new ServiceItem
+        {
+            Id = item.Id,
+            Name = item.Name,
+            Category = item.Category,
+            ItemType = item.ItemType,
+            Price = item.Price,
+            Cost = item.Cost,
+            Discount1 = item.Discount1,
+            Discount2 = item.Discount2,
+            Discount3 = item.Discount3,
+            OpenSale = item.OpenSale,
+            IsTaxable = item.IsTaxable,
+            TaxType = item.TaxType,
+            TaxAmount = item.TaxAmount,
+            TotalPrice = item.TotalPrice,
+            Quantity = 1,
+            Icon = item.Icon
+        };
+        EditingPriceText = item.Price.ToString("F2");
+        UpdateDetailTotal();
+        OnPropertyChanged(nameof(IsPriceEditable));
+        IsItemDetailPopupVisible = true;
+    }
+
+    partial void OnEditingPriceTextChanged(string value)
+    {
+        if (EditingServiceItem == null) return;
+        if (decimal.TryParse(value, out var price) && price >= 0)
+        {
+            EditingServiceItem.Price = price;
+            var taxAmount = EditingServiceItem.IsTaxable ? price * 0.15m : 0;
+            EditingServiceItem.TaxAmount = taxAmount;
+            var afterDiscount = price - EditingServiceItem.Discount1 - EditingServiceItem.Discount2 - EditingServiceItem.Discount3;
+            EditingServiceItem.TotalPrice = afterDiscount + taxAmount;
+            UpdateDetailTotal();
+        }
+    }
+
+    private void UpdateDetailTotal()
+    {
+        if (EditingServiceItem != null)
+        {
+            DetailTotalText = $"{EditingServiceItem.TotalPrice:N2} SAR";
+        }
+    }
+
+    [RelayCommand]
+    private void ConfirmAddToCart()
+    {
+        if (EditingServiceItem == null) return;
+        AddServiceToCart(EditingServiceItem);
+        IsItemDetailPopupVisible = false;
+        EditingServiceItem = null!;
+    }
+
+    [RelayCommand]
+    private void CancelItemDetail()
+    {
+        IsItemDetailPopupVisible = false;
+        EditingServiceItem = null!;
+    }
+
     partial void OnSelectedItemCategoryChanged(ItemCategoryOption? value)
     {
         _ = FilterServicesAsync();
@@ -714,6 +786,10 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
         var price = (decimal)(item.PackagePrice ?? 0);
         var taxRate = (decimal)(item.ItemTax ?? 0) / 100m;
         var taxAmount = price * taxRate;
+        var discount1 = (decimal)(item.Discount1 ?? 0);
+        var discount2 = (decimal)(item.Discount2 ?? 0);
+        var discount3 = (decimal)(item.Discount3 ?? 0);
+        var afterDiscount = price - discount1 - discount2 - discount3;
 
         return new ServiceItem
         {
@@ -723,11 +799,14 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
             ItemType = "Product",
             Price = price,
             Cost = 0,
+            Discount1 = discount1,
+            Discount2 = discount2,
+            Discount3 = discount3,
+            OpenSale = item.OpenSale,
             IsTaxable = taxRate > 0,
             TaxType = "VAT",
             TaxAmount = taxAmount,
-            TotalPrice = price + taxAmount,
-            Icon = "car.svg"
+            TotalPrice = afterDiscount + taxAmount
         };
     }
 

@@ -28,5 +28,9 @@ public class ItemBarCodeView
     public double? ItemTax { get; set; }
     public double? WarrantyTax { get; set; }
     public double? TableTax { get; set; }
+    public bool? OpenSale { get; set; }
+    public string? ItemDiscount1 { get; set; }
+    public string? ItemDiscount2 { get; set; }
+    public string? ItemDiscount3 { get; set; }
     public byte? Status { get; set; }
 }
