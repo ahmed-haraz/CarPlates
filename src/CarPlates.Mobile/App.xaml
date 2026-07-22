@@ -14,6 +14,7 @@
             <converters:ObjectToListConverter x:Key="ObjectToListConverter" />
             <converters:StringToBoolConverter x:Key="StringToBoolConverter" />
             <converters:ColorNameToBrushConverter x:Key="ColorNameToBrushConverter" />
+            <converters:BrandToImageConverter x:Key="BrandToImageConverter" />
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="Resources/Styles/Colors.xaml" />
                 <ResourceDictionary Source="Resources/Styles/Theme.xaml" />

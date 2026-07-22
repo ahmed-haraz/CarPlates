@@ -111,8 +111,9 @@ public class BrandToImageConverter : IValueConverter
 {
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
     {
-        // Return brand logo image source based on brand name
-        var brand = value?.ToString() ?? "";
+        var brand = value?.ToString();
+        if (string.IsNullOrWhiteSpace(brand))
+            return "car.svg";
         return $"brand_{brand.Replace(" ", "_").ToLower()}.png";
     }
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
