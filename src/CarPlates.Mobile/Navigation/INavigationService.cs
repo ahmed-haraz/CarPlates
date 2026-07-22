@@ -30,6 +30,9 @@ public interface INavigationService
     /// <summary>Swaps the app root to the cashier/order queue flow.</summary>
     Task GoToCashierRootAsync();
 
+    /// <summary>Pushes the manual plate entry page onto the active navigation stack.</summary>
+    Task GoToManualEntryAsync();
+
 
     /// <summary>Pushes the page paired with <typeparamref name="TViewModel"/> (by naming convention) onto the active navigation stack.</summary>
     Task PushAsync<TViewModel>(IDictionary<string, object>? parameters = null) where TViewModel : BaseViewModel;

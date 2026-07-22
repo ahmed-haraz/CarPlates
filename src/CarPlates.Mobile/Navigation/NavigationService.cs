@@ -158,6 +158,13 @@ public class NavigationService(IServiceProvider serviceProvider) : INavigationSe
         return Task.CompletedTask;
     }
 
+    public Task GoToManualEntryAsync()
+    {
+        var manualEntryPage = _serviceProvider.GetRequiredService<Views.Scanner.ManualEntryPage>();
+        manualEntryPage.FlowDirection = Localization.LocalizationResourceManager.Instance.FlowDirection;
+        return CurrentNavigation.PushAsync(manualEntryPage);
+    }
+
     public Task GoToCustomerDataAsync(string? plateNumber = null)
     {
         var newOrderPage = _serviceProvider.GetRequiredService<NewOrderPage>();
