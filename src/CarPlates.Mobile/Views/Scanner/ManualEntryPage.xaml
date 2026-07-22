@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:CarPlates.Mobile.ViewModels"
+             xmlns:loc="clr-namespace:CarPlates.Mobile.Localization"
+             xmlns:helpers="clr-namespace:CarPlates.Mobile.Helpers"
+             x:Class="CarPlates.Mobile.Views.Scanner.ManualEntryPage"
+             x:DataType="vm:ManualEntryViewModel"
+             NavigationPage.HasNavigationBar="False"
+             BackgroundColor="{DynamicResource Background}">
+
+    <Grid RowDefinitions="Auto,*,Auto"
+          Padding="0">
+
+        <!-- Header -->
+        <Grid Grid.Row="0"
+              Padding="16,12"
+              ColumnDefinitions="Auto,*,Auto"
+              BackgroundColor="{DynamicResource Surface}">
+            <Image Grid.Column="0"
+                   WidthRequest="24"
+                   HeightRequest="24"
+                   helpers:IconHelper.Glyph="&#xe909;">
+                <Image.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding ClosePageCommand}" />
+                </Image.GestureRecognizers>
+            </Image>
+            <Label Grid.Column="1"
+                   Text="{loc:Translate Key=ManualEntry}"
+                   FontSize="18"
+                   FontAttributes="Bold"
+                   HorizontalOptions="Center"
+                   VerticalOptions="Center" />
+        </Grid>
+
+        <!-- Content -->
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout Spacing="24"
+                                 Padding="20,24">
+
+                <!-- Plate Visual Display -->
+                <Border Style="{StaticResource Card}"
+                        Padding="20"
+                        BackgroundColor="White"
+                        Stroke="{DynamicResource Border}"
+                        StrokeThickness="2">
+                    <VerticalStackLayout Spacing="12"
+                                         HorizontalOptions="Center">
+                        <!-- Plate number display with Saudi plate style -->
+                        <Grid ColumnDefinitions="*,Auto"
+                              ColumnSpacing="8">
+                            <Label Grid.Column="0"
+                                   Text="{Binding PlateText}"
+                                   FontSize="36"
+                                   FontAttributes="Bold"
+                                   HorizontalTextAlignment="Center"
+                                   VerticalOptions="Center"
+                                   CharacterSpacing="4"
+                                   LineBreakMode="NoWrap" />
+                            <Border Grid.Column="1"
+                                    BackgroundColor="Green"
+                                    Padding="6,4"
+                                    StrokeShape="RoundRectangle 4">
+                                <VerticalStackLayout Spacing="2"
+                                                     HorizontalOptions="Center">
+                                    <Label Text="KSA"
+                                           FontSize="10"
+                                           TextColor="White"
+                                           HorizontalOptions="Center"
+                                           FontAttributes="Bold" />
+                                    <BoxView WidthRequest="20"
+                                             HeightRequest="2"
+                                             Color="White"
+                                             HorizontalOptions="Center" />
+                                    <Label Text="●"
+                                           FontSize="10"
+                                           TextColor="White"
+                                           HorizontalOptions="Center" />
+                                </VerticalStackLayout>
+                            </Border>
+                        </Grid>
+
+                        <!-- Placeholder hint when empty -->
+                        <Label Text="{loc:Translate Key=EnterPlateNumberPrompt}"
+                               FontSize="14"
+                               TextColor="{DynamicResource TextSecondary}"
+                               HorizontalOptions="Center"
+                               IsVisible="{Binding PlateText, Converter={StaticResource IsStringEmptyConverter}}" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Plate Type Selector -->
+                <Label Text="{loc:Translate Key=PlateType}"
+                       FontSize="14"
+                       FontAttributes="Bold" />
+                <FlexLayout Wrap="Wrap"
+                            JustifyContent="Start"
+                            AlignItems="Start">
+                    <BindableLayout.ItemsSource>
+                        <Binding Path="PlateTypes" />
+                    </BindableLayout.ItemsSource>
+                    <BindableLayout.ItemTemplate>
+                        <DataTemplate x:DataType="x:String">
+                            <Border Style="{StaticResource Card}"
+                                    Padding="12,8"
+                                    Margin="4"
+                                    Stroke="{DynamicResource Border}"
+                                    StrokeThickness="1">
+                                <Border.StyleTriggers>
+                                    <DataTrigger TargetType="Border"
+                                                 Binding="{Binding Source={RelativeSource AncestorType={x:Type vm:ManualEntryViewModel}}, Path=PlateType}"
+                                                 Value="{Binding .}">
+                                        <Setter Property="Stroke" Value="{StaticResource Primary}" />
+                                        <Setter Property="BackgroundColor" Value="{StaticResource PrimaryContainer}" />
+                                    </DataTrigger>
+                                </Border.StyleTriggers>
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:ManualEntryViewModel}}, Path=SelectPlateTypeCommand}"
+                                                          CommandParameter="{Binding .}" />
+                                </Border.GestureRecognizers>
+                                <Label Text="{Binding .}"
+                                       FontSize="14" />
+                            </Border>
+                        </DataTemplate>
+                    </BindableLayout.ItemTemplate>
+                </FlexLayout>
+
+                <!-- Action Buttons -->
+                <Grid ColumnDefinitions="*,*"
+                      ColumnSpacing="12">
+                    <Button Grid.Column="0"
+                            Text="{loc:Translate Key=Clear}"
+                            BackgroundColor="{DynamicResource Surface}"
+                            TextColor="{DynamicResource TextPrimary}"
+                            BorderColor="{DynamicResource Border}"
+                            BorderWidth="1"
+                            CornerRadius="12"
+                            HeightRequest="48"
+                            Command="{Binding ClearPlateCommand}" />
+                    <Button Grid.Column="1"
+                            Text="{loc:Translate Key=Search}"
+                            BackgroundColor="{StaticResource Primary}"
+                            TextColor="White"
+                            CornerRadius="12"
+                            HeightRequest="48"
+                            Command="{Binding SubmitPlateCommand}" />
+                </Grid>
+
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <!-- Custom Keypad -->
+        <Border Grid.Row="2"
+                BackgroundColor="{DynamicResource Surface}"
+                Stroke="{DynamicResource Border}"
+                StrokeThickness="1"
+                Padding="8,12">
+            <VerticalStackLayout Spacing="8">
+                <!-- Row 1 -->
+                <Grid ColumnDefinitions="*,*,*,*"
+                      ColumnSpacing="8">
+                    <Button Grid.Column="0" Text="1" Style="{StaticResource KeypadButton}" Command="{Binding KeyPressCommand}" CommandParameter="1" />
+                    <Button Grid.Column="1" Text="2" Style="{StaticResource KeypadButton}" Command="{Binding KeyPressCommand}" CommandParameter="2" />
+                    <Button Grid.Column="2" Text="3" Style="{StaticResource KeypadButton}" Command="{Binding KeyPressCommand}" CommandParameter="3" />
+                    <Button Grid.Column="3" Text="-" Style="{StaticResource KeypadButton}" Command="{Binding KeyPressCommand}" CommandParameter="-" />
+                </Grid>
+                <!-- Row 2 -->
+                <Grid ColumnDefinitions="*,*,*,*"
+                      ColumnSpacing="8">
+                    <Button Grid.Column="0" Text="4" Style="{StaticResource KeypadButton}" Command="{Binding KeyPressCommand}" CommandParameter="4" />
+                    <Button Grid.Column="1" Text="5" Style="{StaticResource KeypadButton}" Command="{Binding KeyPressCommand}" CommandParameter="5" />
+                    <Button Grid.Column="2" Text="6" Style="{StaticResource KeypadButton}" Command="{Binding KeyPressCommand}" CommandParameter="6" />
+                    <Button Grid.Column="3" Text="_" Style="{StaticResource KeypadButton}" Command="{Binding KeyPressCommand}" CommandParameter="_" />
+                </Grid>
+                <!-- Row 3 -->
+                <Grid ColumnDefinitions="*,*,*,*"
+                      ColumnSpacing="8">
+                    <Button Grid.Column="0" Text="7" Style="{StaticResource KeypadButton}" Command="{Binding KeyPressCommand}" CommandParameter="7" />
+                    <Button Grid.Column="1" Text="8" Style="{StaticResource KeypadButton}" Command="{Binding KeyPressCommand}" CommandParameter="8" />
+                    <Button Grid.Column="2" Text="9" Style="{StaticResource KeypadButton}" Command="{Binding KeyPressCommand}" CommandParameter="9" />
+                    <Button Grid.Column="3" Text="X" Style="{StaticResource KeypadButton}" Command="{Binding KeyPressCommand}" CommandParameter="X" />
+                </Grid>
+                <!-- Row 4 -->
+                <Grid ColumnDefinitions="*,*,*"
+                      ColumnSpacing="8">
+                    <Button Grid.Column="0" Text="{loc:Translate Key=Space}" Style="{StaticResource KeypadButton}" Command="{Binding KeyPressCommand}" CommandParameter=" " />
+                    <Button Grid.Column="1" Text="0" Style="{StaticResource KeypadButton}" Command="{Binding KeyPressCommand}" CommandParameter="0" />
+                    <Button Grid.Column="2" Text="⌫" Style="{StaticResource KeypadButton}" BackgroundColor="#E53935" TextColor="White" Command="{Binding KeyPressCommand}" CommandParameter="⌫" />
+                </Grid>
+            </VerticalStackLayout>
+        </Border>
+
+    </Grid>
+</ContentPage>

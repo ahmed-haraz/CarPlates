@@ -980,4 +980,29 @@
   <value>Go Back</value>
 </data>
 
+	<data name="SubTotal"
+		  xml:space="preserve">
+  <value>Sub Total</value>
+</data>
+
+	<data name="NetTotal"
+		  xml:space="preserve">
+  <value>Net Total</value>
+</data>
+
+	<data name="Alert"
+		  xml:space="preserve">
+  <value>Alert</value>
+</data>
+
+	<data name="PlateType"
+		  xml:space="preserve">
+  <value>Plate Type</value>
+</data>
+
+	<data name="Space"
+		  xml:space="preserve">
+  <value>Space</value>
+</data>
+
 </root>

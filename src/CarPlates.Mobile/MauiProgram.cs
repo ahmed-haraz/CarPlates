@@ -116,6 +116,8 @@ public static class MauiProgram
         builder.Services.AddTransient<BrandSelectionPage>();
         builder.Services.AddTransient<ModelSelectionPage>();
         builder.Services.AddTransient<MainTabbedPage>();
+        builder.Services.AddTransient<Views.Scanner.ManualEntryPage>();
+        builder.Services.AddTransient<ManualEntryViewModel>();
 
         // Logging
 #if DEBUG

@@ -103,10 +103,22 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
     [ObservableProperty] private string _editingPriceText = string.Empty;
     [ObservableProperty] private string _detailTotalText = string.Empty;
     [ObservableProperty] private bool _isCartReviewVisible;
+    [ObservableProperty] private string _brandSearchText = string.Empty;
+    [ObservableProperty] private string _modelSearchText = string.Empty;
+    [ObservableProperty] private string _locationSearchText = string.Empty;
+    [ObservableProperty] private ObservableCollection<WorkLocation> _filteredLocations = new();
+    [ObservableProperty] private int _locationPage = 1;
+    [ObservableProperty] private int _locationTotalPages = 1;
+    [ObservableProperty] private decimal _discountsTotal;
 
-    // Indicates whether a signature has been captured.
+    // Modern alert popup
+    [ObservableProperty] private bool _isAlertPopupVisible;
+    [ObservableProperty] private string _alertTitle = string.Empty;
+    [ObservableProperty] private string _alertMessage = string.Empty;
+
     public bool HasSignature => !string.IsNullOrWhiteSpace(SignatureData);
-
+    public bool CanGoToPreviousLocationPage => LocationPage > 1;
+    public bool CanGoToNextLocationPage => LocationPage < LocationTotalPages;
     public bool CanGoToPreviousBrandPage => BrandPage > 1;
     public bool CanGoToNextBrandPage => BrandPage < BrandTotalPages;
     public bool CanGoToPreviousModelPage => ModelPage > 1;
@@ -365,6 +377,7 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
             {
                 Locations.Add(new WorkLocation { Id = location.Id.ToString(), Name = location.Name_En ?? location.Name_Ar ?? string.Empty, Type = location.Name_Ar ?? string.Empty });
             }
+            FilteredLocations = new ObservableCollection<WorkLocation>(Locations);
 
             ItemCategories.Clear();
             Categories.Clear();
@@ -391,12 +404,18 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
     [RelayCommand]
     private void ShowBrandPopup()
     {
+        BrandSearchText = string.Empty;
         ResetBrandPaging();
         IsBrandPopupVisible = true;
     }
 
     [RelayCommand]
     private void CloseBrandPopup() => IsBrandPopupVisible = false;
+
+    partial void OnBrandSearchTextChanged(string value)
+    {
+        ResetBrandPaging();
+    }
 
     [RelayCommand]
     private void NextBrandPage()
@@ -424,12 +443,18 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
     [RelayCommand]
     private void ShowModelPopup()
     {
+        ModelSearchText = string.Empty;
         ResetModelPaging();
         IsModelPopupVisible = true;
     }
 
     [RelayCommand]
     private void CloseModelPopup() => IsModelPopupVisible = false;
+
+    partial void OnModelSearchTextChanged(string value)
+    {
+        ResetModelPaging();
+    }
 
     [RelayCommand]
     private void NextModelPage()
@@ -497,7 +522,7 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
     {
         if (SelectedVehicle == null)
         {
-            await Navigation.DisplayAlertAsync(AppResources.SelectVehicleFirst, string.Empty, AppResources.OK);
+            ShowAlert(AppResources.SelectVehicleFirst, string.Empty);
             return;
         }
         ResetItemCategoryPaging();
@@ -722,7 +747,7 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
     {
         if (SelectedCustomer == null)
         {
-            await Navigation.DisplayAlertAsync(AppResources.SelectCustomerFirst, string.Empty, AppResources.OK);
+            ShowAlert(AppResources.SelectCustomerFirst, string.Empty);
             return;
         }
         IsVehiclePopupVisible = true;
@@ -739,7 +764,7 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
     {
         if (SelectedCustomer == null)
         {
-            await Navigation.DisplayAlertAsync(AppResources.SelectCustomerFirst, string.Empty, AppResources.OK);
+            ShowAlert(AppResources.SelectCustomerFirst, string.Empty);
             return;
         }
 
@@ -943,9 +968,11 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
     {
         if (SelectedVehicle == null)
         {
-            await Navigation.DisplayAlertAsync(AppResources.SelectVehicleFirst, string.Empty, AppResources.OK);
+            ShowAlert(AppResources.SelectVehicleFirst, string.Empty);
             return;
         }
+        LocationSearchText = string.Empty;
+        ResetLocationPaging();
         IsLocationPopupVisible = true;
     }
 
@@ -964,7 +991,7 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
     {
         if (SelectedVehicle == null)
         {
-            await Navigation.DisplayAlertAsync(AppResources.SelectVehicleFirst, string.Empty, AppResources.OK);
+            ShowAlert(AppResources.SelectVehicleFirst, string.Empty);
             return;
         }
         TechnicianSearchText = string.Empty;
@@ -1035,6 +1062,20 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
         SelectedTechnician = null!;
     }
 
+    private void ShowAlert(string title, string message)
+    {
+        AlertTitle = title;
+        AlertMessage = message;
+        IsAlertPopupVisible = true;
+    }
+
+    [RelayCommand]
+    private void DismissAlert()
+    {
+        IsAlertPopupVisible = false;
+        AlertMessage = string.Empty;
+    }
+
     [RelayCommand]
     private void ClearServiceAssignment()
     {
@@ -1049,7 +1090,7 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
         {
             if (!MediaPicker.Default.IsCaptureSupported)
             {
-                await Navigation.DisplayAlertAsync("Camera", "Camera capture is not supported on this device.");
+                ShowAlert("Camera", "Camera capture is not supported on this device.");
                 return;
             }
 
@@ -1149,6 +1190,7 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
     {
         SubTotal = CartItems.Sum(c => c.ServiceItem.Price * c.Quantity);
         TaxTotal = CartItems.Sum(c => c.ServiceItem.TaxAmount * c.Quantity);
+        DiscountsTotal = CartItems.Sum(c => (c.ServiceItem.Discount1 + c.ServiceItem.Discount2 + c.ServiceItem.Discount3) * c.Quantity);
         Total = CartItems.Sum(c => c.LineTotal);
     }
 
@@ -1157,30 +1199,48 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
         return "car.svg";
     }
 
+    private IEnumerable<string> GetFilteredBrands()
+    {
+        if (string.IsNullOrWhiteSpace(BrandSearchText))
+            return Brands;
+        return Brands.Where(b => b.Contains(BrandSearchText, StringComparison.OrdinalIgnoreCase));
+    }
+
     private void ResetBrandPaging()
     {
         BrandPage = 1;
-        BrandTotalPages = Math.Max(1, (int)Math.Ceiling(Brands.Count / (double)PopupPageSize));
+        var filtered = GetFilteredBrands().ToList();
+        BrandTotalPages = Math.Max(1, (int)Math.Ceiling(filtered.Count / (double)PopupPageSize));
         RefreshPagedBrands();
     }
 
     private void RefreshPagedBrands()
     {
-        PagedBrands = new ObservableCollection<string>(Brands.Skip((BrandPage - 1) * PopupPageSize).Take(PopupPageSize));
+        var filtered = GetFilteredBrands().ToList();
+        PagedBrands = new ObservableCollection<string>(filtered.Skip((BrandPage - 1) * PopupPageSize).Take(PopupPageSize));
         OnPropertyChanged(nameof(CanGoToPreviousBrandPage));
         OnPropertyChanged(nameof(CanGoToNextBrandPage));
+    }
+
+    private IEnumerable<string> GetFilteredModels()
+    {
+        if (string.IsNullOrWhiteSpace(ModelSearchText))
+            return AvailableModels;
+        return AvailableModels.Where(m => m.Contains(ModelSearchText, StringComparison.OrdinalIgnoreCase));
     }
 
     private void ResetModelPaging()
     {
         ModelPage = 1;
-        ModelTotalPages = Math.Max(1, (int)Math.Ceiling(AvailableModels.Count / (double)PopupPageSize));
+        var filtered = GetFilteredModels().ToList();
+        ModelTotalPages = Math.Max(1, (int)Math.Ceiling(filtered.Count / (double)PopupPageSize));
         RefreshPagedModels();
     }
 
     private void RefreshPagedModels()
     {
-        PagedModels = new ObservableCollection<string>(AvailableModels.Skip((ModelPage - 1) * PopupPageSize).Take(PopupPageSize));
+        var filtered = GetFilteredModels().ToList();
+        PagedModels = new ObservableCollection<string>(filtered.Skip((ModelPage - 1) * PopupPageSize).Take(PopupPageSize));
         OnPropertyChanged(nameof(CanGoToPreviousModelPage));
         OnPropertyChanged(nameof(CanGoToNextModelPage));
     }
@@ -1277,6 +1337,62 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
     {
         OnPropertyChanged(nameof(CanGoToPreviousItemCategoryPage));
         OnPropertyChanged(nameof(CanGoToNextItemCategoryPage));
+    }
+
+    partial void OnLocationSearchTextChanged(string value)
+    {
+        ResetLocationPaging();
+    }
+
+    private IEnumerable<WorkLocation> GetFilteredLocations()
+    {
+        if (string.IsNullOrWhiteSpace(LocationSearchText))
+            return Locations;
+        return Locations.Where(l => l.Name != null && l.Name.Contains(LocationSearchText, StringComparison.OrdinalIgnoreCase));
+    }
+
+    private void ResetLocationPaging()
+    {
+        LocationPage = 1;
+        var filtered = GetFilteredLocations().ToList();
+        LocationTotalPages = Math.Max(1, (int)Math.Ceiling(filtered.Count / (double)PopupPageSize));
+        RefreshPagedLocations();
+    }
+
+    private void RefreshPagedLocations()
+    {
+        var filtered = GetFilteredLocations().ToList();
+        FilteredLocations = new ObservableCollection<WorkLocation>(filtered.Skip((LocationPage - 1) * PopupPageSize).Take(PopupPageSize));
+        OnPropertyChanged(nameof(CanGoToPreviousLocationPage));
+        OnPropertyChanged(nameof(CanGoToNextLocationPage));
+    }
+
+    [RelayCommand]
+    private void NextLocationPage()
+    {
+        if (LocationPage >= LocationTotalPages) return;
+        LocationPage++;
+        RefreshPagedLocations();
+    }
+
+    [RelayCommand]
+    private void PreviousLocationPage()
+    {
+        if (LocationPage <= 1) return;
+        LocationPage--;
+        RefreshPagedLocations();
+    }
+
+    partial void OnLocationPageChanged(int value)
+    {
+        OnPropertyChanged(nameof(CanGoToPreviousLocationPage));
+        OnPropertyChanged(nameof(CanGoToNextLocationPage));
+    }
+
+    partial void OnLocationTotalPagesChanged(int value)
+    {
+        OnPropertyChanged(nameof(CanGoToPreviousLocationPage));
+        OnPropertyChanged(nameof(CanGoToNextLocationPage));
     }
 
     partial void OnColorPageChanged(int value)

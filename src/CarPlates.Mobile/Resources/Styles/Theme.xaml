@@ -58,6 +58,18 @@
         <Setter Property="HeightRequest" Value="56" />
     </Style>
 
+    <Style TargetType="Button" x:Key="KeypadButton">
+        <Setter Property="BackgroundColor" Value="{DynamicResource Surface}" />
+        <Setter Property="TextColor" Value="{DynamicResource TextPrimary}" />
+        <Setter Property="FontSize" Value="22" />
+        <Setter Property="FontAttributes" Value="Bold" />
+        <Setter Property="CornerRadius" Value="12" />
+        <Setter Property="HeightRequest" Value="52" />
+        <Setter Property="BorderColor" Value="{DynamicResource Border}" />
+        <Setter Property="BorderWidth" Value="1" />
+        <Setter Property="Padding" Value="0" />
+    </Style>
+
     <Style TargetType="Button" x:Key="IconButton">
         <Setter Property="BackgroundColor" Value="{DynamicResource Surface}" />
         <Setter Property="TextColor" Value="{DynamicResource TextPrimary}" />

@@ -981,4 +981,29 @@
   <value>رجوع</value>
 </data>
 
+	<data name="SubTotal"
+		  xml:space="preserve">
+  <value>المجموع الفرعي</value>
+</data>
+
+	<data name="NetTotal"
+		  xml:space="preserve">
+  <value>المجموع الصافي</value>
+</data>
+
+	<data name="Alert"
+		  xml:space="preserve">
+  <value>تنبيه</value>
+</data>
+
+	<data name="PlateType"
+		  xml:space="preserve">
+  <value>نوع اللوحة</value>
+</data>
+
+	<data name="Space"
+		  xml:space="preserve">
+  <value>مسافة</value>
+</data>
+
 </root>
