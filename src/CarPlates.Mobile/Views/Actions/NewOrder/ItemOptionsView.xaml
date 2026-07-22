@@ -23,7 +23,7 @@
                 <DataTemplate x:DataType="models:ServiceItem">
                     <Border Style="{StaticResource ElevatedCard}" Padding="14">
                         <Border.GestureRecognizers>
-                            <TapGestureRecognizer Command="{Binding Source={x:Reference Root}, Path=BindingContext.AddServiceToCartCommand}" CommandParameter="{Binding .}" />
+                            <TapGestureRecognizer Command="{Binding Source={x:Reference Root}, Path=BindingContext.ShowItemDetailCommand}" CommandParameter="{Binding .}" />
                         </Border.GestureRecognizers>
                         <VerticalStackLayout Spacing="8">
                             <Border Style="{StaticResource Pill}" HorizontalOptions="Start">
@@ -32,6 +32,9 @@
                             <Label Text="{Binding Name}" FontAttributes="Bold" LineBreakMode="TailTruncation" />
                             <Label Text="{Binding Category}" Style="{StaticResource Caption}" />
                             <Label Text="{Binding TotalPrice, StringFormat='{0:N2} SAR'}" TextColor="{StaticResource Primary}" FontAttributes="Bold" />
+                            <HorizontalStackLayout Spacing="4" IsVisible="{Binding OpenSale}">
+                                <Label Text="OpenSale" FontSize="10" TextColor="{StaticResource Warning}" />
+                            </HorizontalStackLayout>
                         </VerticalStackLayout>
                     </Border>
                 </DataTemplate>

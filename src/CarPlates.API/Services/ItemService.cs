@@ -60,5 +60,9 @@ public class ItemService(ApplicationDbContext context) : IItemService
         i.ItemGroupName_AR,
         i.ItemGroupName_En,
         i.ItemTax,
-        i.Status);
+        i.Status,
+        i.OpenSale ?? false,
+        i.ItemDiscount1,
+        i.ItemDiscount2,
+        i.ItemDiscount3);
 }

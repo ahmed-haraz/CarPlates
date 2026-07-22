@@ -59,13 +59,25 @@ public class ItemLookupService(IHttpClientFactory httpClientFactory) : IItemLook
     }
 
     private static ItemLookupResult ToResult(ItemApiResponse i) => new(
-        i.Id, i.Name_Ar, i.Name_En, i.ItemBarCode, i.PackagePrice, i.ItemGroupId, i.ItemGroupName_Ar, i.ItemGroupName_En, i.ItemTax);
+        i.Id, i.Name_Ar, i.Name_En, i.ItemBarCode, i.PackagePrice, i.ItemGroupId,
+        i.ItemGroupName_Ar, i.ItemGroupName_En, i.ItemTax,
+        i.OpenSale, ParseDiscount(i.ItemDiscount1), ParseDiscount(i.ItemDiscount2), ParseDiscount(i.ItemDiscount3));
+
+    private static double? ParseDiscount(string? value)
+    {
+        if (string.IsNullOrWhiteSpace(value)) return null;
+        var cleaned = value.Trim().TrimEnd('%');
+        if (double.TryParse(cleaned, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out var result))
+            return result;
+        return null;
+    }
 
     private record ItemApiResponse(
         long Id, int? Code, string? Name_Ar, string? Name_En, string ItemBarCode,
         int? Package, string? PackageName, double? PackagePrice,
         int? ItemGroupId, string? ItemGroupName_Ar, string? ItemGroupName_En,
-        double? ItemTax, byte? Status);
+        double? ItemTax, byte? Status,
+        bool OpenSale = false, string? ItemDiscount1 = null, string? ItemDiscount2 = null, string? ItemDiscount3 = null);
 
     private record CategoryApiResponse(int Id, int? Code, string? Name_Ar, string? Name_En, string? GroupName, int? ParentID, int? BranchID, string? Image);
 
