@@ -97,6 +97,8 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
     [ObservableProperty] private ServiceItem _editingServiceItem = null!;
     [ObservableProperty] private string _editingPriceText = string.Empty;
     [ObservableProperty] private string _detailTotalText = string.Empty;
+    public bool HasSignature => !string.IsNullOrWhiteSpace(SignatureData);
+
 
     public bool CanGoToPreviousBrandPage => BrandPage > 1;
     public bool CanGoToNextBrandPage => BrandPage < BrandTotalPages;
