@@ -302,12 +302,12 @@
                                    FontAttributes="Bold"
                                    HorizontalOptions="End" />
                             <Label Grid.Column="1"
-                                   Text="اختياري"
+                                   Text="{loc:Translate Key=Optional}"
                                    FontSize="16"
                                    TextColor="{DynamicResource TextSecondary}"
                                    VerticalOptions="Center" />
                             <Label Grid.Column="2"
-                                   Text="مسح الكل"
+                                   Text="{loc:Translate Key=ClearAll}"
                                    FontSize="16"
                                    TextColor="{StaticResource Success}"
                                    VerticalOptions="Center">
@@ -341,7 +341,7 @@
 
                         <ScrollView Orientation="Horizontal" HorizontalScrollBarVisibility="Never">
                             <HorizontalStackLayout Spacing="12">
-                                <Button Text="+  حدد مكان العمل"
+                                <Button Text="{loc:Translate Key=SelectLocation}"
                                         BackgroundColor="{DynamicResource Surface}"
                                         TextColor="{DynamicResource TextSecondary}"
                                         BorderColor="{DynamicResource Border}"
@@ -349,7 +349,7 @@
                                         CornerRadius="22"
                                         Padding="18,8"
                                         Command="{Binding ShowLocationPopupCommand}" />
-                                <Button Text="+  اختيار الفني"
+                                <Button Text="{loc:Translate Key=SelectTechnician}"
                                         BackgroundColor="{DynamicResource Surface}"
                                         TextColor="{DynamicResource TextSecondary}"
                                         BorderColor="{DynamicResource Border}"
@@ -386,7 +386,7 @@
                                FontSize="28"
                                VerticalOptions="Center" />
                         <Label Grid.Column="1"
-                               Text="لا يوجد توقيع"
+                               Text="{loc:Translate Key=NoSignature}"
                                FontSize="16"
                                TextColor="{DynamicResource TextSecondary}"
                                VerticalOptions="Center" />
