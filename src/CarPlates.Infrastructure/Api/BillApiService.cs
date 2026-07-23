@@ -23,10 +23,10 @@ public class BillApiService(
         {
             _logger.LogInformation("Creating bill for car {CarHeaderId}", request.CarHeaderId);
 
-            var response = await Client.PostAsJsonAsync("v1/bills", request, ApiJsonOptions.Default, cancellationToken);
+            var response = await Client.PostAsJsonAsync("bills", request, ApiJsonOptions.Default, cancellationToken);
             stopwatch.Stop();
 
-            _loggingService.LogApi("v1/bills", response.IsSuccessStatusCode, stopwatch.ElapsedMilliseconds);
+            _loggingService.LogApi("bills", response.IsSuccessStatusCode, stopwatch.ElapsedMilliseconds);
 
             if (!response.IsSuccessStatusCode)
             {
@@ -40,7 +40,7 @@ public class BillApiService(
         catch (Exception ex)
         {
             stopwatch.Stop();
-            _loggingService.LogApi("v1/bills", false, stopwatch.ElapsedMilliseconds);
+            _loggingService.LogApi("bills", false, stopwatch.ElapsedMilliseconds);
             _logger.LogError(ex, "Create bill error");
             return new BillApiResult(false, null, ex.Message);
         }
@@ -51,7 +51,7 @@ public class BillApiService(
         var stopwatch = System.Diagnostics.Stopwatch.StartNew();
         try
         {
-            var query = $"v1/bills/search?page={page}&pageSize={pageSize}";
+            var query = $"bills/search?page={page}&pageSize={pageSize}";
             if (!string.IsNullOrWhiteSpace(search))
                 query += $"&search={Uri.EscapeDataString(search)}";
             if (dateFrom.HasValue)
@@ -62,7 +62,7 @@ public class BillApiService(
             var response = await Client.GetAsync(query, cancellationToken);
             stopwatch.Stop();
 
-            _loggingService.LogApi("v1/bills/search", response.IsSuccessStatusCode, stopwatch.ElapsedMilliseconds);
+            _loggingService.LogApi("bills/search", response.IsSuccessStatusCode, stopwatch.ElapsedMilliseconds);
 
             if (!response.IsSuccessStatusCode)
             {
@@ -85,7 +85,7 @@ public class BillApiService(
         catch (Exception ex)
         {
             stopwatch.Stop();
-            _loggingService.LogApi("v1/bills/search", false, stopwatch.ElapsedMilliseconds);
+            _loggingService.LogApi("bills/search", false, stopwatch.ElapsedMilliseconds);
             _logger.LogError(ex, "Search bills error");
             return new BillSearchResult(false, [], 0, page, 1, ex.Message);
         }
@@ -96,10 +96,10 @@ public class BillApiService(
         var stopwatch = System.Diagnostics.Stopwatch.StartNew();
         try
         {
-            var response = await Client.GetAsync("v1/bills/today-stats", cancellationToken);
+            var response = await Client.GetAsync("bills/today-stats", cancellationToken);
             stopwatch.Stop();
 
-            _loggingService.LogApi("v1/bills/today-stats", response.IsSuccessStatusCode, stopwatch.ElapsedMilliseconds);
+            _loggingService.LogApi("bills/today-stats", response.IsSuccessStatusCode, stopwatch.ElapsedMilliseconds);
 
             if (!response.IsSuccessStatusCode)
                 return new TodayStatsResult(false, 0, 0, "API error");
@@ -110,7 +110,7 @@ public class BillApiService(
         catch (Exception ex)
         {
             stopwatch.Stop();
-            _loggingService.LogApi("v1/bills/today-stats", false, stopwatch.ElapsedMilliseconds);
+            _loggingService.LogApi("bills/today-stats", false, stopwatch.ElapsedMilliseconds);
             _logger.LogError(ex, "Today stats error");
             return new TodayStatsResult(false, 0, 0, ex.Message);
         }

@@ -19,7 +19,7 @@ public class BillAttachmentApiService(
     {
         try
         {
-            var response = await Client.GetAsync($"v1/bills/{headerId}/attachments", cancellationToken);
+            var response = await Client.GetAsync($"bills/{headerId}/attachments", cancellationToken);
             if (!response.IsSuccessStatusCode)
                 return [];
 
@@ -55,7 +55,7 @@ public class BillAttachmentApiService(
             fileContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(mime);
             content.Add(fileContent, "file", fileName);
 
-            var url = $"v1/bills/{headerId}/attachments?attachmentType={Uri.EscapeDataString(attachmentType)}";
+            var url = $"bills/{headerId}/attachments?attachmentType={Uri.EscapeDataString(attachmentType)}";
             var response = await Client.PostAsync(url, content, cancellationToken);
             return response.IsSuccessStatusCode;
         }
@@ -70,7 +70,7 @@ public class BillAttachmentApiService(
     {
         try
         {
-            var response = await Client.DeleteAsync($"v1/bills/{headerId}/attachments/{attachmentId}", cancellationToken);
+            var response = await Client.DeleteAsync($"bills/{headerId}/attachments/{attachmentId}", cancellationToken);
             return response.IsSuccessStatusCode;
         }
         catch (Exception ex)
