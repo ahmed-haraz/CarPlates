@@ -48,7 +48,6 @@ public class VehiclesController(IVehicleService vehicleService, IUserContext use
     }
 
     [HttpPost]
-    [Authorize(Roles = "Admin,Operator")]
     public async Task<ActionResult<VehicleDto>> Create([FromBody] VehicleCreateDto dto)
     {
         if (dto.BranchID <= 0)
@@ -66,7 +65,6 @@ public class VehiclesController(IVehicleService vehicleService, IUserContext use
     }
 
     [HttpPut("{id:int}")]
-    [Authorize(Roles = "Admin,Operator")]
     public async Task<ActionResult<VehicleDto>> Update(int id, [FromBody] VehicleUpdateDto dto)
     {
         var vehicle = await _vehicleService.UpdateAsync(id, dto);
@@ -75,7 +73,6 @@ public class VehiclesController(IVehicleService vehicleService, IUserContext use
     }
 
     [HttpDelete("{id:int}")]
-    [Authorize(Roles = "Admin")]
     public async Task<ActionResult> Delete(int id)
     {
         var result = await _vehicleService.DeleteAsync(id);

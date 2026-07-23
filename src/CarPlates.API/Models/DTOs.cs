@@ -234,6 +234,7 @@ public record CreateBillDto(
     byte? PayType,
     string? Notes,
     string? RefrenceNo,
+    string? Signature,
     IReadOnlyList<CreateBillDetailDto> Details);
 
 public record BillDetailDto(
@@ -263,4 +264,5 @@ public record BillDto(
     string? RefrenceNo,
     int? TransDate,
     string? CustomerName,
+    string? Signature,
     IReadOnlyList<BillDetailDto> Details);

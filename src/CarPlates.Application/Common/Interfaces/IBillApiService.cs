@@ -14,6 +14,7 @@ public record CreateBillRequest(
     int? CarHeaderId,
     string? Notes,
     string? RefrenceNo,
+    string? Signature,
     IReadOnlyList<CreateBillLineRequest> Details);
 
 public record CreateBillLineRequest(
@@ -45,4 +46,5 @@ public record BillApiItem(
     string? Notes,
     string? RefrenceNo,
     int? TransDate,
-    string? CustomerName);
+    string? CustomerName,
+    string? Signature);

@@ -25,6 +25,7 @@ public class TransHeader
     public double? NetTotal { get; set; }
     public double? Balance { get; set; }
     public string? RefrenceNo { get; set; }
+    public string? Signature { get; set; }
     public byte? Status { get; set; }
     public long? InsertUserID { get; set; }
     public long? UpdateUserID { get; set; }
@@ -32,6 +33,7 @@ public class TransHeader
     public long? UpdateDateTime { get; set; }
 
     public List<TransDetail> Details { get; set; } = [];
+    public List<BillAttachment> Attachments { get; set; } = [];
 }
 
 // ---- dbo.wh_TransDetails (writable table, see SQLQuery3.sql) ----
@@ -54,6 +56,23 @@ public class TransDetail
     public long? UpdateUserID { get; set; }
     public long? InsertDateTime { get; set; }
     public long? UpdateDateTime { get; set; }
+
+    public TransHeader? Header { get; set; }
+}
+
+// ---- dbo.wh_BillAttachments ----
+public class BillAttachment
+{
+    public long Id { get; set; }
+    public long HeaderId { get; set; }
+    public string FileName { get; set; } = string.Empty;
+    public string FilePath { get; set; } = string.Empty;
+    public string? ContentType { get; set; }
+    public long? FileSize { get; set; }
+    public string AttachmentType { get; set; } = "Photo"; // 'Photo' or 'Signature'
+    public long? InsertUserID { get; set; }
+    public long? InsertDateTime { get; set; }
+    public byte Status { get; set; } = 1;
 
     public TransHeader? Header { get; set; }
 }

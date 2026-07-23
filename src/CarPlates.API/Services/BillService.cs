@@ -48,6 +48,7 @@ public class BillService(ApplicationDbContext context) : IBillService
             PayType = dto.PayType,
             Notes = dto.Notes,
             RefrenceNo = dto.RefrenceNo,
+            Signature = dto.Signature,
             TransDate = int.Parse(DateTime.UtcNow.ToString("yyyyMMdd")),
             Total = total,
             NetTotal = total,
@@ -179,6 +180,7 @@ public class BillService(ApplicationDbContext context) : IBillService
             h.RefrenceNo,
             h.TransDate,
             customerName,
+            h.Signature,
             h.Details.Select(d => new BillDetailDto(
                 d.DetailId, d.ItemID, d.ItemBarCode, d.Package, d.Qty, d.Price,
                 d.DetailDiscount1, d.DetailTax, d.Value)).ToList());

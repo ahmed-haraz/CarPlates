@@ -15,6 +15,7 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
     private readonly ICustomerLookupService _customerLookupService;
     private readonly IItemLookupService _itemLookupService;
     private readonly IBillApiService _billApiService;
+    private readonly IBillAttachmentApiService _billAttachmentApiService;
     private readonly IAuthenticationService _authenticationService;
 
     // MakeName -> MakeID, so picking a brand can resolve the real ID needed to fetch models.
@@ -278,6 +279,7 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
         ICustomerLookupService customerLookupService,
         IItemLookupService itemLookupService,
         IBillApiService billApiService,
+        IBillAttachmentApiService billAttachmentApiService,
         IAuthenticationService authenticationService) : base(navigation)
     {
         _customerCarLookupService = customerCarLookupService;
@@ -285,6 +287,7 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
         _customerLookupService = customerLookupService;
         _itemLookupService = itemLookupService;
         _billApiService = billApiService;
+        _billAttachmentApiService = billAttachmentApiService;
         _authenticationService = authenticationService;
 
         Title = LocalizationResourceManager.Instance["AddVehicle"];
@@ -1240,6 +1243,7 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
                 CarHeaderId: null,
                 Notes: OrderNotes,
                 RefrenceNo: plateNo,
+                Signature: SignatureData,
                 Details: billDetails);
 
             var result = await _billApiService.CreateBillAsync(request);
@@ -1248,6 +1252,21 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
             {
                 ShowAlert(AppResources.Error, result.ErrorMessage ?? "Failed to save bill");
                 return;
+            }
+
+            if (result.HeaderId.HasValue)
+            {
+                foreach (var photo in OrderPhotos)
+                {
+                    await _billAttachmentApiService.UploadAsync(result.HeaderId.Value, photo.Path, "Photo");
+                }
+
+                if (!string.IsNullOrWhiteSpace(SignatureData))
+                {
+                    var sigPath = Path.Combine(FileSystem.CacheDirectory, $"sig-{Guid.NewGuid():N}.txt");
+                    await File.WriteAllTextAsync(sigPath, SignatureData);
+                    await _billAttachmentApiService.UploadAsync(result.HeaderId.Value, sigPath, "Signature");
+                }
             }
 
             var order = new Order
