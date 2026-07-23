@@ -34,6 +34,8 @@ public class JwtService(IConfiguration configuration) : IJwtService
                 new(JwtRegisteredClaimNames.Email, user.Email ?? ""),
                 new(JwtRegisteredClaimNames.Name, user.UserName ?? ""),
                 new("fullName", user.FullName),
+                new("branchId", user.BranchId.ToString()),
+                new("salesRepId", user.SalesRepId.ToString()),
                 new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
             };
 

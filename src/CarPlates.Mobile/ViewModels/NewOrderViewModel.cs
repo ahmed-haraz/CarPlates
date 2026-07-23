@@ -15,6 +15,7 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
     private readonly ICustomerLookupService _customerLookupService;
     private readonly IItemLookupService _itemLookupService;
     private readonly IBillApiService _billApiService;
+    private readonly IAuthenticationService _authenticationService;
 
     // MakeName -> MakeID, so picking a brand can resolve the real ID needed to fetch models.
     private readonly Dictionary<string, int> _makeIdsByName = new();
@@ -276,13 +277,15 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
         IWorkshopLookupService workshopLookupService,
         ICustomerLookupService customerLookupService,
         IItemLookupService itemLookupService,
-        IBillApiService billApiService) : base(navigation)
+        IBillApiService billApiService,
+        IAuthenticationService authenticationService) : base(navigation)
     {
         _customerCarLookupService = customerCarLookupService;
         _workshopLookupService = workshopLookupService;
         _customerLookupService = customerLookupService;
         _itemLookupService = itemLookupService;
         _billApiService = billApiService;
+        _authenticationService = authenticationService;
 
         Title = LocalizationResourceManager.Instance["AddVehicle"];
         SelectedColor = Colors.First();
@@ -1217,6 +1220,7 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
 
         try
         {
+            var currentUser = await _authenticationService.GetCurrentUserAsync();
             var plateNo = SelectedVehicle?.PlateNumber ?? NewPlateNumber;
 
             var billDetails = CartItems.Select(ci => new CreateBillLineRequest(
@@ -1230,7 +1234,7 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
                 DetailNotes: null)).ToList();
 
             var request = new CreateBillRequest(
-                BranchID: null,
+                BranchID: currentUser?.BranchId,
                 CustomerId: null,
                 EngineerId: null,
                 CarHeaderId: null,

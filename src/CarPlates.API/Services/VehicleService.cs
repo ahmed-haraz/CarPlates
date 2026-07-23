@@ -30,7 +30,7 @@ public class VehicleService(ApplicationDbContext context, ICustomerCarService cu
         return car == null ? null : MapToDto(car);
     }
 
-    public async Task<PagedResult<VehicleDto>> GetAllAsync(string? search = null, string? status = null, int page = 1, int pageSize = 20)
+    public async Task<PagedResult<VehicleDto>> GetAllAsync(string? search = null, string? status = null, int page = 1, int pageSize = 20, int? branchId = null, long? userId = null)
     {
         var query = _context.CustomerCarsFull.AsNoTracking().Where(c => c.CarStatus != 0);
 
@@ -47,6 +47,20 @@ public class VehicleService(ApplicationDbContext context, ICustomerCarService cu
         {
             query = query.Where(c => c.VehicleStatusName_En == status || c.VehicleStatusName_Ar == status);
         }
+
+        if (branchId.HasValue && branchId.Value > 0)
+        {
+            var branchCustomerIds = _context.CustomerBranches
+                .AsNoTracking()
+                .Where(cb => cb.BranchID == branchId && cb.Status == 1 && cb.ParentID != null)
+                .Select(cb => cb.ParentID!.Value)
+                .Distinct();
+
+            query = query.Where(c => c.CustomerID != null && branchCustomerIds.Contains(c.CustomerID.Value));
+        }
+
+        if (userId.HasValue && userId.Value > 0)
+            query = query.Where(c => c.InsertUserID == userId);
 
         query = query.OrderByDescending(c => c.InsertDateTime);
 

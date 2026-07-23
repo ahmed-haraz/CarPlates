@@ -1,3 +1,4 @@
+using CarPlates.API.Common;
 using CarPlates.API.Interface;
 using CarPlates.API.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -8,9 +9,10 @@ namespace CarPlates.API.Controllers;
 [ApiController]
 [Route("api/v1/[controller]")]
 [Authorize]
-public class VehiclesController(IVehicleService vehicleService, ILogger<VehiclesController> logger) : ControllerBase
+public class VehiclesController(IVehicleService vehicleService, IUserContext userContext, ILogger<VehiclesController> logger) : ControllerBase
 {
     private readonly IVehicleService _vehicleService = vehicleService;
+    private readonly IUserContext _userContext = userContext;
     private readonly ILogger<VehiclesController> _logger = logger;
 
     [HttpGet]
@@ -20,7 +22,7 @@ public class VehiclesController(IVehicleService vehicleService, ILogger<Vehicles
         [FromQuery] int page = 1,
         [FromQuery] int pageSize = 20)
     {
-        var vehicles = await _vehicleService.GetAllAsync(search, status, page, pageSize);
+        var vehicles = await _vehicleService.GetAllAsync(search, status, page, pageSize, _userContext.BranchId, long.TryParse(_userContext.UserId, out var uid) ? uid : null);
         return Ok(vehicles);
     }
 
@@ -80,6 +82,4 @@ public class VehiclesController(IVehicleService vehicleService, ILogger<Vehicles
         if (!result) return NotFound();
         return NoContent();
     }
-
-    
 }

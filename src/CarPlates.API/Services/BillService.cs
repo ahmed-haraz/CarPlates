@@ -76,12 +76,12 @@ public class BillService(ApplicationDbContext context) : IBillService
     }
 
     public async Task<PagedResult<BillDto>> GetAllAsync(
-        int? branchId, int? customerId, int? carHeaderId,
+        int branchId, int? customerId, int? carHeaderId,
         int page, int pageSize, CancellationToken cancellationToken = default)
     {
         var query = _context.TransHeaders.AsNoTracking().AsQueryable();
 
-        if (branchId.HasValue) query = query.Where(h => h.BranchID == branchId);
+        if (branchId > 0) query = query.Where(h => h.BranchID == branchId);
         if (customerId.HasValue) query = query.Where(h => h.CustomerId == customerId);
         if (carHeaderId.HasValue) query = query.Where(h => h.CarHeaderId == carHeaderId);
 
@@ -99,7 +99,7 @@ public class BillService(ApplicationDbContext context) : IBillService
 
     public async Task<PagedResult<BillDto>> SearchAsync(
         string? search, int? transDateFrom, int? transDateTo,
-        int page, int pageSize, string? userId = null,
+        int page, int pageSize, string? userId = null, int? branchId = null,
         CancellationToken cancellationToken = default)
     {
         var query = _context.TransHeaders.AsNoTracking().AsQueryable();
@@ -117,6 +117,9 @@ public class BillService(ApplicationDbContext context) : IBillService
         if (transDateTo.HasValue)
             query = query.Where(h => h.TransDate <= transDateTo);
 
+        if (branchId.HasValue && branchId.Value > 0)
+            query = query.Where(h => h.BranchID == branchId);
+
         if (!string.IsNullOrWhiteSpace(userId) && long.TryParse(userId, out var uid))
             query = query.Where(h => h.InsertUserID == uid);
 
@@ -132,11 +135,14 @@ public class BillService(ApplicationDbContext context) : IBillService
         return new PagedResult<BillDto>(items, paged.TotalCount, paged.Page, paged.PageSize, paged.TotalPages);
     }
 
-    public async Task<(int todayBills, double todayTotal)> GetTodayStatsAsync(string? userId, CancellationToken cancellationToken = default)
+    public async Task<(int todayBills, double todayTotal)> GetTodayStatsAsync(string? userId = null, int? branchId = null, CancellationToken cancellationToken = default)
     {
         var today = int.Parse(DateTime.UtcNow.ToString("yyyyMMdd"));
         var query = _context.TransHeaders.AsNoTracking()
             .Where(h => h.TransDate == today && h.Status == 1);
+
+        if (branchId.HasValue && branchId.Value > 0)
+            query = query.Where(h => h.BranchID == branchId);
 
         if (!string.IsNullOrWhiteSpace(userId) && long.TryParse(userId, out var uid))
             query = query.Where(h => h.InsertUserID == uid);

@@ -24,8 +24,9 @@ public partial class CarDataViewModel : NewOrderViewModel
         IWorkshopLookupService workshopLookupService,
         ICustomerLookupService customerLookupService,
         IItemLookupService itemLookupService,
-        IBillApiService billApiService
-    ) : base(navigation, customerCarLookupService, workshopLookupService, customerLookupService, itemLookupService, billApiService)
+        IBillApiService billApiService,
+        IAuthenticationService authenticationService
+    ) : base(navigation, customerCarLookupService, workshopLookupService, customerLookupService, itemLookupService, billApiService, authenticationService)
     {
         Title = "إضافة سيارة جديدة";
     }

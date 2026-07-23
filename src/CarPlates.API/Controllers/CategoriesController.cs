@@ -1,3 +1,4 @@
+using CarPlates.API.Common;
 using CarPlates.API.Interface;
 using CarPlates.API.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -8,7 +9,7 @@ namespace CarPlates.API.Controllers;
 [ApiController]
 [Route("api/v1/[controller]")]
 [Authorize]
-public class CategoriesController(ICategoryService categoryService) : ControllerBase
+public class CategoriesController(ICategoryService categoryService, IUserContext userContext) : ControllerBase
 {
     private readonly ICategoryService _categoryService = categoryService;
 
@@ -20,6 +21,7 @@ public class CategoriesController(ICategoryService categoryService) : Controller
         [FromQuery] int pageSize = 20,
         CancellationToken cancellationToken = default)
     {
-        return Ok(await _categoryService.GetAllAsync(search, branchId, page, pageSize, cancellationToken));
+        var effectiveBranchId = branchId ?? userContext.BranchId;
+        return Ok(await _categoryService.GetAllAsync(search, effectiveBranchId, page, pageSize, cancellationToken));
     }
 }

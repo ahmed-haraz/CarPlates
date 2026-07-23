@@ -1,3 +1,4 @@
+using CarPlates.API.Common;
 using CarPlates.API.Interface;
 using CarPlates.API.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -8,7 +9,7 @@ namespace CarPlates.API.Controllers;
 [ApiController]
 [Route("api/v1/[controller]")]
 [Authorize]
-public class ScansController(IScanRecordService scanService) : ControllerBase
+public class ScansController(IScanRecordService scanService, IUserContext userContext) : ControllerBase
 {
     private readonly IScanRecordService _scanService = scanService;
 
@@ -20,14 +21,14 @@ public class ScansController(IScanRecordService scanService) : ControllerBase
         [FromQuery] int page = 1,
         [FromQuery] int pageSize = 20)
     {
-        var records = await _scanService.GetAllAsync(plateNumber, startDate, endDate, page, pageSize);
+        var records = await _scanService.GetAllAsync(plateNumber, startDate, endDate, page, pageSize, userContext.BranchId, long.TryParse(userContext.UserId, out var uid) ? uid : null);
         return Ok(records);
     }
 
     [HttpGet("recent")]
     public async Task<ActionResult<IReadOnlyList<RecentScanDto>>> GetRecent([FromQuery] int count = 10)
     {
-        var records = await _scanService.GetRecentAsync(count);
+        var records = await _scanService.GetRecentAsync(count, userContext.BranchId, long.TryParse(userContext.UserId, out var uid) ? uid : null);
         return Ok(records);
     }
 

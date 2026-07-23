@@ -26,7 +26,8 @@ public record CreateScanRecordDto(
     string PlateNumber,
     string PlateType,
     float Confidence,
-    string? PhotoPath);
+    string? PhotoPath,
+    int BranchID = 0);
 
 public record UpdateVehicleInfoDto(
     string? VehicleBrand,

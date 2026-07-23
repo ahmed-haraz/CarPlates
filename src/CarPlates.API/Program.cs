@@ -1,3 +1,4 @@
+using CarPlates.API.Common;
 using CarPlates.API.Configuration;
 using CarPlates.API.Data;
 using CarPlates.API.Interface;
@@ -52,6 +53,8 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
         builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddJwtAuthentication(builder.Configuration);
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<IUserContext, UserContext>();
 builder.Services.AddScoped<IVehicleService, VehicleService>();
 builder.Services.AddScoped<IScanRecordService, ScanRecordService>();
 builder.Services.AddScoped<ICustomerCarService, CustomerCarService>();
