@@ -1021,4 +1021,24 @@
   <value>العميل غير موجود. يمكنك إضافة عميل جديد أدناه.</value>
 </data>
 
+	<data name="Cashier"
+		  xml:space="preserve">
+  <value>الكاشير</value>
+</data>
+
+	<data name="NoBillsFound"
+		  xml:space="preserve">
+  <value>لا توجد فواتير</value>
+</data>
+
+	<data name="DailyBills"
+		  xml:space="preserve">
+  <value>فواتير اليوم</value>
+</data>
+
+	<data name="DailySalesTotal"
+		  xml:space="preserve">
+  <value>إجمالي مبيعات اليوم</value>
+</data>
+
 </root>

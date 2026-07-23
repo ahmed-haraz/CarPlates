@@ -24,6 +24,27 @@ public class BillsController(IBillService billService) : ControllerBase
         return Ok(await _billService.GetAllAsync(branchId, customerId, carHeaderId, page, pageSize, cancellationToken));
     }
 
+    [HttpGet("search")]
+    public async Task<ActionResult<PagedResult<BillDto>>> Search(
+        [FromQuery] string? search = null,
+        [FromQuery] int? transDateFrom = null,
+        [FromQuery] int? transDateTo = null,
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 20,
+        CancellationToken cancellationToken = default)
+    {
+        var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+        return Ok(await _billService.SearchAsync(search, transDateFrom, transDateTo, page, pageSize, userId, cancellationToken));
+    }
+
+    [HttpGet("today-stats")]
+    public async Task<IActionResult> GetTodayStats(CancellationToken cancellationToken)
+    {
+        var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+        var (todayBills, todayTotal) = await _billService.GetTodayStatsAsync(userId, cancellationToken);
+        return Ok(new { TodayBills = todayBills, TodayTotal = todayTotal });
+    }
+
     [HttpGet("{id:long}")]
     public async Task<ActionResult<BillDto>> GetById(long id, CancellationToken cancellationToken)
     {

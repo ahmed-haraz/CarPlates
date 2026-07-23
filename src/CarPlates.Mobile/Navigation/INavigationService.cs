@@ -61,5 +61,6 @@ public enum MainTab
     Dashboard = 0,
     Scanner = 1,
     History = 2,
-    Settings = 3
+    Cashier = 3,
+    Settings = 4
 }

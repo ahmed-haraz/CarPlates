@@ -14,6 +14,7 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
     private readonly IWorkshopLookupService _workshopLookupService;
     private readonly ICustomerLookupService _customerLookupService;
     private readonly IItemLookupService _itemLookupService;
+    private readonly IBillApiService _billApiService;
 
     // MakeName -> MakeID, so picking a brand can resolve the real ID needed to fetch models.
     private readonly Dictionary<string, int> _makeIdsByName = new();
@@ -116,11 +117,6 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
     [ObservableProperty] private int _locationPage = 1;
     [ObservableProperty] private int _locationTotalPages = 1;
     [ObservableProperty] private decimal _discountsTotal;
-
-    // Modern alert popup
-    [ObservableProperty] private bool _isAlertPopupVisible;
-    [ObservableProperty] private string _alertTitle = string.Empty;
-    [ObservableProperty] private string _alertMessage = string.Empty;
 
     public bool HasSignature => !string.IsNullOrWhiteSpace(SignatureData);
     public bool CanGoToPreviousLocationPage => LocationPage > 1;
@@ -264,7 +260,8 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
     public ObservableCollection<string> TaxTypes { get; } = new() { "VAT", "معفى من الضريبة" };
     public ObservableCollection<string> CountryCodes { get; } = new()
     {
-        "+966", "+971", "+973", "+974", "+965", "+968", "+962", "+963", "+964", "+967"
+        "+966", "+971", "+973", "+974", "+965", "+968", "+962", "+963", "+964", "+967",
+        "+20", "+27", "+30", "+31", "+32", "+33", "+34", "+36", "+39", "+40", "+41", "+43",
     };
     public ObservableCollection<Vehicle> Vehicles { get; } = new();
 
@@ -278,12 +275,14 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
         ICustomerCarLookupService customerCarLookupService,
         IWorkshopLookupService workshopLookupService,
         ICustomerLookupService customerLookupService,
-        IItemLookupService itemLookupService) : base(navigation)
+        IItemLookupService itemLookupService,
+        IBillApiService billApiService) : base(navigation)
     {
         _customerCarLookupService = customerCarLookupService;
         _workshopLookupService = workshopLookupService;
         _customerLookupService = customerLookupService;
         _itemLookupService = itemLookupService;
+        _billApiService = billApiService;
 
         Title = LocalizationResourceManager.Instance["AddVehicle"];
         SelectedColor = Colors.First();
@@ -1123,20 +1122,6 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
         SelectedTechnician = null!;
     }
 
-    private void ShowAlert(string title, string message)
-    {
-        AlertTitle = title;
-        AlertMessage = message;
-        IsAlertPopupVisible = true;
-    }
-
-    [RelayCommand]
-    private void DismissAlert()
-    {
-        IsAlertPopupVisible = false;
-        AlertMessage = string.Empty;
-    }
-
     [RelayCommand]
     private void ClearServiceAssignment()
     {
@@ -1227,21 +1212,65 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
     [RelayCommand]
     private async Task SubmitOrder()
     {
-        var order = new Order
+        if (IsBusy) return;
+        IsBusy = true;
+
+        try
         {
-            Id = Guid.NewGuid().ToString(),
-            Vehicle = SelectedVehicle,
-            Customer = SelectedCustomer,
-            Items = new ObservableCollection<CartItem>(CartItems),
-            Location = SelectedLocation,
-            Technician = SelectedTechnician,
-            Notes = OrderNotes,
-            Signature = SignatureData,
-            PhotoPaths = new ObservableCollection<string>(OrderPhotos.Select(photo => photo.Path)),
-            Status = "ملغاة"
-        };
-        AppData.Orders.Add(order);
-        await Navigation.GoToCashierRootAsync();
+            var plateNo = SelectedVehicle?.PlateNumber ?? NewPlateNumber;
+
+            var billDetails = CartItems.Select(ci => new CreateBillLineRequest(
+                ItemBarCode: ci.ServiceItem.Id ?? string.Empty,
+                ItemID: 0,
+                Package: null,
+                Qty: ci.Quantity,
+                Price: (double)ci.ServiceItem.Price,
+                DetailDiscount1: null,
+                DetailTax: (double)ci.ServiceItem.TaxAmount,
+                DetailNotes: null)).ToList();
+
+            var request = new CreateBillRequest(
+                BranchID: null,
+                CustomerId: null,
+                EngineerId: null,
+                CarHeaderId: null,
+                Notes: OrderNotes,
+                RefrenceNo: plateNo,
+                Details: billDetails);
+
+            var result = await _billApiService.CreateBillAsync(request);
+
+            if (!result.Success)
+            {
+                ShowAlert(AppResources.Error, result.ErrorMessage ?? "Failed to save bill");
+                return;
+            }
+
+            var order = new Order
+            {
+                Id = Guid.NewGuid().ToString(),
+                Vehicle = SelectedVehicle,
+                Customer = SelectedCustomer,
+                Items = new ObservableCollection<CartItem>(CartItems),
+                Location = SelectedLocation,
+                Technician = SelectedTechnician,
+                Notes = OrderNotes,
+                Signature = SignatureData,
+                PhotoPaths = new ObservableCollection<string>(OrderPhotos.Select(photo => photo.Path)),
+                Status = "مكتملة"
+            };
+            AppData.Orders.Add(order);
+
+            await Navigation.GoToMainRootAsync();
+        }
+        catch (Exception ex)
+        {
+            ShowAlert(AppResources.Error, ex.Message);
+        }
+        finally
+        {
+            IsBusy = false;
+        }
     }
 
     private void RecalculateTotals()
@@ -1500,7 +1529,7 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
     private void ClearNewServiceFields()
     {
         NewServiceName = string.Empty;
-        NewServiceCategory = "بانزين";
+        NewServiceCategory = "بنزين";
         NewServiceType = "Product";
         NewServicePrice = 0;
         NewServiceCost = 0;

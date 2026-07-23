@@ -27,6 +27,7 @@ public static class ServiceRegistration
         services.AddScoped<IWorkshopLookupService, WorkshopLookupService>();
         services.AddScoped<ICustomerLookupService, CustomerLookupService>();
         services.AddScoped<IItemLookupService, ItemLookupService>();
+        services.AddScoped<IBillApiService, BillApiService>();
         services.AddScoped<IPlateRecognitionService, PlateRecognitionService>();
         services.AddScoped<ICameraService, CameraService>();
         services.AddScoped<ISettingsService, SettingsService>();

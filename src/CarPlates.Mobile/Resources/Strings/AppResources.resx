@@ -1020,4 +1020,24 @@
   <value>Customer not found. You can add a new customer below.</value>
 </data>
 
+	<data name="Cashier"
+		  xml:space="preserve">
+  <value>Cashier</value>
+</data>
+
+	<data name="NoBillsFound"
+		  xml:space="preserve">
+  <value>No bills found</value>
+</data>
+
+	<data name="DailyBills"
+		  xml:space="preserve">
+  <value>Today's Bills</value>
+</data>
+
+	<data name="DailySalesTotal"
+		  xml:space="preserve">
+  <value>Today's Sales</value>
+</data>
+
 </root>

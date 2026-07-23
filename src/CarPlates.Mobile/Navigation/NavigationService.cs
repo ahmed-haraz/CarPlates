@@ -41,13 +41,18 @@ public class NavigationService(IServiceProvider serviceProvider) : INavigationSe
 
     public Task GoToCashierRootAsync()
     {
-        var cashierPage = _serviceProvider.GetRequiredService<CashierPage>();
-        cashierPage.FlowDirection = Localization.LocalizationResourceManager.Instance.FlowDirection;
-        CurrentWindow.Page = new NavigationPage(cashierPage)
+        return GoToMainTabAsync(MainTab.Cashier);
+    }
+
+    public async Task GoToMainTabAsync(MainTab tab)
+    {
+        if (CurrentWindow.Page is not TabbedPage)
         {
-            FlowDirection = Localization.LocalizationResourceManager.Instance.FlowDirection
-        };
-        return Task.CompletedTask;
+            var mainPage = _serviceProvider.GetRequiredService<MainTabbedPage>();
+            mainPage.FlowDirection = Localization.LocalizationResourceManager.Instance.FlowDirection;
+            CurrentWindow.Page = mainPage;
+        }
+        await SwitchTabAsync(tab);
     }
 
     public async Task PushAsync<TViewModel>(IDictionary<string, object>? parameters = null) where TViewModel : ViewModels.BaseViewModel

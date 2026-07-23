@@ -158,4 +158,8 @@ public static class AppResources
     public static string InvalidPhoneNumber => LocalizationResourceManager.Instance["InvalidPhoneNumber"];
     public static string FirstNameRequired => LocalizationResourceManager.Instance["FirstNameRequired"];
     public static string CustomerNotFound => LocalizationResourceManager.Instance["CustomerNotFound"];
+    public static string Cashier => LocalizationResourceManager.Instance["Cashier"];
+    public static string NoBillsFound => LocalizationResourceManager.Instance["NoBillsFound"];
+    public static string DailyBills => LocalizationResourceManager.Instance["DailyBills"];
+    public static string DailySalesTotal => LocalizationResourceManager.Instance["DailySalesTotal"];
 }
