@@ -187,14 +187,18 @@
                                     StrokeThickness="1.5"
                                     StrokeShape="RoundRectangle 8"
                                     BackgroundColor="{DynamicResource Surface}">
-                                <Border.StyleTriggers>
-                                    <DataTrigger TargetType="Border"
-                                                 Binding="{Binding Source={RelativeSource AncestorType={x:Type vm:ManualEntryViewModel}}, Path=PlateType}"
-                                                 Value="{Binding .}">
-                                        <Setter Property="Stroke" Value="{StaticResource Primary}" />
-                                        <Setter Property="BackgroundColor" Value="#E8F5E9" />
-                                    </DataTrigger>
-                                </Border.StyleTriggers>
+                                <Border.Style>
+                                    <Style TargetType="Border">
+                                        <Style.Triggers>
+                                            <DataTrigger TargetType="Border"
+                                                         Binding="{Binding Source={RelativeSource AncestorType={x:Type vm:ManualEntryViewModel}}, Path=PlateType}"
+                                                         Value="{Binding .}">
+                                                <Setter Property="Stroke" Value="{StaticResource Primary}" />
+                                                <Setter Property="BackgroundColor" Value="#E8F5E9" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Border.Style>
                                 <Border.GestureRecognizers>
                                     <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:ManualEntryViewModel}}, Path=SelectPlateTypeCommand}"
                                                           CommandParameter="{Binding .}" />

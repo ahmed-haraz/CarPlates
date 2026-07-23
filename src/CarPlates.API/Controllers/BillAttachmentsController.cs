@@ -21,10 +21,10 @@ public class BillAttachmentsController(IBillAttachmentService attachmentService,
     [RequestSizeLimit(10 * 1024 * 1024)]
     public async Task<IActionResult> Upload(
         long headerId,
-        [FromForm] IFormFile file,
         [FromQuery] string attachmentType = "Photo",
         CancellationToken cancellationToken = default)
     {
+        var file = HttpContext.Request.Form.Files.FirstOrDefault();
         if (file == null || file.Length == 0)
             return BadRequest(new { Message = "No file provided" });
 
