@@ -8,7 +8,9 @@ public record DashboardStatisticsDto(
     int DeniedVehicles,
     int PendingVehicles,
     int TotalRegisteredCars,
-    int TotalCustomers);
+    int TotalCustomers,
+    int TodayBills = 0,
+    double TodaySalesTotal = 0);
 
 public record RecentScanDto(
     int Id,

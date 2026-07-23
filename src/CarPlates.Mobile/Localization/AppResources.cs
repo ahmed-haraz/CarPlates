@@ -150,4 +150,16 @@ public static class AppResources
     public static string ReviewOrder => LocalizationResourceManager.Instance["ReviewOrder"];
     public static string ConfirmOrder => LocalizationResourceManager.Instance["ConfirmOrder"];
     public static string GoBack => LocalizationResourceManager.Instance["GoBack"];
+    public static string SubTotal => LocalizationResourceManager.Instance["SubTotal"];
+    public static string NetTotal => LocalizationResourceManager.Instance["NetTotal"];
+    public static string Alert => LocalizationResourceManager.Instance["Alert"];
+    public static string PlateType => LocalizationResourceManager.Instance["PlateType"];
+    public static string Space => LocalizationResourceManager.Instance["Space"];
+    public static string InvalidPhoneNumber => LocalizationResourceManager.Instance["InvalidPhoneNumber"];
+    public static string FirstNameRequired => LocalizationResourceManager.Instance["FirstNameRequired"];
+    public static string CustomerNotFound => LocalizationResourceManager.Instance["CustomerNotFound"];
+    public static string Cashier => LocalizationResourceManager.Instance["Cashier"];
+    public static string NoBillsFound => LocalizationResourceManager.Instance["NoBillsFound"];
+    public static string DailyBills => LocalizationResourceManager.Instance["DailyBills"];
+    public static string DailySalesTotal => LocalizationResourceManager.Instance["DailySalesTotal"];
 }

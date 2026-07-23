@@ -26,6 +26,29 @@ public abstract partial class BaseViewModel(INavigationService navigation) : Obs
     [ObservableProperty]
     private bool _hasError;
 
+    [ObservableProperty]
+    private bool _isAlertPopupVisible;
+
+    [ObservableProperty]
+    private string _alertTitle = string.Empty;
+
+    [ObservableProperty]
+    private string _alertMessage = string.Empty;
+
+    protected void ShowAlert(string title, string message)
+    {
+        AlertTitle = title;
+        AlertMessage = message;
+        IsAlertPopupVisible = true;
+    }
+
+    [RelayCommand]
+    private void DismissAlert()
+    {
+        IsAlertPopupVisible = false;
+        AlertMessage = string.Empty;
+    }
+
     protected async Task ExecuteAsync(Func<Task> action, string? errorMessage = null)
     {
         if (IsBusy) return;

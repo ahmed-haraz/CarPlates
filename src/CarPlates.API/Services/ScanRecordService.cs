@@ -20,31 +20,57 @@ public class ScanRecordService(ApplicationDbContext context, ICustomerCarService
         return record == null ? null : MapToDto(record);
     }
 
-    public async Task<PagedResult<ScanRecordDto>> GetAllAsync(string? plateNumber = null, DateTime? startDate = null, DateTime? endDate = null, int page = 1, int pageSize = 20)
+    public async Task<PagedResult<ScanRecordDto>> GetAllAsync(string? plateNumber = null, DateTime? startDate = null, DateTime? endDate = null, int page = 1, int pageSize = 20, int? branchId = null, long? userId = null)
     {
-        IQueryable<ScanRecord> query = _context.ScanRecords.AsNoTracking();
+        IQueryable<ScanEvent> scanQuery = _context.ScanEvents.AsNoTracking();
 
         if (!string.IsNullOrWhiteSpace(plateNumber))
-            query = query.Where(s => s.PlateNumber.Contains(plateNumber));
+            scanQuery = scanQuery.Where(s => s.PlateNumber.Contains(plateNumber));
 
         if (startDate.HasValue)
-            query = query.Where(s => s.ScanTime >= startDate.Value);
+            scanQuery = scanQuery.Where(s => s.ScanTime >= startDate.Value);
 
         if (endDate.HasValue)
-            query = query.Where(s => s.ScanTime <= endDate.Value);
+            scanQuery = scanQuery.Where(s => s.ScanTime <= endDate.Value);
 
-        query = query.OrderByDescending(s => s.ScanTime);
+        if (branchId.HasValue && branchId.Value > 0)
+            scanQuery = scanQuery.Where(s => s.BranchID == branchId);
 
-        var paged = await query.ToPagedResultAsync(page, pageSize);
-        var items = paged.Items.Select(MapToDto).ToList();
+        if (userId.HasValue && userId.Value > 0)
+            scanQuery = scanQuery.Where(s => s.InsertUserID == userId);
 
-        return new PagedResult<ScanRecordDto>(items, paged.TotalCount, paged.Page, paged.PageSize, paged.TotalPages);
-    }
+        var matchingIds = await scanQuery
+            .OrderByDescending(s => s.ScanTime)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .Select(s => s.Id)
+            .ToListAsync();
 
-    public async Task<IReadOnlyList<RecentScanDto>> GetRecentAsync(int count = 10)
-    {
+        var totalCount = await scanQuery.CountAsync();
+
         var records = await _context.ScanRecords
             .AsNoTracking()
+            .Where(s => matchingIds.Contains(s.Id))
+            .OrderByDescending(s => s.ScanTime)
+            .ToListAsync();
+
+        var items = records.Select(MapToDto).ToList();
+        var totalPages = (int)Math.Ceiling((double)totalCount / pageSize);
+
+        return new PagedResult<ScanRecordDto>(items, totalCount, page, pageSize, totalPages);
+    }
+
+    public async Task<IReadOnlyList<RecentScanDto>> GetRecentAsync(int count = 10, int? branchId = null, long? userId = null)
+    {
+        var query = _context.ScanEvents.AsNoTracking().AsQueryable();
+
+        if (branchId.HasValue && branchId.Value > 0)
+            query = query.Where(s => s.BranchID == branchId);
+
+        if (userId.HasValue && userId.Value > 0)
+            query = query.Where(s => s.InsertUserID == userId);
+
+        var records = await query
             .OrderByDescending(s => s.ScanTime)
             .Take(count)
             .ToListAsync();
@@ -52,7 +78,7 @@ public class ScanRecordService(ApplicationDbContext context, ICustomerCarService
         return [.. records.Select(r => new RecentScanDto(
             r.Id,
             r.PlateNumber,
-            r.Brand,
+            null,
             r.ScanTime))];
     }
 
@@ -95,11 +121,19 @@ public class ScanRecordService(ApplicationDbContext context, ICustomerCarService
         return MapToDto(record);
     }
 
-    public async Task<DashboardStatisticsDto> GetStatisticsAsync()
+    public async Task<DashboardStatisticsDto> GetStatisticsAsync(int? branchId = null, long? userId = null)
     {
         var today = DateTime.UtcNow.Date;
-        var totalScans = await _context.ScanEvents.CountAsync(s => s.Status == 1);
-        var todayScans = await _context.ScanEvents.CountAsync(s => s.Status == 1 && s.ScanTime >= today);
+
+        var scanQuery = _context.ScanEvents.AsNoTracking().Where(s => s.Status == 1);
+        if (branchId.HasValue && branchId.Value > 0)
+            scanQuery = scanQuery.Where(s => s.BranchID == branchId);
+        if (userId.HasValue && userId.Value > 0)
+            scanQuery = scanQuery.Where(s => s.InsertUserID == userId);
+
+        var totalScans = await scanQuery.CountAsync();
+        var todayScans = await scanQuery.CountAsync(s => s.ScanTime >= today);
+
         var totalVehicles = await _context.CustomerCarsFull.CountAsync(c => c.CarStatus != 0);
         var totalRegisteredCars = await _context.CustomerCars.CountAsync(c => c.Status == 1);
         var totalCustomers = await _context.WhCustomers.CountAsync(c => !c.Inactive);

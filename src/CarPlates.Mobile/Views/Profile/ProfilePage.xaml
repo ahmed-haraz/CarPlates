@@ -30,9 +30,6 @@
                     <Label Text="{Binding FullName}" 
                            Style="{StaticResource Title}"
                            HorizontalOptions="Center"/>
-                    <Label Text="{Binding Role}" 
-                           Style="{StaticResource Caption}"
-                           HorizontalOptions="Center"/>
                 </VerticalStackLayout>
             </Border>
 

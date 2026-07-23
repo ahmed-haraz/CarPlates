@@ -92,6 +92,7 @@ public class ScanApiRepository(
             PlateType = dto.PlateType,
             Confidence = dto.Confidence,
             PhotoUrl = dto.PhotoPath,
+            BranchID = dto.BranchID,
             DeviceId = (string?)null,
             Latitude = (double?)null,
             Longitude = (double?)null

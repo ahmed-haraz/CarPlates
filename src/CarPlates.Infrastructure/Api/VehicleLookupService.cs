@@ -57,7 +57,8 @@ public class VehicleLookupService(
                 vehicle.Color,
                 vehicle.OwnerName,
                 vehicle.AccessStatus,
-                null);
+                null,
+                vehicle.PlateType);
         }
         catch (Exception ex)
         {
@@ -74,5 +75,6 @@ public class VehicleLookupService(
         string? Model,
         string? Color,
         string? OwnerName,
-        string? AccessStatus);
+        string? AccessStatus,
+        string? PlateType);
 }

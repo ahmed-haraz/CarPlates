@@ -9,4 +9,5 @@ public record VehicleDetailsDto(
     string? AccessStatus,
     DateTime? LastScanTime,
     int TotalScans,
-    string? PhotoUrl);
+    string? PhotoUrl,
+    string? PlateType = null);

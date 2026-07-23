@@ -8,4 +8,6 @@ public class ApplicationUser : IdentityUser
     public string? ProfilePhotoUrl { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public bool IsActive { get; set; } = true;
+    public int BranchId { get; set; }
+    public int SalesRepId { get; set; }
 }

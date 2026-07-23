@@ -23,8 +23,11 @@ public partial class CarDataViewModel : NewOrderViewModel
         ICustomerCarLookupService customerCarLookupService,
         IWorkshopLookupService workshopLookupService,
         ICustomerLookupService customerLookupService,
-        IItemLookupService itemLookupService
-    ) : base(navigation, customerCarLookupService, workshopLookupService, customerLookupService, itemLookupService)
+        IItemLookupService itemLookupService,
+        IBillApiService billApiService,
+        IBillAttachmentApiService billAttachmentApiService,
+        IAuthenticationService authenticationService
+    ) : base(navigation, customerCarLookupService, workshopLookupService, customerLookupService, itemLookupService, billApiService, billAttachmentApiService, authenticationService)
     {
         Title = "إضافة سيارة جديدة";
     }
@@ -44,6 +47,7 @@ public partial class CarDataViewModel : NewOrderViewModel
                 Brand = dto.Brand,
                 Model = dto.Model,
                 Color = dto.Color,
+                PlateType = dto.PlateType,
             };
 
             NewPlateNumber = dto.PlateNumber;

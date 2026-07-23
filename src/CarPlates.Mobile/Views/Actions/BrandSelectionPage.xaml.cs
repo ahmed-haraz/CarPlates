@@ -9,4 +9,14 @@ public partial class BrandSelectionPage : ContentPage
         InitializeComponent();
         BindingContext = viewModel;
     }
+
+    protected override void OnAppearing()
+    {
+        base.OnAppearing();
+        if (BindingContext is NewOrderViewModel vm)
+        {
+            vm.BrandSearchText = string.Empty;
+            vm.ResetBrandPaging();
+        }
+    }
 }

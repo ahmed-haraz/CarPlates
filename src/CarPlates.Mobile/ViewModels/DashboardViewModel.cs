@@ -13,6 +13,7 @@ public partial class DashboardViewModel : BaseViewModel
 {
     private readonly IMediator _mediator;
     private readonly IAuthenticationService _authService;
+    private readonly IBillApiService _billApiService;
 
     [ObservableProperty]
     private DashboardStatisticsDto _statistics = new(0, 0, 0, 0, 0, 0,0,0);
@@ -23,10 +24,17 @@ public partial class DashboardViewModel : BaseViewModel
     [ObservableProperty]
     private string _userName = "User";
 
-    public DashboardViewModel(IMediator mediator, IAuthenticationService authService, INavigationService navigation) : base(navigation)
+    [ObservableProperty]
+    private int _todayBills;
+
+    [ObservableProperty]
+    private double _todaySalesTotal;
+
+    public DashboardViewModel(IMediator mediator, IAuthenticationService authService, INavigationService navigation, IBillApiService billApiService) : base(navigation)
     {
         _mediator = mediator;
         _authService = authService;
+        _billApiService = billApiService;
         Title = AppResources.Dashboard;
     }
 
@@ -51,6 +59,14 @@ public partial class DashboardViewModel : BaseViewModel
                 if (user != null)
                 {
                     UserName = user.Username;
+                }
+
+                // Load today's bill stats
+                var billStats = await _billApiService.GetTodayStatsAsync();
+                if (billStats.Success)
+                {
+                    TodayBills = billStats.TodayBills;
+                    TodaySalesTotal = billStats.TodayTotal;
                 }
             });
         }

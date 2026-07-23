@@ -4,15 +4,18 @@ namespace CarPlates.API.Interface;
 
 public interface IBillService
 {
-    /// <summary>
-    /// Saves a bill: one wh_TransHeader row plus its wh_TransDetails lines, in a single
-    /// SaveChangesAsync call so the header and every detail commit together or not at all.
-    /// </summary>
     Task<BillDto> CreateAsync(CreateBillDto dto, string? userId, CancellationToken cancellationToken = default);
 
     Task<BillDto?> GetByIdAsync(long headerId, CancellationToken cancellationToken = default);
 
     Task<PagedResult<BillDto>> GetAllAsync(
-        int? branchId, int? customerId, int? carHeaderId,
+        int branchId, int? customerId, int? carHeaderId,
         int page, int pageSize, CancellationToken cancellationToken = default);
+
+    Task<PagedResult<BillDto>> SearchAsync(
+        string? search, int? transDateFrom, int? transDateTo,
+        int page, int pageSize, string? userId = null, int? branchId = null,
+        CancellationToken cancellationToken = default);
+
+    Task<(int todayBills, double todayTotal)> GetTodayStatsAsync(string? userId = null, int? branchId = null, CancellationToken cancellationToken = default);
 }

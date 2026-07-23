@@ -85,6 +85,32 @@
                     </Border>
                 </Grid>
 
+                <!-- Bill Stats -->
+                <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+                    <Border Style="{StaticResource ElevatedCard}" Grid.Column="0">
+                        <VerticalStackLayout HorizontalOptions="Center">
+                            <Label Text="{Binding TodayBills}"
+                                   Style="{StaticResource Headline}"
+                                   TextColor="{StaticResource Primary}"
+                                   HorizontalOptions="Center"/>
+                            <Label Text="{loc:Translate Key=DailyBills}"
+                                   Style="{StaticResource Caption}"
+                                   HorizontalOptions="Center"/>
+                        </VerticalStackLayout>
+                    </Border>
+                    <Border Style="{StaticResource ElevatedCard}" Grid.Column="1">
+                        <VerticalStackLayout HorizontalOptions="Center">
+                            <Label Text="{Binding TodaySalesTotal, StringFormat='{0:N0}'}"
+                                   Style="{StaticResource Headline}"
+                                   TextColor="{StaticResource Success}"
+                                   HorizontalOptions="Center"/>
+                            <Label Text="{loc:Translate Key=DailySalesTotal}"
+                                   Style="{StaticResource Caption}"
+                                   HorizontalOptions="Center"/>
+                        </VerticalStackLayout>
+                    </Border>
+                </Grid>
+
                 <!-- Recent Scans -->
                 <Label Text="{loc:Translate Key=RecentScans}" Style="{StaticResource Title}" Margin="0,8,0,0"/>
 

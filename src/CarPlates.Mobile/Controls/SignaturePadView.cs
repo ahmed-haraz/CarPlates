@@ -1,5 +1,6 @@
 using System.Collections.ObjectModel;
 using System.Globalization;
+using CarPlates.Mobile.Helpers;
 using Microsoft.Maui.Graphics;
 
 namespace CarPlates.Mobile.Controls;
@@ -35,6 +36,11 @@ public class SignaturePadView : GraphicsView, IDrawable
         StartInteraction += OnStartInteraction;
         DragInteraction += OnDragInteraction;
         EndInteraction += OnEndInteraction;
+        SizeChanged += (_, _) =>
+        {
+            if (Width > 0 && Height > 0 && !string.IsNullOrWhiteSpace(SignatureData))
+                LoadSignature(SignatureData);
+        };
     }
 
     public void Clear()
@@ -89,8 +95,20 @@ public class SignaturePadView : GraphicsView, IDrawable
 
     private string Serialize()
     {
+        float maxX = 0, maxY = 0;
+        foreach (var stroke in _strokes)
+        {
+            foreach (var p in stroke)
+            {
+                if (p.X > maxX) maxX = p.X;
+                if (p.Y > maxY) maxY = p.Y;
+            }
+        }
+
+        float width = Math.Max(maxX, 1);
+        float height = Math.Max(maxY, 1);
         return string.Join('|', _strokes.Select(stroke => string.Join(';', stroke.Select(point =>
-            string.Create(CultureInfo.InvariantCulture, $"{point.X:0.##},{point.Y:0.##}")))));
+            string.Create(CultureInfo.InvariantCulture, $"{point.X / width:0.##},{point.Y / height:0.##}")))));
     }
 
     private void LoadSignature(string? data)
@@ -105,10 +123,10 @@ public class SignaturePadView : GraphicsView, IDrawable
                 {
                     var parts = pointData.Split(',', StringSplitOptions.RemoveEmptyEntries);
                     if (parts.Length == 2
-                        && float.TryParse(parts[0], NumberStyles.Float, CultureInfo.InvariantCulture, out var x)
-                        && float.TryParse(parts[1], NumberStyles.Float, CultureInfo.InvariantCulture, out var y))
+                        && float.TryParse(parts[0], NumberStyles.Float, CultureInfo.InvariantCulture, out var nx)
+                        && float.TryParse(parts[1], NumberStyles.Float, CultureInfo.InvariantCulture, out var ny))
                     {
-                        stroke.Add(new PointF(x, y));
+                        stroke.Add(ConversionHelpers.ToPointF(nx * Width, ny * Height));
                     }
                 }
                 if (stroke.Count > 0) _strokes.Add(stroke);

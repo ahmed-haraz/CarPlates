@@ -20,9 +20,6 @@ public partial class ProfileViewModel : BaseViewModel
     private string _fullName = string.Empty;
 
     [ObservableProperty]
-    private string _role = string.Empty;
-
-    [ObservableProperty]
     private string? _profilePhotoUrl;
 
     public ProfileViewModel(IAuthenticationService authService, INavigationService navigation) : base(navigation)
@@ -42,9 +39,6 @@ public partial class ProfileViewModel : BaseViewModel
                 UserName = user.Username;
                 Email = user.Email;
                 FullName = user.FullName;
-                // Role and ProfilePhotoUrl aren't part of the legacy fw_Users-backed
-                // UserDto returned by the API, so they're left as-is here rather
-                // than guessed from unrelated fields like Usertype.
             }
         });
     }

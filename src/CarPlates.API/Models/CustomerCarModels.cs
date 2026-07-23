@@ -15,6 +15,7 @@ public class CustomerCar
     public int? VehicleYear { get; set; }
     public string? Color { get; set; }
     public int? VehicleStatus { get; set; }
+    public string? PlateType { get; set; }
     public int? Status { get; set; }
     public long? InsertUserID { get; set; }
     public long? UpdateUserID { get; set; }
@@ -164,6 +165,7 @@ public class CustomerCarFull
     public int? VehicleYear { get; set; }
     public long? Distance { get; set; }
     public int? CarStatus { get; set; }
+    public string? PlateType { get; set; }
 
     public int? CarMakesID { get; set; }
     public string? MakeName { get; set; }

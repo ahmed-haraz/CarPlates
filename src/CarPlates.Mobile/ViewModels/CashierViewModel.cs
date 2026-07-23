@@ -1,77 +1,91 @@
-using CarPlates.Mobile.Views.Actions;
-using CarPlates.Domain.Entities;
+using CarPlates.Application.Common.Interfaces;
+using CarPlates.Mobile.Localization;
 using CarPlates.Mobile.Navigation;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace CarPlates.Mobile.ViewModels;
 
 public partial class CashierViewModel : BaseViewModel
 {
-    [ObservableProperty] private ObservableCollection<Order> _orders = new();
-    [ObservableProperty] private string _searchText;
-    [ObservableProperty] private string _selectedFilter = "الكل";
-    [ObservableProperty] private ObservableCollection<string> _filters = new()
-    {
-        "الكل", "غير معين", "تم التعيين", "قيد الخدمة", "ملغاة"
-    };
-    [ObservableProperty] private ObservableCollection<Order> _filteredOrders = new();
+    private readonly IBillApiService _billApiService;
 
-    public CashierViewModel(INavigationService navigation) : base(navigation)
+    [ObservableProperty] private string _searchText = string.Empty;
+    [ObservableProperty] private int _currentPage = 1;
+    [ObservableProperty] private int _totalPages = 1;
+    [ObservableProperty] private bool _canGoToPreviousPage;
+    [ObservableProperty] private bool _canGoToNextPage;
+    [ObservableProperty] private ObservableCollection<BillApiItem> _bills = new();
+    [ObservableProperty] private string? _dateFromText;
+    [ObservableProperty] private string? _dateToText;
+
+    private const int PageSize = 20;
+
+    public CashierViewModel(INavigationService navigation, IBillApiService billApiService) : base(navigation)
     {
-        Title = "الكاشير";
-        LoadOrders();
+        _billApiService = billApiService;
+        Title = AppResources.Cashier;
+    }
+
+    [RelayCommand]
+    private async Task LoadBillsAsync()
+    {
+        await ExecuteAsync(async () =>
+        {
+            int? dateFrom = ParseDate(DateFromText);
+            int? dateTo = ParseDate(DateToText);
+
+            var result = await _billApiService.SearchBillsAsync(
+                SearchText, dateFrom, dateTo, CurrentPage, PageSize);
+
+            if (result.Success)
+            {
+                Bills = new ObservableCollection<BillApiItem>(result.Items);
+                TotalPages = Math.Max(result.TotalPages, 1);
+                CanGoToPreviousPage = CurrentPage > 1;
+                CanGoToNextPage = CurrentPage < TotalPages;
+            }
+            else
+            {
+                ShowAlert(AppResources.Error, result.ErrorMessage ?? "Failed to load bills");
+            }
+        });
+    }
+
+    [RelayCommand]
+    private async Task SearchAsync()
+    {
+        CurrentPage = 1;
+        await LoadBillsAsync();
+    }
+
+    [RelayCommand]
+    private async Task PreviousPageAsync()
+    {
+        if (CurrentPage <= 1) return;
+        CurrentPage--;
+        await LoadBillsAsync();
+    }
+
+    [RelayCommand]
+    private async Task NextPageAsync()
+    {
+        if (CurrentPage >= TotalPages) return;
+        CurrentPage++;
+        await LoadBillsAsync();
+    }
+
+    private static int? ParseDate(string? text)
+    {
+        if (string.IsNullOrWhiteSpace(text)) return null;
+        if (DateTime.TryParse(text, out var dt))
+            return int.Parse(dt.ToString("yyyyMMdd"));
+        return null;
     }
 
     partial void OnSearchTextChanged(string value)
     {
-        ApplyFilters();
-    }
-
-    partial void OnSelectedFilterChanged(string value)
-    {
-        ApplyFilters();
-    }
-
-    private void LoadOrders()
-    {
-        Orders = new ObservableCollection<Order>(AppData.Orders);
-        ApplyFilters();
-    }
-
-    private void ApplyFilters()
-    {
-        var query = Orders.AsEnumerable();
-
-        if (!string.IsNullOrWhiteSpace(SearchText))
-        {
-            query = query.Where(o => 
-                o.Vehicle?.PlateNumber?.Contains(SearchText) == true ||
-                o.Vehicle?.Brand?.Contains(SearchText) == true ||
-                o.Customer?.FirstName?.Contains(SearchText) == true);
-        }
-
-        if (SelectedFilter != "الكل")
-        {
-            query = query.Where(o => o.Vehicle?.Status == SelectedFilter || o.Status == SelectedFilter);
-        }
-
-        FilteredOrders = new ObservableCollection<Order>(query);
-    }
-
-    [RelayCommand]
-    private async Task NewOrder()
-    {
-        await Navigation.GoToCustomerDataAsync();
-    }
-
-    [RelayCommand]
-    private async Task ViewOrderDetails(Order order)
-    {
-        if (order == null) return;
-        await Navigation.PushPageAsync<OrderSummaryPage>();
+        _ = SearchAsync();
     }
 }

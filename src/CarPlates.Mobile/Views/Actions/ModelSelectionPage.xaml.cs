@@ -10,4 +10,14 @@ public partial class ModelSelectionPage : ContentPage
         InitializeComponent();
         BindingContext = viewModel;
     }
+
+    protected override void OnAppearing()
+    {
+        base.OnAppearing();
+        if (BindingContext is NewOrderViewModel vm)
+        {
+            vm.ModelSearchText = string.Empty;
+            vm.ResetModelPaging();
+        }
+    }
 }

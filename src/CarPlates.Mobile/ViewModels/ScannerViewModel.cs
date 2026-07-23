@@ -256,26 +256,6 @@ public partial class ScannerViewModel : BaseViewModel
     {
         if (IsBusy) return;
 
-        var plateText = await Navigation.DisplayPromptAsync(AppResources.ManualEntry, AppResources.EnterPlateNumberPrompt,
-            accept: AppResources.Search, cancel: AppResources.Cancel);
-
-        if (string.IsNullOrWhiteSpace(plateText)) return;
-
-        var recognitionResult = await _plateRecognitionService.RecognizeFromTextAsync(plateText);
-
-        if (!recognitionResult.Success || recognitionResult.PlateNumber == null)
-        {
-            ScanStatus = recognitionResult.ErrorMessage ?? AppResources.InvalidPlateNumber;
-            return;
-        }
-
-        DetectedPlate = recognitionResult.PlateNumber.Value;
-        DetectionConfidence = recognitionResult.PlateNumber.Confidence;
-        ScanStatus = string.Format(AppResources.DetectedFormat, DetectedPlate);
-
-        // ProcessScanAsync owns its own busy/error state and re-validates the
-        // plate format before ever calling the API, so manual entry goes
-        // through the exact same gated path as camera/document scans.
-        await ProcessScanAsync(recognitionResult.PlateNumber);
+        await Navigation.GoToManualEntryAsync();
     }
 }

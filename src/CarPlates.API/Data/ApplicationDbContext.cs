@@ -29,6 +29,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     public DbSet<TransHeader> TransHeaders { get; set; } = null!;
     public DbSet<TransDetail> TransDetails { get; set; } = null!;
     public DbSet<ItemSubGroupView> Categories { get; set; } = null!;
+    public DbSet<BillAttachment> BillAttachments { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -81,6 +82,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
             entity.Property(c => c.PlateNumber).HasMaxLength(50);
             entity.Property(c => c.VIN).HasMaxLength(17);
             entity.Property(c => c.Color).HasMaxLength(50);
+            entity.Property(c => c.PlateType).HasMaxLength(50);
             entity.HasIndex(c => c.PlateNumber);
         });
 
@@ -180,11 +182,15 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
             entity.Property(h => h.Terminal_ID).HasMaxLength(200);
             entity.Property(h => h.DocTransNo).HasMaxLength(50);
             entity.Property(h => h.Notes).HasMaxLength(200);
+            entity.Property(h => h.RefrenceNo).HasMaxLength(50);
             entity.HasIndex(h => h.CustomerId);
             entity.HasIndex(h => h.CarHeaderId);
             entity.HasMany(h => h.Details)
                   .WithOne(d => d.Header)
                   .HasForeignKey(d => d.HeaderId);
+            entity.HasMany(h => h.Attachments)
+                  .WithOne(a => a.Header)
+                  .HasForeignKey(a => a.HeaderId);
         });
 
         builder.Entity<TransDetail>(entity =>
@@ -193,6 +199,17 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
             entity.HasKey(d => d.DetailId);
             entity.Property(d => d.ItemBarCode).HasMaxLength(25).IsRequired();
             entity.HasIndex(d => d.HeaderId);
+        });
+
+        builder.Entity<BillAttachment>(entity =>
+        {
+            entity.ToTable("wh_BillAttachments", t => t.ExcludeFromMigrations());
+            entity.HasKey(a => a.Id);
+            entity.Property(a => a.FileName).HasMaxLength(255).IsRequired();
+            entity.Property(a => a.FilePath).HasMaxLength(500).IsRequired();
+            entity.Property(a => a.ContentType).HasMaxLength(100);
+            entity.Property(a => a.AttachmentType).HasMaxLength(50).IsRequired();
+            entity.HasIndex(a => a.HeaderId);
         });
 
         builder.Entity<ItemSubGroupView>(entity =>

@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:CarPlates.Mobile.ViewModels"
+             xmlns:loc="clr-namespace:CarPlates.Mobile.Localization"
+             xmlns:helpers="clr-namespace:CarPlates.Mobile.Helpers"
+             x:Class="CarPlates.Mobile.Views.Scanner.ManualEntryPage"
+             x:DataType="vm:ManualEntryViewModel"
+             NavigationPage.HasNavigationBar="False"
+             BackgroundColor="{DynamicResource Background}">
+
+    <Grid RowDefinitions="Auto,*"
+          Padding="0">
+
+        <!-- Header -->
+        <Grid Grid.Row="0"
+              Padding="16,12"
+              ColumnDefinitions="Auto,*,Auto"
+              BackgroundColor="{DynamicResource Surface}">
+            <Image Grid.Column="0"
+                   WidthRequest="24"
+                   HeightRequest="24"
+                   helpers:IconHelper.Glyph="&#xe909;">
+                <Image.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding ClosePageCommand}" />
+                </Image.GestureRecognizers>
+            </Image>
+            <Label Grid.Column="1"
+                   Text="{loc:Translate Key=ManualEntry}"
+                   FontSize="18"
+                   FontAttributes="Bold"
+                   HorizontalOptions="Center"
+                   VerticalOptions="Center" />
+        </Grid>
+
+        <!-- Content -->
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout Spacing="24"
+                                 Padding="20,24">
+
+                <!-- Plate Visual Display -->
+                <Border Padding="16"
+                        BackgroundColor="White"
+                        Stroke="{Binding PlateBorderColor}"
+                        StrokeThickness="3"
+                        StrokeShape="RoundRectangle 12">
+                    <Border.Shadow>
+                        <Shadow Brush="#22000000" Offset="0,4" Radius="12" />
+                    </Border.Shadow>
+                    <Grid ColumnDefinitions="Auto,*,Auto"
+                          ColumnSpacing="12">
+                        <!-- KSA Badge (right side for RTL) -->
+                        <Border Grid.Column="0"
+                                BackgroundColor="#1B5E20"
+                                Padding="10,8"
+                                StrokeShape="RoundRectangle 8">
+                            <VerticalStackLayout Spacing="3"
+                                                 HorizontalOptions="Center"
+                                                 VerticalOptions="Center">
+                                <Label Text="KSA"
+                                       FontSize="11"
+                                       TextColor="White"
+                                       HorizontalOptions="Center"
+                                       FontAttributes="Bold" />
+                                <BoxView WidthRequest="24"
+                                         HeightRequest="2"
+                                         Color="White"
+                                         HorizontalOptions="Center" />
+                                <Label Text="●"
+                                       FontSize="12"
+                                       TextColor="White"
+                                       HorizontalOptions="Center" />
+                            </VerticalStackLayout>
+                        </Border>
+
+                        <!-- Character Slots -->
+                        <VerticalStackLayout Grid.Column="1"
+                                             Spacing="4"
+                                             HorizontalOptions="Center"
+                                             VerticalOptions="Center">
+                            <!-- Empty state -->
+                            <Label Text="{loc:Translate Key=EnterPlateNumberPrompt}"
+                                   FontSize="14"
+                                   TextColor="#999999"
+                                   HorizontalOptions="Center"
+                                   VerticalOptions="Center"
+                                   IsVisible="{Binding PlateText, Converter={StaticResource IsStringEmptyConverter}}" />
+                            <!-- Arabic row (top) -->
+                            <HorizontalStackLayout Spacing="6"
+                                                   BindableLayout.ItemsSource="{Binding ArabicChars}"
+                                                   IsVisible="{Binding PlateText, Converter={StaticResource IsStringNotEmptyConverter}}">
+                                <BindableLayout.ItemTemplate>
+                                    <DataTemplate x:DataType="x:String">
+                                        <Border Stroke="#555555"
+                                                StrokeThickness="1.5"
+                                                Padding="8,4"
+                                                MinimumWidthRequest="40"
+                                                MinimumHeightRequest="32"
+                                                BackgroundColor="#FAFAFA"
+                                                StrokeShape="RoundRectangle 4">
+                                            <Label Text="{Binding .}"
+                                                   FontSize="20"
+                                                   FontAttributes="Bold"
+                                                   TextColor="{Binding Source={RelativeSource AncestorType={x:Type vm:ManualEntryViewModel}}, Path=PlateTextColor}"
+                                                   HorizontalOptions="Center"
+                                                   VerticalOptions="Center" />
+                                        </Border>
+                                    </DataTemplate>
+                                </BindableLayout.ItemTemplate>
+                            </HorizontalStackLayout>
+
+                            <!-- Input row (bottom) -->
+                            <HorizontalStackLayout Spacing="6"
+                                                   BindableLayout.ItemsSource="{Binding PlateChars}"
+                                                   IsVisible="{Binding PlateText, Converter={StaticResource IsStringNotEmptyConverter}}">
+                                <BindableLayout.ItemTemplate>
+                                    <DataTemplate x:DataType="x:String">
+                                        <Border Stroke="#555555"
+                                                StrokeThickness="1.5"
+                                                Padding="8,6"
+                                                MinimumWidthRequest="40"
+                                                MinimumHeightRequest="50"
+                                                BackgroundColor="#FAFAFA"
+                                                StrokeShape="RoundRectangle 4">
+                                            <Label Text="{Binding .}"
+                                                   FontSize="28"
+                                                   FontAttributes="Bold"
+                                                   TextColor="{Binding Source={RelativeSource AncestorType={x:Type vm:ManualEntryViewModel}}, Path=PlateTextColor}"
+                                                   HorizontalOptions="Center"
+                                                   VerticalOptions="Center" />
+                                        </Border>
+                                    </DataTemplate>
+                                </BindableLayout.ItemTemplate>
+                            </HorizontalStackLayout>
+                        </VerticalStackLayout>
+                    </Grid>
+                </Border>
+
+                <!-- Plate Input Entry -->
+                <Border Style="{StaticResource Card}"
+                        Padding="8">
+                    <Entry Placeholder="{loc:Translate Key=EnterPlateNumberPrompt}"
+                           Text="{Binding PlateInput}"
+                           MaxLength="10"
+                           FontSize="20"
+                           FontAttributes="Bold"
+                           HorizontalTextAlignment="Center"
+                           Keyboard="Text" />
+                </Border>
+
+                <!-- Clear and Backspace buttons -->
+                <Grid ColumnDefinitions="*,*"
+                      ColumnSpacing="12">
+                    <Button Grid.Column="0"
+                            Text="{loc:Translate Key=Clear}"
+                            BackgroundColor="{DynamicResource Surface}"
+                            TextColor="{DynamicResource TextPrimary}"
+                            BorderColor="{DynamicResource Border}"
+                            BorderWidth="1"
+                            CornerRadius="12"
+                            HeightRequest="48"
+                            Command="{Binding ClearPlateCommand}" />
+                    <Button Grid.Column="1"
+                            Text="⌫"
+                            BackgroundColor="#E53935"
+                            TextColor="White"
+                            CornerRadius="12"
+                            HeightRequest="48"
+                            Command="{Binding BackspaceCommand}" />
+                </Grid>
+
+                <!-- Plate Type Selector -->
+                <Label Text="{loc:Translate Key=PlateType}"
+                       FontSize="14"
+                       FontAttributes="Bold" />
+                <FlexLayout Wrap="Wrap"
+                            JustifyContent="Start"
+                            AlignItems="Start">
+                    <BindableLayout.ItemsSource>
+                        <Binding Path="PlateTypes" />
+                    </BindableLayout.ItemsSource>
+                    <BindableLayout.ItemTemplate>
+                        <DataTemplate x:DataType="x:String">
+                            <Border Padding="12,8"
+                                    Margin="4"
+                                    Stroke="{DynamicResource Border}"
+                                    StrokeThickness="1.5"
+                                    StrokeShape="RoundRectangle 8"
+                                    BackgroundColor="{DynamicResource Surface}">
+                                <Border.Style>
+                                    <Style TargetType="Border">
+                                        <Style.Triggers>
+                                            <DataTrigger TargetType="Border"
+                                                         Binding="{Binding Source={RelativeSource AncestorType={x:Type vm:ManualEntryViewModel}}, Path=PlateType}"
+                                                         Value="{Binding .}">
+                                                <Setter Property="Stroke" Value="{StaticResource Primary}" />
+                                                <Setter Property="BackgroundColor" Value="#E8F5E9" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Border.Style>
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:ManualEntryViewModel}}, Path=SelectPlateTypeCommand}"
+                                                          CommandParameter="{Binding .}" />
+                                </Border.GestureRecognizers>
+                                <Label Text="{Binding .}"
+                                       FontSize="14" />
+                            </Border>
+                        </DataTemplate>
+                    </BindableLayout.ItemTemplate>
+                </FlexLayout>
+
+                <!-- Action Buttons -->
+                <Grid ColumnDefinitions="*,*"
+                      ColumnSpacing="12">
+                    <Button Grid.Column="0"
+                            Text="{loc:Translate Key=Clear}"
+                            BackgroundColor="{DynamicResource Surface}"
+                            TextColor="{DynamicResource TextPrimary}"
+                            BorderColor="{DynamicResource Border}"
+                            BorderWidth="1"
+                            CornerRadius="12"
+                            HeightRequest="48"
+                            Command="{Binding ClearPlateCommand}" />
+                    <Button Grid.Column="1"
+                            Text="{loc:Translate Key=Search}"
+                            BackgroundColor="{StaticResource Primary}"
+                            TextColor="White"
+                            CornerRadius="12"
+                            HeightRequest="48"
+                            Command="{Binding SubmitPlateCommand}" />
+                </Grid>
+
+            </VerticalStackLayout>
+        </ScrollView>
+
+    </Grid>
+</ContentPage>

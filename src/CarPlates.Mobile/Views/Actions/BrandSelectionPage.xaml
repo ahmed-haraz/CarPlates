@@ -7,16 +7,16 @@
              Title="علامة المركبة"
              BackgroundColor="{DynamicResource Background}">
 
-    <Grid RowDefinitions="Auto,Auto,*">
+    <Grid RowDefinitions="Auto,Auto,*,Auto">
         <Grid Grid.Row="0" Padding="16,12" ColumnDefinitions="Auto,*,Auto">
             <ImageButton Grid.Column="0" Source="arrow_right.png" WidthRequest="24" HeightRequest="24"/>
             <Label Grid.Column="1" Text="علامة المركبة" FontSize="18" FontAttributes="Bold" HorizontalOptions="Center"/>
             <ImageButton Grid.Column="2" Source="arrow_left.png" WidthRequest="24" HeightRequest="24"/>
         </Grid>
 
-        <SearchBar Grid.Row="1" Placeholder="بحث" Margin="16,8"/>
+        <SearchBar Grid.Row="1" Placeholder="بحث" Margin="16,8" Text="{Binding BrandSearchText}"/>
 
-        <CollectionView Grid.Row="2" ItemsSource="{Binding Brands}">
+        <CollectionView Grid.Row="2" ItemsSource="{Binding PagedBrands}">
             <CollectionView.ItemsLayout>
                 <GridItemsLayout Orientation="Vertical" Span="3" HorizontalItemSpacing="12" VerticalItemSpacing="12"/>
             </CollectionView.ItemsLayout>
@@ -36,5 +36,11 @@
                 </DataTemplate>
             </CollectionView.ItemTemplate>
         </CollectionView>
+
+        <Grid Grid.Row="3" ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12" Margin="16,8">
+            <Button Grid.Column="0" Text="‹" Command="{Binding PreviousBrandPageCommand}" IsEnabled="{Binding CanGoToPreviousBrandPage}" />
+            <Label Grid.Column="1" Text="{Binding BrandPage, StringFormat='{0}'}" HorizontalOptions="Center" VerticalOptions="Center" />
+            <Button Grid.Column="2" Text="›" Command="{Binding NextBrandPageCommand}" IsEnabled="{Binding CanGoToNextBrandPage}" />
+        </Grid>
     </Grid>
 </ContentPage>

@@ -1,3 +1,4 @@
+using CarPlates.API.Common;
 using CarPlates.API.Interface;
 using CarPlates.API.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -8,20 +9,38 @@ namespace CarPlates.API.Controllers;
 [ApiController]
 [Route("api/v1/[controller]")]
 [Authorize]
-public class BillsController(IBillService billService) : ControllerBase
+public class BillsController(IBillService billService, IUserContext userContext) : ControllerBase
 {
     private readonly IBillService _billService = billService;
 
     [HttpGet]
     public async Task<ActionResult<PagedResult<BillDto>>> GetAll(
-        [FromQuery] int? branchId = null,
         [FromQuery] int? customerId = null,
         [FromQuery] int? carHeaderId = null,
         [FromQuery] int page = 1,
         [FromQuery] int pageSize = 20,
         CancellationToken cancellationToken = default)
     {
-        return Ok(await _billService.GetAllAsync(branchId, customerId, carHeaderId, page, pageSize, cancellationToken));
+        return Ok(await _billService.GetAllAsync(userContext.BranchId, customerId, carHeaderId, page, pageSize, cancellationToken));
+    }
+
+    [HttpGet("search")]
+    public async Task<ActionResult<PagedResult<BillDto>>> Search(
+        [FromQuery] string? search = null,
+        [FromQuery] int? transDateFrom = null,
+        [FromQuery] int? transDateTo = null,
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 20,
+        CancellationToken cancellationToken = default)
+    {
+        return Ok(await _billService.SearchAsync(search, transDateFrom, transDateTo, page, pageSize, userContext.UserId, userContext.BranchId, cancellationToken));
+    }
+
+    [HttpGet("today-stats")]
+    public async Task<IActionResult> GetTodayStats(CancellationToken cancellationToken)
+    {
+        var (todayBills, todayTotal) = await _billService.GetTodayStatsAsync(userContext.UserId, userContext.BranchId, cancellationToken);
+        return Ok(new { TodayBills = todayBills, TodayTotal = todayTotal });
     }
 
     [HttpGet("{id:long}")]
@@ -40,8 +59,7 @@ public class BillsController(IBillService billService) : ControllerBase
             return BadRequest(new { Message = "A bill needs at least one detail line" });
         }
 
-        var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
-        var bill = await _billService.CreateAsync(dto, userId, cancellationToken);
+        var bill = await _billService.CreateAsync(dto, userContext.UserId, cancellationToken);
         return CreatedAtAction(nameof(GetById), new { id = bill.HeaderId }, bill);
     }
 }
