@@ -45,6 +45,8 @@
                                     </Label>
                                     <Label Text="{Binding ScannedVehicle.PlateNumber, Converter={StaticResource ArabicToEnglishPlateConverter}}"
                                            FontSize="14" TextColor="Gray"/>
+                                    <Label Text="{Binding ScannedVehicle.PlateType}"
+                                           FontSize="12" TextColor="{StaticResource Primary}"/>
                                 </VerticalStackLayout>
                                 <Frame Grid.Column="1" BackgroundColor="#E0E0E0" CornerRadius="8" Padding="10,6"
                                        VerticalOptions="Center" HasShadow="False">

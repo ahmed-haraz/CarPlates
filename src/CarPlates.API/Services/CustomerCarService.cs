@@ -161,6 +161,7 @@ public class CustomerCarService(ApplicationDbContext context) : ICustomerCarServ
             CarModelID = dto.CarModelID,
             VehicleType = dto.VehicleType,
             EngineType = dto.EngineType,
+            PlateType = dto.PlateType,
             Status = 1,
             InsertUserID = userIdLong,
             InsertDateTime = now,
@@ -199,5 +200,6 @@ public class CustomerCarService(ApplicationDbContext context) : ICustomerCarServ
         c.CustomerName_En,
         c.CustomerPhone1,
         c.CustomerMobile,
-        c.CustomerEmail);
+        c.CustomerEmail,
+        c.PlateType);
 }

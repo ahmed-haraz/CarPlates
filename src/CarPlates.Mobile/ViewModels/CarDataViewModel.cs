@@ -44,6 +44,7 @@ public partial class CarDataViewModel : NewOrderViewModel
                 Brand = dto.Brand,
                 Model = dto.Model,
                 Color = dto.Color,
+                PlateType = dto.PlateType,
             };
 
             NewPlateNumber = dto.PlateNumber;

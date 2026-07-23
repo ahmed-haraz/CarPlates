@@ -42,7 +42,8 @@ public class ScanVehicleCommandHandler(
                 null,
                 DateTime.UtcNow,
                 1,
-                request.PhotoPath);
+                request.PhotoPath,
+                request.PlateType);
         }
 
         _loggingService.LogScanner(request.PlateNumber, request.Confidence, lookupResult.Success);

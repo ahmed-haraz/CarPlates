@@ -30,6 +30,7 @@ public class GetVehicleDetailsHandler(
             lookup.AccessStatus,
             latestScan?.ScanTime,
             scans.Count,
-            latestScan?.PhotoPath);
+            latestScan?.PhotoPath,
+            lookup.PlateType);
     }
 }

@@ -81,6 +81,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
             entity.Property(c => c.PlateNumber).HasMaxLength(50);
             entity.Property(c => c.VIN).HasMaxLength(17);
             entity.Property(c => c.Color).HasMaxLength(50);
+            entity.Property(c => c.PlateType).HasMaxLength(50);
             entity.HasIndex(c => c.PlateNumber);
         });
 

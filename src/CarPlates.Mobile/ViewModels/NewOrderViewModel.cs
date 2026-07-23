@@ -43,6 +43,7 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
     [ObservableProperty] private string _newCustomerLastName = string.Empty;
     [ObservableProperty] private string _newCustomerPhone = string.Empty;
     [ObservableProperty] private string _newPlateNumber = string.Empty;
+    [ObservableProperty] private string _newPlateType = "خصوصي";
     [ObservableProperty] private string _newVin = string.Empty;
     [ObservableProperty] private string _selectedBrand = string.Empty;
     [ObservableProperty] private string _selectedModel = string.Empty;
@@ -818,6 +819,7 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
             Mileage = NewMileage,
             Year = SelectedVehicleYear,
             Color = SelectedColor?.Name,
+            PlateType = NewPlateType,
             CustomerId = SelectedCustomer.Id
         };
 

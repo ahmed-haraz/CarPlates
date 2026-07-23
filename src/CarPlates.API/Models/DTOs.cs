@@ -15,7 +15,8 @@ public record VehicleDto(
     string? Brand,
     string? Model,
     string? Color,
-    string? OwnerName);
+    string? OwnerName,
+    string? PlateType = null);
 
 public record VehicleCreateDto(
     string PlateNumber,
@@ -24,7 +25,8 @@ public record VehicleCreateDto(
     string? Model,
     string? Color,
     string? OwnerName,
-    string? OwnerPhone);
+    string? OwnerPhone,
+    string? PlateType = null);
 
 public record VehicleUpdateDto(
     string? Brand,
@@ -127,7 +129,8 @@ public record CustomerCarLookupDto(
     string? CustomerName_En,
     string? CustomerPhone1,
     string? CustomerMobile,
-    string? CustomerEmail);
+    string? CustomerEmail,
+    string? PlateType = null);
 
 // Sent by the mobile app after a plate scan. PlateNumber is required; everything else
 // is only used if the plate isn't registered yet and a new car/customer must be created.
@@ -144,7 +147,8 @@ public record CustomerCarScanDto(
     string? CustomerName_Ar,
     string? CustomerName_En,
     string? CustomerMobile,
-    string? CustomerPhone1);
+    string? CustomerPhone1,
+    string? PlateType = null);
 
 public record CustomerCarScanResultDto(
     CustomerCarLookupDto? Car,

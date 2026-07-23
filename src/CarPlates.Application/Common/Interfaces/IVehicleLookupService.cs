@@ -15,4 +15,5 @@ public record VehicleLookupResult(
     string? Color,
     string? OwnerName,
     string? AccessStatus,
-    string? ErrorMessage);
+    string? ErrorMessage,
+    string? PlateType = null);

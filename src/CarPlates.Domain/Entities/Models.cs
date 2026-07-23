@@ -24,6 +24,7 @@ public partial class Vehicle : ObservableObject
     [ObservableProperty] private int _mileage;
     [ObservableProperty] private int _year;
     [ObservableProperty] private string? _color;
+    [ObservableProperty] private string? _plateType; // نوع اللوحة (خصوصي/نقل عام/تجاري/دبلوماسي/لقة)
     [ObservableProperty] private int _customerId;
     [ObservableProperty] private string? _status = "غير معين"; // غير معين / تم التعيين / قيد الخدمة
 }

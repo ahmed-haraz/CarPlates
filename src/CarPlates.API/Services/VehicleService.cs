@@ -76,7 +76,8 @@ public class VehicleService(ApplicationDbContext context, ICustomerCarService cu
             CustomerName_Ar: null,
             CustomerName_En: dto.OwnerName,
             CustomerMobile: dto.OwnerPhone,
-            CustomerPhone1: dto.OwnerPhone);
+            CustomerPhone1: dto.OwnerPhone,
+            PlateType: dto.PlateType);
 
         var result = await _customerCarService.RegisterAsync(scanDto, userId: null);
         return MapToDto(result.Car);
@@ -170,7 +171,8 @@ public class VehicleService(ApplicationDbContext context, ICustomerCarService cu
         c.MakeName,
         c.ModelName,
         c.Color,
-        c.CustomerName_En ?? c.CustomerName_Ar);
+        c.CustomerName_En ?? c.CustomerName_Ar,
+        c.PlateType);
 
     private static VehicleDto MapToDto(CustomerCarLookupDto c) => new(
         (int)c.Id,
@@ -178,5 +180,6 @@ public class VehicleService(ApplicationDbContext context, ICustomerCarService cu
         c.MakeName,
         c.ModelName,
         c.Color,
-        c.CustomerName_En ?? c.CustomerName_Ar);
+        c.CustomerName_En ?? c.CustomerName_Ar,
+        c.PlateType);
 }
