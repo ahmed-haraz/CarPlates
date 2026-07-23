@@ -112,26 +112,32 @@ public partial class ManualEntryViewModel : BaseViewModel
         "نقل عام",
         "تجاري",
         "دبلوماسي",
-        "لقة"
+        "مؤقته",
+        "معدات ثقيله",
+        "اخرى"
     };
 
     public Color PlateTextColor => PlateType switch
     {
         "خصوصي" => Colors.Black,
-        "نقل عام" => Colors.Blue,
-        "تجاري" => Colors.Red,
+        "نقل عام" => Colors.Orange,
+        "تجاري" => Colors.Blue,
         "دبلوماسي" => Colors.Green,
-        "لقة" => Colors.Orange,
+        "مؤقته" => Colors.LightGray,
+        "معدات ثقيله" => Colors.DarkRed,
+        "اخرى" => Colors.Gray,
         _ => Colors.Black
     };
 
     public Color PlateBorderColor => PlateType switch
     {
-        "خصوصي" => Colors.Black,
-        "نقل عام" => Colors.Blue,
-        "تجاري" => Colors.Red,
+        "خصوصي" => Colors.Wheat,
+        "نقل عام" => Colors.Orange,
+        "تجاري" => Colors.Blue,
         "دبلوماسي" => Colors.Green,
-        "لقة" => Colors.Orange,
+        "مؤقته" => Colors.LightGray,
+        "معدات ثقيله" => Colors.DarkRed,
+        "اخرى" => Colors.Gray,
         _ => Colors.Black
     };
 
