@@ -43,7 +43,7 @@
                                             </MultiBinding>
                                         </Label.Text>
                                     </Label>
-                                    <Label Text="{Binding ScannedVehicle.PlateNumber}"
+                                    <Label Text="{Binding ScannedVehicle.PlateNumber, Converter={StaticResource ArabicToEnglishPlateConverter}}"
                                            FontSize="14" TextColor="Gray"/>
                                 </VerticalStackLayout>
                                 <Frame Grid.Column="1" BackgroundColor="#E0E0E0" CornerRadius="8" Padding="10,6"

@@ -323,8 +323,8 @@
                                         Padding="10,6"
                                         IsVisible="{Binding SelectedLocation, Converter={StaticResource IsNotNullConverter}}">
                                     <Grid ColumnDefinitions="Auto,Auto,Auto" ColumnSpacing="8">
-                                        <Button Grid.Column="0" Text="✕" WidthRequest="24" HeightRequest="24" Padding="0" BackgroundColor="Transparent" Command="{Binding ClearLocationCommand}" />
-                                        <Label Grid.Column="1" Text="{Binding SelectedLocation.Name}" FontSize="14" VerticalOptions="Center" />
+                                        <Button Grid.Column="0" Text="✕" WidthRequest="24" HeightRequest="24" Padding="0" BackgroundColor="Transparent" TextColor="White" Command="{Binding ClearLocationCommand}" />
+                                        <Label Grid.Column="1" Text="{Binding SelectedLocation.Name}" FontSize="14" TextColor="White" VerticalOptions="Center" />
                                         <Image Grid.Column="2" Source="car.svg" WidthRequest="22" HeightRequest="22" />
                                     </Grid>
                                 </Border>
@@ -332,8 +332,8 @@
                                         Padding="10,6"
                                         IsVisible="{Binding SelectedTechnician, Converter={StaticResource IsNotNullConverter}}">
                                     <Grid ColumnDefinitions="Auto,Auto" ColumnSpacing="8">
-                                        <Button Grid.Column="0" Text="✕" WidthRequest="24" HeightRequest="24" Padding="0" BackgroundColor="Transparent" Command="{Binding ClearTechnicianCommand}" />
-                                        <Label Grid.Column="1" Text="{Binding SelectedTechnician.Name, StringFormat='Tech: {0}'}" FontSize="14" FontAttributes="Bold" VerticalOptions="Center" />
+                                        <Button Grid.Column="0" Text="✕" WidthRequest="24" HeightRequest="24" Padding="0" BackgroundColor="Transparent" TextColor="White" Command="{Binding ClearTechnicianCommand}" />
+                                        <Label Grid.Column="1" Text="{Binding SelectedTechnician.Name, StringFormat='Tech: {0}'}" FontSize="14" FontAttributes="Bold" TextColor="White" VerticalOptions="Center" />
                                     </Grid>
                                 </Border>
                             </HorizontalStackLayout>
@@ -373,6 +373,23 @@
                                                    IsReadOnly="True"
                                                    HeightRequest="110"
                                                    WidthRequest="130" />
+                    </Grid>
+                </Border>
+
+                <!-- No Signature Placeholder -->
+                <Border Style="{StaticResource Card}"
+                        Padding="16"
+                        IsVisible="{Binding HasSignature, Converter={StaticResource InvertedBoolConverter}}">
+                    <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
+                        <Label Grid.Column="0"
+                               Text="✍"
+                               FontSize="28"
+                               VerticalOptions="Center" />
+                        <Label Grid.Column="1"
+                               Text="لا يوجد توقيع"
+                               FontSize="16"
+                               TextColor="{DynamicResource TextSecondary}"
+                               VerticalOptions="Center" />
                     </Grid>
                 </Border>
 
@@ -439,15 +456,18 @@
                     <Border Style="{StaticResource Card}"
                             Padding="8">
                         <Grid ColumnDefinitions="Auto,*">
-                            <Label Grid.Column="0"
-                                   Text="+966"
-                                   FontSize="16"
-                                   VerticalOptions="Center"
-                                   Margin="8,0" />
+                            <Picker Grid.Column="0"
+                                    ItemsSource="{Binding CountryCodes}"
+                                    SelectedItem="{Binding SelectedCountryCode}"
+                                    WidthRequest="90"
+                                    FontSize="16"
+                                    VerticalOptions="Center"
+                                    Margin="4,0" />
                             <Entry Grid.Column="1"
                                    Placeholder="{loc:Translate Key=PhoneNumber}"
                                    Text="{Binding SearchPhoneNumber}"
-                                   Keyboard="Telephone" />
+                                   Keyboard="Telephone"
+                                   MaxLength="12" />
                         </Grid>
                     </Border>
                     <Button Text="{loc:Translate Key=Search}"
@@ -455,7 +475,16 @@
                             TextColor="White"
                             CornerRadius="12"
                             HeightRequest="48"
-                            Command="{Binding SearchCustomerCommand}" />
+                            Command="{Binding SearchCustomerCommand}"
+                            IsEnabled="{Binding IsSearchingCustomer, Converter={StaticResource InvertedBoolConverter}}" />
+                    <ActivityIndicator IsVisible="{Binding IsSearchingCustomer}"
+                                       IsRunning="{Binding IsSearchingCustomer}"
+                                       Color="{StaticResource Primary}" />
+                    <Label Text="{Binding CustomerSearchMessage}"
+                           IsVisible="{Binding CustomerSearchMessage, Converter={StaticResource IsStringNotEmptyConverter}}"
+                           FontSize="14"
+                           TextColor="{DynamicResource TextSecondary}"
+                           HorizontalOptions="Center" />
 
                     <!-- New Customer Form -->
                     <VerticalStackLayout Spacing="12"
@@ -474,17 +503,6 @@
                             <Entry Placeholder="{loc:Translate Key=LastName}"
                                    Text="{Binding NewCustomerLastName}" />
                         </Border>
-                        <HorizontalStackLayout Spacing="24"
-                                               HorizontalOptions="Center">
-                            <HorizontalStackLayout Spacing="8">
-                                <RadioButton Content="{loc:Translate Key=Male}"
-                                             IsChecked="{Binding NewCustomerGender, Converter={StaticResource StringToBoolConverter}, ConverterParameter=ذكر}" />
-                            </HorizontalStackLayout>
-                            <HorizontalStackLayout Spacing="8">
-                                <RadioButton Content="{loc:Translate Key=Female}"
-                                             IsChecked="{Binding NewCustomerGender, Converter={StaticResource StringToBoolConverter}, ConverterParameter=أنثى}" />
-                            </HorizontalStackLayout>
-                        </HorizontalStackLayout>
                         <Button Text="{loc:Translate Key=Save}"
                                 BackgroundColor="{StaticResource Primary}"
                                 TextColor="White"
@@ -873,7 +891,7 @@
                     </Grid>
                     <SearchBar Placeholder="{loc:Translate Key=Search}"
                                Text="{Binding TechnicianSearchText}" />
-                    <CollectionView ItemsSource="{Binding FilteredTechnicians}" HeightRequest="380">
+                    <CollectionView ItemsSource="{Binding PagedTechnicians}" HeightRequest="380">
                         <CollectionView.ItemsLayout>
                             <GridItemsLayout Orientation="Vertical" Span="2" HorizontalItemSpacing="12" VerticalItemSpacing="12" />
                         </CollectionView.ItemsLayout>
@@ -891,6 +909,11 @@
                             </DataTemplate>
                         </CollectionView.ItemTemplate>
                     </CollectionView>
+                    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+                        <Button Grid.Column="0" Text="‹" Command="{Binding PreviousTechnicianPageCommand}" IsEnabled="{Binding CanGoToPreviousTechnicianPage}" />
+                        <Label Grid.Column="1" Text="{Binding TechnicianPage, StringFormat='{0}'}" HorizontalOptions="Center" VerticalOptions="Center" />
+                        <Button Grid.Column="2" Text="›" Command="{Binding NextTechnicianPageCommand}" IsEnabled="{Binding CanGoToNextTechnicianPage}" />
+                    </Grid>
                 </VerticalStackLayout>
             </Border>
         </Grid>
@@ -940,7 +963,8 @@
                                 </DataTemplate>
                             </CollectionView.ItemTemplate>
                         </CollectionView>
-                    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+                    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12"
+                          IsVisible="{Binding Brands.Count, Converter={StaticResource CountToBoolConverter}}">
                         <Button Grid.Column="0" Text="‹" Command="{Binding PreviousBrandPageCommand}" IsEnabled="{Binding CanGoToPreviousBrandPage}" />
                         <Label Grid.Column="1" Text="{Binding BrandPage, StringFormat='{0}'}" HorizontalOptions="Center" VerticalOptions="Center" />
                         <Button Grid.Column="2" Text="›" Command="{Binding NextBrandPageCommand}" IsEnabled="{Binding CanGoToNextBrandPage}" />
@@ -994,7 +1018,8 @@
                                 </DataTemplate>
                             </CollectionView.ItemTemplate>
                         </CollectionView>
-                    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+                    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12"
+                          IsVisible="{Binding AvailableModels.Count, Converter={StaticResource CountToBoolConverter}}">
                         <Button Grid.Column="0" Text="‹" Command="{Binding PreviousModelPageCommand}" IsEnabled="{Binding CanGoToPreviousModelPage}" />
                         <Label Grid.Column="1" Text="{Binding ModelPage, StringFormat='{0}'}" HorizontalOptions="Center" VerticalOptions="Center" />
                         <Button Grid.Column="2" Text="›" Command="{Binding NextModelPageCommand}" IsEnabled="{Binding CanGoToNextModelPage}" />
@@ -1046,7 +1071,8 @@
                             </DataTemplate>
                         </CollectionView.ItemTemplate>
                     </CollectionView>
-                    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+                    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12"
+                          IsVisible="{Binding Colors.Count, Converter={StaticResource CountToBoolConverter}}">
                         <Button Grid.Column="0" Text="‹" Command="{Binding PreviousColorPageCommand}" IsEnabled="{Binding CanGoToPreviousColorPage}" />
                         <Label Grid.Column="1" Text="{Binding ColorPage, StringFormat='{0}'}" HorizontalOptions="Center" VerticalOptions="Center" />
                         <Button Grid.Column="2" Text="›" Command="{Binding NextColorPageCommand}" IsEnabled="{Binding CanGoToNextColorPage}" />

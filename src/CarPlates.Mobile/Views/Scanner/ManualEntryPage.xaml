@@ -9,7 +9,7 @@
              NavigationPage.HasNavigationBar="False"
              BackgroundColor="{DynamicResource Background}">
 
-    <Grid RowDefinitions="Auto,*,Auto"
+    <Grid RowDefinitions="Auto,*"
           Padding="0">
 
         <!-- Header -->
@@ -74,10 +74,10 @@
                         </Border>
 
                         <!-- Character Slots -->
-                        <HorizontalStackLayout Grid.Column="1"
-                                                Spacing="6"
-                                                HorizontalOptions="Center"
-                                                VerticalOptions="Center">
+                        <VerticalStackLayout Grid.Column="1"
+                                             Spacing="4"
+                                             HorizontalOptions="Center"
+                                             VerticalOptions="Center">
                             <!-- Empty state -->
                             <Label Text="{loc:Translate Key=EnterPlateNumberPrompt}"
                                    FontSize="14"
@@ -85,11 +85,34 @@
                                    HorizontalOptions="Center"
                                    VerticalOptions="Center"
                                    IsVisible="{Binding PlateText, Converter={StaticResource IsStringEmptyConverter}}" />
-
-                            <!-- Character frames dynamically created from PlateText -->
+                            <!-- Arabic row (top) -->
                             <HorizontalStackLayout Spacing="6"
-                                                    BindableLayout.ItemsSource="{Binding PlateChars}"
-                                                    IsVisible="{Binding PlateText, Converter={StaticResource IsStringNotEmptyConverter}}">
+                                                   BindableLayout.ItemsSource="{Binding ArabicChars}"
+                                                   IsVisible="{Binding PlateText, Converter={StaticResource IsStringNotEmptyConverter}}">
+                                <BindableLayout.ItemTemplate>
+                                    <DataTemplate x:DataType="x:String">
+                                        <Border Stroke="#555555"
+                                                StrokeThickness="1.5"
+                                                Padding="8,4"
+                                                MinimumWidthRequest="40"
+                                                MinimumHeightRequest="32"
+                                                BackgroundColor="#FAFAFA"
+                                                StrokeShape="RoundRectangle 4">
+                                            <Label Text="{Binding .}"
+                                                   FontSize="20"
+                                                   FontAttributes="Bold"
+                                                   TextColor="{Binding Source={RelativeSource AncestorType={x:Type vm:ManualEntryViewModel}}, Path=PlateTextColor}"
+                                                   HorizontalOptions="Center"
+                                                   VerticalOptions="Center" />
+                                        </Border>
+                                    </DataTemplate>
+                                </BindableLayout.ItemTemplate>
+                            </HorizontalStackLayout>
+
+                            <!-- Input row (bottom) -->
+                            <HorizontalStackLayout Spacing="6"
+                                                   BindableLayout.ItemsSource="{Binding PlateChars}"
+                                                   IsVisible="{Binding PlateText, Converter={StaticResource IsStringNotEmptyConverter}}">
                                 <BindableLayout.ItemTemplate>
                                     <DataTemplate x:DataType="x:String">
                                         <Border Stroke="#555555"
@@ -109,9 +132,42 @@
                                     </DataTemplate>
                                 </BindableLayout.ItemTemplate>
                             </HorizontalStackLayout>
-                        </HorizontalStackLayout>
+                        </VerticalStackLayout>
                     </Grid>
                 </Border>
+
+                <!-- Plate Input Entry -->
+                <Border Style="{StaticResource Card}"
+                        Padding="8">
+                    <Entry Placeholder="{loc:Translate Key=EnterPlateNumberPrompt}"
+                           Text="{Binding PlateInput}"
+                           MaxLength="10"
+                           FontSize="20"
+                           FontAttributes="Bold"
+                           HorizontalTextAlignment="Center"
+                           Keyboard="Text" />
+                </Border>
+
+                <!-- Clear and Backspace buttons -->
+                <Grid ColumnDefinitions="*,*"
+                      ColumnSpacing="12">
+                    <Button Grid.Column="0"
+                            Text="{loc:Translate Key=Clear}"
+                            BackgroundColor="{DynamicResource Surface}"
+                            TextColor="{DynamicResource TextPrimary}"
+                            BorderColor="{DynamicResource Border}"
+                            BorderWidth="1"
+                            CornerRadius="12"
+                            HeightRequest="48"
+                            Command="{Binding ClearPlateCommand}" />
+                    <Button Grid.Column="1"
+                            Text="⌫"
+                            BackgroundColor="#E53935"
+                            TextColor="White"
+                            CornerRadius="12"
+                            HeightRequest="48"
+                            Command="{Binding BackspaceCommand}" />
+                </Grid>
 
                 <!-- Plate Type Selector -->
                 <Label Text="{loc:Translate Key=PlateType}"
@@ -173,47 +229,6 @@
 
             </VerticalStackLayout>
         </ScrollView>
-
-        <!-- Custom Keypad -->
-        <Border Grid.Row="2"
-                BackgroundColor="{DynamicResource Surface}"
-                Stroke="{DynamicResource Border}"
-                StrokeThickness="1"
-                Padding="8,12">
-            <VerticalStackLayout Spacing="8">
-                <!-- Row 1 -->
-                <Grid ColumnDefinitions="*,*,*,*"
-                      ColumnSpacing="8">
-                    <Button Grid.Column="0" Text="1" Style="{StaticResource KeypadButton}" Command="{Binding KeyPressCommand}" CommandParameter="1" />
-                    <Button Grid.Column="1" Text="2" Style="{StaticResource KeypadButton}" Command="{Binding KeyPressCommand}" CommandParameter="2" />
-                    <Button Grid.Column="2" Text="3" Style="{StaticResource KeypadButton}" Command="{Binding KeyPressCommand}" CommandParameter="3" />
-                    <Button Grid.Column="3" Text="-" Style="{StaticResource KeypadButton}" Command="{Binding KeyPressCommand}" CommandParameter="-" />
-                </Grid>
-                <!-- Row 2 -->
-                <Grid ColumnDefinitions="*,*,*,*"
-                      ColumnSpacing="8">
-                    <Button Grid.Column="0" Text="4" Style="{StaticResource KeypadButton}" Command="{Binding KeyPressCommand}" CommandParameter="4" />
-                    <Button Grid.Column="1" Text="5" Style="{StaticResource KeypadButton}" Command="{Binding KeyPressCommand}" CommandParameter="5" />
-                    <Button Grid.Column="2" Text="6" Style="{StaticResource KeypadButton}" Command="{Binding KeyPressCommand}" CommandParameter="6" />
-                    <Button Grid.Column="3" Text="_" Style="{StaticResource KeypadButton}" Command="{Binding KeyPressCommand}" CommandParameter="_" />
-                </Grid>
-                <!-- Row 3 -->
-                <Grid ColumnDefinitions="*,*,*,*"
-                      ColumnSpacing="8">
-                    <Button Grid.Column="0" Text="7" Style="{StaticResource KeypadButton}" Command="{Binding KeyPressCommand}" CommandParameter="7" />
-                    <Button Grid.Column="1" Text="8" Style="{StaticResource KeypadButton}" Command="{Binding KeyPressCommand}" CommandParameter="8" />
-                    <Button Grid.Column="2" Text="9" Style="{StaticResource KeypadButton}" Command="{Binding KeyPressCommand}" CommandParameter="9" />
-                    <Button Grid.Column="3" Text="X" Style="{StaticResource KeypadButton}" Command="{Binding KeyPressCommand}" CommandParameter="X" />
-                </Grid>
-                <!-- Row 4 -->
-                <Grid ColumnDefinitions="*,*,*"
-                      ColumnSpacing="8">
-                    <Button Grid.Column="0" Text="{loc:Translate Key=Space}" Style="{StaticResource KeypadButton}" Command="{Binding KeyPressCommand}" CommandParameter=" " />
-                    <Button Grid.Column="1" Text="0" Style="{StaticResource KeypadButton}" Command="{Binding KeyPressCommand}" CommandParameter="0" />
-                    <Button Grid.Column="2" Text="⌫" Style="{StaticResource KeypadButton}" BackgroundColor="#E53935" TextColor="White" Command="{Binding KeyPressCommand}" CommandParameter="⌫" />
-                </Grid>
-            </VerticalStackLayout>
-        </Border>
 
     </Grid>
 </ContentPage>

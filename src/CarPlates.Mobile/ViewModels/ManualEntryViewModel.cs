@@ -7,7 +7,6 @@ namespace CarPlates.Mobile.ViewModels;
 
 public partial class ManualEntryViewModel : BaseViewModel
 {
-    private const string BackspaceKey = "backspace";
     private const int MaxPlateLength = 10;
 
     private static readonly Dictionary<char, string> EnglishToArabic = new()
@@ -40,28 +39,66 @@ public partial class ManualEntryViewModel : BaseViewModel
         ['z'] = "ز", ['Z'] = "ز",
     };
 
-    private static readonly HashSet<char> AllowedChars = new()
-    {
-        '0','1','2','3','4','5','6','7','8','9',
-        '-','_',' ',
-
-        'ا','أ','إ','آ',
-        'ب','ت','ث','ج','ح','خ',
-        'د','ذ','ر','ز','س','ش',
-        'ص','ض','ط','ظ',
-        'ع','غ',
-        'ف','ق','ك','ل','م','ن',
-        'ه','و','ي',
-        'ة','ى',
-        'ء','ئ','ؤ'
-    };
-
     [ObservableProperty]
     private string plateText = string.Empty;
+
+    [ObservableProperty]
+    private string arabicText = string.Empty;
+
+    [ObservableProperty]
+    private string plateInput = string.Empty;
+
+    partial void OnPlateInputChanged(string value)
+    {
+        if (IsProcessing)
+            return;
+
+        if (string.IsNullOrEmpty(value))
+        {
+            PlateText = string.Empty;
+            ArabicText = string.Empty;
+            OnPropertyChanged(nameof(PlateChars));
+            OnPropertyChanged(nameof(ArabicChars));
+            return;
+        }
+
+        PlateText = string.Empty;
+        ArabicText = string.Empty;
+
+        bool isFirst = true;
+        foreach (char c in value)
+        {
+            if (char.IsLetter(c) && c <= 127)
+            {
+                bool useUpper = isFirst || char.IsDigit(PlateText.Length > 0 ? PlateText[^1] : '0');
+                char transformed = useUpper ? char.ToUpperInvariant(c) : char.ToLowerInvariant(c);
+
+                if (EnglishToArabic.TryGetValue(transformed, out var arabicChar))
+                {
+                    PlateText += transformed;
+                    ArabicText += arabicChar;
+                    isFirst = false;
+                }
+            }
+            else if (char.IsDigit(c) || c == '-' || c == '_')
+            {
+                PlateText += c;
+                ArabicText += c;
+                isFirst = false;
+            }
+        }
+
+        OnPropertyChanged(nameof(PlateChars));
+        OnPropertyChanged(nameof(ArabicChars));
+    }
 
     public List<string> PlateChars => string.IsNullOrEmpty(PlateText)
         ? new List<string>()
         : PlateText.Select(c => c.ToString()).ToList();
+
+    public List<string> ArabicChars => string.IsNullOrEmpty(ArabicText)
+        ? new List<string>()
+        : ArabicText.Select(c => c.ToString()).ToList();
 
     [ObservableProperty]
     private string plateType = "خصوصي";
@@ -116,60 +153,6 @@ public partial class ManualEntryViewModel : BaseViewModel
     }
 
     [RelayCommand]
-    private void KeyPress(string key)
-    {
-        if (IsProcessing || string.IsNullOrWhiteSpace(key))
-            return;
-
-        // Backspace
-        if (key == BackspaceKey)
-        {
-            PlateText = PlateText[..^1];
-            OnPropertyChanged(nameof(PlateChars));
-            return;
-        }
-
-        if (key.Length != 1)
-            return;
-
-        char c = key[0];
-
-        // English letter
-        if (char.IsLetter(c) && c <= 127)
-        {
-            c = char.ToUpperInvariant(c);
-
-            if (!EnglishToArabic.TryGetValue(c, out var textToAppend))
-                return;
-
-            // Validate every generated character
-            if (!textToAppend.All(AllowedChars.Contains))
-                return;
-
-            // Respect max length
-            if (PlateText.Length + textToAppend.Length > MaxPlateLength)
-                return;
-
-            PlateText += textToAppend;
-        }
-        else
-        {
-            if (!AllowedChars.Contains(c))
-                return;
-
-            if (PlateText.Length >= MaxPlateLength)
-                return;
-
-            if (EnglishToArabic.TryGetValue(c, out var arabic))
-                PlateText += arabic;
-            else
-                PlateText += c;
-        }
-
-        OnPropertyChanged(nameof(PlateChars));
-    }
-
-    [RelayCommand]
     private void SelectPlateType(string type)
     {
         PlateType = type;
@@ -185,7 +168,7 @@ public partial class ManualEntryViewModel : BaseViewModel
 
         try
         {
-            var trimmed = PlateText.Trim();
+            var trimmed = ArabicText.Trim();
 
             await Navigation.GoBackAsync();
 
@@ -213,7 +196,19 @@ public partial class ManualEntryViewModel : BaseViewModel
     [RelayCommand]
     private void ClearPlate()
     {
+        PlateInput = string.Empty;
         PlateText = string.Empty;
+        ArabicText = string.Empty;
         OnPropertyChanged(nameof(PlateChars));
+        OnPropertyChanged(nameof(ArabicChars));
+    }
+
+    [RelayCommand]
+    private void Backspace()
+    {
+        if (PlateInput.Length > 0)
+        {
+            PlateInput = PlateInput[..^1];
+        }
     }
 }

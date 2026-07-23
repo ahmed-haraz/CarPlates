@@ -17,6 +17,7 @@
             <converters:BrandToImageConverter x:Key="BrandToImageConverter" />
             <converters:IsStringEmptyConverter x:Key="IsStringEmptyConverter" />
             <converters:IsStringNotEmptyConverter x:Key="IsStringNotEmptyConverter" />
+            <converters:ArabicToEnglishPlateConverter x:Key="ArabicToEnglishPlateConverter" />
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="Resources/Styles/Colors.xaml" />
                 <ResourceDictionary Source="Resources/Styles/Theme.xaml" />

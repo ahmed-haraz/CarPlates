@@ -155,4 +155,7 @@ public static class AppResources
     public static string Alert => LocalizationResourceManager.Instance["Alert"];
     public static string PlateType => LocalizationResourceManager.Instance["PlateType"];
     public static string Space => LocalizationResourceManager.Instance["Space"];
+    public static string InvalidPhoneNumber => LocalizationResourceManager.Instance["InvalidPhoneNumber"];
+    public static string FirstNameRequired => LocalizationResourceManager.Instance["FirstNameRequired"];
+    public static string CustomerNotFound => LocalizationResourceManager.Instance["CustomerNotFound"];
 }

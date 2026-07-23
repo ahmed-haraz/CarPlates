@@ -14,7 +14,7 @@
             <Border Style="{StaticResource ElevatedCard}" Padding="24">
                 <VerticalStackLayout HorizontalOptions="Center" Spacing="8">
                     <Label Text="🚗" FontSize="48" HorizontalOptions="Center"/>
-                    <Label Text="{Binding VehicleDetails.PlateNumber}" 
+                    <Label Text="{Binding VehicleDetails.PlateNumber, Converter={StaticResource ArabicToEnglishPlateConverter}}" 
                            Style="{StaticResource Headline}"
                            HorizontalOptions="Center"
                            TextColor="{StaticResource Primary}"/>

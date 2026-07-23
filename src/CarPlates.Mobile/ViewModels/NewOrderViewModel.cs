@@ -36,10 +36,12 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
     [ObservableProperty] private bool _isTechnicianPopupVisible = false;
     [ObservableProperty] private bool _isSignaturePadVisible = false;
     [ObservableProperty] private string _searchPhoneNumber = string.Empty;
+    [ObservableProperty] private string _selectedCountryCode = "+966";
+    [ObservableProperty] private bool _isSearchingCustomer;
+    [ObservableProperty] private string _customerSearchMessage = string.Empty;
     [ObservableProperty] private string _newCustomerFirstName = string.Empty;
     [ObservableProperty] private string _newCustomerLastName = string.Empty;
     [ObservableProperty] private string _newCustomerPhone = string.Empty;
-    [ObservableProperty] private string _newCustomerGender = "ذكر";
     [ObservableProperty] private string _newPlateNumber = string.Empty;
     [ObservableProperty] private string _newVin = string.Empty;
     [ObservableProperty] private string _selectedBrand = string.Empty;
@@ -98,6 +100,9 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
     [ObservableProperty] private string _itemCategorySearchText = string.Empty;
     [ObservableProperty] private string _technicianSearchText = string.Empty;
     [ObservableProperty] private ObservableCollection<Technician> _filteredTechnicians = new();
+    [ObservableProperty] private ObservableCollection<Technician> _pagedTechnicians = new();
+    [ObservableProperty] private int _technicianPage = 1;
+    [ObservableProperty] private int _technicianTotalPages = 1;
     [ObservableProperty] private bool _isItemDetailPopupVisible;
     [ObservableProperty] private ServiceItem _editingServiceItem = null!;
     [ObservableProperty] private string _editingPriceText = string.Empty;
@@ -129,6 +134,8 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
     public bool CanGoToNextItemCategoryPage => ItemCategoryPage < ItemCategoryTotalPages;
     public bool CanGoToPreviousColorPage => ColorPage > 1;
     public bool CanGoToNextColorPage => ColorPage < ColorTotalPages;
+    public bool CanGoToPreviousTechnicianPage => TechnicianPage > 1;
+    public bool CanGoToNextTechnicianPage => TechnicianPage < TechnicianTotalPages;
     public bool IsPriceEditable => EditingServiceItem?.OpenSale == true;
 
     // No API source for a generic color list (wh_CustomerCars.Color is free text) or the
@@ -254,6 +261,10 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
     ];
 
     public ObservableCollection<string> TaxTypes { get; } = new() { "VAT", "معفى من الضريبة" };
+    public ObservableCollection<string> CountryCodes { get; } = new()
+    {
+        "+966", "+971", "+973", "+974", "+965", "+968", "+962", "+963", "+964", "+967"
+    };
     public ObservableCollection<Vehicle> Vehicles { get; } = new();
 
     public ObservableCollection<int> VehicleYears { get; } = new();
@@ -370,7 +381,6 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
             {
                 Technicians.Add(new Technician { Id = tech.Id.ToString(), Name = tech.Name_En ?? tech.Name_Ar ?? string.Empty });
             }
-            FilteredTechnicians = new ObservableCollection<Technician>(Technicians);
 
             Locations.Clear();
             foreach (var location in locationsTask.Result.Items)
@@ -696,9 +706,19 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
     [RelayCommand]
     private async Task SearchCustomerAsync()
     {
+        if (string.IsNullOrWhiteSpace(SearchPhoneNumber) || SearchPhoneNumber.Length < 2)
+        {
+            ShowAlert(string.Empty, AppResources.InvalidPhoneNumber);
+            return;
+        }
+
+        IsSearchingCustomer = true;
+        CustomerSearchMessage = string.Empty;
+
         await ExecuteAsync(async () =>
         {
-            var results = await _customerLookupService.SearchAsync(SearchPhoneNumber, pageSize: 20);
+            var fullPhone = SelectedCountryCode + SearchPhoneNumber;
+            var results = await _customerLookupService.SearchAsync(fullPhone, pageSize: 20);
 
             Customers.Clear();
             foreach (var c in results.Items)
@@ -707,34 +727,47 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
                 {
                     FirstName = c.Name_Ar,
                     LastName = c.Name_En,
-                    PhoneNumber = c.Mobile ?? c.Phone1 ?? string.Empty,
-                    Gender = string.Empty
+                    PhoneNumber = c.Mobile ?? c.Phone1 ?? string.Empty
                 });
             }
 
-            var exactMatch = Customers.FirstOrDefault(c => c.PhoneNumber == SearchPhoneNumber);
+            var exactMatch = Customers.FirstOrDefault(c => c.PhoneNumber == fullPhone || c.PhoneNumber == SearchPhoneNumber);
             if (exactMatch != null)
             {
                 SelectedCustomer = exactMatch;
                 IsCustomerPopupVisible = false;
+                CustomerSearchMessage = string.Empty;
             }
             else
             {
-                // No exact match on the server either - offer the new-customer form.
-                NewCustomerPhone = SearchPhoneNumber;
+                NewCustomerPhone = fullPhone;
+                CustomerSearchMessage = AppResources.CustomerNotFound;
             }
         });
+
+        IsSearchingCustomer = false;
     }
 
     [RelayCommand]
     private void SaveNewCustomer()
     {
+        if (string.IsNullOrWhiteSpace(NewCustomerFirstName))
+        {
+            ShowAlert(string.Empty, AppResources.FirstNameRequired);
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(NewCustomerPhone) || NewCustomerPhone.Length != 9 || !NewCustomerPhone.StartsWith('5') || !NewCustomerPhone.All(char.IsDigit))
+        {
+            ShowAlert(string.Empty, AppResources.InvalidPhoneNumber);
+            return;
+        }
+
         var customer = new Customer
         {
             FirstName = NewCustomerFirstName,
             LastName = NewCustomerLastName,
-            PhoneNumber = NewCustomerPhone,
-            Gender = NewCustomerGender
+            PhoneNumber = NewCustomerPhone
         };
         Customers.Add(customer);
         SelectedCustomer = customer;
@@ -995,7 +1028,7 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
             return;
         }
         TechnicianSearchText = string.Empty;
-        FilterTechnicians();
+        ResetTechnicianPaging();
         IsTechnicianPopupVisible = true;
     }
 
@@ -1004,20 +1037,46 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
 
     partial void OnTechnicianSearchTextChanged(string value)
     {
-        FilterTechnicians();
+        ResetTechnicianPaging();
     }
 
-    private void FilterTechnicians()
+    [RelayCommand]
+    private void NextTechnicianPage()
+    {
+        if (TechnicianPage >= TechnicianTotalPages) return;
+        TechnicianPage++;
+        RefreshPagedTechnicians();
+    }
+
+    [RelayCommand]
+    private void PreviousTechnicianPage()
+    {
+        if (TechnicianPage <= 1) return;
+        TechnicianPage--;
+        RefreshPagedTechnicians();
+    }
+
+    private IEnumerable<Technician> GetFilteredTechnicians()
     {
         if (string.IsNullOrWhiteSpace(TechnicianSearchText))
-        {
-            FilteredTechnicians = new ObservableCollection<Technician>(Technicians);
-        }
-        else
-        {
-            FilteredTechnicians = new ObservableCollection<Technician>(
-                Technicians.Where(t => t.Name != null && t.Name.Contains(TechnicianSearchText, StringComparison.OrdinalIgnoreCase)));
-        }
+            return Technicians;
+        return Technicians.Where(t => t.Name != null && t.Name.Contains(TechnicianSearchText, StringComparison.OrdinalIgnoreCase));
+    }
+
+    private void ResetTechnicianPaging()
+    {
+        TechnicianPage = 1;
+        var filtered = GetFilteredTechnicians().ToList();
+        TechnicianTotalPages = Math.Max(1, (int)Math.Ceiling(filtered.Count / (double)PopupPageSize));
+        RefreshPagedTechnicians();
+    }
+
+    private void RefreshPagedTechnicians()
+    {
+        var filtered = GetFilteredTechnicians().ToList();
+        PagedTechnicians = new ObservableCollection<Technician>(filtered.Skip((TechnicianPage - 1) * PopupPageSize).Take(PopupPageSize));
+        OnPropertyChanged(nameof(CanGoToPreviousTechnicianPage));
+        OnPropertyChanged(nameof(CanGoToNextTechnicianPage));
     }
 
     [RelayCommand]
@@ -1150,13 +1209,10 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
 
         if (missing.Count > 0)
         {
-            ErrorMessage = AppResources.PleaseCompleteData + "\n• " + string.Join("\n• ", missing);
-            HasError = true;
+            ShowAlert(AppResources.PleaseCompleteData, "\n• " + string.Join("\n• ", missing));
             return;
         }
 
-        ErrorMessage = null;
-        HasError = false;
         IsCartReviewVisible = true;
     }
 
@@ -1206,7 +1262,7 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
         return Brands.Where(b => b.Contains(BrandSearchText, StringComparison.OrdinalIgnoreCase));
     }
 
-    private void ResetBrandPaging()
+    internal void ResetBrandPaging()
     {
         BrandPage = 1;
         var filtered = GetFilteredBrands().ToList();
@@ -1229,7 +1285,7 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
         return AvailableModels.Where(m => m.Contains(ModelSearchText, StringComparison.OrdinalIgnoreCase));
     }
 
-    private void ResetModelPaging()
+    internal void ResetModelPaging()
     {
         ModelPage = 1;
         var filtered = GetFilteredModels().ToList();
@@ -1407,12 +1463,23 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
         OnPropertyChanged(nameof(CanGoToNextColorPage));
     }
 
+    partial void OnTechnicianPageChanged(int value)
+    {
+        OnPropertyChanged(nameof(CanGoToPreviousTechnicianPage));
+        OnPropertyChanged(nameof(CanGoToNextTechnicianPage));
+    }
+
+    partial void OnTechnicianTotalPagesChanged(int value)
+    {
+        OnPropertyChanged(nameof(CanGoToPreviousTechnicianPage));
+        OnPropertyChanged(nameof(CanGoToNextTechnicianPage));
+    }
+
     private void ClearNewCustomerFields()
     {
         NewCustomerFirstName = string.Empty;
         NewCustomerLastName = string.Empty;
         NewCustomerPhone = string.Empty;
-        NewCustomerGender = "ذكر";
     }
 
     private void ClearNewVehicleFields()
