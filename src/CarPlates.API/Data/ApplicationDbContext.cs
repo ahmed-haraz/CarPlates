@@ -182,7 +182,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
             entity.Property(h => h.Terminal_ID).HasMaxLength(200);
             entity.Property(h => h.DocTransNo).HasMaxLength(50);
             entity.Property(h => h.Notes).HasMaxLength(200);
-            entity.Property(h => h.RefrenceNo).HasMaxLength(50);
+            entity.Property(h => h.ReferenceNo).HasMaxLength(50);
             entity.HasIndex(h => h.CustomerId);
             entity.HasIndex(h => h.CarHeaderId);
             entity.HasMany(h => h.Details)

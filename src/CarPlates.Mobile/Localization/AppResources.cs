@@ -162,4 +162,17 @@ public static class AppResources
     public static string NoBillsFound => LocalizationResourceManager.Instance["NoBillsFound"];
     public static string DailyBills => LocalizationResourceManager.Instance["DailyBills"];
     public static string DailySalesTotal => LocalizationResourceManager.Instance["DailySalesTotal"];
+    public static string NoSignature => LocalizationResourceManager.Instance["NoSignature"];
+    public static string OrderNotes => LocalizationResourceManager.Instance["OrderNotes"];
+    public static string WriteHere => LocalizationResourceManager.Instance["WriteHere"];
+    public static string SavingOrder => LocalizationResourceManager.Instance["SavingOrder"];
+    public static string BrandSelection => LocalizationResourceManager.Instance["BrandSelection"];
+    public static string ModelSelection => LocalizationResourceManager.Instance["ModelSelection"];
+    public static string AddNewVehicle => LocalizationResourceManager.Instance["AddNewVehicle"];
+    public static string Karage => LocalizationResourceManager.Instance["Karage"];
+    public static string TotalAmount => LocalizationResourceManager.Instance["TotalAmount"];
+    public static string MyOrderCart => LocalizationResourceManager.Instance["MyOrderCart"];
+    public static string Signature => LocalizationResourceManager.Instance["Signature"];
+    public static string CurrencySAR => LocalizationResourceManager.Instance["CurrencySAR"];
+    public static string VATLabel => LocalizationResourceManager.Instance["VATLabel"];
 }

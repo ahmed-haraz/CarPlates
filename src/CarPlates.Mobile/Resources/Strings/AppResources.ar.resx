@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <root>
-	<!-- 
+  <!-- 
     Microsoft ResX Schema 
     
     Version 2.0
@@ -59,986 +59,725 @@
             : using a System.ComponentModel.TypeConverter
             : and then encoded with base64 encoding.
     -->
-	<xsd:schema id="root"
-				xmlns=""
-				xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-				xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
-		<xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
-		<xsd:element name="root"
-					 msdata:IsDataSet="true">
-			<xsd:complexType>
-				<xsd:choice maxOccurs="unbounded">
-					<xsd:element name="metadata">
-						<xsd:complexType>
-							<xsd:sequence>
-								<xsd:element name="value"
-											 type="xsd:string"
-											 minOccurs="0" />
-							</xsd:sequence>
-							<xsd:attribute name="name"
-										   use="required"
-										   type="xsd:string" />
-							<xsd:attribute name="type"
-										   type="xsd:string" />
-							<xsd:attribute name="mimetype"
-										   type="xsd:string" />
-							<xsd:attribute ref="xml:space" />
-						</xsd:complexType>
-					</xsd:element>
-					<xsd:element name="assembly">
-						<xsd:complexType>
-							<xsd:attribute name="alias"
-										   type="xsd:string" />
-							<xsd:attribute name="name"
-										   type="xsd:string" />
-						</xsd:complexType>
-					</xsd:element>
-					<xsd:element name="data">
-						<xsd:complexType>
-							<xsd:sequence>
-								<xsd:element name="value"
-											 type="xsd:string"
-											 minOccurs="0"
-											 msdata:Ordinal="1" />
-								<xsd:element name="comment"
-											 type="xsd:string"
-											 minOccurs="0"
-											 msdata:Ordinal="2" />
-							</xsd:sequence>
-							<xsd:attribute name="name"
-										   type="xsd:string"
-										   use="required"
-										   msdata:Ordinal="1" />
-							<xsd:attribute name="type"
-										   type="xsd:string"
-										   msdata:Ordinal="3" />
-							<xsd:attribute name="mimetype"
-										   type="xsd:string"
-										   msdata:Ordinal="4" />
-							<xsd:attribute ref="xml:space" />
-						</xsd:complexType>
-					</xsd:element>
-					<xsd:element name="resheader">
-						<xsd:complexType>
-							<xsd:sequence>
-								<xsd:element name="value"
-											 type="xsd:string"
-											 minOccurs="0"
-											 msdata:Ordinal="1" />
-							</xsd:sequence>
-							<xsd:attribute name="name"
-										   type="xsd:string"
-										   use="required" />
-						</xsd:complexType>
-					</xsd:element>
-				</xsd:choice>
-			</xsd:complexType>
-		</xsd:element>
-	</xsd:schema>
-	<resheader name="resmimetype">
-		<value>text/microsoft-resx</value>
-	</resheader>
-	<resheader name="version">
-		<value>2.0</value>
-	</resheader>
-	<resheader name="reader">
-		<value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-	</resheader>
-	<resheader name="writer">
-		<value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-	</resheader>
-	<data name="AppName"
-		  xml:space="preserve">
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="AppName" xml:space="preserve">
     <value>خدمات اركان</value>
   </data>
-	<data name="Tagline"
-		  xml:space="preserve">
+  <data name="Tagline" xml:space="preserve">
     <value>التعرف على لوحات السيارات</value>
   </data>
-	<data name="OK"
-		  xml:space="preserve">
+  <data name="OK" xml:space="preserve">
     <value>موافق</value>
   </data>
-	<data name="Cancel"
-		  xml:space="preserve">
+  <data name="Cancel" xml:space="preserve">
     <value>إلغاء</value>
   </data>
-	<data name="Save"
-		  xml:space="preserve">
+  <data name="Save" xml:space="preserve">
     <value>حفظ</value>
   </data>
-	<data name="Delete"
-		  xml:space="preserve">
+  <data name="Delete" xml:space="preserve">
     <value>حذف</value>
   </data>
-	<data name="Search"
-		  xml:space="preserve">
+  <data name="Search" xml:space="preserve">
     <value>بحث</value>
   </data>
-	<data name="Yes"
-		  xml:space="preserve">
+  <data name="Yes" xml:space="preserve">
     <value>نعم</value>
   </data>
-	<data name="No"
-		  xml:space="preserve">
+  <data name="No" xml:space="preserve">
     <value>لا</value>
   </data>
-	<data name="Success"
-		  xml:space="preserve">
+  <data name="Success" xml:space="preserve">
     <value>تم بنجاح</value>
   </data>
-	<data name="Error"
-		  xml:space="preserve">
+  <data name="Error" xml:space="preserve">
     <value>خطأ</value>
   </data>
-	<data name="Offline"
-		  xml:space="preserve">
+  <data name="Offline" xml:space="preserve">
     <value>غير متصل</value>
   </data>
-	<data name="WelcomeBack"
-		  xml:space="preserve">
+  <data name="WelcomeBack" xml:space="preserve">
     <value>مرحباً بعودتك</value>
   </data>
-	<data name="SignInToContinue"
-		  xml:space="preserve">
+  <data name="SignInToContinue" xml:space="preserve">
     <value>سجّل الدخول للمتابعة</value>
   </data>
-	<data name="Username"
-		  xml:space="preserve">
+  <data name="Username" xml:space="preserve">
     <value>اسم المستخدم</value>
   </data>
-	<data name="EnterUsername"
-		  xml:space="preserve">
+  <data name="EnterUsername" xml:space="preserve">
     <value>أدخل اسم المستخدم</value>
   </data>
-	<data name="Password"
-		  xml:space="preserve">
+  <data name="Password" xml:space="preserve">
     <value>كلمة المرور</value>
   </data>
-	<data name="EnterPassword"
-		  xml:space="preserve">
+  <data name="EnterPassword" xml:space="preserve">
     <value>أدخل كلمة المرور</value>
   </data>
-	<data name="SignIn"
-		  xml:space="preserve">
+  <data name="SignIn" xml:space="preserve">
     <value>تسجيل الدخول</value>
   </data>
-	<data name="PleaseEnterCredentials"
-		  xml:space="preserve">
+  <data name="PleaseEnterCredentials" xml:space="preserve">
     <value>الرجاء إدخال اسم المستخدم وكلمة المرور</value>
   </data>
-	<data name="LoginFailed"
-		  xml:space="preserve">
+  <data name="LoginFailed" xml:space="preserve">
     <value>فشل تسجيل الدخول</value>
   </data>
-	<data name="LoginFailedTryAgain"
-		  xml:space="preserve">
+  <data name="LoginFailedTryAgain" xml:space="preserve">
     <value>فشل تسجيل الدخول. حاول مرة أخرى.</value>
   </data>
-	<data name="WelcomeBackComma"
-		  xml:space="preserve">
+  <data name="WelcomeBackComma" xml:space="preserve">
     <value>مرحباً بعودتك،</value>
   </data>
-	<data name="ScanLicensePlate"
-		  xml:space="preserve">
+  <data name="ScanLicensePlate" xml:space="preserve">
     <value>مسح لوحة السيارة</value>
   </data>
-	<data name="TodaysScans"
-		  xml:space="preserve">
+  <data name="TodaysScans" xml:space="preserve">
     <value>عمليات مسح اليوم</value>
   </data>
-	<data name="TotalScansLabel"
-		  xml:space="preserve">
+  <data name="TotalScansLabel" xml:space="preserve">
     <value>إجمالي عمليات المسح</value>
   </data>
-	<data name="PendingVehicles"
-		  xml:space="preserve">
+  <data name="PendingVehicles" xml:space="preserve">
     <value>بانتظار الموافقة</value>
   </data>
-	<data name="TotalVehiclesLabel"
-		  xml:space="preserve">
+  <data name="TotalVehiclesLabel" xml:space="preserve">
     <value>إجمالي المركبات</value>
   </data>
-	<data name="RecentScans"
-		  xml:space="preserve">
+  <data name="RecentScans" xml:space="preserve">
     <value>عمليات المسح الأخيرة</value>
   </data>
-	<data name="NoRecentScans"
-		  xml:space="preserve">
+  <data name="NoRecentScans" xml:space="preserve">
     <value>لا توجد عمليات مسح حديثة</value>
   </data>
-	<data name="ViewAllHistory"
-		  xml:space="preserve">
+  <data name="ViewAllHistory" xml:space="preserve">
     <value>عرض كل السجل ←</value>
   </data>
-	<data name="Scan"
-		  xml:space="preserve">
+  <data name="Scan" xml:space="preserve">
     <value>مسح</value>
   </data>
-	<data name="PointCameraAtPlate"
-		  xml:space="preserve">
+  <data name="PointCameraAtPlate" xml:space="preserve">
     <value>وجّه الكاميرا نحو لوحة السيارة</value>
   </data>
-	<data name="CameraPermissionRequired"
-		  xml:space="preserve">
+  <data name="CameraPermissionRequired" xml:space="preserve">
     <value>يلزم إذن الكاميرا لمسح اللوحات. يرجى تفعيله من إعدادات الجهاز.</value>
   </data>
-	<data name="ManualEntry"
-		  xml:space="preserve">
+  <data name="ManualEntry" xml:space="preserve">
     <value>إدخال يدوي</value>
   </data>
-	<data name="TapToScanButton"
-		  xml:space="preserve">
+  <data name="TapToScanButton" xml:space="preserve">
     <value>📷 اضغط لمسح اللوحة</value>
   </data>
-	<data name="ScanningDocument"
-		  xml:space="preserve">
+  <data name="ScanningDocument" xml:space="preserve">
     <value>جارِ مسح اللوحة...</value>
   </data>
-	<data name="NoTextDetectedOnPlate"
-		  xml:space="preserve">
+  <data name="NoTextDetectedOnPlate" xml:space="preserve">
     <value>تعذّرت قراءة اللوحة. حاول مرة أخرى بإضاءة أفضل أو استخدم الإدخال اليدوي.</value>
   </data>
-	<data name="EnterPlateNumberPrompt"
-		  xml:space="preserve">
+  <data name="EnterPlateNumberPrompt" xml:space="preserve">
     <value>أدخل رقم اللوحة:</value>
   </data>
-	<data name="InvalidPlateNumber"
-		  xml:space="preserve">
+  <data name="InvalidPlateNumber" xml:space="preserve">
     <value>رقم لوحة غير صالح</value>
   </data>
-	<data name="VehicleNotFound"
-		  xml:space="preserve">
+  <data name="VehicleNotFound" xml:space="preserve">
     <value>المركبة غير موجودة</value>
   </data>
-	<data name="ConfidencePrefix"
-		  xml:space="preserve">
+  <data name="ConfidencePrefix" xml:space="preserve">
     <value>نسبة الثقة</value>
   </data>
-	<data name="History"
-		  xml:space="preserve">
+  <data name="History" xml:space="preserve">
     <value>السجل</value>
   </data>
-	<data name="SearchByPlate"
-		  xml:space="preserve">
+  <data name="SearchByPlate" xml:space="preserve">
     <value>ابحث برقم اللوحة...</value>
   </data>
-	<data name="Export"
-		  xml:space="preserve">
+  <data name="Export" xml:space="preserve">
     <value>تصدير</value>
   </data>
-	<data name="NoScanRecordsFound"
-		  xml:space="preserve">
+  <data name="NoScanRecordsFound" xml:space="preserve">
     <value>لا توجد سجلات مسح</value>
   </data>
-	<data name="ExportComingSoon"
-		  xml:space="preserve">
+  <data name="ExportComingSoon" xml:space="preserve">
     <value>ميزة التصدير قريباً</value>
   </data>
-	<data name="DateFilterComingSoon"
-		  xml:space="preserve">
+  <data name="DateFilterComingSoon" xml:space="preserve">
     <value>تصفية التاريخ قريباً</value>
   </data>
-	<data name="RecordsSuffix"
-		  xml:space="preserve">
+  <data name="RecordsSuffix" xml:space="preserve">
     <value>سجل</value>
   </data>
-	<data name="Settings"
-		  xml:space="preserve">
+  <data name="Settings" xml:space="preserve">
     <value>الإعدادات</value>
   </data>
-	<data name="Appearance"
-		  xml:space="preserve">
+  <data name="Appearance" xml:space="preserve">
     <value>المظهر</value>
   </data>
-	<data name="DarkMode"
-		  xml:space="preserve">
+  <data name="DarkMode" xml:space="preserve">
     <value>الوضع الداكن</value>
   </data>
-	<data name="Language"
-		  xml:space="preserve">
+  <data name="Language" xml:space="preserve">
     <value>اللغة</value>
   </data>
-	<data name="Scanner"
-		  xml:space="preserve">
+  <data name="Scanner" xml:space="preserve">
     <value>الماسح</value>
   </data>
-	<data name="OcrConfidence"
-		  xml:space="preserve">
+  <data name="OcrConfidence" xml:space="preserve">
     <value>دقة التعرف الضوئي</value>
   </data>
-	<data name="AutoResumeScanning"
-		  xml:space="preserve">
+  <data name="AutoResumeScanning" xml:space="preserve">
     <value>استئناف المسح تلقائياً</value>
   </data>
-	<data name="ApiConfiguration"
-		  xml:space="preserve">
+  <data name="ApiConfiguration" xml:space="preserve">
     <value>إعدادات الواجهة البرمجية</value>
   </data>
-	<data name="ApiUrl"
-		  xml:space="preserve">
+  <data name="ApiUrl" xml:space="preserve">
     <value>رابط الواجهة البرمجية</value>
   </data>
-	<data name="Notifications"
-		  xml:space="preserve">
+  <data name="Notifications" xml:space="preserve">
     <value>الإشعارات</value>
   </data>
-	<data name="EnableNotifications"
-		  xml:space="preserve">
+  <data name="EnableNotifications" xml:space="preserve">
     <value>تفعيل الإشعارات</value>
   </data>
-	<data name="DataManagement"
-		  xml:space="preserve">
+  <data name="DataManagement" xml:space="preserve">
     <value>إدارة البيانات</value>
   </data>
-	<data name="ViewLogs"
-		  xml:space="preserve">
+  <data name="ViewLogs" xml:space="preserve">
     <value>عرض السجلات</value>
   </data>
-	<data name="SaveSettings"
-		  xml:space="preserve">
+  <data name="SaveSettings" xml:space="preserve">
     <value>حفظ الإعدادات</value>
   </data>
-	<data name="About"
-		  xml:space="preserve">
+  <data name="About" xml:space="preserve">
     <value>حول التطبيق</value>
   </data>
-	<data name="Logout"
-		  xml:space="preserve">
+  <data name="Logout" xml:space="preserve">
     <value>تسجيل الخروج</value>
   </data>
-	<data name="Clear"
-		  xml:space="preserve">
+  <data name="Clear" xml:space="preserve">
     <value>مسح</value>
   </data>
-	<data name="LogoutConfirmMessage"
-		  xml:space="preserve">
+  <data name="LogoutConfirmMessage" xml:space="preserve">
     <value>هل أنت متأكد أنك تريد تسجيل الخروج؟</value>
   </data>
-	<data name="SettingsSaved"
-		  xml:space="preserve">
+  <data name="SettingsSaved" xml:space="preserve">
     <value>تم حفظ الإعدادات</value>
   </data>
-	<data name="LogViewerComingSoon"
-		  xml:space="preserve">
+  <data name="LogViewerComingSoon" xml:space="preserve">
     <value>عارض السجلات قريباً</value>
   </data>
-	<data name="English"
-		  xml:space="preserve">
+  <data name="English" xml:space="preserve">
     <value>الإنجليزية</value>
   </data>
-	<data name="Arabic"
-		  xml:space="preserve">
+  <data name="Arabic" xml:space="preserve">
     <value>العربية</value>
   </data>
-	<data name="Profile"
-		  xml:space="preserve">
+  <data name="Profile" xml:space="preserve">
     <value>الملف الشخصي</value>
   </data>
-	<data name="ChangePhoto"
-		  xml:space="preserve">
+  <data name="ChangePhoto" xml:space="preserve">
     <value>تغيير الصورة</value>
   </data>
-	<data name="Email"
-		  xml:space="preserve">
+  <data name="Email" xml:space="preserve">
     <value>البريد الإلكتروني</value>
   </data>
-	<data name="FullName"
-		  xml:space="preserve">
+  <data name="FullName" xml:space="preserve">
     <value>الاسم الكامل</value>
   </data>
-	<data name="EditProfile"
-		  xml:space="preserve">
+  <data name="EditProfile" xml:space="preserve">
     <value>تعديل الملف الشخصي</value>
   </data>
-	<data name="ChangePassword"
-		  xml:space="preserve">
+  <data name="ChangePassword" xml:space="preserve">
     <value>تغيير كلمة المرور</value>
   </data>
-	<data name="EditProfileComingSoon"
-		  xml:space="preserve">
+  <data name="EditProfileComingSoon" xml:space="preserve">
     <value>تعديل الملف الشخصي قريباً</value>
   </data>
-	<data name="ChangePhotoComingSoon"
-		  xml:space="preserve">
+  <data name="ChangePhotoComingSoon" xml:space="preserve">
     <value>رفع الصورة قريباً</value>
   </data>
-	<data name="ChangePasswordComingSoon"
-		  xml:space="preserve">
+  <data name="ChangePasswordComingSoon" xml:space="preserve">
     <value>تغيير كلمة المرور قريباً</value>
   </data>
-	<data name="VehicleDetails"
-		  xml:space="preserve">
+  <data name="VehicleDetails" xml:space="preserve">
     <value>تفاصيل المركبة</value>
   </data>
-	<data name="Brand"
-		  xml:space="preserve">
+  <data name="Brand" xml:space="preserve">
     <value>الماركة</value>
   </data>
-	<data name="Model"
-		  xml:space="preserve">
+  <data name="Model" xml:space="preserve">
     <value>الموديل</value>
   </data>
-	<data name="Color"
-		  xml:space="preserve">
+  <data name="Color" xml:space="preserve">
     <value>اللون</value>
   </data>
-	<data name="Owner"
-		  xml:space="preserve">
+  <data name="Owner" xml:space="preserve">
     <value>المالك</value>
   </data>
-	<data name="ScanHistory"
-		  xml:space="preserve">
+  <data name="ScanHistory" xml:space="preserve">
     <value>سجل المسح</value>
   </data>
-	<data name="NoScanHistoryAvailable"
-		  xml:space="preserve">
+  <data name="NoScanHistoryAvailable" xml:space="preserve">
     <value>لا يوجد سجل مسح متاح</value>
   </data>
-	<data name="ScanAgain"
-		  xml:space="preserve">
+  <data name="ScanAgain" xml:space="preserve">
     <value>مسح مرة أخرى</value>
   </data>
-	<data name="Share"
-		  xml:space="preserve">
+  <data name="Share" xml:space="preserve">
     <value>مشاركة</value>
   </data>
-	<data name="VersionLabel"
-		  xml:space="preserve">
+  <data name="VersionLabel" xml:space="preserve">
     <value>الإصدار 1.0.0</value>
   </data>
-	<data name="BuiltWithDescription"
-		  xml:space="preserve">
+  <data name="BuiltWithDescription" xml:space="preserve">
     <value>تم البناء باستخدام .NET MAUI وClean Architecture وGoogle ML Kit للتعرف الضوئي.</value>
   </data>
-	<data name="FeaturesLabel"
-		  xml:space="preserve">
+  <data name="FeaturesLabel" xml:space="preserve">
     <value>• الميزات:</value>
   </data>
-	<data name="FeatureJwtAuth"
-		  xml:space="preserve">
+  <data name="FeatureJwtAuth" xml:space="preserve">
     <value>• مصادقة JWT</value>
   </data>
-	<data name="FeatureCameraPreview"
-		  xml:space="preserve">
+  <data name="FeatureCameraPreview" xml:space="preserve">
     <value>• معاينة كاميرا مباشرة</value>
   </data>
-	<data name="FeatureAutoRecognition"
-		  xml:space="preserve">
+  <data name="FeatureAutoRecognition" xml:space="preserve">
     <value>• تعرف تلقائي على اللوحات</value>
   </data>
-	<data name="FeatureEgyptEnglishPlates"
-		  xml:space="preserve">
+  <data name="FeatureEgyptEnglishPlates" xml:space="preserve">
     <value>• لوحات مصرية وإنجليزية</value>
   </data>
-	<data name="FeatureVehicleLookup"
-		  xml:space="preserve">
+  <data name="FeatureVehicleLookup" xml:space="preserve">
     <value>• بحث عن المركبة عبر REST API</value>
   </data>
-	<data name="FeatureHistoryExport"
-		  xml:space="preserve">
+  <data name="FeatureHistoryExport" xml:space="preserve">
     <value>• سجل المسح والتصدير</value>
   </data>
-	<data name="Copyright"
-		  xml:space="preserve">
+  <data name="Copyright" xml:space="preserve">
     <value>© 2026 أركان للصيانة. جميع الحقوق محفوظة.</value>
   </data>
-	<data name="DetectedFormat"
-		  xml:space="preserve">
+  <data name="DetectedFormat" xml:space="preserve">
     <value>تم الكشف: {0}</value>
   </data>
-	<data name="ManualEntryButton"
-		  xml:space="preserve">
+  <data name="ManualEntryButton" xml:space="preserve">
     <value>✎ إدخال يدوي</value>
   </data>
-	<data name="ExportButton"
-		  xml:space="preserve">
+  <data name="ExportButton" xml:space="preserve">
     <value>📤 تصدير</value>
   </data>
-	<data name="ViewLogsButton"
-		  xml:space="preserve">
+  <data name="ViewLogsButton" xml:space="preserve">
     <value>📋 عرض السجلات</value>
   </data>
-	<data name="SaveSettingsButton"
-		  xml:space="preserve">
+  <data name="SaveSettingsButton" xml:space="preserve">
     <value>💾 حفظ الإعدادات</value>
   </data>
-	<data name="AboutButton"
-		  xml:space="preserve">
+  <data name="AboutButton" xml:space="preserve">
     <value>ℹ حول التطبيق</value>
   </data>
-	<data name="LogoutButton"
-		  xml:space="preserve">
+  <data name="LogoutButton" xml:space="preserve">
     <value>🚪 تسجيل الخروج</value>
   </data>
-	<data name="EditProfileButton"
-		  xml:space="preserve">
+  <data name="EditProfileButton" xml:space="preserve">
     <value>✏ تعديل الملف الشخصي</value>
   </data>
-	<data name="ChangePasswordButton"
-		  xml:space="preserve">
+  <data name="ChangePasswordButton" xml:space="preserve">
     <value>🔒 تغيير كلمة المرور</value>
   </data>
-	<data name="ChangePhotoButton"
-		  xml:space="preserve">
+  <data name="ChangePhotoButton" xml:space="preserve">
     <value>📷 تغيير الصورة</value>
   </data>
-	<data name="ScanAgainButton"
-		  xml:space="preserve">
+  <data name="ScanAgainButton" xml:space="preserve">
     <value>📷 مسح مرة أخرى</value>
   </data>
-	<data name="ShareButton"
-		  xml:space="preserve">
+  <data name="ShareButton" xml:space="preserve">
     <value>📤 مشاركة</value>
   </data>
-	<data name="ScanLicensePlateButton"
-		  xml:space="preserve">
+  <data name="ScanLicensePlateButton" xml:space="preserve">
     <value>📷 مسح لوحة السيارة</value>
   </data>
-	<data name="Dashboard"
-		  xml:space="preserve">
+  <data name="Dashboard" xml:space="preserve">
     <value>لوحة التحكم</value>
   </data>
-	<data name="UsernameColon"
-		  xml:space="preserve">
+  <data name="UsernameColon" xml:space="preserve">
     <value>اسم المستخدم:</value>
   </data>
-	<data name="EmailColon"
-		  xml:space="preserve">
+  <data name="EmailColon" xml:space="preserve">
     <value>البريد الإلكتروني:</value>
   </data>
-	<data name="FullNameColon"
-		  xml:space="preserve">
+  <data name="FullNameColon" xml:space="preserve">
     <value>الاسم الكامل:</value>
   </data>
-	<data name="BrandColon"
-		  xml:space="preserve">
+  <data name="BrandColon" xml:space="preserve">
     <value>الماركة:</value>
   </data>
-	<data name="ModelColon"
-		  xml:space="preserve">
+  <data name="ModelColon" xml:space="preserve">
     <value>الموديل:</value>
   </data>
-	<data name="ColorColon"
-		  xml:space="preserve">
+  <data name="ColorColon" xml:space="preserve">
     <value>اللون:</value>
   </data>
-	<data name="OwnerColon"
-		  xml:space="preserve">
+  <data name="OwnerColon" xml:space="preserve">
     <value>المالك:</value>
   </data>
-	<data name="TotalScansColon"
-		  xml:space="preserve">
+  <data name="TotalScansColon" xml:space="preserve">
     <value>إجمالي عمليات المسح:</value>
   </data>
-	<data name="TestConnectionButton"
-		  xml:space="preserve">
+  <data name="TestConnectionButton" xml:space="preserve">
     <value>🔌 اختبار الاتصال</value>
   </data>
-	<data name="ConnectionSuccessful"
-		  xml:space="preserve">
+  <data name="ConnectionSuccessful" xml:space="preserve">
     <value>تم الاتصال بنجاح</value>
   </data>
-	<data name="ConnectionFailed"
-		  xml:space="preserve">
+  <data name="ConnectionFailed" xml:space="preserve">
     <value>فشل الاتصال</value>
   </data>
-	<data name="AddCustomer"
-		  xml:space="preserve">
+  <data name="AddCustomer" xml:space="preserve">
     <value>إضافة عميل</value>
   </data>
-	<data name="AddVehicle"
-		  xml:space="preserve">
+  <data name="AddVehicle" xml:space="preserve">
     <value>إضافة سيارة</value>
   </data>
-	<data name="AddItems"
-		  xml:space="preserve">
-	<value>إضافة صنف</value>
+  <data name="AddItems" xml:space="preserve">
+    <value>إضافة صنف</value>
   </data>
-	<data name="AddPhotos"
-		  xml:space="preserve">
-	<value>إضافة صور</value>
+  <data name="AddPhotos" xml:space="preserve">
+    <value>إضافة صور</value>
   </data>
-
-	<data name="AssignService"
-		  xml:space="preserve">        
-
-  <value>تعيين الخدمة</value>
-</data>
-
-	<data name="SelectWorkLocation"
-		  xml:space="preserve">
-  <value>+ حدد مكان العمل</value>
-</data>
-
-	<data name="SelectTechnician"
-		  xml:space="preserve">
-  <value>+ اختيار الفني</value>
-</data>
-
-	<data name="Next"
-		  xml:space="preserve">
-  <value>التالي</value>
-</data>
-
-	<data name="SearchCustomer"
-		  xml:space="preserve">
-  <value>البحث عن عميل</value>
-</data>
-
-	<data name="PhoneNumber"
-		  xml:space="preserve">
-  <value>رقم الجوال</value>
-</data>
-
-	<data name="NewCustomer"
-		  xml:space="preserve">
-  <value>عميل جديد</value>
-</data>
-
-	<data name="FirstName"
-		  xml:space="preserve">
-  <value>الاسم الأول</value>
-</data>
-
-	<data name="LastName"
-		  xml:space="preserve">
-  <value>الاسم الأخير</value>
-</data>
-
-	<data name="Male"
-		  xml:space="preserve">
-  <value>ذكر</value>
-</data>
-
-	<data name="Female"
-		  xml:space="preserve">
-  <value>أنثى</value>
-</data>
-
-	<data name="Plate"
-		  xml:space="preserve">
-  <value>اللوحة</value>
-</data>
-
-	<data name="PlateNumber"
-		  xml:space="preserve">
-  <value>رقم اللوحة</value>
-</data>
-
-	<data name="VIN17Digits"
-		  xml:space="preserve">
-  <value>17 خانة</value>
-</data>
-
-	<data name="VIN"
-		  xml:space="preserve">
-  <value>رقم هيكل المركبة (VIN)</value>
-</data>
-
-	<data name="VehicleType"
-		  xml:space="preserve">
-  <value>نوع المركبة</value>
-</data>
-
-	<data name="EngineType"
-		  xml:space="preserve">
-  <value>نوع المحرك</value>
-</data>
-
-	<data name="Mileage"
-		  xml:space="preserve">
-  <value>أدخل عدد المسافة</value>
-</data>
-
-	<data name="VehicleYear"
-		  xml:space="preserve">
-  <value>سنة المركبة</value>
-</data>
-
-	<data name="VehicleColor"
-		  xml:space="preserve">
-  <value>لون المركبة</value>
-</data>
-
-	<data name="SelectCategory"
-		  xml:space="preserve">
-  <value>اختر الفئة</value>
-</data>
-
-	<data name="SearchItem"
-		  xml:space="preserve">
-  <value>بحث عن صنف</value>
-</data>
-
-	<data name="CreateNewItem"
-		  xml:space="preserve">
-  <value>إنشاء صنف جديد</value>
-</data>
-
-	<data name="ItemDetails"
-		  xml:space="preserve">
-  <value>تفاصيل الصنف</value>
-</data>
-
-	<data name="ProductName"
-		  xml:space="preserve">
-  <value>اسم المنتج</value>
-</data>
-
-	<data name="Category"
-		  xml:space="preserve">
-  <value>الفئة</value>
-</data>
-
-	<data name="ItemType"
-		  xml:space="preserve">
-  <value>نوع الصنف</value>
-</data>
-
-	<data name="Product"
-		  xml:space="preserve">
-  <value>منتج</value>
-</data>
-
-	<data name="Service"
-		  xml:space="preserve">
-  <value>خدمة</value>
-</data>
-
-	<data name="Pricing"
-		  xml:space="preserve">
-  <value>التسعير</value>
-</data>
-
-	<data name="OpenItem"
-		  xml:space="preserve">
-  <value>صنف مفتوح</value>
-</data>
-
-	<data name="Price"
-		  xml:space="preserve">
-  <value>السعر</value>
-</data>
-
-	<data name="Cost"
-		  xml:space="preserve">
-  <value>التكلفة</value>
-</data>
-
-	<data name="ApplyTax"
-		  xml:space="preserve">
-  <value>تطبيق الضريبة على هذا المنتج</value>
-</data>
-
-	<data name="Tax"
-		  xml:space="preserve">
-  <value>الضريبة</value>
-</data>
-
-	<data name="PriceBeforeTax"
-		  xml:space="preserve">
-  <value>السعر قبل الضريبة</value>
-</data>
-
-	<data name="PriceWithTax"
-		  xml:space="preserve">
-  <value>السعر شامل الضريبة</value>
-</data>
-
-	<data name="SearchLocation"
-		  xml:space="preserve">
-  <value>البحث</value>
-</data>
-
-	<data name="WriteSignature"
-		  xml:space="preserve">
-  <value>فضلاً، اكتب توقيعك</value>
-</data>
-
-	<data name="ClearSignature"
-		  xml:space="preserve">
-  <value>مسح التوقيع</value>
-</data>
-
-	<data name="SaveSignature"
-		  xml:space="preserve">
-  <value>حفظ التوقيع</value>
-</data>
-
-	<data name="Discounts"
-		  xml:space="preserve">
-  <value>الخصومات</value>
-</data>
-
-	<data name="Discount1"
-		  xml:space="preserve">
-  <value>خصم 1</value>
-</data>
-
-	<data name="Discount2"
-		  xml:space="preserve">
-  <value>خصم 2</value>
-</data>
-
-	<data name="Discount3"
-		  xml:space="preserve">
-  <value>خصم 3</value>
-</data>
-
-	<data name="AddToCart"
-		  xml:space="preserve">
-  <value>إضافة إلى السلة</value>
-</data>
-
-	<data name="OpenSaleBadge"
-		  xml:space="preserve">
-  <value>سعر مفتوح</value>
-</data>
-
-	<data name="Quantity"
-		  xml:space="preserve">
-  <value>الكمية</value>
-</data>
-
-	<data name="TotalLabel"
-		  xml:space="preserve">
-  <value>الإجمالي</value>
-</data>
-
-	<data name="SelectCustomerFirst"
-		  xml:space="preserve">
-  <value>الرجاء اختيار عميل أولاً</value>
-</data>
-
-	<data name="SelectVehicleFirst"
-		  xml:space="preserve">
-  <value>الرجاء إضافة مركبة أولاً</value>
-</data>
-
-	<data name="PleaseCompleteData"
-		  xml:space="preserve">
-  <value>الرجاء إكمال البيانات التالية:</value>
-</data>
-
-	<data name="CustomerField"
-		  xml:space="preserve">
-  <value>العميل</value>
-</data>
-
-	<data name="VehicleField"
-		  xml:space="preserve">
-  <value>المركبة</value>
-</data>
-
-	<data name="PlateNumberField"
-		  xml:space="preserve">
-  <value>رقم اللوحة</value>
-</data>
-
-	<data name="BrandField"
-		  xml:space="preserve">
-  <value>الماركة</value>
-</data>
-
-	<data name="ModelField"
-		  xml:space="preserve">
-  <value>الموديل</value>
-</data>
-
-	<data name="ColorField"
-		  xml:space="preserve">
-  <value>اللون</value>
-</data>
-
-	<data name="ItemsField"
-		  xml:space="preserve">
-  <value>الأصناف</value>
-</data>
-
-	<data name="LocationField"
-		  xml:space="preserve">
-  <value>موقع العمل</value>
-</data>
-
-	<data name="TechnicianField"
-		  xml:space="preserve">
-  <value>الفني</value>
-</data>
-
-	<data name="ReviewOrder"
-		  xml:space="preserve">
-  <value>مراجعة الطلب</value>
-</data>
-
-	<data name="ConfirmOrder"
-		  xml:space="preserve">
-  <value>تأكيد وإرسال</value>
-</data>
-
-	<data name="GoBack"
-		  xml:space="preserve">
-  <value>رجوع</value>
-</data>
-
-	<data name="SubTotal"
-		  xml:space="preserve">
-  <value>المجموع الفرعي</value>
-</data>
-
-	<data name="NetTotal"
-		  xml:space="preserve">
-  <value>المجموع الصافي</value>
-</data>
-
-	<data name="Alert"
-		  xml:space="preserve">
-  <value>تنبيه</value>
-</data>
-
-	<data name="PlateType"
-		  xml:space="preserve">
-  <value>نوع اللوحة</value>
-</data>
-
-	<data name="Space"
-		  xml:space="preserve">
-  <value>مسافة</value>
-</data>
-
-	<data name="InvalidPhoneNumber"
-		  xml:space="preserve">
-  <value>يرجى إدخال رقم هاتف سعودي صحيح (9 أرقام تبدأ بـ 5)</value>
-</data>
-
-	<data name="FirstNameRequired"
-		  xml:space="preserve">
-  <value>الاسم الأول مطلوب</value>
-</data>
-
-	<data name="CustomerNotFound"
-		  xml:space="preserve">
-  <value>العميل غير موجود. يمكنك إضافة عميل جديد أدناه.</value>
-</data>
-
-	<data name="Cashier"
-		  xml:space="preserve">
-  <value>الكاشير</value>
-</data>
-
-	<data name="NoBillsFound"
-		  xml:space="preserve">
-  <value>لا توجد فواتير</value>
-</data>
-
-	<data name="DailyBills"
-		  xml:space="preserve">
-  <value>فواتير اليوم</value>
-</data>
-
-	<data name="DailySalesTotal"
-		  xml:space="preserve">
-  <value>إجمالي مبيعات اليوم</value>
-</data>
-
+  <data name="AssignService" xml:space="preserve">
+    <value>تعيين الخدمة</value>
+  </data>
+  <data name="SelectWorkLocation" xml:space="preserve">
+    <value>+ حدد مكان العمل</value>
+  </data>
+  <data name="SelectTechnician" xml:space="preserve">
+    <value>+ اختيار الفني</value>
+  </data>
+  <data name="Next" xml:space="preserve">
+    <value>التالي</value>
+  </data>
+  <data name="SearchCustomer" xml:space="preserve">
+    <value>البحث عن عميل</value>
+  </data>
+  <data name="PhoneNumber" xml:space="preserve">
+    <value>رقم الجوال</value>
+  </data>
+  <data name="NewCustomer" xml:space="preserve">
+    <value>عميل جديد</value>
+  </data>
+  <data name="FirstName" xml:space="preserve">
+    <value>الاسم الأول</value>
+  </data>
+  <data name="LastName" xml:space="preserve">
+    <value>الاسم الأخير</value>
+  </data>
+  <data name="Male" xml:space="preserve">
+    <value>ذكر</value>
+  </data>
+  <data name="Female" xml:space="preserve">
+    <value>أنثى</value>
+  </data>
+  <data name="Plate" xml:space="preserve">
+    <value>اللوحة</value>
+  </data>
+  <data name="PlateNumber" xml:space="preserve">
+    <value>رقم اللوحة</value>
+  </data>
+  <data name="VIN17Digits" xml:space="preserve">
+    <value>17 خانة</value>
+  </data>
+  <data name="VIN" xml:space="preserve">
+    <value>رقم هيكل المركبة (VIN)</value>
+  </data>
+  <data name="VehicleType" xml:space="preserve">
+    <value>نوع المركبة</value>
+  </data>
+  <data name="EngineType" xml:space="preserve">
+    <value>نوع المحرك</value>
+  </data>
+  <data name="Mileage" xml:space="preserve">
+    <value>أدخل عدد المسافة</value>
+  </data>
+  <data name="VehicleYear" xml:space="preserve">
+    <value>سنة المركبة</value>
+  </data>
+  <data name="VehicleColor" xml:space="preserve">
+    <value>لون المركبة</value>
+  </data>
+  <data name="SelectCategory" xml:space="preserve">
+    <value>اختر الفئة</value>
+  </data>
+  <data name="SearchItem" xml:space="preserve">
+    <value>بحث عن صنف</value>
+  </data>
+  <data name="CreateNewItem" xml:space="preserve">
+    <value>إنشاء صنف جديد</value>
+  </data>
+  <data name="ItemDetails" xml:space="preserve">
+    <value>تفاصيل الصنف</value>
+  </data>
+  <data name="ProductName" xml:space="preserve">
+    <value>اسم المنتج</value>
+  </data>
+  <data name="Category" xml:space="preserve">
+    <value>الفئة</value>
+  </data>
+  <data name="ItemType" xml:space="preserve">
+    <value>نوع الصنف</value>
+  </data>
+  <data name="Product" xml:space="preserve">
+    <value>منتج</value>
+  </data>
+  <data name="Service" xml:space="preserve">
+    <value>خدمة</value>
+  </data>
+  <data name="Pricing" xml:space="preserve">
+    <value>التسعير</value>
+  </data>
+  <data name="OpenItem" xml:space="preserve">
+    <value>صنف مفتوح</value>
+  </data>
+  <data name="Price" xml:space="preserve">
+    <value>السعر</value>
+  </data>
+  <data name="Cost" xml:space="preserve">
+    <value>التكلفة</value>
+  </data>
+  <data name="ApplyTax" xml:space="preserve">
+    <value>تطبيق الضريبة على هذا المنتج</value>
+  </data>
+  <data name="Tax" xml:space="preserve">
+    <value>الضريبة</value>
+  </data>
+  <data name="PriceBeforeTax" xml:space="preserve">
+    <value>السعر قبل الضريبة</value>
+  </data>
+  <data name="PriceWithTax" xml:space="preserve">
+    <value>السعر شامل الضريبة</value>
+  </data>
+  <data name="SearchLocation" xml:space="preserve">
+    <value>البحث</value>
+  </data>
+  <data name="WriteSignature" xml:space="preserve">
+    <value>فضلاً، اكتب توقيعك</value>
+  </data>
+  <data name="ClearSignature" xml:space="preserve">
+    <value>مسح التوقيع</value>
+  </data>
+  <data name="SaveSignature" xml:space="preserve">
+    <value>حفظ التوقيع</value>
+  </data>
+  <data name="Discounts" xml:space="preserve">
+    <value>الخصومات</value>
+  </data>
+  <data name="Discount1" xml:space="preserve">
+    <value>خصم 1</value>
+  </data>
+  <data name="Discount2" xml:space="preserve">
+    <value>خصم 2</value>
+  </data>
+  <data name="Discount3" xml:space="preserve">
+    <value>خصم 3</value>
+  </data>
+  <data name="AddToCart" xml:space="preserve">
+    <value>إضافة إلى السلة</value>
+  </data>
+  <data name="OpenSaleBadge" xml:space="preserve">
+    <value>سعر مفتوح</value>
+  </data>
+  <data name="Quantity" xml:space="preserve">
+    <value>الكمية</value>
+  </data>
+  <data name="TotalLabel" xml:space="preserve">
+    <value>الإجمالي</value>
+  </data>
+  <data name="SelectCustomerFirst" xml:space="preserve">
+    <value>الرجاء اختيار عميل أولاً</value>
+  </data>
+  <data name="SelectVehicleFirst" xml:space="preserve">
+    <value>الرجاء إضافة مركبة أولاً</value>
+  </data>
+  <data name="PleaseCompleteData" xml:space="preserve">
+    <value>الرجاء إكمال البيانات التالية:</value>
+  </data>
+  <data name="CustomerField" xml:space="preserve">
+    <value>العميل</value>
+  </data>
+  <data name="VehicleField" xml:space="preserve">
+    <value>المركبة</value>
+  </data>
+  <data name="PlateNumberField" xml:space="preserve">
+    <value>رقم اللوحة</value>
+  </data>
+  <data name="BrandField" xml:space="preserve">
+    <value>الماركة</value>
+  </data>
+  <data name="ModelField" xml:space="preserve">
+    <value>الموديل</value>
+  </data>
+  <data name="ColorField" xml:space="preserve">
+    <value>اللون</value>
+  </data>
+  <data name="ItemsField" xml:space="preserve">
+    <value>الأصناف</value>
+  </data>
+  <data name="LocationField" xml:space="preserve">
+    <value>موقع العمل</value>
+  </data>
+  <data name="TechnicianField" xml:space="preserve">
+    <value>الفني</value>
+  </data>
+  <data name="ReviewOrder" xml:space="preserve">
+    <value>مراجعة الطلب</value>
+  </data>
+  <data name="ConfirmOrder" xml:space="preserve">
+    <value>تأكيد وإرسال</value>
+  </data>
+  <data name="GoBack" xml:space="preserve">
+    <value>رجوع</value>
+  </data>
+  <data name="SubTotal" xml:space="preserve">
+    <value>المجموع الفرعي</value>
+  </data>
+  <data name="NetTotal" xml:space="preserve">
+    <value>المجموع الصافي</value>
+  </data>
+  <data name="Alert" xml:space="preserve">
+    <value>تنبيه</value>
+  </data>
+  <data name="PlateType" xml:space="preserve">
+    <value>نوع اللوحة</value>
+  </data>
+  <data name="Space" xml:space="preserve">
+    <value>مسافة</value>
+  </data>
+  <data name="InvalidPhoneNumber" xml:space="preserve">
+    <value>يرجى إدخال رقم هاتف سعودي صحيح (9 أرقام تبدأ بـ 5)</value>
+  </data>
+  <data name="FirstNameRequired" xml:space="preserve">
+    <value>الاسم الأول مطلوب</value>
+  </data>
+  <data name="CustomerNotFound" xml:space="preserve">
+    <value>العميل غير موجود. يمكنك إضافة عميل جديد أدناه.</value>
+  </data>
+  <data name="Cashier" xml:space="preserve">
+    <value>الكاشير</value>
+  </data>
+  <data name="NoBillsFound" xml:space="preserve">
+    <value>لا توجد فواتير</value>
+  </data>
+  <data name="DailyBills" xml:space="preserve">
+    <value>فواتير اليوم</value>
+  </data>
+  <data name="DailySalesTotal" xml:space="preserve">
+    <value>إجمالي مبيعات اليوم</value>
+  </data>
+  <data name="SlectTech" xml:space="preserve">
+    <value>+  اختيار الفني</value>
+  </data>
+  <data name="SelectLocation" xml:space="preserve">
+    <value>+  حدد مكان العمل</value>
+  </data>
+  <data name="Optional" xml:space="preserve">
+    <value>إختياري</value>
+  </data>
+  <data name="ClearAll" xml:space="preserve">
+    <value>مسح الكل</value>
+  </data>
+  <data name="NoSignature" xml:space="preserve">
+    <value>لا يوجد توقيع</value>
+  </data>
+  <data name="OrderNotes" xml:space="preserve">
+    <value>ملاحظات الطلب</value>
+  </data>
+  <data name="WriteHere" xml:space="preserve">
+    <value>اكتب هنا...</value>
+  </data>
+  <data name="SavingOrder" xml:space="preserve">
+    <value>جاري حفظ الطلب...</value>
+  </data>
+  <data name="BrandSelection" xml:space="preserve">
+    <value>اختر الماركة</value>
+  </data>
+  <data name="ModelSelection" xml:space="preserve">
+    <value>اختر الموديل</value>
+  </data>
+  <data name="AddNewVehicle" xml:space="preserve">
+    <value>إضافة مركبة جديدة</value>
+  </data>
+  <data name="Karage" xml:space="preserve">
+    <value>كراج</value>
+  </data>
+  <data name="TotalAmount" xml:space="preserve">
+    <value>المبلغ الإجمالي</value>
+  </data>
+  <data name="MyOrderCart" xml:space="preserve">
+    <value>سلة طلباتي</value>
+  </data>
+  <data name="Signature" xml:space="preserve">
+    <value>التوقيع</value>
+  </data>
+  <data name="CurrencySAR" xml:space="preserve">
+    <value>ر.س</value>
+  </data>
+  <data name="VATLabel" xml:space="preserve">
+    <value>ضريبة القيمة المضافة 15%</value>
+  </data>
 </root>

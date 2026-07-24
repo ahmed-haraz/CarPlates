@@ -30,7 +30,7 @@ public class CustomerCarLookupService(
             {
                 _loggingService.LogApi("customercars/scan", false, stopwatch.ElapsedMilliseconds);
                 var error = await response.Content.ReadAsStringAsync(cancellationToken);
-                return new CustomerCarScanResult(false, request.PlateNumber, null, null, null, null, null, null, null, false, false, false, $"API error: {error}");
+                return new CustomerCarScanResult(false, request.PlateNumber, null, null, null, null, null, null, null, false, false, false, null, $"API error: {error}");
             }
 
             var result = await response.Content.ReadFromJsonAsync<ScanApiResponse>(ApiJsonOptions.Default, cancellationToken);
@@ -38,14 +38,14 @@ public class CustomerCarLookupService(
 
             if (result == null)
             {
-                return new CustomerCarScanResult(false, request.PlateNumber, null, null, null, null, null, null, null, false, false, false, "Invalid response");
+                return new CustomerCarScanResult(false, request.PlateNumber, null, null, null, null, null, null, null, false, false, false, null, "Invalid response");
             }
 
             if (result.Car == null)
             {
                 // Legitimate "not registered" outcome, not an error - scanning no longer
                 // auto-registers a customer/car, so an unmatched plate is expected here.
-                return new CustomerCarScanResult(false, request.PlateNumber, null, null, null, null, null, null, null, false, false, false, null);
+                return new CustomerCarScanResult(false, request.PlateNumber, null, null, null, null, null, null, null, false, false, false, null, null);
             }
 
             var car = result.Car;
@@ -62,6 +62,7 @@ public class CustomerCarLookupService(
                 result.WasNewCar,
                 result.WasNewCustomer,
                 result.WasNewBranchLink,
+                car.Id,
                 null);
         }
         catch (Exception ex)
@@ -69,7 +70,7 @@ public class CustomerCarLookupService(
             stopwatch.Stop();
             _loggingService.LogApi("customercars/scan", false, stopwatch.ElapsedMilliseconds);
             _logger.LogError(ex, "Customer car scan error for {PlateNumber}", request.PlateNumber);
-            return new CustomerCarScanResult(false, request.PlateNumber, null, null, null, null, null, null, null, false, false, false, ex.Message);
+            return new CustomerCarScanResult(false, request.PlateNumber, null, null, null, null, null, null, null, false, false, false, null, ex.Message);
         }
     }
 

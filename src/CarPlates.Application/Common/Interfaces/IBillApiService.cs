@@ -13,7 +13,7 @@ public record CreateBillRequest(
     int? EngineerId,
     int? CarHeaderId,
     string? Notes,
-    string? RefrenceNo,
+    string? ReferenceNo,
     string? Signature,
     IReadOnlyList<CreateBillLineRequest> Details);
 
@@ -44,7 +44,7 @@ public record BillApiItem(
     double Balance,
     byte? PayType,
     string? Notes,
-    string? RefrenceNo,
+    string? ReferenceNo,
     int? TransDate,
     string? CustomerName,
     string? Signature);

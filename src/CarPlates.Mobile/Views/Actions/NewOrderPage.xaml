@@ -302,12 +302,12 @@
                                    FontAttributes="Bold"
                                    HorizontalOptions="End" />
                             <Label Grid.Column="1"
-                                   Text="اختياري"
+                                   Text="{loc:Translate Key=Optional}"
                                    FontSize="16"
                                    TextColor="{DynamicResource TextSecondary}"
                                    VerticalOptions="Center" />
                             <Label Grid.Column="2"
-                                   Text="مسح الكل"
+                                   Text="{loc:Translate Key=ClearAll}"
                                    FontSize="16"
                                    TextColor="{StaticResource Success}"
                                    VerticalOptions="Center">
@@ -341,7 +341,7 @@
 
                         <ScrollView Orientation="Horizontal" HorizontalScrollBarVisibility="Never">
                             <HorizontalStackLayout Spacing="12">
-                                <Button Text="+  حدد مكان العمل"
+                                <Button Text="{loc:Translate Key=SelectLocation}"
                                         BackgroundColor="{DynamicResource Surface}"
                                         TextColor="{DynamicResource TextSecondary}"
                                         BorderColor="{DynamicResource Border}"
@@ -349,7 +349,7 @@
                                         CornerRadius="22"
                                         Padding="18,8"
                                         Command="{Binding ShowLocationPopupCommand}" />
-                                <Button Text="+  اختيار الفني"
+                                <Button Text="{loc:Translate Key=SelectTechnician}"
                                         BackgroundColor="{DynamicResource Surface}"
                                         TextColor="{DynamicResource TextSecondary}"
                                         BorderColor="{DynamicResource Border}"
@@ -386,7 +386,7 @@
                                FontSize="28"
                                VerticalOptions="Center" />
                         <Label Grid.Column="1"
-                               Text="لا يوجد توقيع"
+                               Text="{loc:Translate Key=NoSignature}"
                                FontSize="16"
                                TextColor="{DynamicResource TextSecondary}"
                                VerticalOptions="Center" />
@@ -534,7 +534,7 @@
                             <Border Grid.Column="1"
                                     Style="{StaticResource Card}"
                                     Padding="8,4">
-                                <Label Text="Karage"
+                                <Label Text="{loc:Translate Key=Karage}"
                                        FontSize="12" />
                             </Border>
                             <Button Grid.Column="2"
@@ -744,7 +744,7 @@
                                 Padding="8">
                             <Grid ColumnDefinitions="Auto,*">
                                 <Label Grid.Column="0"
-                                       Text="SAR"
+                                       Text="{loc:Translate Key=CurrencySAR}"
                                        TextColor="{StaticResource Success}"
                                        VerticalOptions="Center"
                                        Margin="0,0,8,0" />
@@ -758,7 +758,7 @@
                                 Padding="8">
                             <Grid ColumnDefinitions="Auto,*">
                                 <Label Grid.Column="0"
-                                       Text="SAR"
+                                       Text="{loc:Translate Key=CurrencySAR}"
                                        TextColor="{StaticResource Success}"
                                        VerticalOptions="Center"
                                        Margin="0,0,8,0" />
@@ -1131,40 +1131,6 @@
             </Border>
         </Grid>
 
-        <!-- Modern Alert Popup -->
-        <Grid Grid.Row="1"
-              BackgroundColor="{StaticResource Overlay}"
-              IsVisible="{Binding IsAlertPopupVisible}">
-            <Border Style="{StaticResource Card}"
-                    Padding="24"
-                    VerticalOptions="Center"
-                    HorizontalOptions="Center"
-                    WidthRequest="300">
-                <VerticalStackLayout Spacing="16">
-                    <Image WidthRequest="48"
-                           HeightRequest="48"
-                           HorizontalOptions="Center"
-                           helpers:IconHelper.Glyph="&#xe909;" />
-                    <Label Text="{Binding AlertTitle}"
-                           FontSize="18"
-                           FontAttributes="Bold"
-                           HorizontalOptions="Center"
-                           HorizontalTextAlignment="Center" />
-                    <Label Text="{Binding AlertMessage}"
-                           FontSize="14"
-                           TextColor="{DynamicResource TextSecondary}"
-                           HorizontalOptions="Center"
-                           HorizontalTextAlignment="Center" />
-                    <Button Text="{loc:Translate Key=OK}"
-                            BackgroundColor="{StaticResource Primary}"
-                            TextColor="White"
-                            CornerRadius="12"
-                            HeightRequest="48"
-                            Command="{Binding DismissAlertCommand}" />
-                </VerticalStackLayout>
-            </Border>
-        </Grid>
-
         <!-- Cart Review Overlay -->
         <Grid Grid.Row="1"
               BackgroundColor="{StaticResource Overlay}"
@@ -1184,8 +1150,15 @@
 
                         <BoxView HeightRequest="1" Color="{DynamicResource Border}" />
 
+                        <!-- Loading indicator while submitting -->
+                        <VerticalStackLayout IsVisible="{Binding IsBusy}" HorizontalOptions="Center" Spacing="8">
+                            <ActivityIndicator IsRunning="{Binding IsBusy}" HeightRequest="32" WidthRequest="32" Color="{StaticResource Primary}" />
+                            <Label Text="جاري حفظ الطلب..." FontSize="14" TextColor="{DynamicResource TextSecondary}" HorizontalOptions="Center" />
+                        </VerticalStackLayout>
+
                         <CollectionView ItemsSource="{Binding CartItems}"
-                                        MaximumHeightRequest="300">
+                                        MaximumHeightRequest="300"
+                                        IsVisible="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}">
                             <CollectionView.ItemTemplate>
                                 <DataTemplate x:DataType="models:CartItem">
                                     <Border Style="{StaticResource Card}"
@@ -1222,16 +1195,16 @@
                             </CollectionView.ItemTemplate>
                         </CollectionView>
 
-                        <BoxView HeightRequest="1" Color="{DynamicResource Border}" />
+                        <BoxView HeightRequest="1" Color="{DynamicResource Border}" IsVisible="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}" />
 
-                        <Grid ColumnDefinitions="*,Auto">
+                        <Grid ColumnDefinitions="*,Auto" IsVisible="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}">
                             <Label Text="{loc:Translate Key=SubTotal}"
                                    FontSize="14" />
                             <Label Grid.Column="1"
                                    Text="{Binding SubTotal, StringFormat='{0:N2} SAR'}"
                                    FontSize="14" />
                         </Grid>
-                        <Grid ColumnDefinitions="*,Auto">
+                        <Grid ColumnDefinitions="*,Auto" IsVisible="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}">
                             <Label Text="{loc:Translate Key=Discounts}"
                                    FontSize="14"
                                    TextColor="{DynamicResource TextSecondary}" />
@@ -1240,15 +1213,15 @@
                                    FontSize="14"
                                    TextColor="{DynamicResource TextSecondary}" />
                         </Grid>
-                        <Grid ColumnDefinitions="*,Auto">
+                        <Grid ColumnDefinitions="*,Auto" IsVisible="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}">
                             <Label Text="{loc:Translate Key=Tax}"
                                    FontSize="14" />
                             <Label Grid.Column="1"
                                    Text="{Binding TaxTotal, StringFormat='{0:N2} SAR'}"
                                    FontSize="14" />
                         </Grid>
-                        <BoxView HeightRequest="1" Color="{DynamicResource Border}" />
-                        <Grid ColumnDefinitions="*,Auto">
+                        <BoxView HeightRequest="1" Color="{DynamicResource Border}" IsVisible="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}" />
+                        <Grid ColumnDefinitions="*,Auto" IsVisible="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}">
                             <Label Text="{loc:Translate Key=NetTotal}"
                                    FontSize="16"
                                    FontAttributes="Bold" />
@@ -1264,6 +1237,7 @@
                                 TextColor="White"
                                 CornerRadius="12"
                                 HeightRequest="48"
+                                IsVisible="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}"
                                 IsEnabled="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}"
                                 Command="{Binding SubmitOrderCommand}" />
 
@@ -1272,9 +1246,44 @@
                                 TextColor="{DynamicResource TextSecondary}"
                                 CornerRadius="12"
                                 HeightRequest="48"
+                                IsVisible="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}"
                                 Command="{Binding CloseCartReviewCommand}" />
                     </VerticalStackLayout>
                 </ScrollView>
+            </Border>
+        </Grid>
+
+        <!-- Modern Alert Popup -->
+        <Grid Grid.Row="1"
+              BackgroundColor="{StaticResource Overlay}"
+              IsVisible="{Binding IsAlertPopupVisible}">
+            <Border Style="{StaticResource Card}"
+                    Padding="24"
+                    VerticalOptions="Center"
+                    HorizontalOptions="Center"
+                    WidthRequest="300">
+                <VerticalStackLayout Spacing="16">
+                    <Image WidthRequest="48"
+                           HeightRequest="48"
+                           HorizontalOptions="Center"
+                           helpers:IconHelper.Glyph="&#xe909;" />
+                    <Label Text="{Binding AlertTitle}"
+                           FontSize="18"
+                           FontAttributes="Bold"
+                           HorizontalOptions="Center"
+                           HorizontalTextAlignment="Center" />
+                    <Label Text="{Binding AlertMessage}"
+                           FontSize="14"
+                           TextColor="{DynamicResource TextSecondary}"
+                           HorizontalOptions="Center"
+                           HorizontalTextAlignment="Center" />
+                    <Button Text="{loc:Translate Key=OK}"
+                            BackgroundColor="{StaticResource Primary}"
+                            TextColor="White"
+                            CornerRadius="12"
+                            HeightRequest="48"
+                            Command="{Binding DismissAlertCommand}" />
+                </VerticalStackLayout>
             </Border>
         </Grid>
 
@@ -1349,7 +1358,7 @@
                                 Padding="8">
                             <Grid ColumnDefinitions="Auto,*">
                                 <Label Grid.Column="0"
-                                       Text="SAR"
+                                       Text="{loc:Translate Key=CurrencySAR}"
                                        TextColor="{StaticResource Success}"
                                        VerticalOptions="Center"
                                        Margin="0,0,8,0" />

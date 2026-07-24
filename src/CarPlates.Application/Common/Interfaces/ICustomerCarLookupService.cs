@@ -37,6 +37,7 @@ public record CustomerCarScanResult(
     bool WasNewCar,
     bool WasNewCustomer,
     bool WasNewBranchLink,
+    long? CarHeaderId,
     string? ErrorMessage);
 
 public record CarMakeResult(int MakeID, string MakeName);

@@ -2,19 +2,20 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:CarPlates.Mobile.ViewModels"
+             xmlns:loc="clr-namespace:CarPlates.Mobile.Localization"
              x:Class="CarPlates.Mobile.Views.Actions.BrandSelectionPage"
              x:DataType="vm:NewOrderViewModel"
-             Title="علامة المركبة"
+             Title="{loc:Translate Key=BrandSelection}"
              BackgroundColor="{DynamicResource Background}">
 
     <Grid RowDefinitions="Auto,Auto,*,Auto">
         <Grid Grid.Row="0" Padding="16,12" ColumnDefinitions="Auto,*,Auto">
             <ImageButton Grid.Column="0" Source="arrow_right.png" WidthRequest="24" HeightRequest="24"/>
-            <Label Grid.Column="1" Text="علامة المركبة" FontSize="18" FontAttributes="Bold" HorizontalOptions="Center"/>
+            <Label Grid.Column="1" Text="{loc:Translate Key=BrandSelection}" FontSize="18" FontAttributes="Bold" HorizontalOptions="Center"/>
             <ImageButton Grid.Column="2" Source="arrow_left.png" WidthRequest="24" HeightRequest="24"/>
         </Grid>
 
-        <SearchBar Grid.Row="1" Placeholder="بحث" Margin="16,8" Text="{Binding BrandSearchText}"/>
+        <SearchBar Grid.Row="1" Placeholder="{loc:Translate Key=Search}" Margin="16,8" Text="{Binding BrandSearchText}"/>
 
         <CollectionView Grid.Row="2" ItemsSource="{Binding PagedBrands}">
             <CollectionView.ItemsLayout>

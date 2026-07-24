@@ -10,4 +10,5 @@ public record VehicleDetailsDto(
     DateTime? LastScanTime,
     int TotalScans,
     string? PhotoUrl,
-    string? PlateType = null);
+    string? PlateType = null,
+    long? CarHeaderId = null);

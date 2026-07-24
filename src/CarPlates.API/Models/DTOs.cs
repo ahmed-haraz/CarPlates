@@ -233,7 +233,7 @@ public record CreateBillDto(
     int? StoreId,
     byte? PayType,
     string? Notes,
-    string? RefrenceNo,
+    string? ReferenceNo,
     string? Signature,
     IReadOnlyList<CreateBillDetailDto> Details);
 
@@ -261,7 +261,7 @@ public record BillDto(
     double Balance,
     byte? PayType,
     string? Notes,
-    string? RefrenceNo,
+    string? ReferenceNo,
     int? TransDate,
     string? CustomerName,
     string? Signature,

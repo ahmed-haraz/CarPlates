@@ -68,12 +68,12 @@
                                 </Label.Text>
                             </Label>
 
-                            <!-- Plate Number (RefrenceNo) + Customer -->
+                            <!-- Plate Number (ReferenceNo) + Customer -->
                             <Label Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
                                    FontSize="13" TextColor="{DynamicResource TextSecondary}">
                                 <Label.Text>
                                     <MultiBinding StringFormat="Plate: {0} | Customer: {1}">
-                                        <Binding Path="RefrenceNo" />
+                                        <Binding Path="ReferenceNo" />
                                         <Binding Path="CustomerName" />
                                     </MultiBinding>
                                 </Label.Text>

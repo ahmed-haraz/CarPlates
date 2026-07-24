@@ -17,7 +17,7 @@ public class BillService(ApplicationDbContext context) : IBillService
 
         var details = dto.Details.Select(d =>
         {
-            var lineValue = (d.Qty * d.Price) - (d.DetailDiscount1 ?? 0) + (d.DetailTax ?? 0);
+            var lineValue = Math.Round((d.Qty * d.Price) - (d.DetailDiscount1 ?? 0) + (d.DetailTax ?? 0), 2);
 
             return new TransDetail
             {
@@ -25,7 +25,7 @@ public class BillService(ApplicationDbContext context) : IBillService
                 ItemBarCode = d.ItemBarCode,
                 Package = d.Package,
                 Qty = d.Qty,
-                Price = d.Price,
+                Price = Math.Round(d.Price, 2),
                 DetailDiscount1 = d.DetailDiscount1,
                 DetailTax = d.DetailTax,
                 DetailNotes = d.DetailNotes,
@@ -36,7 +36,7 @@ public class BillService(ApplicationDbContext context) : IBillService
             };
         }).ToList();
 
-        var total = details.Sum(d => d.Value ?? 0);
+        var total = Math.Round(details.Sum(d => d.Value ?? 0), 2);
 
         var header = new TransHeader
         {
@@ -47,7 +47,7 @@ public class BillService(ApplicationDbContext context) : IBillService
             StoreId = dto.StoreId,
             PayType = dto.PayType,
             Notes = dto.Notes,
-            RefrenceNo = dto.RefrenceNo,
+            ReferenceNo = dto.ReferenceNo,
             Signature = dto.Signature,
             TransDate = int.Parse(DateTime.UtcNow.ToString("yyyyMMdd")),
             Total = total,
@@ -109,7 +109,7 @@ public class BillService(ApplicationDbContext context) : IBillService
         {
             var searchLower = search.ToLower();
             query = query.Where(h =>
-                (h.RefrenceNo != null && h.RefrenceNo.ToLower().Contains(searchLower)) ||
+                (h.ReferenceNo != null && h.ReferenceNo.ToLower().Contains(searchLower)) ||
                 (h.DocTransNo != null && h.DocTransNo.ToLower().Contains(searchLower)));
         }
 
@@ -177,7 +177,7 @@ public class BillService(ApplicationDbContext context) : IBillService
             h.Balance ?? 0,
             h.PayType,
             h.Notes,
-            h.RefrenceNo,
+            h.ReferenceNo,
             h.TransDate,
             customerName,
             h.Signature,
