@@ -17,7 +17,11 @@ public class BillService(ApplicationDbContext context) : IBillService
 
         var details = dto.Details.Select(d =>
         {
-            var lineValue = Math.Round((d.Qty * d.Price) - (d.DetailDiscount1 ?? 0) + (d.DetailTax ?? 0), 2);
+            var lineValue = (double)Math.Round(
+                (decimal)d.Qty * (decimal)d.Price
+                - (decimal)(d.DetailDiscount1 ?? 0d)
+                + (decimal)(d.DetailTax ?? 0d),
+                2);
 
             return new TransDetail
             {
@@ -25,9 +29,9 @@ public class BillService(ApplicationDbContext context) : IBillService
                 ItemBarCode = d.ItemBarCode,
                 Package = d.Package,
                 Qty = d.Qty,
-                Price = Math.Round(d.Price, 2),
-                DetailDiscount1 = d.DetailDiscount1,
-                DetailTax = d.DetailTax,
+                Price = (double)Math.Round((decimal)d.Price, 2),
+                DetailDiscount1 = d.DetailDiscount1.HasValue ? (double)Math.Round((decimal)d.DetailDiscount1.Value, 2) : null,
+                DetailTax = d.DetailTax.HasValue ? (double)Math.Round((decimal)d.DetailTax.Value, 2) : null,
                 DetailNotes = d.DetailNotes,
                 Value = lineValue,
                 Status = 1,
@@ -36,7 +40,7 @@ public class BillService(ApplicationDbContext context) : IBillService
             };
         }).ToList();
 
-        var total = Math.Round(details.Sum(d => d.Value ?? 0), 2);
+        var total = (double)Math.Round(details.Sum(d => (decimal)(d.Value ?? 0d)), 2);
 
         var header = new TransHeader
         {
