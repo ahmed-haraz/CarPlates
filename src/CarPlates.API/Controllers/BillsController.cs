@@ -59,7 +59,7 @@ public class BillsController(IBillService billService, IUserContext userContext)
             return BadRequest(new { Message = "A bill needs at least one detail line" });
         }
 
-        var bill = await _billService.CreateAsync(dto, userContext.UserId, cancellationToken);
+        var bill = await _billService.CreateAsync(dto, userContext.UserId, userContext, cancellationToken);
         return CreatedAtAction(nameof(GetById), new { id = bill.HeaderId }, bill);
     }
 }

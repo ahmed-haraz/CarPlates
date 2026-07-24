@@ -585,6 +585,8 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
         EditingServiceItem = new ServiceItem
         {
             Id = item.Id,
+            ItemID = item.ItemID,
+            ItemBarCode = item.ItemBarCode,
             Name = item.Name,
             Category = item.Category,
             ItemType = item.ItemType,
@@ -599,6 +601,7 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
             TaxAmount = item.TaxAmount,
             TotalPrice = item.TotalPrice,
             Quantity = 1,
+            Package = item.Package,
             Icon = item.Icon
         };
         EditingPriceText = item.Price.ToString("F2");
@@ -915,6 +918,8 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
         return new ServiceItem
         {
             Id = item.ItemBarCode,
+            ItemID = item.Id,
+            ItemBarCode = item.ItemBarCode,
             Name = item.Name_En ?? item.Name_Ar ?? item.ItemBarCode,
             Category = item.ItemGroupName_En ?? item.ItemGroupName_Ar ?? string.Empty,
             ItemType = "Product",
@@ -927,6 +932,7 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
             IsTaxable = taxRate > 0,
             TaxType = "VAT",
             TaxAmount = taxAmount,
+            Package = item.Package.GetValueOrDefault(),
             TotalPrice = afterDiscount + taxAmount
         };
     }
@@ -1227,21 +1233,39 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
             var currentUser = await _authenticationService.GetCurrentUserAsync();
             var plateNo = SelectedVehicle?.PlateNumber ?? NewPlateNumber;
 
-            var billDetails = CartItems.Select(ci => new CreateBillLineRequest(
-                ItemBarCode: ci.ServiceItem.Id ?? string.Empty,
-                ItemID: 0,
-                Package: null,
-                Qty: ci.Quantity,
-                Price: Math.Round((double)ci.ServiceItem.Price, 2),
-                DetailDiscount1: null,
-                DetailTax: Math.Round((double)ci.ServiceItem.TaxAmount, 2),
-                DetailNotes: null)).ToList();
+            var billDetails = CartItems.Select(ci =>
+            {
+                var price = (double)ci.ServiceItem.Price;
+                var qty = ci.Quantity;
+                var discount1 = (double)ci.ServiceItem.Discount1;
+                var discount2 = (double)ci.ServiceItem.Discount2;
+                var discount3 = (double)ci.ServiceItem.Discount3;
+                var totalDiscount = discount1 + discount2 + discount3;
+                var discountRatio = price > 0 ? totalDiscount / price * 100 : 0;
+                var taxAmount = (double)ci.ServiceItem.TaxAmount;
+                var taxRatio = price > 0 ? taxAmount / price * 100 : 0;
+
+                return new CreateBillLineRequest(
+                    ItemBarCode: ci.ServiceItem.ItemBarCode ?? ci.ServiceItem.Id ?? string.Empty,
+                    ItemID: ci.ServiceItem.ItemID,
+                    Package: ci.ServiceItem.Package > 0 ? ci.ServiceItem.Package : null,
+                    Qty: qty,
+                    Price: Math.Round(price, 2),
+                    DetailDiscount1: Math.Round(totalDiscount, 2),
+                    DetailDiscount2: Math.Round(discount2, 2),
+                    DetailDiscount1Ratio: Math.Round(discountRatio, 2),
+                    DetailTax: Math.Round(taxAmount, 2),
+                    DetailTaxRatio: Math.Round(taxRatio, 2),
+                    DetailNotes: null);
+            }).ToList();
 
             var request = new CreateBillRequest(
                 BranchID: currentUser?.BranchId,
                 CustomerId: SelectedCustomer?.Id > 0 ? SelectedCustomer.Id : null,
                 EngineerId: SelectedTechnician != null && int.TryParse(SelectedTechnician.Id, out var engId) ? engId : null,
                 CarHeaderId: SelectedVehicle?.CarHeaderId,
+                SalesRepId: currentUser?.SalesRepID,
+                StoreId: currentUser?.StoreId,
                 Notes: OrderNotes,
                 ReferenceNo: plateNo,
                 Signature: SignatureData,

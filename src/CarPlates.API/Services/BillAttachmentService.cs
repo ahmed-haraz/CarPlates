@@ -12,7 +12,7 @@ public class BillAttachmentService(ApplicationDbContext context, IWebHostEnviron
 
     public async Task<long> UploadAsync(long headerId, string fileName, Stream content, string contentType, string attachmentType, long? userId, CancellationToken cancellationToken = default)
     {
-        var now = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+        var now = long.Parse(DateTime.Now.ToString("yyyyMMddHHmmss"));
 
         var attachmentDir = Path.Combine(_env.ContentRootPath, "uploads", "bills", headerId.ToString());
         Directory.CreateDirectory(attachmentDir);

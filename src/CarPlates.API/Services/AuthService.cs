@@ -38,7 +38,9 @@ public class AuthService(
             FullName = GetFullName(user),
             IsActive = true,
             BranchId = user.BranchID ?? 0,
-            SalesRepId = user.SalesRepID ?? 0
+            SalesRepId = user.SalesRepID ?? 0,
+            StoreId = user.StoreID ?? 0,
+            CarId = user.CarID ?? 0
         };
 
 
@@ -103,7 +105,9 @@ public class AuthService(
             FullName = GetFullName(user),
             IsActive = true,
             BranchId = user.BranchID ?? 0,
-            SalesRepId = user.SalesRepID ?? 0
+            SalesRepId = user.SalesRepID ?? 0,
+            StoreId = user.StoreID ?? 0,
+            CarId = user.CarID ?? 0
         };
 
 

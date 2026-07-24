@@ -17,8 +17,8 @@ public partial class CashierViewModel : BaseViewModel
     [ObservableProperty] private bool _canGoToPreviousPage;
     [ObservableProperty] private bool _canGoToNextPage;
     [ObservableProperty] private ObservableCollection<BillApiItem> _bills = new();
-    [ObservableProperty] private string? _dateFromText;
-    [ObservableProperty] private string? _dateToText;
+    [ObservableProperty] private DateTime _dateFrom;
+    [ObservableProperty] private DateTime _dateTo;
 
     private const int PageSize = 20;
 
@@ -26,6 +26,8 @@ public partial class CashierViewModel : BaseViewModel
     {
         _billApiService = billApiService;
         Title = AppResources.Cashier;
+        _dateFrom = DateTime.Today;
+        _dateTo = DateTime.Today;
     }
 
     [RelayCommand]
@@ -33,8 +35,8 @@ public partial class CashierViewModel : BaseViewModel
     {
         await ExecuteAsync(async () =>
         {
-            int? dateFrom = ParseDate(DateFromText);
-            int? dateTo = ParseDate(DateToText);
+            int? dateFrom = DateFrom != DateTime.MinValue ? int.Parse(DateFrom.ToString("yyyyMMdd")) : null;
+            int? dateTo = DateTo != DateTime.MinValue ? int.Parse(DateTo.ToString("yyyyMMdd")) : null;
 
             var result = await _billApiService.SearchBillsAsync(
                 SearchText, dateFrom, dateTo, CurrentPage, PageSize);
@@ -54,13 +56,6 @@ public partial class CashierViewModel : BaseViewModel
     }
 
     [RelayCommand]
-    private async Task SearchAsync()
-    {
-        CurrentPage = 1;
-        await LoadBillsAsync();
-    }
-
-    [RelayCommand]
     private async Task PreviousPageAsync()
     {
         if (CurrentPage <= 1) return;
@@ -76,16 +71,13 @@ public partial class CashierViewModel : BaseViewModel
         await LoadBillsAsync();
     }
 
-    private static int? ParseDate(string? text)
+    partial void OnDateFromChanged(DateTime value)
     {
-        if (string.IsNullOrWhiteSpace(text)) return null;
-        if (DateTime.TryParse(text, out var dt))
-            return int.Parse(dt.ToString("yyyyMMdd"));
-        return null;
+        _ = LoadBillsAsync();
     }
 
-    partial void OnSearchTextChanged(string value)
+    partial void OnDateToChanged(DateTime value)
     {
-        _ = SearchAsync();
+        _ = LoadBillsAsync();
     }
 }

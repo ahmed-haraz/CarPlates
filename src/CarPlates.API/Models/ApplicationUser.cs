@@ -10,4 +10,6 @@ public class ApplicationUser : IdentityUser
     public bool IsActive { get; set; } = true;
     public int BranchId { get; set; }
     public int SalesRepId { get; set; }
+    public int StoreId { get; set; }
+    public int CarId { get; set; }
 }

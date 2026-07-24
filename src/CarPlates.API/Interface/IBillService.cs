@@ -1,10 +1,11 @@
+using CarPlates.API.Common;
 using CarPlates.API.Models;
 
 namespace CarPlates.API.Interface;
 
 public interface IBillService
 {
-    Task<BillDto> CreateAsync(CreateBillDto dto, string? userId, CancellationToken cancellationToken = default);
+    Task<BillDto> CreateAsync(CreateBillDto dto, string? userId, IUserContext? userContext = null, CancellationToken cancellationToken = default);
 
     Task<BillDto?> GetByIdAsync(long headerId, CancellationToken cancellationToken = default);
 

@@ -168,11 +168,26 @@ public partial class ScannerViewModel : BaseViewModel
 
         await ExecuteAsync(async () =>
         {
+            double? lat = null;
+            double? lng = null;
+            try
+            {
+                var location = await Geolocation.GetLocationAsync(new GeolocationRequest(GeolocationAccuracy.Medium, TimeSpan.FromSeconds(5)));
+                if (location != null)
+                {
+                    lat = location.Latitude;
+                    lng = location.Longitude;
+                }
+            }
+            catch { }
+
             var command = new ScanVehicleCommand(
                 plateNumber.Value,
                 plateNumber.Type.ToString(),
                 plateNumber.Confidence,
-                null); // Photo path would be set by camera service
+                null,
+                lat,
+                lng);
 
             var result = await _mediator.Send(command);
 

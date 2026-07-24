@@ -98,7 +98,7 @@ public class CustomerCarService(ApplicationDbContext context) : ICustomerCarServ
             return new CustomerCarScanResultDto(MapToDto(existing), WasNewCar: false, WasNewCustomer: false, WasNewBranchLink: false);
         }
 
-        var now = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+        var now = long.Parse(DateTime.Now.ToString("yyyyMMddHHmmss"));
         var wasNewCustomer = false;
         var wasNewBranchLink = false;
 
@@ -113,9 +113,14 @@ public class CustomerCarService(ApplicationDbContext context) : ICustomerCarServ
 
         if (customer == null)
         {
+            var allCodes = await _context.WhCustomers
+                .Where(c => c.Code != null && c.Code.All(char.IsDigit))
+                .Select(c => c.Code)
+                .ToListAsync();
+            var maxNum = allCodes.Select(c => int.TryParse(c, out var n) ? n : 0).DefaultIfEmpty(0).Max();
             customer = new WhCustomer
             {
-                Code = $"MOB-{now}",
+                Code = (maxNum + 1).ToString(),
                 Name_Ar = string.IsNullOrWhiteSpace(dto.CustomerName_Ar) ? "غير معروف" : dto.CustomerName_Ar,
                 Name_En = string.IsNullOrWhiteSpace(dto.CustomerName_En) ? "Unknown" : dto.CustomerName_En,
                 Mobile = dto.CustomerMobile,
