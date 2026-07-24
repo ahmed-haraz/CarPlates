@@ -1,5 +1,6 @@
 using CarPlates.Application.Authentication.Commands;
 using CarPlates.Application.Common.Interfaces;
+using CarPlates.Shared.Constants;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CarPlates.Mobile.Localization;
@@ -8,6 +9,8 @@ using CarPlates.Mobile.Theming;
 using CarPlates.Mobile.Views.About;
 using MediatR;
 using System.Globalization;
+using System.Net.Http.Json;
+using System.Text.Json;
 using AppTheme = CarPlates.Domain.Enums.AppTheme;
 
 namespace CarPlates.Mobile.ViewModels;
@@ -19,15 +22,22 @@ public partial class SettingsViewModel : BaseViewModel
     private readonly IAuthenticationService _authService;
     private readonly IThemeService _themeService;
     private readonly IApiConnectivityService _connectivityService;
+    private readonly IHttpClientFactory _httpClientFactory;
 
     [ObservableProperty]
     private bool _isDarkMode;
 
     [ObservableProperty]
-    private string _selectedLanguage = "English";  // native-language label, matches AvailableLanguages
+    private string _selectedLanguage = "English";
 
     [ObservableProperty]
     private string _apiUrl = string.Empty;
+
+    [ObservableProperty]
+    private bool _isApiUrlLocked = true;
+
+    [ObservableProperty]
+    private string _apiUrlPassword = string.Empty;
 
     [ObservableProperty]
     private float _ocrConfidence = 0.75f;
@@ -46,6 +56,7 @@ public partial class SettingsViewModel : BaseViewModel
         IAuthenticationService authService,
         IThemeService themeService,
         IApiConnectivityService connectivityService,
+        IHttpClientFactory httpClientFactory,
         INavigationService navigation) : base(navigation)
     {
         _mediator = mediator;
@@ -53,6 +64,7 @@ public partial class SettingsViewModel : BaseViewModel
         _authService = authService;
         _themeService = themeService;
         _connectivityService = connectivityService;
+        _httpClientFactory = httpClientFactory;
         Title = AppResources.Settings;
     }
 
@@ -84,9 +96,6 @@ public partial class SettingsViewModel : BaseViewModel
 
             await _settingsService.SaveSettingsAsync(settings);
 
-            // Apply immediately - no restart needed. Switches every {loc:Translate}
-            // binding and AppResources.* call in one shot, and flips the current
-            // root's FlowDirection for Arabic/English RTL vs LTR layout.
             LocalizationResourceManager.Instance.SetCulture(new CultureInfo(language));
             await Navigation.ApplyCurrentFlowDirectionAsync();
             _themeService.ApplyTheme(theme);
@@ -96,13 +105,54 @@ public partial class SettingsViewModel : BaseViewModel
     }
 
     [RelayCommand]
+    private async Task UnlockApiUrlAsync()
+    {
+        if (string.IsNullOrWhiteSpace(ApiUrlPassword))
+        {
+            await Navigation.DisplayAlertAsync(AppResources.Error, "Please enter the settings password");
+            return;
+        }
+
+        await ExecuteAsync(async () =>
+        {
+            var client = _httpClientFactory.CreateClient("CarPlatesApi");
+            var baseUrl = client.BaseAddress?.ToString()?.TrimEnd('/');
+            var apiBase = baseUrl?.Replace("/api/v1", "") ?? "https://online.arkancloud.com:7072";
+
+            var response = await client.PostAsJsonAsync("settings/verify-password",
+                new { companyCode = AuthConstants.DefaultCompanyCode, password = ApiUrlPassword });
+
+            if (!response.IsSuccessStatusCode)
+            {
+                await Navigation.DisplayAlertAsync(AppResources.Error, "Failed to verify password");
+                return;
+            }
+
+            var result = await response.Content.ReadFromJsonAsync<VerifyResult>();
+            if (result?.IsValid == true)
+            {
+                IsApiUrlLocked = false;
+                ApiUrlPassword = string.Empty;
+            }
+            else
+            {
+                await Navigation.DisplayAlertAsync(AppResources.Error, "Invalid password");
+            }
+        });
+    }
+
+    [RelayCommand]
+    private void LockApiUrl()
+    {
+        IsApiUrlLocked = true;
+        ApiUrlPassword = string.Empty;
+    }
+
+    [RelayCommand]
     private async Task TestConnectionAsync()
     {
         await ExecuteAsync(async () =>
         {
-            // Uses whatever is currently typed in the ApiUrl field, saving it
-            // first so the test reflects exactly what "Save Settings" would
-            // apply - avoids a confusing "it worked here but not after I saved" gap.
             await _settingsService.SetApiUrlAsync(ApiUrl);
             var result = await _connectivityService.TestConnectionAsync();
 
@@ -146,4 +196,6 @@ public partial class SettingsViewModel : BaseViewModel
     {
         await Navigation.PushPageAsync<AboutPage>();
     }
+
+    private record VerifyResult(bool IsValid);
 }

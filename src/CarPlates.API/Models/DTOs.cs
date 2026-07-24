@@ -1,7 +1,8 @@
 namespace CarPlates.API.Models;
 
 // Auth DTOs
-public record LoginRequestDto(string Username, string Password);
+public record DeviceInfoDto(string? CompanyCode, string? DeviceId, string? AppVersion, string? Manufacturer, string? Model, string? DeviceName);
+public record LoginRequestDto(string Username, string Password, DeviceInfoDto? Device = null);
 public record LoginResponseDto(string AccessToken, string RefreshToken, UserDto User);
 public record RefreshTokenRequestDto(string RefreshToken);
 public record LogoutRequestDto(string RefreshToken);
@@ -56,7 +57,8 @@ public record ScanRecordCreateDto(
     string? DeviceId,
     double? Latitude,
     double? Longitude,
-    int BranchID);
+    int BranchID,
+    string? Notes = null);
 
 // Dashboard/Stats DTOs
 public record DashboardStatisticsDto(
@@ -222,7 +224,10 @@ public record CreateBillDetailDto(
     double Qty,
     double Price,
     double? DetailDiscount1 = null,
+    double? DetailDiscount2 = null,
+    double? DetailDiscount1Ratio = null,
     double? DetailTax = null,
+    double? DetailTaxRatio = null,
     string? DetailNotes = null);
 
 public record CreateBillDto(
@@ -230,6 +235,7 @@ public record CreateBillDto(
     int? CustomerId,
     int? EngineerId,
     int? CarHeaderId,
+    int? SalesRepId,
     int? StoreId,
     byte? PayType,
     string? Notes,
@@ -245,7 +251,10 @@ public record BillDetailDto(
     double Qty,
     double Price,
     double? DetailDiscount1,
+    double? DetailDiscount2,
+    double? DetailDiscount1Ratio,
     double? DetailTax,
+    double? DetailTaxRatio,
     double? Value);
 
 public record BillDto(

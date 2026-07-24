@@ -18,6 +18,7 @@ public record ItemLookupResult(
     string? Name_Ar,
     string? Name_En,
     string ItemBarCode,
+    int? Package,
     double? PackagePrice,
     int? ItemGroupId,
     string? ItemGroupName_Ar,

@@ -12,6 +12,8 @@ public record CreateBillRequest(
     int? CustomerId,
     int? EngineerId,
     int? CarHeaderId,
+    int? SalesRepId,
+    int? StoreId,
     string? Notes,
     string? ReferenceNo,
     string? Signature,
@@ -24,7 +26,10 @@ public record CreateBillLineRequest(
     double Qty,
     double Price,
     double? DetailDiscount1,
+    double? DetailDiscount2,
+    double? DetailDiscount1Ratio,
     double? DetailTax,
+    double? DetailTaxRatio,
     string? DetailNotes);
 
 public record BillApiResult(bool Success, long? HeaderId, string? ErrorMessage);

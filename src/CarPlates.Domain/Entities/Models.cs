@@ -33,6 +33,8 @@ public partial class Vehicle : ObservableObject
 public partial class ServiceItem : ObservableObject
 {
     [ObservableProperty] private string? _id;
+    [ObservableProperty] private long _itemID;
+    [ObservableProperty] private string? _itemBarCode;
     [ObservableProperty] private string? _name;
     [ObservableProperty] private string? _category; // الفئة
     [ObservableProperty] private string? _itemType; // نوع الصنف (Product/Service)
@@ -47,6 +49,7 @@ public partial class ServiceItem : ObservableObject
     [ObservableProperty] private decimal _taxAmount;
     [ObservableProperty] private decimal _totalPrice; // Price - Discounts + Tax
     [ObservableProperty] private int _quantity = 1;
+    [ObservableProperty] private int _package;
     [ObservableProperty] private string? _icon;
 }
 

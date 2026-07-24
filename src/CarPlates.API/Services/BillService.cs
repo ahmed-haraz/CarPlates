@@ -1,4 +1,5 @@
 using CarPlates.API.Common;
+using CarPlates.API.Common;
 using CarPlates.API.Data;
 using CarPlates.API.Interface;
 using CarPlates.API.Models;
@@ -10,53 +11,115 @@ public class BillService(ApplicationDbContext context) : IBillService
 {
     private readonly ApplicationDbContext _context = context;
 
-    public async Task<BillDto> CreateAsync(CreateBillDto dto, string? userId, CancellationToken cancellationToken = default)
+    public async Task<BillDto> CreateAsync(CreateBillDto dto, string? userId, IUserContext? userContext = null, CancellationToken cancellationToken = default)
     {
-        var userIdLong = long.TryParse(userId, out var uid) ? (long?)uid : null;
-        var now = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+        var userIdLong = long.TryParse(userId, out var uid) ? uid : 0L;
+        var now = long.Parse(DateTime.Now.ToString("yyyyMMddHHmmss"));
+
+        var salesRepId = dto.SalesRepId ?? userContext?.SalesRepId ?? 0;
+        var storeId = dto.StoreId ?? userContext?.StoreId ?? 0;
+        var branchId = dto.BranchID ?? userContext?.BranchId ?? 0;
 
         var details = dto.Details.Select(d =>
         {
-            var lineValue = Math.Round((d.Qty * d.Price) - (d.DetailDiscount1 ?? 0) + (d.DetailTax ?? 0), 2);
+            var lineQty = d.Qty > 0 ? d.Qty : 1d;
+            var linePrice = d.Price > 0 ? d.Price : 0d;
+            var lineDiscount1 = d.DetailDiscount1 ?? 0d;
+            var lineDiscount2 = d.DetailDiscount2 ?? 0d;
+            var lineDiscount1Ratio = d.DetailDiscount1Ratio ?? 0d;
+            var lineTax = d.DetailTax ?? 0d;
+            var lineTaxRatio = d.DetailTaxRatio ?? 0d;
+            var lineValue = (double)Math.Round(
+                (decimal)lineQty * (decimal)linePrice
+                - (decimal)lineDiscount1
+                + (decimal)lineTax,
+                2);
 
             return new TransDetail
             {
                 ItemID = d.ItemID,
-                ItemBarCode = d.ItemBarCode,
+                ItemBarCode = string.IsNullOrWhiteSpace(d.ItemBarCode) ? "" : d.ItemBarCode,
                 Package = d.Package,
-                Qty = d.Qty,
-                Price = Math.Round(d.Price, 2),
-                DetailDiscount1 = d.DetailDiscount1,
-                DetailTax = d.DetailTax,
-                DetailNotes = d.DetailNotes,
+                Qty = lineQty,
+                Price = (double)Math.Round((decimal)linePrice, 2),
+                DetailDiscount1 = lineDiscount1,
+                DetailDiscount2 = lineDiscount2,
+                DetailDiscount1Ratio = lineDiscount1Ratio,
+                DetailTax = lineTax,
+                DetailTaxRatio = lineTaxRatio,
                 Value = lineValue,
+                DetailNotes = d.DetailNotes ?? "",
                 Status = 1,
+                DiamonQty = 0,
                 InsertUserID = userIdLong,
+                UpdateUserID = userIdLong,
                 InsertDateTime = now,
+                UpdateDateTime = now,
             };
         }).ToList();
 
-        var total = Math.Round(details.Sum(d => d.Value ?? 0), 2);
+        var total = (double)Math.Round(details.Sum(d => (decimal)(d.Value ?? 0d)), 2);
+
+        // --- Req 1: Auto-create car in wh_customercars if not exists ---
+        int? carHeaderId = dto.CarHeaderId;
+        if (!carHeaderId.HasValue && !string.IsNullOrWhiteSpace(dto.ReferenceNo) && dto.CustomerId.HasValue)
+        {
+            var existingCar = await _context.CustomerCars
+                .AsNoTracking()
+                .FirstOrDefaultAsync(c => c.PlateNumber == dto.ReferenceNo.ToUpperInvariant(), cancellationToken);
+            if (existingCar == null)
+            {
+                var newCar = new CustomerCar
+                {
+                    CustomerID = dto.CustomerId.Value,
+                    PlateNumber = dto.ReferenceNo.ToUpperInvariant(),
+                    Status = 1,
+                    InsertUserID = userIdLong,
+                    UpdateUserID = userIdLong,
+                    InsertDateTime = now,
+                    UpdateDateTime = now,
+                };
+                _context.CustomerCars.Add(newCar);
+                await _context.SaveChangesAsync(cancellationToken);
+                carHeaderId = (int)newCar.Id;
+            }
+            else
+            {
+                carHeaderId = (int)existingCar.Id;
+            }
+        }
+
+        // --- Req 9: Auto-generate Code for TransHeader ---
+        var maxCode = await _context.TransHeaders
+            .MaxAsync(h => (int?)h.Code, cancellationToken) ?? 0;
+        var newCode = maxCode + 1;
 
         var header = new TransHeader
         {
-            BranchID = dto.BranchID,
-            CustomerId = dto.CustomerId,
-            EngineerId = dto.EngineerId,
-            CarHeaderId = dto.CarHeaderId,
-            StoreId = dto.StoreId,
-            PayType = dto.PayType,
-            Notes = dto.Notes,
-            ReferenceNo = dto.ReferenceNo,
-            Signature = dto.Signature,
-            TransDate = int.Parse(DateTime.UtcNow.ToString("yyyyMMdd")),
+            TransType = 3,
+            Code = newCode,
+            TransDate = int.Parse(DateTime.Now.ToString("yyyyMMdd")),
+            BranchID = branchId,
+            CustomerId = dto.CustomerId ?? 0,
+            EngineerId = dto.EngineerId ?? 0,
+            CarHeaderId = carHeaderId ?? 0,
+            SalesRepId = salesRepId,
+            StoreId = storeId,
+            PayType = 2,
+            HdrDiscount = 0,
+            HdrTax = 0,
+            Notes = dto.Notes ?? "",
+            ReferenceNo = dto.ReferenceNo ?? "",
+            Signature = dto.Signature ?? "",
             Total = total,
             NetTotal = total,
-            Paid = 0,
-            Balance = total,
+            Paid = total,
+            Balance = 0,
             Status = 1,
             InsertUserID = userIdLong,
+            UpdateUserID = userIdLong,
             InsertDateTime = now,
+            UpdateDateTime = now,
             Details = details,
         };
 
@@ -138,7 +201,7 @@ public class BillService(ApplicationDbContext context) : IBillService
 
     public async Task<(int todayBills, double todayTotal)> GetTodayStatsAsync(string? userId = null, int? branchId = null, CancellationToken cancellationToken = default)
     {
-        var today = int.Parse(DateTime.UtcNow.ToString("yyyyMMdd"));
+        var today = int.Parse(DateTime.Now.ToString("yyyyMMdd"));
         var query = _context.TransHeaders.AsNoTracking()
             .Where(h => h.TransDate == today && h.Status == 1);
 
@@ -183,6 +246,6 @@ public class BillService(ApplicationDbContext context) : IBillService
             h.Signature,
             h.Details.Select(d => new BillDetailDto(
                 d.DetailId, d.ItemID, d.ItemBarCode, d.Package, d.Qty, d.Price,
-                d.DetailDiscount1, d.DetailTax, d.Value)).ToList());
+                d.DetailDiscount1, d.DetailDiscount2, d.DetailDiscount1Ratio, d.DetailTax, d.DetailTaxRatio, d.Value)).ToList());
     }
 }

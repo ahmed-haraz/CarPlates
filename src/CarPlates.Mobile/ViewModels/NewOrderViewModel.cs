@@ -142,121 +142,121 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
     // so the picker can show a color circle, not just a name.
     public ObservableCollection<ColorOption> Colors { get; } =
     [
-        new("Black", Color.FromArgb("#000000")),
-        new("Jet Black", Color.FromArgb("#0A0A0A")),
-        new("Obsidian Black", Color.FromArgb("#1C1C1C")),
-        new("Midnight Black", Color.FromArgb("#191970")),
-        new("Graphite", Color.FromArgb("#383838")),
-        new("Charcoal", Color.FromArgb("#36454F")),
-        new("Dark Gray", Color.FromArgb("#555555")),
-        new("Gray", Color.FromArgb("#808080")),
-        new("Silver", Color.FromArgb("#C0C0C0")),
-        new("Brilliant Silver", Color.FromArgb("#C8C8C8")),
-        new("Aluminum", Color.FromArgb("#A9A9A9")),
-        new("Titanium", Color.FromArgb("#878681")),
-        new("Gunmetal", Color.FromArgb("#2A3439")),
-        new("Nardo Gray", Color.FromArgb("#8D9093")),
+        new("Black", "أسود", "#000000", Color.FromArgb("#000000")),
+        new("Jet Black", "أسود جيت", "#0A0A0A", Color.FromArgb("#0A0A0A")),
+        new("Obsidian Black", "أسود أوبسيديان", "#1C1C1C", Color.FromArgb("#1C1C1C")),
+        new("Midnight Black", "أسود منتصف الليل", "#191970", Color.FromArgb("#191970")),
+        new("Graphite", "جرافيت", "#383838", Color.FromArgb("#383838")),
+        new("Charcoal", "فحمي", "#36454F", Color.FromArgb("#36454F")),
+        new("Dark Gray", "رمادي غامق", "#555555", Color.FromArgb("#555555")),
+        new("Gray", "رمادي", "#808080", Color.FromArgb("#808080")),
+        new("Silver", "فضي", "#C0C0C0", Color.FromArgb("#C0C0C0")),
+        new("Brilliant Silver", "فضي لامع", "#C8C8C8", Color.FromArgb("#C8C8C8")),
+        new("Aluminum", "ألمنيوم", "#A9A9A9", Color.FromArgb("#A9A9A9")),
+        new("Titanium", "تيتانيوم", "#878681", Color.FromArgb("#878681")),
+        new("Gunmetal", "رمادي معدني", "#2A3439", Color.FromArgb("#2A3439")),
+        new("Nardo Gray", "رمادي ناردو", "#8D9093", Color.FromArgb("#8D9093")),
 
-        new("White", Color.FromArgb("#FFFFFF")),
-        new("Pearl White", Color.FromArgb("#F8F8FF")),
-        new("Ivory White", Color.FromArgb("#FFFFF0")),
-        new("Snow White", Color.FromArgb("#FFFAFA")),
-        new("Cream", Color.FromArgb("#FFFDD0")),
-        new("Beige", Color.FromArgb("#F5F5DC")),
-        new("Champagne", Color.FromArgb("#F7E7CE")),
+        new("White", "أبيض", "#FFFFFF", Color.FromArgb("#FFFFFF")),
+        new("Pearl White", "أبيض لؤلؤي", "#F8F8FF", Color.FromArgb("#F8F8FF")),
+        new("Ivory White", "أبيض عاجي", "#FFFFF0", Color.FromArgb("#FFFFF0")),
+        new("Snow White", "أبيض ثلجي", "#FFFAFA", Color.FromArgb("#FFFAFA")),
+        new("Cream", "كريمي", "#FFFDD0", Color.FromArgb("#FFFDD0")),
+        new("Beige", "بيج", "#F5F5DC", Color.FromArgb("#F5F5DC")),
+        new("Champagne", "شمباني", "#F7E7CE", Color.FromArgb("#F7E7CE")),
 
-        new("Gold", Color.FromArgb("#FFD700")),
-        new("Rose Gold", Color.FromArgb("#B76E79")),
-        new("Bronze", Color.FromArgb("#CD7F32")),
-        new("Copper", Color.FromArgb("#B87333")),
+        new("Gold", "ذهبي", "#FFD700", Color.FromArgb("#FFD700")),
+        new("Rose Gold", "ذهب وردي", "#B76E79", Color.FromArgb("#B76E79")),
+        new("Bronze", "برونزي", "#CD7F32", Color.FromArgb("#CD7F32")),
+        new("Copper", "نحاسي", "#B87333", Color.FromArgb("#B87333")),
 
-        new("Brown", Color.FromArgb("#8B4513")),
-        new("Chocolate Brown", Color.FromArgb("#7B3F00")),
-        new("Mocha", Color.FromArgb("#967969")),
-        new("Mahogany", Color.FromArgb("#C04000")),
+        new("Brown", "بني", "#8B4513", Color.FromArgb("#8B4513")),
+        new("Chocolate Brown", "بني شوكولاتة", "#7B3F00", Color.FromArgb("#7B3F00")),
+        new("Mocha", "موكا", "#967969", Color.FromArgb("#967969")),
+        new("Mahogany", "ماهوجني", "#C04000", Color.FromArgb("#C04000")),
 
-        new("Red", Color.FromArgb("#FF0000")),
-        new("Bright Red", Color.FromArgb("#FF2400")),
-        new("Candy Red", Color.FromArgb("#D2042D")),
-        new("Ruby Red", Color.FromArgb("#9B111E")),
-        new("Crimson", Color.FromArgb("#DC143C")),
-        new("Burgundy", Color.FromArgb("#800020")),
-        new("Maroon", Color.FromArgb("#800000")),
-        new("Wine Red", Color.FromArgb("#722F37")),
+        new("Red", "أحمر", "#FF0000", Color.FromArgb("#FF0000")),
+        new("Bright Red", "أحمر فاقع", "#FF2400", Color.FromArgb("#FF2400")),
+        new("Candy Red", "أحمر حلوى", "#D2042D", Color.FromArgb("#D2042D")),
+        new("Ruby Red", "أحمر ياقوتي", "#9B111E", Color.FromArgb("#9B111E")),
+        new("Crimson", "أحمر قرمزي", "#DC143C", Color.FromArgb("#DC143C")),
+        new("Burgundy", "بورجوندي", "#800020", Color.FromArgb("#800020")),
+        new("Maroon", "أحمر كستنائي", "#800000", Color.FromArgb("#800000")),
+        new("Wine Red", "أحمر خمري", "#722F37", Color.FromArgb("#722F37")),
 
-        new("Orange", Color.FromArgb("#FFA500")),
-        new("Burnt Orange", Color.FromArgb("#CC5500")),
-        new("Copper Orange", Color.FromArgb("#DA8A67")),
+        new("Orange", "برتقالي", "#FFA500", Color.FromArgb("#FFA500")),
+        new("Burnt Orange", "برتقالي محروق", "#CC5500", Color.FromArgb("#CC5500")),
+        new("Copper Orange", "برتقالي نحاسي", "#DA8A67", Color.FromArgb("#DA8A67")),
 
-        new("Yellow", Color.FromArgb("#FFFF00")),
-        new("Canary Yellow", Color.FromArgb("#FFEF00")),
-        new("Lemon Yellow", Color.FromArgb("#FFF44F")),
-        new("Mustard", Color.FromArgb("#E1AD01")),
+        new("Yellow", "أصفر", "#FFFF00", Color.FromArgb("#FFFF00")),
+        new("Canary Yellow", "أصفر كناري", "#FFEF00", Color.FromArgb("#FFEF00")),
+        new("Lemon Yellow", "أصفر ليموني", "#FFF44F", Color.FromArgb("#FFF44F")),
+        new("Mustard", "خردلي", "#E1AD01", Color.FromArgb("#E1AD01")),
 
-        new("Green", Color.FromArgb("#008000")),
-        new("British Racing Green", Color.FromArgb("#004225")),
-        new("Forest Green", Color.FromArgb("#228B22")),
-        new("Dark Green", Color.FromArgb("#006400")),
-        new("Olive Green", Color.FromArgb("#556B2F")),
-        new("Lime Green", Color.FromArgb("#32CD32")),
-        new("Mint Green", Color.FromArgb("#98FF98")),
-        new("Emerald Green", Color.FromArgb("#50C878")),
+        new("Green", "أخضر", "#008000", Color.FromArgb("#008000")),
+        new("British Racing Green", "أخضر سباق بريطاني", "#004225", Color.FromArgb("#004225")),
+        new("Forest Green", "أخضر غابي", "#228B22", Color.FromArgb("#228B22")),
+        new("Dark Green", "أخضر غامق", "#006400", Color.FromArgb("#006400")),
+        new("Olive Green", "أخضر زيتوني", "#556B2F", Color.FromArgb("#556B2F")),
+        new("Lime Green", "أخضر ليموني", "#32CD32", Color.FromArgb("#32CD32")),
+        new("Mint Green", "أخضر نعناعي", "#98FF98", Color.FromArgb("#98FF98")),
+        new("Emerald Green", "أخضر زمردي", "#50C878", Color.FromArgb("#50C878")),
 
-        new("Blue", Color.FromArgb("#0000FF")),
-        new("Navy Blue", Color.FromArgb("#000080")),
-        new("Dark Blue", Color.FromArgb("#00008B")),
-        new("Royal Blue", Color.FromArgb("#4169E1")),
-        new("Electric Blue", Color.FromArgb("#7DF9FF")),
-        new("Sky Blue", Color.FromArgb("#87CEEB")),
-        new("Light Blue", Color.FromArgb("#ADD8E6")),
-        new("Aqua Blue", Color.FromArgb("#00FFFF")),
-        new("Teal", Color.FromArgb("#008080")),
-        new("Turquoise", Color.FromArgb("#40E0D0")),
-        new("Cyan", Color.FromArgb("#00FFFF")),
+        new("Blue", "أزرق", "#0000FF", Color.FromArgb("#0000FF")),
+        new("Navy Blue", "أزرق كحلي", "#000080", Color.FromArgb("#000080")),
+        new("Dark Blue", "أزرق غامق", "#00008B", Color.FromArgb("#00008B")),
+        new("Royal Blue", "أزرق ملكي", "#4169E1", Color.FromArgb("#4169E1")),
+        new("Electric Blue", "أزرق كهربائي", "#7DF9FF", Color.FromArgb("#7DF9FF")),
+        new("Sky Blue", "أزرق سماوي", "#87CEEB", Color.FromArgb("#87CEEB")),
+        new("Light Blue", "أزرق فاتح", "#ADD8E6", Color.FromArgb("#ADD8E6")),
+        new("Aqua Blue", "أزرق مائي", "#00FFFF", Color.FromArgb("#00FFFF")),
+        new("Teal", "شرشيري", "#008080", Color.FromArgb("#008080")),
+        new("Turquoise", "فيروزي", "#40E0D0", Color.FromArgb("#40E0D0")),
+        new("Cyan", "سيان", "#00FFFF", Color.FromArgb("#00FFFF")),
 
-        new("Purple", Color.FromArgb("#800080")),
-        new("Deep Purple", Color.FromArgb("#673AB7")),
-        new("Violet", Color.FromArgb("#8F00FF")),
-        new("Lavender", Color.FromArgb("#E6E6FA")),
-        new("Plum", Color.FromArgb("#8E4585")),
-        new("Magenta", Color.FromArgb("#FF00FF")),
+        new("Purple", "أرجواني", "#800080", Color.FromArgb("#800080")),
+        new("Deep Purple", "أرجواني غامق", "#673AB7", Color.FromArgb("#673AB7")),
+        new("Violet", "بنفسجي", "#8F00FF", Color.FromArgb("#8F00FF")),
+        new("Lavender", "خزامي", "#E6E6FA", Color.FromArgb("#E6E6FA")),
+        new("Plum", "برقوقي", "#8E4585", Color.FromArgb("#8E4585")),
+        new("Magenta", "ماجنتا", "#FF00FF", Color.FromArgb("#FF00FF")),
 
-        new("Pink", Color.FromArgb("#FFC0CB")),
-        new("Hot Pink", Color.FromArgb("#FF69B4")),
-        new("Coral", Color.FromArgb("#FF7F50")),
+        new("Pink", "وردي", "#FFC0CB", Color.FromArgb("#FFC0CB")),
+        new("Hot Pink", "وردي فاقع", "#FF69B4", Color.FromArgb("#FF69B4")),
+        new("Coral", "مرجاني", "#FF7F50", Color.FromArgb("#FF7F50")),
 
-        new("Pearl Blue", Color.FromArgb("#6A8DFF")),
-        new("Pearl Black", Color.FromArgb("#1A1A1A")),
-        new("Pearl Red", Color.FromArgb("#AA0114")),
-        new("Pearl Gray", Color.FromArgb("#B0B0B0")),
+        new("Pearl Blue", "أزرق لؤلؤي", "#6A8DFF", Color.FromArgb("#6A8DFF")),
+        new("Pearl Black", "أسود لؤلؤي", "#1A1A1A", Color.FromArgb("#1A1A1A")),
+        new("Pearl Red", "أحمر لؤلؤي", "#AA0114", Color.FromArgb("#AA0114")),
+        new("Pearl Gray", "رمادي لؤلؤي", "#B0B0B0", Color.FromArgb("#B0B0B0")),
 
-        new("Metallic Silver", Color.FromArgb("#BFC1C2")),
-        new("Metallic Gray", Color.FromArgb("#6E7072")),
-        new("Metallic Blue", Color.FromArgb("#3B6EA5")),
-        new("Metallic Green", Color.FromArgb("#2E8B57")),
-        new("Metallic Red", Color.FromArgb("#B22222")),
-        new("Metallic Brown", Color.FromArgb("#8B5A2B")),
-        new("Metallic Bronze", Color.FromArgb("#8C7853")),
+        new("Metallic Silver", "فضي معدني", "#BFC1C2", Color.FromArgb("#BFC1C2")),
+        new("Metallic Gray", "رمادي معدني", "#6E7072", Color.FromArgb("#6E7072")),
+        new("Metallic Blue", "أزرق معدني", "#3B6EA5", Color.FromArgb("#3B6EA5")),
+        new("Metallic Green", "أخضر معدني", "#2E8B57", Color.FromArgb("#2E8B57")),
+        new("Metallic Red", "أحمر معدني", "#B22222", Color.FromArgb("#B22222")),
+        new("Metallic Brown", "بني معدني", "#8B5A2B", Color.FromArgb("#8B5A2B")),
+        new("Metallic Bronze", "برونزي معدني", "#8C7853", Color.FromArgb("#8C7853")),
 
-        new("Matte Black", Color.FromArgb("#121212")),
-        new("Matte Gray", Color.FromArgb("#696969")),
-        new("Matte White", Color.FromArgb("#F5F5F5")),
-        new("Matte Blue", Color.FromArgb("#1E3A8A")),
-        new("Matte Green", Color.FromArgb("#355E3B")),
-        new("Matte Red", Color.FromArgb("#8B0000")),
+        new("Matte Black", "أسود مطفي", "#121212", Color.FromArgb("#121212")),
+        new("Matte Gray", "رمادي مطفي", "#696969", Color.FromArgb("#696969")),
+        new("Matte White", "أبيض مطفي", "#F5F5F5", Color.FromArgb("#F5F5F5")),
+        new("Matte Blue", "أزرق مطفي", "#1E3A8A", Color.FromArgb("#1E3A8A")),
+        new("Matte Green", "أخضر مطفي", "#355E3B", Color.FromArgb("#355E3B")),
+        new("Matte Red", "أحمر مطفي", "#8B0000", Color.FromArgb("#8B0000")),
 
-        new("Satin Black", Color.FromArgb("#242424")),
-        new("Satin Silver", Color.FromArgb("#AFAFAF")),
-        new("Satin Blue", Color.FromArgb("#3A5FCD")),
-        new("Satin Gray", Color.FromArgb("#7E7F7F")),
+        new("Satin Black", "أسود ساتان", "#242424", Color.FromArgb("#242424")),
+        new("Satin Silver", "فضي ساتان", "#AFAFAF", Color.FromArgb("#AFAFAF")),
+        new("Satin Blue", "أزرق ساتان", "#3A5FCD", Color.FromArgb("#3A5FCD")),
+        new("Satin Gray", "رمادي ساتان", "#7E7F7F", Color.FromArgb("#7E7F7F")),
 
-        new("Two-Tone Black/White", Color.FromArgb("#808080")),
-        new("Two-Tone Red/Black", Color.FromArgb("#990000")),
-        new("Two-Tone Blue/White", Color.FromArgb("#4F81BD")),
+        new("Two-Tone Black/White", "ثنائي اللون أسود/أبيض", "#808080", Color.FromArgb("#808080")),
+        new("Two-Tone Red/Black", "ثنائي اللون أحمر/أسود", "#990000", Color.FromArgb("#990000")),
+        new("Two-Tone Blue/White", "ثنائي اللون أزرق/أبيض", "#4F81BD", Color.FromArgb("#4F81BD")),
 
-        new("Custom", Color.FromArgb("#FFFFFF")),
-        new("Other", Color.FromArgb("#999999")),
-        new("Unknown", Color.FromArgb("#CCCCCC"))
+        new("Custom", "مخصص", "#FFFFFF", Color.FromArgb("#FFFFFF")),
+        new("Other", "آخر", "#999999", Color.FromArgb("#999999")),
+        new("Unknown", "غير معروف", "#CCCCCC", Color.FromArgb("#CCCCCC"))
     ];
 
     public ObservableCollection<string> TaxTypes { get; } = new() { "VAT", "معفى من الضريبة" };
@@ -585,6 +585,8 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
         EditingServiceItem = new ServiceItem
         {
             Id = item.Id,
+            ItemID = item.ItemID,
+            ItemBarCode = item.ItemBarCode,
             Name = item.Name,
             Category = item.Category,
             ItemType = item.ItemType,
@@ -599,6 +601,7 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
             TaxAmount = item.TaxAmount,
             TotalPrice = item.TotalPrice,
             Quantity = 1,
+            Package = item.Package,
             Icon = item.Icon
         };
         EditingPriceText = item.Price.ToString("F2");
@@ -915,6 +918,8 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
         return new ServiceItem
         {
             Id = item.ItemBarCode,
+            ItemID = item.Id,
+            ItemBarCode = item.ItemBarCode,
             Name = item.Name_En ?? item.Name_Ar ?? item.ItemBarCode,
             Category = item.ItemGroupName_En ?? item.ItemGroupName_Ar ?? string.Empty,
             ItemType = "Product",
@@ -927,6 +932,7 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
             IsTaxable = taxRate > 0,
             TaxType = "VAT",
             TaxAmount = taxAmount,
+            Package = item.Package.GetValueOrDefault(),
             TotalPrice = afterDiscount + taxAmount
         };
     }
@@ -1227,21 +1233,39 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
             var currentUser = await _authenticationService.GetCurrentUserAsync();
             var plateNo = SelectedVehicle?.PlateNumber ?? NewPlateNumber;
 
-            var billDetails = CartItems.Select(ci => new CreateBillLineRequest(
-                ItemBarCode: ci.ServiceItem.Id ?? string.Empty,
-                ItemID: 0,
-                Package: null,
-                Qty: ci.Quantity,
-                Price: Math.Round((double)ci.ServiceItem.Price, 2),
-                DetailDiscount1: null,
-                DetailTax: Math.Round((double)ci.ServiceItem.TaxAmount, 2),
-                DetailNotes: null)).ToList();
+            var billDetails = CartItems.Select(ci =>
+            {
+                var price = (double)ci.ServiceItem.Price;
+                var qty = ci.Quantity;
+                var discount1 = (double)ci.ServiceItem.Discount1;
+                var discount2 = (double)ci.ServiceItem.Discount2;
+                var discount3 = (double)ci.ServiceItem.Discount3;
+                var totalDiscount = discount1 + discount2 + discount3;
+                var discountRatio = price > 0 ? totalDiscount / price * 100 : 0;
+                var taxAmount = (double)ci.ServiceItem.TaxAmount;
+                var taxRatio = price > 0 ? taxAmount / price * 100 : 0;
+
+                return new CreateBillLineRequest(
+                    ItemBarCode: ci.ServiceItem.ItemBarCode ?? ci.ServiceItem.Id ?? string.Empty,
+                    ItemID: ci.ServiceItem.ItemID,
+                    Package: ci.ServiceItem.Package > 0 ? ci.ServiceItem.Package : null,
+                    Qty: qty,
+                    Price: Math.Round(price, 2),
+                    DetailDiscount1: Math.Round(totalDiscount, 2),
+                    DetailDiscount2: Math.Round(discount2, 2),
+                    DetailDiscount1Ratio: Math.Round(discountRatio, 2),
+                    DetailTax: Math.Round(taxAmount, 2),
+                    DetailTaxRatio: Math.Round(taxRatio, 2),
+                    DetailNotes: null);
+            }).ToList();
 
             var request = new CreateBillRequest(
                 BranchID: currentUser?.BranchId,
                 CustomerId: SelectedCustomer?.Id > 0 ? SelectedCustomer.Id : null,
                 EngineerId: SelectedTechnician != null && int.TryParse(SelectedTechnician.Id, out var engId) ? engId : null,
                 CarHeaderId: SelectedVehicle?.CarHeaderId,
+                SalesRepId: currentUser?.SalesRepID,
+                StoreId: currentUser?.StoreId,
                 Notes: OrderNotes,
                 ReferenceNo: plateNo,
                 Signature: SignatureData,
@@ -1383,7 +1407,9 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
     {
         if (string.IsNullOrWhiteSpace(ColorSearchText))
             return Colors;
-        return Colors.Where(c => c.Name.Contains(ColorSearchText, StringComparison.OrdinalIgnoreCase));
+        return Colors.Where(c =>
+            c.Name.Contains(ColorSearchText, StringComparison.OrdinalIgnoreCase) ||
+            c.NameAr.Contains(ColorSearchText, StringComparison.OrdinalIgnoreCase));
     }
 
     private void ResetColorPaging()
@@ -1568,7 +1594,7 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
 // Wraps a category for the item-search filter picker; Id is null for the "All" entry.
 public record ItemCategoryOption(int? Id, string Name);
 
-// Pairs a color name with a real swatch so the color picker can show it, not just text.
-public record ColorOption(string Name, Color Swatch);
+// Pairs a color name (EN + AR) with a real swatch and hex code so the color picker can show it.
+public record ColorOption(string Name, string NameAr, string HexCode, Color Swatch);
 
 public record OrderPhoto(string Path);

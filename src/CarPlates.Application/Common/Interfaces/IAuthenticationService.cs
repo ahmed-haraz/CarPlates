@@ -4,7 +4,7 @@ namespace CarPlates.Application.Common.Interfaces;
 
 public interface IAuthenticationService
 {
-    Task<AuthResult> LoginAsync(string username, string password, CancellationToken cancellationToken = default);
+    Task<AuthResult> LoginAsync(string username, string password, DeviceInfoDto? device, CancellationToken cancellationToken = default);
     Task<AuthResult> RefreshTokenAsync(string refreshToken, CancellationToken cancellationToken = default);
     Task<bool> IsAuthenticatedAsync(CancellationToken cancellationToken = default);
     Task<UserDto?> GetCurrentUserAsync(CancellationToken cancellationToken = default);
@@ -12,4 +12,4 @@ public interface IAuthenticationService
 
 }
 
-public record AuthResult(bool Success, string? AccessToken, string? RefreshToken, string? ErrorMessage, UserDto info);
+public record AuthResult(bool Success, string? AccessToken, string? RefreshToken, string? ErrorMessage, UserDto info, bool DeviceBlocked = false);

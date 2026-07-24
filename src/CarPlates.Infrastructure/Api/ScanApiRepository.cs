@@ -94,8 +94,9 @@ public class ScanApiRepository(
             PhotoUrl = dto.PhotoPath,
             BranchID = dto.BranchID,
             DeviceId = (string?)null,
-            Latitude = (double?)null,
-            Longitude = (double?)null
+            Latitude = dto.Latitude,
+            Longitude = dto.Longitude,
+            Notes = dto.Notes
         };
 
         var response = await Client.PostAsJsonAsync("scans", request, ApiJsonOptions.Default, cancellationToken);
@@ -103,7 +104,7 @@ public class ScanApiRepository(
 
         var api = await response.Content.ReadFromJsonAsync<ApiScanRecordDto>(ApiJsonOptions.Default, cancellationToken);
         return api?.ToScanRecordDto()
-            ?? new ScanRecordDto(0, dto.PlateNumber, dto.PlateType, dto.Confidence, dto.PhotoPath, DateTime.UtcNow, null, null, null, null, null);
+            ?? new ScanRecordDto(0, dto.PlateNumber, dto.PlateType, dto.Confidence, dto.PhotoPath, DateTime.Now, null, null, null, null, null);
     }
 
     public async Task<DashboardStatisticsDto> GetStatisticsAsync(CancellationToken cancellationToken = default)

@@ -85,13 +85,9 @@ public class ScanRecordService(ApplicationDbContext context, ICustomerCarService
     public async Task<ScanRecordDto> CreateAsync(ScanRecordCreateDto dto, string? userId = null)
     {
         var plateNumber = dto.PlateNumber.ToUpperInvariant();
-        var userIdLong = long.TryParse(userId, out var uid) ? (long?)uid : null;
-        var now = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+        var userIdLong = long.TryParse(userId, out var uid) ? uid : 0L;
+        var now = long.Parse(DateTime.Now.ToString("yyyyMMddHHmmss"));
 
-        // Plain lookup only - if the plate is already registered in wh_CustomerCars, link
-        // the scan to it. If it isn't, CustomerCarID is left null: scanning an unregistered
-        // plate never creates a wh_Customers/wh_CustomersBranch/wh_CustomerCars row anymore,
-        // it only ever writes the wh_ScanRecords row below.
         long? customerCarId = null;
 
         var existingCar = await _customerCarService.GetByPlateAsync(plateNumber);
@@ -109,9 +105,13 @@ public class ScanRecordService(ApplicationDbContext context, ICustomerCarService
             BranchID = dto.BranchID,
             Latitude = dto.Latitude,
             Longitude = dto.Longitude,
-            ScanTime = DateTime.UtcNow,
+            Notes = dto.Notes,
+            ScanTime = DateTime.Now,
+            Status = 1,
             InsertUserID = userIdLong,
+            UpdateUserID = userIdLong,
             InsertDateTime = now,
+            UpdateDateTime = now,
         };
 
         _context.ScanEvents.Add(scanEvent);

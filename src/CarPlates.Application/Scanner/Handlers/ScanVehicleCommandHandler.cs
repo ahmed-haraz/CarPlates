@@ -27,7 +27,15 @@ public class ScanVehicleCommandHandler(
         var lookupResult = await _customerCarLookupService.ScanAsync(scanRequest, cancellationToken);
 
         var scanDto = await _scanRepository.CreateAsync(
-            new CreateScanRecordDto(request.PlateNumber, request.PlateType, request.Confidence, request.PhotoPath, currentUser?.BranchId ?? 0),
+            new CreateScanRecordDto(
+                request.PlateNumber,
+                request.PlateType,
+                request.Confidence,
+                request.PhotoPath,
+                currentUser?.BranchId ?? 0,
+                request.Latitude,
+                request.Longitude,
+                request.Notes),
             cancellationToken);
 
         VehicleDetailsDto? vehicleInfo = null;

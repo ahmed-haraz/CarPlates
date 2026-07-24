@@ -928,8 +928,8 @@
                     HorizontalOptions="Center"
                     WidthRequest="300"
                     MaximumHeightRequest="500">
-                <VerticalStackLayout Spacing="12">
-                    <Grid ColumnDefinitions="*,Auto">
+                <Grid RowDefinitions="Auto,Auto,*,Auto" RowSpacing="12">
+                    <Grid Grid.Row="0" ColumnDefinitions="*,Auto">
                         <Label Grid.Column="0"
                                Text="{loc:Translate Key=Brand}"
                                FontSize="18"
@@ -937,9 +937,9 @@
                                HorizontalOptions="Center" />
                         <Button Grid.Column="1" Text="✕" WidthRequest="28" HeightRequest="28" BackgroundColor="Transparent" TextColor="{DynamicResource TextPrimary}" Padding="0" Command="{Binding CloseBrandPopupCommand}" />
                     </Grid>
-                    <SearchBar Placeholder="{loc:Translate Key=Search}"
+                    <SearchBar Grid.Row="1" Placeholder="{loc:Translate Key=Search}"
                                Text="{Binding BrandSearchText}" />
-                    <CollectionView ItemsSource="{Binding PagedBrands}" HeightRequest="360">
+                    <CollectionView Grid.Row="2" ItemsSource="{Binding PagedBrands}">
                             <CollectionView.ItemTemplate>
                                 <DataTemplate x:DataType="x:String">
                                     <Border Style="{StaticResource Card}"
@@ -963,13 +963,13 @@
                                 </DataTemplate>
                             </CollectionView.ItemTemplate>
                         </CollectionView>
-                    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12"
+                    <Grid Grid.Row="3" ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12"
                           IsVisible="{Binding Brands.Count, Converter={StaticResource CountToBoolConverter}}">
                         <Button Grid.Column="0" Text="‹" Command="{Binding PreviousBrandPageCommand}" IsEnabled="{Binding CanGoToPreviousBrandPage}" />
                         <Label Grid.Column="1" Text="{Binding BrandPage, StringFormat='{0}'}" HorizontalOptions="Center" VerticalOptions="Center" />
                         <Button Grid.Column="2" Text="›" Command="{Binding NextBrandPageCommand}" IsEnabled="{Binding CanGoToNextBrandPage}" />
                     </Grid>
-                </VerticalStackLayout>
+                </Grid>
             </Border>
         </Grid>
 
@@ -983,8 +983,8 @@
                     HorizontalOptions="Center"
                     WidthRequest="300"
                     MaximumHeightRequest="500">
-                <VerticalStackLayout Spacing="12">
-                    <Grid ColumnDefinitions="*,Auto">
+                <Grid RowDefinitions="Auto,Auto,*,Auto" RowSpacing="12">
+                    <Grid Grid.Row="0" ColumnDefinitions="*,Auto">
                         <Label Grid.Column="0"
                                Text="{loc:Translate Key=Model}"
                                FontSize="18"
@@ -992,9 +992,9 @@
                                HorizontalOptions="Center" />
                         <Button Grid.Column="1" Text="✕" WidthRequest="28" HeightRequest="28" BackgroundColor="Transparent" TextColor="{DynamicResource TextPrimary}" Padding="0" Command="{Binding CloseModelPopupCommand}" />
                     </Grid>
-                    <SearchBar Placeholder="{loc:Translate Key=Search}"
+                    <SearchBar Grid.Row="1" Placeholder="{loc:Translate Key=Search}"
                                Text="{Binding ModelSearchText}" />
-                    <CollectionView ItemsSource="{Binding PagedModels}" HeightRequest="360">
+                    <CollectionView Grid.Row="2" ItemsSource="{Binding PagedModels}">
                             <CollectionView.ItemTemplate>
                                 <DataTemplate x:DataType="x:String">
                                     <Border Style="{StaticResource Card}"
@@ -1018,13 +1018,13 @@
                                 </DataTemplate>
                             </CollectionView.ItemTemplate>
                         </CollectionView>
-                    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12"
+                    <Grid Grid.Row="3" ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12"
                           IsVisible="{Binding AvailableModels.Count, Converter={StaticResource CountToBoolConverter}}">
                         <Button Grid.Column="0" Text="‹" Command="{Binding PreviousModelPageCommand}" IsEnabled="{Binding CanGoToPreviousModelPage}" />
                         <Label Grid.Column="1" Text="{Binding ModelPage, StringFormat='{0}'}" HorizontalOptions="Center" VerticalOptions="Center" />
                         <Button Grid.Column="2" Text="›" Command="{Binding NextModelPageCommand}" IsEnabled="{Binding CanGoToNextModelPage}" />
                     </Grid>
-                </VerticalStackLayout>
+                </Grid>
             </Border>
         </Grid>
 
@@ -1038,14 +1038,14 @@
                     HorizontalOptions="Center"
                     WidthRequest="300"
                     MaximumHeightRequest="500">
-                <VerticalStackLayout Spacing="12">
-                    <Grid ColumnDefinitions="*,Auto">
+                <Grid RowDefinitions="Auto,Auto,*,Auto" RowSpacing="12">
+                    <Grid Grid.Row="0" ColumnDefinitions="*,Auto">
                         <Label Grid.Column="0" Text="{loc:Translate Key=Color}" FontSize="18" FontAttributes="Bold" HorizontalOptions="Center" />
                         <Button Grid.Column="1" Text="✕" WidthRequest="28" HeightRequest="28" BackgroundColor="Transparent" TextColor="{DynamicResource TextPrimary}" Padding="0" Command="{Binding CloseColorPopupCommand}" />
                     </Grid>
-                    <SearchBar Placeholder="{loc:Translate Key=Search}"
+                    <SearchBar Grid.Row="1" Placeholder="{loc:Translate Key=Search}"
                                Text="{Binding ColorSearchText}" />
-                    <CollectionView ItemsSource="{Binding PagedColors}" HeightRequest="360">
+                    <CollectionView Grid.Row="2" ItemsSource="{Binding PagedColors}">
                         <CollectionView.ItemTemplate>
                             <DataTemplate x:DataType="vm:ColorOption">
                                 <Border Style="{StaticResource Card}"
@@ -1054,30 +1054,45 @@
                                         <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:NewOrderViewModel}}, Path=SelectColorOptionCommand}"
                                                               CommandParameter="{Binding .}" />
                                     </Border.GestureRecognizers>
-                                    <Grid ColumnDefinitions="Auto,*">
+                                    <Grid ColumnDefinitions="Auto,*,Auto">
                                         <Ellipse Grid.Column="0"
                                                  Fill="{Binding Swatch}"
                                                  WidthRequest="28"
                                                  HeightRequest="28"
                                                  Stroke="Gray"
                                                  StrokeThickness="1" />
-                                        <Label Grid.Column="1"
-                                               Text="{Binding Name}"
-                                               Margin="10,0"
-                                               FontSize="16"
-                                               VerticalOptions="Center" />
+                                        <VerticalStackLayout Grid.Column="1" Margin="10,0">
+                                            <Label Text="{Binding Name}"
+                                                   FontSize="14"
+                                                   VerticalOptions="Center" />
+                                            <Label Text="{Binding NameAr}"
+                                                   FontSize="12"
+                                                   TextColor="{DynamicResource TextSecondary}"
+                                                   VerticalOptions="Center" />
+                                        </VerticalStackLayout>
+                                        <Border Grid.Column="2"
+                                                BackgroundColor="{Binding Swatch}"
+                                                Stroke="Gray" StrokeThickness="1"
+                                                WidthRequest="48" HeightRequest="24"
+                                                Padding="4,2">
+                                            <Label Text="{Binding HexCode}"
+                                                   FontSize="10"
+                                                   HorizontalOptions="Center"
+                                                   VerticalOptions="Center"
+                                                   TextColor="White" />
+                                        </Border>
                                     </Grid>
                                 </Border>
                             </DataTemplate>
                         </CollectionView.ItemTemplate>
                     </CollectionView>
-                    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12"
+                    <Grid Grid.Row="3" ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12"
                           IsVisible="{Binding Colors.Count, Converter={StaticResource CountToBoolConverter}}">
                         <Button Grid.Column="0" Text="‹" Command="{Binding PreviousColorPageCommand}" IsEnabled="{Binding CanGoToPreviousColorPage}" />
                         <Label Grid.Column="1" Text="{Binding ColorPage, StringFormat='{0}'}" HorizontalOptions="Center" VerticalOptions="Center" />
                         <Button Grid.Column="2" Text="›" Command="{Binding NextColorPageCommand}" IsEnabled="{Binding CanGoToNextColorPage}" />
                     </Grid>
-                </VerticalStackLayout>
+                </Grid>
             </Border>
         </Grid>
 

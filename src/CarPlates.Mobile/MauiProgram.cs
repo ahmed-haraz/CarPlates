@@ -3,6 +3,7 @@ using CarPlates.Application.Common.Behaviors;
 using CarPlates.Infrastructure.DependencyInjection;
 using CarPlates.Mobile.Controls;
 using CarPlates.Mobile.Navigation;
+using CarPlates.Mobile.Services;
 using CarPlates.Mobile.Theming;
 
 using CarPlates.Mobile.ViewModels;
@@ -80,6 +81,9 @@ public static class MauiProgram
 
         // Theming
         builder.Services.AddSingleton<IThemeService, ThemeService>();
+
+        // SignalR monitor for live API URL updates
+        builder.Services.AddSingleton<IApiUrlMonitorService, ApiUrlMonitorService>();
 
         // Tap-to-scan document scanner (platform-specific)
 #if ANDROID || IOS

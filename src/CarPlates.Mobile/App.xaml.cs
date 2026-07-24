@@ -30,6 +30,9 @@ public partial class App : Microsoft.Maui.Controls.Application
             : CarPlates.Domain.Enums.AppTheme.System;
         services.GetRequiredService<Theming.IThemeService>().ApplyTheme(theme);
 
+        // Start SignalR monitor for live API URL updates
+        _ = services.GetRequiredService<Services.IApiUrlMonitorService>().StartAsync();
+
         var splashPage = services.GetRequiredService<Views.Splash.SplashPage>();
         NavigationPage.SetHasNavigationBar(splashPage, false);
 
