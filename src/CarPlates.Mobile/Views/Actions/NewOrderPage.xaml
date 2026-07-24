@@ -534,7 +534,7 @@
                             <Border Grid.Column="1"
                                     Style="{StaticResource Card}"
                                     Padding="8,4">
-                                <Label Text="Karage"
+                                <Label Text="{loc:Translate Key=Karage}"
                                        FontSize="12" />
                             </Border>
                             <Button Grid.Column="2"
@@ -744,7 +744,7 @@
                                 Padding="8">
                             <Grid ColumnDefinitions="Auto,*">
                                 <Label Grid.Column="0"
-                                       Text="SAR"
+                                       Text="{loc:Translate Key=CurrencySAR}"
                                        TextColor="{StaticResource Success}"
                                        VerticalOptions="Center"
                                        Margin="0,0,8,0" />
@@ -758,7 +758,7 @@
                                 Padding="8">
                             <Grid ColumnDefinitions="Auto,*">
                                 <Label Grid.Column="0"
-                                       Text="SAR"
+                                       Text="{loc:Translate Key=CurrencySAR}"
                                        TextColor="{StaticResource Success}"
                                        VerticalOptions="Center"
                                        Margin="0,0,8,0" />
@@ -1358,7 +1358,7 @@
                                 Padding="8">
                             <Grid ColumnDefinitions="Auto,*">
                                 <Label Grid.Column="0"
-                                       Text="SAR"
+                                       Text="{loc:Translate Key=CurrencySAR}"
                                        TextColor="{StaticResource Success}"
                                        VerticalOptions="Center"
                                        Margin="0,0,8,0" />

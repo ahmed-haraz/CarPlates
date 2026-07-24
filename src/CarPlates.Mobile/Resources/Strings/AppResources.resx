@@ -744,4 +744,40 @@
   <data name="NoSignature" xml:space="preserve">
     <value>No Signature</value>
   </data>
+  <data name="OrderNotes" xml:space="preserve">
+    <value>Order Notes</value>
+  </data>
+  <data name="WriteHere" xml:space="preserve">
+    <value>Write here...</value>
+  </data>
+  <data name="SavingOrder" xml:space="preserve">
+    <value>Saving order...</value>
+  </data>
+  <data name="BrandSelection" xml:space="preserve">
+    <value>Select Brand</value>
+  </data>
+  <data name="ModelSelection" xml:space="preserve">
+    <value>Select Model</value>
+  </data>
+  <data name="AddNewVehicle" xml:space="preserve">
+    <value>Add New Vehicle</value>
+  </data>
+  <data name="Karage" xml:space="preserve">
+    <value>Karage</value>
+  </data>
+  <data name="TotalAmount" xml:space="preserve">
+    <value>Total Amount</value>
+  </data>
+  <data name="MyOrderCart" xml:space="preserve">
+    <value>My Order Cart</value>
+  </data>
+  <data name="Signature" xml:space="preserve">
+    <value>Signature</value>
+  </data>
+  <data name="CurrencySAR" xml:space="preserve">
+    <value>SAR</value>
+  </data>
+  <data name="VATLabel" xml:space="preserve">
+    <value>VAT 15%</value>
+  </data>
 </root>

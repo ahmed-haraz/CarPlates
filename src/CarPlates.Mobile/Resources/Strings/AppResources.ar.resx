@@ -744,4 +744,40 @@
   <data name="NoSignature" xml:space="preserve">
     <value>لا يوجد توقيع</value>
   </data>
+  <data name="OrderNotes" xml:space="preserve">
+    <value>ملاحظات الطلب</value>
+  </data>
+  <data name="WriteHere" xml:space="preserve">
+    <value>اكتب هنا...</value>
+  </data>
+  <data name="SavingOrder" xml:space="preserve">
+    <value>جاري حفظ الطلب...</value>
+  </data>
+  <data name="BrandSelection" xml:space="preserve">
+    <value>اختر الماركة</value>
+  </data>
+  <data name="ModelSelection" xml:space="preserve">
+    <value>اختر الموديل</value>
+  </data>
+  <data name="AddNewVehicle" xml:space="preserve">
+    <value>إضافة مركبة جديدة</value>
+  </data>
+  <data name="Karage" xml:space="preserve">
+    <value>كراج</value>
+  </data>
+  <data name="TotalAmount" xml:space="preserve">
+    <value>المبلغ الإجمالي</value>
+  </data>
+  <data name="MyOrderCart" xml:space="preserve">
+    <value>سلة طلباتي</value>
+  </data>
+  <data name="Signature" xml:space="preserve">
+    <value>التوقيع</value>
+  </data>
+  <data name="CurrencySAR" xml:space="preserve">
+    <value>ر.س</value>
+  </data>
+  <data name="VATLabel" xml:space="preserve">
+    <value>ضريبة القيمة المضافة 15%</value>
+  </data>
 </root>
