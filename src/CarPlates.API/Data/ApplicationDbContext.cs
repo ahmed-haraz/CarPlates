@@ -30,6 +30,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     public DbSet<TransDetail> TransDetails { get; set; } = null!;
     public DbSet<ItemSubGroupView> Categories { get; set; } = null!;
     public DbSet<BillAttachment> BillAttachments { get; set; } = null!;
+    public DbSet<WhPrTrans> WhPrTrans { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -210,6 +211,17 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
             entity.Property(a => a.ContentType).HasMaxLength(100);
             entity.Property(a => a.AttachmentType).HasMaxLength(50).IsRequired();
             entity.HasIndex(a => a.HeaderId);
+        });
+
+        builder.Entity<WhPrTrans>(entity =>
+        {
+            entity.ToTable("wh_PrTrans", t => t.ExcludeFromMigrations());
+            entity.HasKey(p => p.ID);
+            entity.Property(p => p.ReceiptNo).HasMaxLength(100).IsRequired();
+            entity.Property(p => p.Terminal_ID).HasMaxLength(200);
+            entity.Property(p => p.DocTransNo).HasMaxLength(50);
+            entity.Property(p => p.TransNotes).HasMaxLength(200);
+            entity.HasIndex(p => p.InvHeaderID);
         });
 
         builder.Entity<ItemSubGroupView>(entity =>

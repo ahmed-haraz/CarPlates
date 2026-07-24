@@ -275,3 +275,34 @@ public record BillDto(
     string? CustomerName,
     string? Signature,
     IReadOnlyList<BillDetailDto> Details);
+
+public record PaymentDetailDto(
+    byte PayType,
+    double Amount);
+
+public record PayBillRequest(
+    long HeaderId,
+    IReadOnlyList<PaymentDetailDto> Payments,
+    string? Notes);
+
+public record PayBillResponse(
+    bool Success,
+    string? Message,
+    string? ReceiptNo,
+    double PaidAmount,
+    double Balance);
+
+public record ReceiptDto(
+    string? ReceiptNo,
+    long HeaderId,
+    string? DocTransNo,
+    int? TransDate,
+    string? CustomerName,
+    string? ReferenceNo,
+    double Total,
+    double NetTotal,
+    double Paid,
+    double Balance,
+    byte? PayType,
+    IReadOnlyList<PaymentDetailDto> Payments,
+    IReadOnlyList<BillDetailDto> Details);

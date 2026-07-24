@@ -69,6 +69,7 @@ builder.Services.AddScoped<IBillAttachmentService, BillAttachmentService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IJwtService, JwtService>();
 builder.Services.AddScoped<IDeviceValidationService, DeviceValidationService>();
+builder.Services.AddScoped<IPaymentService, PaymentService>();
 builder.Services.AddHostedService<PublishIPMonitorService>();
 
 builder.Services.AddHttpClient("FwApi", client =>

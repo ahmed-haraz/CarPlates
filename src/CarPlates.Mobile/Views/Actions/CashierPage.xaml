@@ -64,7 +64,7 @@
             <CollectionView.ItemTemplate>
                 <DataTemplate x:DataType="x:Object">
                     <Border Style="{StaticResource Card}" Margin="0,4" Padding="16">
-                        <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto,Auto" RowSpacing="4">
+                        <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto,Auto,Auto" RowSpacing="4">
                             <!-- Bill Number + Date -->
                             <Label Grid.Row="0" Grid.Column="0"
                                    FontSize="16" FontAttributes="Bold">
@@ -103,6 +103,24 @@
                                     </MultiBinding>
                                 </Label.Text>
                             </Label>
+
+                            <!-- Action buttons -->
+                            <HorizontalStackLayout Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2"
+                                                   Spacing="8" Margin="0,4,0,0">
+                                <Button Text="Preview" FontSize="11" HeightRequest="30" Padding="8,0"
+                                        BackgroundColor="{StaticResource SecondaryButton}"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:CashierViewModel}}, Path=PreviewBillCommand}"
+                                        CommandParameter="{Binding .}"/>
+                                <Button Text="Pay" FontSize="11" HeightRequest="30" Padding="8,0"
+                                        BackgroundColor="{StaticResource Primary}"
+                                        TextColor="White"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:CashierViewModel}}, Path=PayBillCommand}"
+                                        CommandParameter="{Binding .}"/>
+                                <Button Text="Print" FontSize="11" HeightRequest="30" Padding="8,0"
+                                        BackgroundColor="{StaticResource SecondaryButton}"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:CashierViewModel}}, Path=PrintBillCommand}"
+                                        CommandParameter="{Binding .}"/>
+                            </HorizontalStackLayout>
                         </Grid>
                     </Border>
                 </DataTemplate>
