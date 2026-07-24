@@ -49,6 +49,6 @@ public static class SignalRConstants
 {
     public const string HubPath = "/notify";
     public const string IPUpdateMethod = "IPUpdate";
-    public const string DefaultPublishedIPId = "9d13ffcf-a89c-45ee-acbd-21997b8fd08e";
+    public const string DefaultPublishedIPId = "0f516f28-181a-4b6c-9a8f-fcfe4fc28cbd";
     public const int PollIntervalSeconds = 30;
 }
