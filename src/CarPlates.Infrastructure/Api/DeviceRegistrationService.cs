@@ -78,7 +78,7 @@ public class DeviceRegistrationService(
                 Online: true,
                 IsBlocked: false,
                 Status: 1,
-                InsertDateTime: DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(),
+                InsertDateTime: long.Parse(DateTime.UtcNow.ToString("yyyyMMddHHmmss")),
                 UpdateDateTime: 0
             );
             var registered = await UpsertDeviceAsync(newDevice, cancellationToken);
