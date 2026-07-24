@@ -50,7 +50,30 @@
             <Border Style="{StaticResource Card}">
                 <VerticalStackLayout Spacing="12">
                     <Label Text="{loc:Translate Key=ApiUrl}" Style="{StaticResource Body}" FontAttributes="Bold"/>
-                    <Entry Text="{Binding ApiUrl}" Placeholder="https://api.example.com"/>
+                    <Entry Text="{Binding ApiUrl}" Placeholder="https://api.example.com"
+                           IsPassword="{Binding IsApiUrlLocked}"
+                           IsReadOnly="{Binding IsApiUrlLocked}"/>
+
+                    <!-- Unlock UI when API URL is locked -->
+                    <VerticalStackLayout Spacing="8" IsVisible="{Binding IsApiUrlLocked}">
+                        <Entry Placeholder="Enter settings password"
+                               Text="{Binding ApiUrlPassword}"
+                               IsPassword="True"/>
+                        <Button Text="Unlock API URL"
+                                Style="{StaticResource SecondaryButton}"
+                                Command="{Binding UnlockApiUrlCommand}"
+                                HeightRequest="40"
+                                FontSize="14"/>
+                    </VerticalStackLayout>
+
+                    <!-- Lock button when API URL is unlocked -->
+                    <Button Text="Lock API URL"
+                            Style="{StaticResource SecondaryButton}"
+                            Command="{Binding LockApiUrlCommand}"
+                            HeightRequest="40"
+                            FontSize="14"
+                            IsVisible="{Binding IsApiUrlLocked, Converter={StaticResource InvertedBoolConverter}}"/>
+
                     <Button Text="{loc:Translate Key=TestConnectionButton}"
                             Style="{StaticResource SecondaryButton}"
                             Command="{Binding TestConnectionCommand}"

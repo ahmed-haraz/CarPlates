@@ -1,7 +1,8 @@
 namespace CarPlates.API.Models;
 
 // Auth DTOs
-public record LoginRequestDto(string Username, string Password);
+public record DeviceInfoDto(string? CompanyCode, string? DeviceId, string? AppVersion, string? Manufacturer, string? Model, string? DeviceName);
+public record LoginRequestDto(string Username, string Password, DeviceInfoDto? Device = null);
 public record LoginResponseDto(string AccessToken, string RefreshToken, UserDto User);
 public record RefreshTokenRequestDto(string RefreshToken);
 public record LogoutRequestDto(string RefreshToken);

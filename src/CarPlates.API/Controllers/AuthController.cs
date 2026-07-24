@@ -15,7 +15,7 @@ public class AuthController(IAuthService authService, ILogger<AuthController> lo
 
     [HttpPost("login")]
     [AllowAnonymous]
-    public async Task<ActionResult<LoginResponseDto>> Login([FromBody] LoginRequestDto request)
+    public async Task<ActionResult> Login([FromBody] LoginRequestDto request)
     {
         _logger.LogInformation("Login attempt for user: {Username}", request.Username);
 
@@ -23,10 +23,17 @@ public class AuthController(IAuthService authService, ILogger<AuthController> lo
         if (result == null)
         {
             _logger.LogWarning("Failed login attempt for user: {Username}", request.Username);
-            return Unauthorized(new { Message = "Invalid username or password" });
+            return Unauthorized(new { message = "Invalid username or password" });
         }
 
-        return Ok(result);
+        if (!result.IsSuccess)
+        {
+            if (result.DeviceBlocked)
+                return StatusCode(403, new { message = result.ErrorMessage, deviceBlocked = true });
+            return Unauthorized(new { message = result.ErrorMessage });
+        }
+
+        return Ok(result.Data);
     }
 
     [HttpPost("refresh")]

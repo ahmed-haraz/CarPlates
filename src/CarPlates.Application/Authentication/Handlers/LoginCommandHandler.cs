@@ -11,11 +11,11 @@ public class LoginCommandHandler(IAuthenticationService authService) : IRequestH
 
     public async Task<LoginResult> Handle(LoginCommand request, CancellationToken cancellationToken)
     {
-        var result = await _authService.LoginAsync(request.Username, request.Password, cancellationToken);
+        var result = await _authService.LoginAsync(request.Username, request.Password, request.Device, cancellationToken);
 
         if (!result.Success)
         {
-            return new LoginResult(false, null, null, null, result.ErrorMessage);
+            return new LoginResult(false, null, null, null, result.ErrorMessage, result.DeviceBlocked);
         }
 
         var user = result.info;

@@ -1,10 +1,13 @@
 using CarPlates.Application.Authentication.Commands;
+using CarPlates.Application.Common.DTOs;
 using CarPlates.Application.Common.Interfaces;
+using CarPlates.Shared.Constants;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MediatR;
 using CarPlates.Mobile.Localization;
 using CarPlates.Mobile.Navigation;
+using Microsoft.Maui.ApplicationModel;
 
 namespace CarPlates.Mobile.ViewModels;
 
@@ -41,7 +44,21 @@ public partial class LoginViewModel : BaseViewModel
 
         await ExecuteAsync(async () =>
         {
-            var command = new LoginCommand(Username, Password);
+            var deviceId = await SecureStorage.GetAsync("device_id");
+            if (string.IsNullOrWhiteSpace(deviceId))
+            {
+                deviceId = Guid.NewGuid().ToString();
+                await SecureStorage.SetAsync("device_id", deviceId);
+            }
+
+            var appVersion = VersionTracking.CurrentVersion;
+            var manufacturer = DeviceInfo.Manufacturer;
+            var model = DeviceInfo.Model;
+            var deviceName = DeviceInfo.Name;
+
+            var deviceInfo = new DeviceInfoDto(AuthConstants.DefaultCompanyCode, deviceId, appVersion, manufacturer, model, deviceName);
+
+            var command = new LoginCommand(Username, Password, deviceInfo);
             var result = await _mediator.Send(command);
 
             if (result.Success)

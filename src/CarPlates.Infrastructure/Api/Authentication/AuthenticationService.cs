@@ -21,20 +21,22 @@ public class AuthenticationService(
     private readonly ITokenStorage _tokenStorage = tokenStorage;
     private readonly ILogger<AuthenticationService> _logger = logger;
 
-    public async Task<AuthResult> LoginAsync(string username, string password, CancellationToken cancellationToken = default)
+    public async Task<AuthResult> LoginAsync(string username, string password, DeviceInfoDto? device, CancellationToken cancellationToken = default)
     {
         try
         {
             _logger.LogInformation("Attempting login for user: {Username}", username);
 
-            var request = new LoginRequestDto(username, password);
+            var request = new LoginRequestDto(username, password, device);
             var response = await Client.PostAsJsonAsync("Auth/login", request, ApiJsonOptions.Default, cancellationToken);
 
             if (!response.IsSuccessStatusCode)
             {
                 var error = await response.Content.ReadAsStringAsync(cancellationToken);
-                _logger.LogWarning("Login failed for {Username}: {StatusCode}", username, response.StatusCode);
-                return new AuthResult(false, null, null, $"Login failed: {error}", null!);
+                _logger.LogWarning("Login failed for {Username}: {StatusCode} - {Error}", username, response.StatusCode, error);
+
+                var deviceBlocked = response.StatusCode == System.Net.HttpStatusCode.Forbidden;
+                return new AuthResult(false, null, null, $"Login failed: {error}", null!, deviceBlocked);
             }
 
             var result = await response.Content.ReadFromJsonAsync<LoginResponseDto>(ApiJsonOptions.Default, cancellationToken);

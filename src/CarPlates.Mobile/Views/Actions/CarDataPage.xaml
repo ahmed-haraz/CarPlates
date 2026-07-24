@@ -329,15 +329,15 @@
             <Border Style="{StaticResource Card}"
                     Padding="20" VerticalOptions="Center" HorizontalOptions="Center"
                     WidthRequest="300" MaximumHeightRequest="500">
-                <VerticalStackLayout Spacing="12">
-                    <Grid ColumnDefinitions="*,Auto">
+                <Grid RowDefinitions="Auto,Auto,*,Auto" RowSpacing="12">
+                    <Grid Grid.Row="0" ColumnDefinitions="*,Auto">
                         <Label Grid.Column="0" Text="{loc:Translate Key=VehicleColor}" FontSize="18" FontAttributes="Bold" HorizontalOptions="Center" />
                         <Button Grid.Column="1" Text="✕" WidthRequest="28" HeightRequest="28"
                                 BackgroundColor="Transparent" TextColor="{DynamicResource TextPrimary}" Padding="0"
                                 Command="{Binding CloseColorPopupCommand}" />
                     </Grid>
-                    <SearchBar Placeholder="{loc:Translate Key=Search}" Text="{Binding ColorSearchText}" />
-                    <CollectionView ItemsSource="{Binding PagedColors}" HeightRequest="360">
+                    <SearchBar Grid.Row="1" Placeholder="{loc:Translate Key=Search}" Text="{Binding ColorSearchText}" />
+                    <CollectionView Grid.Row="2" ItemsSource="{Binding PagedColors}">
                         <CollectionView.ItemTemplate>
                             <DataTemplate x:DataType="vm:ColorOption">
                                 <Border Style="{StaticResource Card}" Padding="12">
@@ -345,21 +345,27 @@
                                         <TapGestureRecognizer Command="{Binding Source={x:Reference CarDataPageRoot}, Path=BindingContext.SelectColorOptionCommand}"
                                                               CommandParameter="{Binding .}" />
                                     </Border.GestureRecognizers>
-                                    <Grid ColumnDefinitions="Auto,*">
+                                    <Grid ColumnDefinitions="Auto,*,Auto">
                                         <Ellipse Grid.Column="0" Fill="{Binding Swatch}" WidthRequest="28" HeightRequest="28" Stroke="Gray" StrokeThickness="1" />
-                                        <Label Grid.Column="1" Text="{Binding Name}" Margin="10,0" FontSize="16" VerticalOptions="Center" />
+                                        <VerticalStackLayout Grid.Column="1" Margin="10,0">
+                                            <Label Text="{Binding Name}" FontSize="14" VerticalOptions="Center" />
+                                            <Label Text="{Binding NameAr}" FontSize="12" TextColor="{DynamicResource TextSecondary}" VerticalOptions="Center" />
+                                        </VerticalStackLayout>
+                                        <Border Grid.Column="2" BackgroundColor="{Binding Swatch}" Stroke="Gray" StrokeThickness="1" WidthRequest="48" HeightRequest="24" Padding="4,2">
+                                            <Label Text="{Binding HexCode}" FontSize="10" HorizontalOptions="Center" VerticalOptions="Center" TextColor="White" />
+                                        </Border>
                                     </Grid>
                                 </Border>
                             </DataTemplate>
                         </CollectionView.ItemTemplate>
                     </CollectionView>
-                    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12"
+                    <Grid Grid.Row="3" ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12"
                           IsVisible="{Binding Colors.Count, Converter={StaticResource CountToBoolConverter}}">
                         <Button Grid.Column="0" Text="‹" Command="{Binding PreviousColorPageCommand}" IsEnabled="{Binding CanGoToPreviousColorPage}" />
                         <Label Grid.Column="1" Text="{Binding ColorPage, StringFormat='{0}'}" HorizontalOptions="Center" VerticalOptions="Center" />
                         <Button Grid.Column="2" Text="›" Command="{Binding NextColorPageCommand}" IsEnabled="{Binding CanGoToNextColorPage}" />
                     </Grid>
-                </VerticalStackLayout>
+                </Grid>
             </Border>
         </Grid>
 

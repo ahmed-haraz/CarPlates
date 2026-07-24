@@ -4,6 +4,7 @@ using CarPlates.API.Configuration;
 using CarPlates.API.Data;
 using CarPlates.API.Interface;
 using CarPlates.API.Models;
+using CarPlates.Shared.Constants;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 
@@ -12,15 +13,38 @@ namespace CarPlates.API.Services;
 public class AuthService(
     ApplicationDbContext context,
     IJwtService jwtService,
-    IOptions<LegacyDesOptions> desOptions) : IAuthService
+    IOptions<LegacyDesOptions> desOptions,
+    IDeviceValidationService deviceValidation) : IAuthService
 {
 
     private readonly ApplicationDbContext _context = context;
     private readonly IJwtService _jwtService = jwtService;
     private readonly LegacyDesOptions _desOptions = desOptions.Value;
+    private readonly IDeviceValidationService _deviceValidation = deviceValidation;
 
-    public async Task<LoginResponseDto?> LoginAsync(LoginRequestDto request)
+    public async Task<LoginServiceResult?> LoginAsync(LoginRequestDto request)
     {
+        // Device validation before authentication
+        if (request.Device != null)
+        {
+            var deviceResult = await _deviceValidation.ValidateDeviceAsync(
+                request.Device.CompanyCode ?? AuthConstants.DefaultCompanyCode,
+                request.Device.DeviceId ?? "",
+                request.Device.AppVersion ?? "",
+                request.Device.Manufacturer ?? "",
+                request.Device.Model ?? "",
+                request.Device.DeviceName ?? "");
+
+            if (!deviceResult.IsValid)
+                return LoginServiceResult.DeviceError(deviceResult.ErrorMessage ?? "Device validation failed", false);
+
+            if (deviceResult.IsBlocked)
+                return LoginServiceResult.DeviceError(deviceResult.ErrorMessage ?? "Device is blocked", true);
+
+            if (deviceResult.LimitExceeded)
+                return LoginServiceResult.DeviceError(deviceResult.ErrorMessage ?? "Device limit exceeded", true);
+        }
+
         var user = await _context.FwUsers
             .AsNoTracking()
             .FirstOrDefaultAsync(u => u.UserName == request.Username);
@@ -58,7 +82,7 @@ public class AuthService(
 
         await _context.SaveChangesAsync();
 
-        return new LoginResponseDto(
+        return LoginServiceResult.Success(new LoginResponseDto(
             accessToken,
             refreshToken,
             new UserDto(
@@ -72,7 +96,7 @@ public class AuthService(
                 user.StoreID ?? 0,
                 user.SalesRepID ?? 0,
                 user.UserType ?? 0
-            ));
+            )));
     }
 
     public async Task<LoginResponseDto?> RefreshTokenAsync(RefreshTokenRequestDto request)

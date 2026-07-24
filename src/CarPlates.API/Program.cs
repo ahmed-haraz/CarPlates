@@ -1,6 +1,7 @@
 using CarPlates.API.Common;
 using CarPlates.API.Configuration;
 using CarPlates.API.Data;
+using CarPlates.API.Hubs;
 using CarPlates.API.Interface;
 using CarPlates.API.Middleware;
 using CarPlates.API.Services;
@@ -20,6 +21,7 @@ builder.Host.UseSerilog();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSignalR();
 
 builder.Services.AddSwaggerGen(c =>
 {
@@ -66,6 +68,15 @@ builder.Services.AddScoped<IBillService, BillService>();
 builder.Services.AddScoped<IBillAttachmentService, BillAttachmentService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IJwtService, JwtService>();
+builder.Services.AddScoped<IDeviceValidationService, DeviceValidationService>();
+builder.Services.AddHostedService<PublishIPMonitorService>();
+
+builder.Services.AddHttpClient("FwApi", client =>
+{
+    client.BaseAddress = new Uri("https://online.arkancloud.com:7070");
+    client.Timeout = TimeSpan.FromSeconds(30);
+    client.DefaultRequestHeaders.Add("Accept", "application/json");
+});
 
 builder.Services.AddAutoMapper(cfg => cfg.AddMaps(AppDomain.CurrentDomain.GetAssemblies()));
 
@@ -91,6 +102,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+app.MapHub<ReceivedIP>(CarPlates.Shared.Constants.SignalRConstants.HubPath);
 
 //using (var scope = app.Services.CreateScope())
 //{

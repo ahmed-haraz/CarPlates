@@ -42,4 +42,13 @@ public static class AuthConstants
     public const string RefreshTokenKey = "refresh_token";
     public const string TokenExpiryKey = "token_expiry";
     public const int TokenRefreshMinutes = 5;
+    public const string DefaultCompanyCode = "99999999999999";
+}
+
+public static class SignalRConstants
+{
+    public const string HubPath = "/notify";
+    public const string IPUpdateMethod = "IPUpdate";
+    public const string DefaultPublishedIPId = "9d13ffcf-a89c-45ee-acbd-21997b8fd08e";
+    public const int PollIntervalSeconds = 30;
 }
