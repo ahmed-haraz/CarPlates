@@ -78,7 +78,7 @@ public class BillApiService(
             var items = result.Items.Select(b => new BillApiItem(
                 b.HeaderId, b.DocTransNo, b.BranchID, b.CustomerId, b.EngineerId,
                 b.CarHeaderId, b.Total, b.NetTotal, b.Paid, b.Balance,
-                b.PayType, b.Notes, b.RefrenceNo, b.TransDate, b.CustomerName, b.Signature)).ToList();
+                b.PayType, b.Notes, b.ReferenceNo, b.TransDate, b.CustomerName, b.Signature)).ToList();
 
             return new BillSearchResult(true, items, result.TotalCount, result.Page, result.TotalPages, null);
         }
@@ -142,7 +142,7 @@ public class BillApiService(
         public double Balance { get; set; }
         public byte? PayType { get; set; }
         public string? Notes { get; set; }
-        public string? RefrenceNo { get; set; }
+        public string? ReferenceNo { get; set; }
         public int? TransDate { get; set; }
         public string? CustomerName { get; set; }
         public string? Signature { get; set; }

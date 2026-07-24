@@ -43,8 +43,9 @@ public class ScanVehicleCommandHandler(
                 DateTime.UtcNow,
                 1,
                 request.PhotoPath,
-                request.PlateType);
-        }
+                request.PlateType,
+                CarHeaderId: lookupResult.CarHeaderId);
+            }
 
         _loggingService.LogScanner(request.PlateNumber, request.Confidence, lookupResult.Success);
 

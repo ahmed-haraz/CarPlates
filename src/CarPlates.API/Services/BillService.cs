@@ -47,7 +47,7 @@ public class BillService(ApplicationDbContext context) : IBillService
             StoreId = dto.StoreId,
             PayType = dto.PayType,
             Notes = dto.Notes,
-            RefrenceNo = dto.RefrenceNo,
+            ReferenceNo = dto.ReferenceNo,
             Signature = dto.Signature,
             TransDate = int.Parse(DateTime.UtcNow.ToString("yyyyMMdd")),
             Total = total,
@@ -109,7 +109,7 @@ public class BillService(ApplicationDbContext context) : IBillService
         {
             var searchLower = search.ToLower();
             query = query.Where(h =>
-                (h.RefrenceNo != null && h.RefrenceNo.ToLower().Contains(searchLower)) ||
+                (h.ReferenceNo != null && h.ReferenceNo.ToLower().Contains(searchLower)) ||
                 (h.DocTransNo != null && h.DocTransNo.ToLower().Contains(searchLower)));
         }
 
@@ -177,7 +177,7 @@ public class BillService(ApplicationDbContext context) : IBillService
             h.Balance ?? 0,
             h.PayType,
             h.Notes,
-            h.RefrenceNo,
+            h.ReferenceNo,
             h.TransDate,
             customerName,
             h.Signature,

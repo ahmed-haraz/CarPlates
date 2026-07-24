@@ -24,7 +24,7 @@ public class TransHeader
     public double? Total { get; set; }
     public double? NetTotal { get; set; }
     public double? Balance { get; set; }
-    public string? RefrenceNo { get; set; }
+    public string? ReferenceNo { get; set; }
     public string? Signature { get; set; }
     public byte? Status { get; set; }
     public long? InsertUserID { get; set; }

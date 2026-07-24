@@ -731,6 +731,7 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
             {
                 Customers.Add(new Customer
                 {
+                    Id = c.Id,
                     FirstName = c.Name_Ar,
                     LastName = c.Name_En,
                     PhoneNumber = c.Mobile ?? c.Phone1 ?? string.Empty
@@ -1238,11 +1239,11 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
 
             var request = new CreateBillRequest(
                 BranchID: currentUser?.BranchId,
-                CustomerId: null,
-                EngineerId: null,
-                CarHeaderId: null,
+                CustomerId: SelectedCustomer?.Id > 0 ? SelectedCustomer.Id : null,
+                EngineerId: SelectedTechnician != null && int.TryParse(SelectedTechnician.Id, out var engId) ? engId : null,
+                CarHeaderId: SelectedVehicle?.CarHeaderId,
                 Notes: OrderNotes,
-                RefrenceNo: plateNo,
+                ReferenceNo: plateNo,
                 Signature: SignatureData,
                 Details: billDetails);
 
