@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:CarPlates.Mobile.ViewModels"
+             xmlns:loc="clr-namespace:CarPlates.Mobile.Localization"
+             x:Class="CarPlates.Mobile.Views.Actions.PaymentPage"
+             x:DataType="vm:PaymentViewModel"
+             Title="{Binding Title}"
+             BackgroundColor="{DynamicResource Background}">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="16" Spacing="12">
+
+            <!-- Bill Summary -->
+            <Border Style="{StaticResource Card}">
+                <VerticalStackLayout Spacing="6" Padding="12">
+                    <Label Text="Bill Summary" FontSize="16" FontAttributes="Bold"/>
+                    <BoxView HeightRequest="1" Color="{DynamicResource Border}"/>
+                    <Label FontSize="13">
+                        <Label.Text>
+                            <MultiBinding StringFormat="Bill #{0} — {1}">
+                                <Binding Path="HeaderId"/>
+                                <Binding Path="TransDate" StringFormat="{}{0:D8}"/>
+                            </MultiBinding>
+                        </Label.Text>
+                    </Label>
+                    <Label Text="{Binding CustomerName, StringFormat='Customer: {0}'}" FontSize="13"/>
+                    <Label Text="{Binding ReferenceNo, StringFormat='Plate: {0}'}" FontSize="13"/>
+                    <Label Text="{Binding NetTotal, StringFormat='Total: {0:N2} SAR'}" FontSize="14" FontAttributes="Bold" TextColor="{StaticResource Primary}"/>
+                    <Label Text="{Binding Paid, StringFormat='Paid: {0:N2} SAR'}" FontSize="13"/>
+                    <Label Text="{Binding Balance, StringFormat='Balance: {0:N2} SAR'}" FontSize="14" FontAttributes="Bold" TextColor="{StaticResource Error}"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Payment Methods -->
+            <Label Text="Payment Methods" FontSize="16" FontAttributes="Bold" Margin="0,4,0,0"/>
+            <Border Style="{StaticResource Card}">
+                <VerticalStackLayout Spacing="12" Padding="12">
+                    <Grid ColumnDefinitions="80,*,Auto">
+                        <Label Grid.Column="0" Text="Cash" VerticalOptions="Center"/>
+                        <Entry Grid.Column="1" Text="{Binding CashAmount}" Keyboard="Numeric" Placeholder="0.00"/>
+                        <Label Grid.Column="2" Text="SAR" VerticalOptions="Center" Margin="8,0,0,0"/>
+                    </Grid>
+                    <BoxView HeightRequest="1" Color="{DynamicResource Border}"/>
+                    <Grid ColumnDefinitions="80,*,Auto">
+                        <Label Grid.Column="0" Text="Visa" VerticalOptions="Center"/>
+                        <Entry Grid.Column="1" Text="{Binding VisaAmount}" Keyboard="Numeric" Placeholder="0.00"/>
+                        <Label Grid.Column="2" Text="SAR" VerticalOptions="Center" Margin="8,0,0,0"/>
+                    </Grid>
+                    <BoxView HeightRequest="1" Color="{DynamicResource Border}"/>
+                    <Grid ColumnDefinitions="80,*,Auto">
+                        <Label Grid.Column="0" Text="Bank" VerticalOptions="Center"/>
+                        <Entry Grid.Column="1" Text="{Binding BankAmount}" Keyboard="Numeric" Placeholder="0.00"/>
+                        <Label Grid.Column="2" Text="SAR" VerticalOptions="Center" Margin="8,0,0,0"/>
+                    </Grid>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Notes -->
+            <Entry Placeholder="Payment notes (optional)" Text="{Binding Notes}"/>
+
+            <!-- Pay Button -->
+            <Button Text="Process Payment"
+                    Style="{StaticResource PrimaryButton}"
+                    Command="{Binding PayCommand}"
+                    HeightRequest="48"
+                    IsVisible="{Binding IsPaid, Converter={StaticResource InvertedBoolConverter}}"/>
+
+            <ActivityIndicator IsRunning="{Binding IsProcessing}"
+                               IsVisible="{Binding IsProcessing}"
+                               Color="{StaticResource Primary}"/>
+
+            <!-- After Payment Actions -->
+            <VerticalStackLayout Spacing="8" IsVisible="{Binding IsPaid}">
+                <Label Text="Payment Complete" FontSize="18" FontAttributes="Bold"
+                       HorizontalOptions="Center" TextColor="{StaticResource Primary}"/>
+                <Label Text="{Binding Receipt.ReceiptNo, StringFormat='Receipt: {0}'}"
+                       HorizontalOptions="Center" FontSize="14"/>
+
+                <Button Text="Preview Receipt"
+                        Style="{StaticResource SecondaryButton}"
+                        Command="{Binding PreviewReceiptCommand}"
+                        HeightRequest="44"/>
+
+                <Button Text="Print Receipt"
+                        Style="{StaticResource SecondaryButton}"
+                        Command="{Binding PrintReceiptCommand}"
+                        HeightRequest="44"/>
+
+                <Button Text="Print A4"
+                        Style="{StaticResource SecondaryButton}"
+                        Command="{Binding PrintA4Command}"
+                        HeightRequest="44"/>
+            </VerticalStackLayout>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

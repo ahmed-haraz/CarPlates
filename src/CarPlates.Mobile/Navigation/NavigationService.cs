@@ -76,6 +76,12 @@ public class NavigationService(IServiceProvider serviceProvider) : INavigationSe
         await CurrentNavigation.PushAsync(page);
     }
 
+    public async Task PushPageAsync<TPage>(TPage page) where TPage : Page
+    {
+        page.FlowDirection = Localization.LocalizationResourceManager.Instance.FlowDirection;
+        await CurrentNavigation.PushAsync(page);
+    }
+
     public async Task GoBackAsync()
     {
         await CurrentNavigation.PopAsync();

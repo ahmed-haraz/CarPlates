@@ -40,6 +40,9 @@ public interface INavigationService
     /// <summary>Pushes a page that has no paired view model (e.g. a static About page).</summary>
     Task PushPageAsync<TPage>() where TPage : Page;
 
+    /// <summary>Pushes a pre-configured page instance onto the active navigation stack.</summary>
+    Task PushPageAsync<TPage>(TPage page) where TPage : Page;
+
     /// <summary>Pops the top page off the active navigation stack.</summary>
     Task GoBackAsync();
 

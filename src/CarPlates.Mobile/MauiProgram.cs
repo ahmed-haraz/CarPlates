@@ -90,6 +90,13 @@ public static class MauiProgram
         builder.Services.AddSingleton<IDocumentScannerService, DocumentScannerService>();
 #endif
 
+        // Receipt printing (platform-specific)
+#if ANDROID
+        builder.Services.AddSingleton<IReceiptPrintService, ReceiptPrintService>();
+#elif IOS
+        builder.Services.AddSingleton<IReceiptPrintService, CarPlates.Mobile.Platforms.iOS.Services.ReceiptPrintService>();
+#endif
+
         // ViewModels
         builder.Services.AddTransient<SplashViewModel>();
         builder.Services.AddTransient<LoginViewModel>();
@@ -102,6 +109,7 @@ public static class MauiProgram
         builder.Services.AddTransient<NewOrderViewModel>();
         builder.Services.AddTransient<CarDataViewModel>();
         builder.Services.AddTransient<CashierViewModel>();
+        builder.Services.AddTransient<PaymentViewModel>();
 
         // Views
         builder.Services.AddTransient<SplashPage>();
@@ -116,6 +124,7 @@ public static class MauiProgram
         builder.Services.AddTransient<NewOrderPage>();
         builder.Services.AddTransient<CarDataPage>();
         builder.Services.AddTransient<CashierPage>();
+        builder.Services.AddTransient<PaymentPage>();
         builder.Services.AddTransient<OrderSummaryPage>();
         builder.Services.AddTransient<BrandSelectionPage>();
         builder.Services.AddTransient<ModelSelectionPage>();

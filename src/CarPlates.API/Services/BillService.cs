@@ -1,5 +1,4 @@
 using CarPlates.API.Common;
-using CarPlates.API.Common;
 using CarPlates.API.Data;
 using CarPlates.API.Interface;
 using CarPlates.API.Models;
