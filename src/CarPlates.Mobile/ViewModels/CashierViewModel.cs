@@ -127,12 +127,30 @@ public partial class CashierViewModel : BaseViewModel
     {
         await ExecuteAsync(async () =>
         {
-            var receipt = await _paymentApiService.GetReceiptAsync(bill.HeaderId);
-            if (receipt == null)
+            var detail = await _billApiService.GetBillByIdAsync(bill.HeaderId);
+            if (detail == null)
             {
-                ShowAlert(AppResources.Error, "Unable to load receipt data");
+                ShowAlert(AppResources.Error, "Unable to load bill details");
                 return;
             }
+
+            var receipt = new ReceiptApiResult(
+                ReceiptNo: null,
+                HeaderId: detail.HeaderId,
+                DocTransNo: detail.DocTransNo,
+                TransDate: detail.TransDate,
+                CustomerName: detail.CustomerName,
+                ReferenceNo: detail.ReferenceNo,
+                Total: detail.Total,
+                NetTotal: detail.NetTotal,
+                Paid: detail.Paid,
+                Balance: detail.Balance,
+                PayType: detail.PayType,
+                Payments: [],
+                Details: detail.Details.Select(d => new BillDetailApiItem(
+                    d.DetailId, d.ItemID, d.ItemBarCode, d.Package, d.Qty, d.Price,
+                    d.DetailDiscount1, d.DetailDiscount2, d.DetailDiscount1Ratio,
+                    d.DetailTax, d.DetailTaxRatio, d.Value)).ToList());
 
             await _printService.PrintReceiptAsync(receipt, PrintFormat.Receipt);
         });

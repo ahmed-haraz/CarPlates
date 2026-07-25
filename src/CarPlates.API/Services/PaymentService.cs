@@ -126,11 +126,19 @@ public class PaymentService(ApplicationDbContext context, IUserContext userConte
 
     private async Task<string> GenerateReceiptNoAsync(int transDate, CancellationToken cancellationToken)
     {
-        var todayCount = await _context.WhPrTrans
+        var maxNo = await _context.WhPrTrans
             .AsNoTracking()
-            .CountAsync(p => p.TransDate == transDate, cancellationToken);
+            .MaxAsync(p => (string?)p.ReceiptNo, cancellationToken) ?? "";
 
-        return $"RCP-{transDate}-{(todayCount + 1):D4}";
+        var seq = 1;
+        if (!string.IsNullOrEmpty(maxNo) && maxNo.Contains('-'))
+        {
+            var parts = maxNo.Split('-');
+            if (parts.Length >= 2 && int.TryParse(parts[^1], out var last))
+                seq = last + 1;
+        }
+
+        return $"RCP-{transDate}-{seq:D4}";
     }
 
     private static byte DeterminePayType(IReadOnlyList<PaymentDetailDto> payments)

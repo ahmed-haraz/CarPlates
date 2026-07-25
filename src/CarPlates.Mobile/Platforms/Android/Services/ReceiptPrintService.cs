@@ -45,7 +45,7 @@ public class ReceiptPrintService : IReceiptPrintService
 
         if (devices == null || devices.Length == 0)
         {
-            ShowToast("No paired Bluetooth printer found. Pair a printer first.");
+            ShowDialog("No paired Bluetooth printer found. Please pair a printer in Bluetooth settings, or use A4 print instead.");
             return;
         }
 
@@ -67,7 +67,7 @@ public class ReceiptPrintService : IReceiptPrintService
         }
         catch (System.Exception ex)
         {
-            ShowToast($"Print failed: {ex.Message}");
+            ShowDialog($"Print failed: {ex.Message}. Try A4 print instead.");
         }
         finally
         {
@@ -218,6 +218,21 @@ public class ReceiptPrintService : IReceiptPrintService
         var context = global::Android.App.Application.Context;
         var toast = global::Android.Widget.Toast.MakeText(context, message, global::Android.Widget.ToastLength.Short);
         toast?.Show();
+    }
+
+    private static void ShowDialog(string message)
+    {
+        var activity = Platform.CurrentActivity;
+        if (activity == null) return;
+
+        activity.RunOnUiThread(() =>
+        {
+            new global::Android.App.AlertDialog.Builder(activity)
+                .SetTitle("Print")
+                .SetMessage(message)
+                .SetPositiveButton("OK", (s, e) => { })
+                .Show();
+        });
     }
 
     private class ReceiptPrintAdapter(Activity activity, string html) : PrintDocumentAdapter

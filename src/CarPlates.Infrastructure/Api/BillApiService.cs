@@ -116,6 +116,40 @@ public class BillApiService(
         }
     }
 
+    public async Task<BillDetailResult?> GetBillByIdAsync(long headerId, CancellationToken cancellationToken = default)
+    {
+        var stopwatch = System.Diagnostics.Stopwatch.StartNew();
+        try
+        {
+            var response = await Client.GetAsync($"bills/{headerId}", cancellationToken);
+            stopwatch.Stop();
+
+            _loggingService.LogApi($"bills/{headerId}", response.IsSuccessStatusCode, stopwatch.ElapsedMilliseconds);
+
+            if (!response.IsSuccessStatusCode) return null;
+
+            var dto = await response.Content.ReadFromJsonAsync<BillFullDto>(ApiJsonOptions.Default, cancellationToken);
+            if (dto == null) return null;
+
+            return new BillDetailResult(
+                dto.HeaderId, dto.DocTransNo, dto.BranchID, dto.CustomerId,
+                dto.EngineerId, dto.CarHeaderId, dto.Total, dto.NetTotal,
+                dto.Paid, dto.Balance, dto.PayType, dto.Notes, dto.ReferenceNo,
+                dto.TransDate, dto.CustomerName, dto.Signature,
+                dto.Details?.Select(d => new BillLineItem(
+                    d.DetailId, d.ItemID, d.ItemBarCode, d.Package, d.Qty, d.Price,
+                    d.DetailDiscount1, d.DetailDiscount2, d.DetailDiscount1Ratio,
+                    d.DetailTax, d.DetailTaxRatio, d.Value)).ToList() ?? []);
+        }
+        catch (Exception ex)
+        {
+            stopwatch.Stop();
+            _loggingService.LogApi($"bills/{headerId}", false, stopwatch.ElapsedMilliseconds);
+            _logger.LogError(ex, "Get bill by id error");
+            return null;
+        }
+    }
+
     private record BillResponse(long HeaderId);
     private record TodayStatsResponse(int TodayBills, double TodayTotal);
 
@@ -146,5 +180,42 @@ public class BillApiService(
         public int? TransDate { get; set; }
         public string? CustomerName { get; set; }
         public string? Signature { get; set; }
+    }
+
+    private class BillFullDto
+    {
+        public long HeaderId { get; set; }
+        public string? DocTransNo { get; set; }
+        public int? BranchID { get; set; }
+        public int? CustomerId { get; set; }
+        public int? EngineerId { get; set; }
+        public int? CarHeaderId { get; set; }
+        public double Total { get; set; }
+        public double NetTotal { get; set; }
+        public double Paid { get; set; }
+        public double Balance { get; set; }
+        public byte? PayType { get; set; }
+        public string? Notes { get; set; }
+        public string? ReferenceNo { get; set; }
+        public int? TransDate { get; set; }
+        public string? CustomerName { get; set; }
+        public string? Signature { get; set; }
+        public List<BillDetailDtoInternal>? Details { get; set; }
+    }
+
+    private class BillDetailDtoInternal
+    {
+        public long DetailId { get; set; }
+        public long ItemID { get; set; }
+        public string ItemBarCode { get; set; } = string.Empty;
+        public int? Package { get; set; }
+        public double Qty { get; set; }
+        public double Price { get; set; }
+        public double? DetailDiscount1 { get; set; }
+        public double? DetailDiscount2 { get; set; }
+        public double? DetailDiscount1Ratio { get; set; }
+        public double? DetailTax { get; set; }
+        public double? DetailTaxRatio { get; set; }
+        public double? Value { get; set; }
     }
 }
