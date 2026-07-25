@@ -24,18 +24,18 @@
             <DatePicker Grid.Column="0" Date="{Binding DateFrom}" FontSize="13" />
             <DatePicker Grid.Column="1" Date="{Binding DateTo}" FontSize="13" />
             <HorizontalStackLayout Grid.Column="2" VerticalOptions="Center" Spacing="8">
-                <Frame CornerRadius="12" Padding="6,4" BackgroundColor="{DynamicResource Surface}"
-                       IsVisible="{Binding ShowAllBills}">
+                <Border StrokeShape="RoundRectangle 12" Padding="6,4" BackgroundColor="{DynamicResource Surface}"
+                        StrokeThickness="0" IsVisible="{Binding ShowAllBills}">
                     <Label Text="All" FontSize="12" TextColor="{DynamicResource TextSecondary}" />
-                </Frame>
-                <Frame CornerRadius="12" Padding="6,4" BackgroundColor="{DynamicResource Surface}"
-                       IsVisible="{Binding ShowPaidBills}">
+                </Border>
+                <Border StrokeShape="RoundRectangle 12" Padding="6,4" BackgroundColor="{DynamicResource Surface}"
+                        StrokeThickness="0" IsVisible="{Binding ShowPaidBills}">
                     <Label Text="Paid" FontSize="12" TextColor="{DynamicResource Success}" />
-                </Frame>
-                <Frame CornerRadius="12" Padding="6,4" BackgroundColor="{DynamicResource Surface}"
-                       IsVisible="{Binding ShowUnpaidBills}">
+                </Border>
+                <Border StrokeShape="RoundRectangle 12" Padding="6,4" BackgroundColor="{DynamicResource Surface}"
+                        StrokeThickness="0" IsVisible="{Binding ShowUnpaidBills}">
                     <Label Text="Unpaid" FontSize="12" TextColor="{DynamicResource Warning}" />
-                </Frame>
+                </Border>
             </HorizontalStackLayout>
             <Border Grid.Column="3" Style="{StaticResource Card}" Padding="0" WidthRequest="48" HeightRequest="48"
                     IsEnabled="{Binding CanGoToPreviousPage}">
