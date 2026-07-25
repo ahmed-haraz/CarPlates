@@ -2,6 +2,18 @@ namespace CarPlates.Mobile.Helpers;
 
 public static class PermissionHelper
 {
+#if ANDROID
+    public static async Task<bool> RequestBluetoothPermissionAsync()
+    {
+        if (!OperatingSystem.IsAndroidVersionAtLeast(31))
+            return true;
+
+        var status = await Permissions.CheckStatusAsync<Platforms.Android.BluetoothConnectPermission>();
+        if (status != PermissionStatus.Granted)
+            status = await Permissions.RequestAsync<Platforms.Android.BluetoothConnectPermission>();
+        return status == PermissionStatus.Granted;
+    }
+#endif
     public static async Task<bool> RequestCameraPermissionAsync()
     {
         var status = await Permissions.CheckStatusAsync<Permissions.Camera>();

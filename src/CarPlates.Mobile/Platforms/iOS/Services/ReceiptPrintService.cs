@@ -4,7 +4,7 @@ namespace CarPlates.Mobile.Platforms.iOS.Services;
 
 public class ReceiptPrintService : IReceiptPrintService
 {
-    public Task PrintReceiptAsync(ReceiptApiResult receipt, PrintFormat format = PrintFormat.Receipt)
+    public Task PrintReceiptAsync(ReceiptApiResult receipt, string? printerName = null, PrintFormat format = PrintFormat.Receipt)
     {
         System.Diagnostics.Debug.WriteLine("Printing is not yet implemented on iOS.");
         return Task.CompletedTask;

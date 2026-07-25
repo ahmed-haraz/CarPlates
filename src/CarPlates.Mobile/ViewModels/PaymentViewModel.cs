@@ -116,7 +116,7 @@ public partial class PaymentViewModel : BaseViewModel
 
         await ExecuteAsync(async () =>
         {
-            await _printService.PrintReceiptAsync(Receipt, PrintFormat.Receipt);
+            await _printService.PrintReceiptAsync(Receipt, format: PrintFormat.Receipt);
         });
     }
 
@@ -127,7 +127,7 @@ public partial class PaymentViewModel : BaseViewModel
 
         await ExecuteAsync(async () =>
         {
-            await _printService.PrintReceiptAsync(Receipt, PrintFormat.A4);
+            await _printService.PrintReceiptAsync(Receipt, format: PrintFormat.A4);
         });
     }
 

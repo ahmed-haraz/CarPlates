@@ -129,6 +129,13 @@ public class NavigationService(IServiceProvider serviceProvider) : INavigationSe
         return await page.DisplayPromptAsync(title, message, accept, cancel, placeholder: placeholder);
     }
 
+    public async Task<string?> DisplayActionSheetAsync(string title, string cancel, string? destruction, params string[] buttons)
+    {
+        var page = CurrentWindow.Page;
+        if (page == null) return null;
+        return await page.DisplayActionSheet(title, cancel, destruction, buttons);
+    }
+
     private static Type ResolvePageType(Type viewModelType)
     {
         if (PageTypeCache.TryGetValue(viewModelType, out var cached)) return cached;

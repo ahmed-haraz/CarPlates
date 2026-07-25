@@ -57,6 +57,7 @@ public interface INavigationService
     Task DisplayAlertAsync(string title, string message, string cancel = "OK");
     Task<bool> DisplayConfirmAsync(string title, string message, string accept = "Yes", string cancel = "No");
     Task<string?> DisplayPromptAsync(string title, string message, string accept = "OK", string cancel = "Cancel", string? placeholder = null);
+    Task<string?> DisplayActionSheetAsync(string title, string cancel, string? destruction, params string[] buttons);
 }
 
 public enum MainTab

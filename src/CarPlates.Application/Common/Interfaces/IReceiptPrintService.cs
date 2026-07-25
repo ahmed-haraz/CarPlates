@@ -8,6 +8,6 @@ public enum PrintFormat
 
 public interface IReceiptPrintService
 {
-    Task PrintReceiptAsync(ReceiptApiResult receipt, PrintFormat format = PrintFormat.Receipt);
+    Task PrintReceiptAsync(ReceiptApiResult receipt, string? printerName = null, PrintFormat format = PrintFormat.Receipt);
     Task<IReadOnlyList<string>> GetAvailablePrintersAsync();
 }

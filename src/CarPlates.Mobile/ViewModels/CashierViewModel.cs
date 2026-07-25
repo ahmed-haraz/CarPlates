@@ -153,10 +153,46 @@ public partial class CashierViewModel : BaseViewModel
                     d.DetailDiscount1, d.DetailDiscount2, d.DetailDiscountR1, d.DetailDiscountR2,
                     d.DetailTax, d.DetailTaxR, d.Value)).ToList());
 
-            await _printService.PrintReceiptAsync(receipt, PrintFormat.Receipt);
+            // 1. Show preview formatted exactly as the printed receipt
+            var preview = BuildPrintPreview(detail);
+            await Navigation.DisplayAlertAsync("Print Preview", preview);
+            IsBusy = false;
+
+            // 2. Pick printer
+            var printers = (await _printService.GetAvailablePrintersAsync()).ToList();
+
+            if (printers.Count == 0)
+            {
+                var noBt = await Navigation.DisplayActionSheetAsync(
+                    "No Bluetooth printers found. Print as A4?", "Cancel", null, "Print A4");
+                if (noBt == "Print A4")
+                    await _printService.PrintReceiptAsync(receipt, null, PrintFormat.A4);
+                else
+                    return;
+            }
+            else
+            {
+                var options = printers.Cast<string>().ToList();
+                options.Add("Print A4");
+                var selected = await Navigation.DisplayActionSheetAsync(
+                    "Select Printer", "Cancel", null, [.. options]);
+
+                if (selected == "Cancel" || selected == null)
+                    return;
+
+                if (selected == "Print A4")
+                {
+                    await _printService.PrintReceiptAsync(receipt, null, PrintFormat.A4);
+                }
+                else
+                {
+                    await _printService.PrintReceiptAsync(receipt, selected, PrintFormat.Receipt);
+                }
+            }
+
             await Navigation.DisplayAlertAsync("Print", "Receipt sent to printer");
         }
-        catch (System.Exception ex)
+        catch (Exception ex)
         {
             System.Diagnostics.Debug.WriteLine($"[PrintBill] {ex}");
             await Navigation.DisplayAlertAsync("Print Error", ex.Message);
@@ -166,6 +202,31 @@ public partial class CashierViewModel : BaseViewModel
             IsBusy = false;
         }
     }
+
+    private static string BuildPrintPreview(BillDetailResult detail)
+    {
+        var items = string.Join("\n",
+            detail.Details.Select(d =>
+                $"  {d.ItemBarCode,-20} {d.Qty,5:F0} {d.Price,8:F2}"));
+
+        var preview = $"ARKAN MAINTENANCE\n" +
+                      $"{new string('-', 32)}\n" +
+                      $"Receipt: {detail.DocTransNo ?? "N/A"}\n" +
+                      $"Date: {detail.TransDate}\n" +
+                      $"Customer: {detail.CustomerName ?? "N/A"}\n" +
+                      $"Plate: {detail.ReferenceNo ?? "N/A"}\n" +
+                      $"{new string('-', 32)}\n" +
+                      $"  {"Item",-20} {"Qty",5} {"Price",8}\n" +
+                      $"{items}\n" +
+                      $"{new string('-', 32)}\n" +
+                      $"Total:     {detail.Total,10:F2}\n" +
+                      $"Paid:      {detail.Paid,10:F2}\n" +
+                      $"Balance:   {detail.Balance,10:F2}\n" +
+                      $"Thank you for your visit!";
+
+        return preview;
+    }
+    
 
     partial void OnDateFromChanged(DateTime value)
     {
