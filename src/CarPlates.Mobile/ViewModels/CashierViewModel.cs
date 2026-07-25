@@ -22,6 +22,11 @@ public partial class CashierViewModel : BaseViewModel
     [ObservableProperty] private ObservableCollection<BillApiItem> _bills = new();
     [ObservableProperty] private DateTime _dateFrom;
     [ObservableProperty] private DateTime _dateTo;
+    [ObservableProperty] private bool _showAllBills = true;
+    [ObservableProperty] private bool _showPaidBills = false;
+    [ObservableProperty] private bool _showUnpaidBills = false;
+
+    public enum BillStatus { All, Paid, Unpaid }
 
     private const int PageSize = 20;
 
@@ -226,7 +231,7 @@ public partial class CashierViewModel : BaseViewModel
 
         return preview;
     }
-    
+
 
     partial void OnDateFromChanged(DateTime value)
     {
@@ -236,5 +241,62 @@ public partial class CashierViewModel : BaseViewModel
     partial void OnDateToChanged(DateTime value)
     {
         _ = LoadBillsAsync();
+    }
+
+    partial void OnShowAllBillsChanged(bool value)
+    {
+        ShowPaidBills = false;
+        ShowUnpaidBills = false;
+        _ = LoadBillsAsync();
+    }
+
+    partial void OnShowPaidBillsChanged(bool value)
+    {
+        ShowAllBills = false;
+        ShowUnpaidBills = false;
+        _ = LoadBillsAsync();
+    }
+
+    partial void OnShowUnpaidBillsChanged(bool value)
+    {
+        ShowAllBills = false;
+        ShowPaidBills = false;
+        _ = LoadBillsAsync();
+    }
+
+    private async Task FilterBillsAsync(BillStatus status)
+    {
+        var result = await _billApiService.SearchBillsAsync(
+            SearchText,
+            DateFrom != DateTime.MinValue ? int.Parse(DateFrom.ToString("yyyyMMdd")) : null,
+            DateTo != DateTime.MinValue ? int.Parse(DateTo.ToString("yyyyMMdd")) : null,
+            CurrentPage,
+            PageSize);
+
+        if (!result.Success)
+        {
+            ShowAlert(AppResources.Error, result.ErrorMessage ?? "Failed to load bills");
+            return;
+        }
+
+        var filteredBills = result.Items;
+
+        switch (status)
+        {
+            case BillStatus.Paid:
+                filteredBills = result.Items.Where(b => b.Paid > 0).ToList();
+                break;
+            case BillStatus.Unpaid:
+                filteredBills = result.Items.Where(b => b.Balance > 0).ToList();
+                break;
+            case BillStatus.All:
+            default:
+                break;
+        }
+
+        Bills = new ObservableCollection<BillApiItem>(filteredBills);
+        TotalPages = Math.Max(result.TotalPages, 1);
+        CanGoToPreviousPage = CurrentPage > 1;
+        CanGoToNextPage = CurrentPage < TotalPages;
     }
 }
