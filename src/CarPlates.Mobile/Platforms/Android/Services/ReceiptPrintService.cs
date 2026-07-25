@@ -1,18 +1,26 @@
 using Android.App;
 using Android.Bluetooth;
 using Android.Content;
+using Android.Content.PM;
 using Android.OS;
 using Android.Print;
-using Android.Webkit;
+using Android.Runtime;
+using AndroidX.Core.App;
+using AndroidX.Core.Content;
 using CarPlates.Application.Common.Interfaces;
-using Java.IO;
 using Java.Util;
 
 namespace CarPlates.Mobile.Platforms.Android.Services;
 
 public class ReceiptPrintService : IReceiptPrintService
 {
-    public async Task PrintReceiptAsync(ReceiptApiResult receipt, PrintFormat format = PrintFormat.Receipt)
+    internal const int RequestEnableBluetooth = 9001;
+    internal const int RequestBluetoothPermission = 9002;
+
+    internal static TaskCompletionSource<bool>? EnableBluetoothTcs { get; set; }
+    internal static TaskCompletionSource<bool>? PermissionTcs { get; set; }
+
+    public async Task PrintReceiptAsync(ReceiptApiResult receipt, string? printerName = null, PrintFormat format = PrintFormat.Receipt)
     {
         if (format == PrintFormat.A4)
         {
@@ -20,7 +28,7 @@ public class ReceiptPrintService : IReceiptPrintService
         }
         else
         {
-            await PrintEscPosAsync(receipt);
+            await PrintEscPosAsync(receipt, printerName);
         }
     }
 
@@ -37,21 +45,34 @@ public class ReceiptPrintService : IReceiptPrintService
         return Task.FromResult<IReadOnlyList<string>>(paired);
     }
 
-    private async Task PrintEscPosAsync(ReceiptApiResult receipt)
+    private async Task PrintEscPosAsync(ReceiptApiResult receipt, string? printerName = null)
     {
+        // Ensure Bluetooth is enabled (handles permissions + enable flow)
+        await EnsureBluetoothEnabledAsync();
+
         var adapter = BluetoothAdapter.DefaultAdapter;
         if (adapter == null)
-            throw new System.InvalidOperationException("Bluetooth is not available on this device. Use A4 print instead.");
-
-        if (!adapter.IsEnabled)
-            throw new System.InvalidOperationException("Bluetooth is turned off. Please enable Bluetooth in settings, or use A4 print instead.");
+            throw new InvalidOperationException("Bluetooth is not available on this device. Use A4 print instead.");
 
         var devices = adapter.BondedDevices?.ToArray();
-
         if (devices == null || devices.Length == 0)
-            throw new System.InvalidOperationException("No paired Bluetooth printer found. Pair a printer or use A4 print instead.");
+            throw new InvalidOperationException("No paired Bluetooth printer found. Pair a printer or use A4 print instead.");
 
-        var device = devices[0];
+        BluetoothDevice? device;
+        if (!string.IsNullOrWhiteSpace(printerName))
+        {
+            device = devices.FirstOrDefault(d =>
+                d.Name?.Equals(printerName, StringComparison.OrdinalIgnoreCase) == true ||
+                d.Address?.Equals(printerName, StringComparison.OrdinalIgnoreCase) == true);
+
+            if (device == null)
+                throw new InvalidOperationException($"Printer '{printerName}' not found in paired devices.");
+        }
+        else
+        {
+            device = devices[0];
+        }
+
         BluetoothSocket? socket = null;
 
         try
@@ -65,14 +86,70 @@ public class ReceiptPrintService : IReceiptPrintService
             await outputStream.WriteAsync(data);
             await outputStream.FlushAsync();
         }
-        catch (System.Exception ex)
+        catch (Exception ex)
         {
-            throw new System.InvalidOperationException($"Print failed: {ex.Message}", ex);
+            throw new InvalidOperationException($"Print failed: {ex.Message}", ex);
         }
         finally
         {
             try { socket?.Close(); } catch { }
         }
+    }
+
+    private static async Task EnsureBluetoothEnabledAsync()
+    {
+        if (OperatingSystem.IsAndroidVersionAtLeast(31))
+            await EnsureBluetoothConnectPermissionAsync();
+
+        var adapter = BluetoothAdapter.DefaultAdapter;
+        if (adapter == null) return;
+        if (adapter.IsEnabled) return;
+
+        // Try silent enable first (works on older APIs)
+        try
+        {
+            adapter.Enable();
+            await Task.Delay(500);
+            if (adapter.IsEnabled) return;
+        }
+        catch { /* fall through to intent-based approach */ }
+
+        // Ask user to turn on Bluetooth via system dialog
+        var activity = Platform.CurrentActivity;
+        if (activity == null)
+            throw new InvalidOperationException("Please enable Bluetooth in settings to print via ESC/POS.");
+
+        var tcs = new TaskCompletionSource<bool>();
+        EnableBluetoothTcs = tcs;
+
+        var intent = new Intent(BluetoothAdapter.ActionRequestEnable);
+        activity.StartActivityForResult(intent, RequestEnableBluetooth);
+
+        var enabled = await tcs.Task;
+
+        if (!enabled)
+            throw new InvalidOperationException("Bluetooth was not enabled. Please enable Bluetooth and try again, or use A4 print.");
+    }
+
+    private static async Task EnsureBluetoothConnectPermissionAsync()
+    {
+        var activity = Platform.CurrentActivity;
+        if (activity == null) return;
+
+        bool hasPermission = ContextCompat.CheckSelfPermission(activity, global::Android.Manifest.Permission.BluetoothConnect) == Permission.Granted;
+        if (hasPermission) return;
+
+        var tcs = new TaskCompletionSource<bool>();
+        PermissionTcs = tcs;
+
+        ActivityCompat.RequestPermissions(activity,
+            [global::Android.Manifest.Permission.BluetoothConnect, global::Android.Manifest.Permission.BluetoothScan],
+            RequestBluetoothPermission);
+
+        var granted = await tcs.Task;
+
+        if (!granted)
+            throw new InvalidOperationException("Bluetooth permission denied. Grant it in Settings or use A4 print.");
     }
 
     private void PrintA4(ReceiptApiResult receipt)
@@ -86,7 +163,11 @@ public class ReceiptPrintService : IReceiptPrintService
         var html = BuildA4Html(receipt);
         var adapter = new ReceiptPrintAdapter(activity, html);
 
-        printManager.Print("Receipt", adapter, new PrintAttributes.Builder().Build());
+        var attributes = new PrintAttributes.Builder()
+            .SetMediaSize(PrintAttributes.MediaSize.IsoA4)
+            .Build();
+
+        printManager.Print("Receipt", adapter, attributes);
     }
 
     private static byte[] BuildEscPosReceipt(ReceiptApiResult receipt)
@@ -213,9 +294,18 @@ public class ReceiptPrintService : IReceiptPrintService
 </body></html>";
     }
 
-    private class ReceiptPrintAdapter(Activity activity, string html) : PrintDocumentAdapter
+    private class ReceiptPrintAdapter : PrintDocumentAdapter
     {
-        private readonly string _html = html;
+        private readonly global::Android.Webkit.WebView _webView;
+        private readonly PrintDocumentAdapter _innerAdapter;
+
+        public ReceiptPrintAdapter(Activity activity, string html)
+        {
+            _webView = new global::Android.Webkit.WebView(activity);
+            _webView.Settings.JavaScriptEnabled = false;
+            _webView.LoadDataWithBaseURL(null, html, "text/html", "UTF-8", null);
+            _innerAdapter = _webView.CreatePrintDocumentAdapter("receipt");
+        }
 
         public override void OnLayout(PrintAttributes? oldAttributes, PrintAttributes? newAttributes,
             CancellationSignal? cancellationSignal, LayoutResultCallback? callback, Bundle? extras)
@@ -226,23 +316,13 @@ public class ReceiptPrintService : IReceiptPrintService
                 return;
             }
 
-            var info = new PrintDocumentInfo.Builder("receipt")
-                .SetContentType(PrintContentType.Document)
-                .SetPageCount(1)
-                .Build();
-
-            callback?.OnLayoutFinished(info, true);
+            _innerAdapter.OnLayout(oldAttributes, newAttributes, cancellationSignal, callback, extras);
         }
 
         public override void OnWrite(PageRange[]? pages, ParcelFileDescriptor? destination,
             CancellationSignal? cancellationSignal, WriteResultCallback? callback)
         {
-            var webView = new global::Android.Webkit.WebView(activity);
-            webView.Settings.JavaScriptEnabled = false;
-            webView.LoadDataWithBaseURL(null, _html, "text/html", "UTF-8", null);
-
-            var printAdapter = webView.CreatePrintDocumentAdapter("receipt");
-            printAdapter.OnWrite(pages, destination, cancellationSignal, callback);
+            _innerAdapter.OnWrite(pages, destination, cancellationSignal, callback);
         }
     }
 }

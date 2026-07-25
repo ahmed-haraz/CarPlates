@@ -97,6 +97,16 @@ public static class MauiProgram
         builder.Services.AddSingleton<IReceiptPrintService, CarPlates.Mobile.Platforms.iOS.Services.ReceiptPrintService>();
 #endif
 
+        // NFC card reader (platform-specific)
+#if ANDROID
+        builder.Services.AddSingleton<INfcCardReaderService, CarPlates.Mobile.Platforms.Android.Services.NfcCardReaderService>();
+#elif IOS
+        builder.Services.AddSingleton<INfcCardReaderService, CarPlates.Mobile.Platforms.iOS.Services.NfcCardReaderService>();
+#endif
+
+        // Payment gateway (default stub — replace with a real gateway SDK)
+        builder.Services.AddSingleton<IPaymentGatewayService, CarPlates.Infrastructure.Services.DefaultPaymentGatewayService>();
+
         // ViewModels
         builder.Services.AddTransient<SplashViewModel>();
         builder.Services.AddTransient<LoginViewModel>();

@@ -23,6 +23,7 @@ public partial class SettingsViewModel : BaseViewModel
     private readonly IThemeService _themeService;
     private readonly IApiConnectivityService _connectivityService;
     private readonly IHttpClientFactory _httpClientFactory;
+    private readonly IPaymentGatewayService _gatewayService;
 
     [ObservableProperty]
     private bool _isDarkMode;
@@ -48,6 +49,25 @@ public partial class SettingsViewModel : BaseViewModel
     [ObservableProperty]
     private bool _notificationsEnabled = true;
 
+    // Payment Gateway settings
+    [ObservableProperty]
+    private bool _paymentGatewayEnabled;
+
+    [ObservableProperty]
+    private string _paymentGatewayName = string.Empty;
+
+    [ObservableProperty]
+    private string _paymentMerchantId = string.Empty;
+
+    [ObservableProperty]
+    private string _paymentApiKey = string.Empty;
+
+    [ObservableProperty]
+    private string _paymentEndpointUrl = string.Empty;
+
+    [ObservableProperty]
+    private string _paymentAdditionalSettings = string.Empty;
+
     public List<string> AvailableLanguages { get; } = new() { "English", "العربية" };
 
     public SettingsViewModel(
@@ -57,6 +77,7 @@ public partial class SettingsViewModel : BaseViewModel
         IThemeService themeService,
         IApiConnectivityService connectivityService,
         IHttpClientFactory httpClientFactory,
+        IPaymentGatewayService gatewayService,
         INavigationService navigation) : base(navigation)
     {
         _mediator = mediator;
@@ -65,6 +86,7 @@ public partial class SettingsViewModel : BaseViewModel
         _themeService = themeService;
         _connectivityService = connectivityService;
         _httpClientFactory = httpClientFactory;
+        _gatewayService = gatewayService;
         Title = AppResources.Settings;
     }
 
@@ -80,6 +102,14 @@ public partial class SettingsViewModel : BaseViewModel
             OcrConfidence = settings.OcrConfidence;
             AutoResume = settings.AutoResume;
             NotificationsEnabled = settings.NotificationsEnabled;
+
+            // Load payment gateway config
+            PaymentGatewayEnabled = _gatewayService.Config.IsEnabled;
+            PaymentGatewayName = _gatewayService.Config.GatewayName;
+            PaymentMerchantId = _gatewayService.Config.MerchantId;
+            PaymentApiKey = _gatewayService.Config.ApiKey;
+            PaymentEndpointUrl = _gatewayService.Config.EndpointUrl;
+            PaymentAdditionalSettings = _gatewayService.Config.AdditionalSettings;
         });
     }
 
@@ -95,6 +125,17 @@ public partial class SettingsViewModel : BaseViewModel
                 theme, language, ApiUrl, OcrConfidence, AutoResume, NotificationsEnabled);
 
             await _settingsService.SaveSettingsAsync(settings);
+
+            // Save payment gateway config
+            _gatewayService.Config = new PaymentGatewayConfig
+            {
+                IsEnabled = PaymentGatewayEnabled,
+                GatewayName = PaymentGatewayName,
+                MerchantId = PaymentMerchantId,
+                ApiKey = PaymentApiKey,
+                EndpointUrl = PaymentEndpointUrl,
+                AdditionalSettings = PaymentAdditionalSettings
+            };
 
             LocalizationResourceManager.Instance.SetCulture(new CultureInfo(language));
             await Navigation.ApplyCurrentFlowDirectionAsync();

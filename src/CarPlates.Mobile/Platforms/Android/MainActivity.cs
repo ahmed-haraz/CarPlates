@@ -1,4 +1,5 @@
 using Android.App;
+using Android.Content;
 using Android.Content.PM;
 using Android.OS;
 using CarPlates.Application.Common.Interfaces;
@@ -26,5 +27,21 @@ public class MainActivity : MauiAppCompatActivity
         Microsoft.Maui.ApplicationModel.Platform.OnRequestPermissionsResult(requestCode, permissions, grantResults);
 
         base.OnRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        if (requestCode == Platforms.Android.Services.ReceiptPrintService.RequestBluetoothPermission)
+        {
+            var allGranted = grantResults.All(g => g == Android.Content.PM.Permission.Granted);
+            Platforms.Android.Services.ReceiptPrintService.PermissionTcs?.TrySetResult(allGranted);
+        }
+    }
+
+    protected override void OnActivityResult(int requestCode, [Android.Runtime.GeneratedEnum] Result resultCode, Intent? data)
+    {
+        base.OnActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == Platforms.Android.Services.ReceiptPrintService.RequestEnableBluetooth)
+        {
+            Platforms.Android.Services.ReceiptPrintService.EnableBluetoothTcs?.TrySetResult(resultCode == Result.Ok);
+        }
     }
 }
