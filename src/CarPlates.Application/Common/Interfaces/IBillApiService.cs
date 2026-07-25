@@ -5,6 +5,7 @@ public interface IBillApiService
     Task<BillApiResult> CreateBillAsync(CreateBillRequest request, CancellationToken cancellationToken = default);
     Task<BillSearchResult> SearchBillsAsync(string? search, int? dateFrom, int? dateTo, int page, int pageSize, CancellationToken cancellationToken = default);
     Task<TodayStatsResult> GetTodayStatsAsync(CancellationToken cancellationToken = default);
+    Task<BillDetailResult?> GetBillByIdAsync(long headerId, CancellationToken cancellationToken = default);
 }
 
 public record CreateBillRequest(
@@ -27,9 +28,10 @@ public record CreateBillLineRequest(
     double Price,
     double? DetailDiscount1,
     double? DetailDiscount2,
-    double? DetailDiscount1Ratio,
+    double? DetailDiscountR1,
+    double? DetailDiscountR2,
     double? DetailTax,
-    double? DetailTaxRatio,
+    double? DetailTaxR,
     string? DetailNotes);
 
 public record BillApiResult(bool Success, long? HeaderId, string? ErrorMessage);
@@ -53,3 +55,37 @@ public record BillApiItem(
     int? TransDate,
     string? CustomerName,
     string? Signature);
+
+public record BillDetailResult(
+    long HeaderId,
+    string? DocTransNo,
+    int? BranchID,
+    int? CustomerId,
+    int? EngineerId,
+    int? CarHeaderId,
+    double Total,
+    double NetTotal,
+    double Paid,
+    double Balance,
+    byte? PayType,
+    string? Notes,
+    string? ReferenceNo,
+    int? TransDate,
+    string? CustomerName,
+    string? Signature,
+    IReadOnlyList<BillLineItem> Details);
+
+public record BillLineItem(
+    long DetailId,
+    long ItemID,
+    string ItemBarCode,
+    int? Package,
+    double Qty,
+    double Price,
+    double? DetailDiscount1,
+    double? DetailDiscount2,
+    double? DetailDiscountR1,
+    double? DetailDiscountR2,
+    double? DetailTax,
+    double? DetailTaxR,
+    double? Value);

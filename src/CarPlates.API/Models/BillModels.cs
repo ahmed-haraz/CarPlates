@@ -48,9 +48,10 @@ public class TransDetail
     public double Price { get; set; }
     public double? DetailDiscount1 { get; set; }
     public double? DetailDiscount2 { get; set; }
-    public double? DetailDiscount1Ratio { get; set; }
+    public double? DetailDiscountR1 { get; set; }
+    public double? DetailDiscountR2 { get; set; }
     public double? DetailTax { get; set; }
-    public double? DetailTaxRatio { get; set; }
+    public double? DetailTaxR { get; set; }
     public double? Value { get; set; }
     public string? DetailNotes { get; set; }
     public byte? Status { get; set; }

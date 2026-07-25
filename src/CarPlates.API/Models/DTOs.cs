@@ -225,9 +225,10 @@ public record CreateBillDetailDto(
     double Price,
     double? DetailDiscount1 = null,
     double? DetailDiscount2 = null,
-    double? DetailDiscount1Ratio = null,
+    double? DetailDiscountR1 = null,
+    double? DetailDiscountR2 = null,
     double? DetailTax = null,
-    double? DetailTaxRatio = null,
+    double? DetailTaxR = null,
     string? DetailNotes = null);
 
 public record CreateBillDto(
@@ -252,9 +253,10 @@ public record BillDetailDto(
     double Price,
     double? DetailDiscount1,
     double? DetailDiscount2,
-    double? DetailDiscount1Ratio,
+    double? DetailDiscountR1,
+    double? DetailDiscountR2,
     double? DetailTax,
-    double? DetailTaxRatio,
+    double? DetailTaxR,
     double? Value);
 
 public record BillDto(

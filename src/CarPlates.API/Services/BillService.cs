@@ -25,9 +25,10 @@ public class BillService(ApplicationDbContext context) : IBillService
             var linePrice = d.Price > 0 ? d.Price : 0d;
             var lineDiscount1 = d.DetailDiscount1 ?? 0d;
             var lineDiscount2 = d.DetailDiscount2 ?? 0d;
-            var lineDiscount1Ratio = d.DetailDiscount1Ratio ?? 0d;
+            var lineDiscountR1 = d.DetailDiscountR1 ?? 0d;
+            var lineDiscountR2 = d.DetailDiscountR2 ?? 0d;
             var lineTax = d.DetailTax ?? 0d;
-            var lineTaxRatio = d.DetailTaxRatio ?? 0d;
+            var lineTaxR = d.DetailTaxR ?? 0d;
             var lineValue = (double)Math.Round(
                 (decimal)lineQty * (decimal)linePrice
                 - (decimal)lineDiscount1
@@ -43,9 +44,10 @@ public class BillService(ApplicationDbContext context) : IBillService
                 Price = (double)Math.Round((decimal)linePrice, 2),
                 DetailDiscount1 = lineDiscount1,
                 DetailDiscount2 = lineDiscount2,
-                DetailDiscount1Ratio = lineDiscount1Ratio,
+                DetailDiscountR1 = lineDiscountR1,
+                DetailDiscountR2 = lineDiscountR2,
                 DetailTax = lineTax,
-                DetailTaxRatio = lineTaxRatio,
+                DetailTaxR = lineTaxR,
                 Value = lineValue,
                 DetailNotes = d.DetailNotes ?? "",
                 Status = 1,
@@ -245,6 +247,6 @@ public class BillService(ApplicationDbContext context) : IBillService
             h.Signature,
             h.Details.Select(d => new BillDetailDto(
                 d.DetailId, d.ItemID, d.ItemBarCode, d.Package, d.Qty, d.Price,
-                d.DetailDiscount1, d.DetailDiscount2, d.DetailDiscount1Ratio, d.DetailTax, d.DetailTaxRatio, d.Value)).ToList());
+                d.DetailDiscount1, d.DetailDiscount2, d.DetailDiscountR1, d.DetailDiscountR2, d.DetailTax, d.DetailTaxR, d.Value)).ToList());
     }
 }

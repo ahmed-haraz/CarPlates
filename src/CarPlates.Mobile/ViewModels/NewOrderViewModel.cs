@@ -1253,9 +1253,10 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
                     Price: Math.Round(price, 2),
                     DetailDiscount1: Math.Round(totalDiscount, 2),
                     DetailDiscount2: Math.Round(discount2, 2),
-                    DetailDiscount1Ratio: Math.Round(discountRatio, 2),
+                    DetailDiscountR1: Math.Round(discountRatio, 2),
+                    DetailDiscountR2: null,
                     DetailTax: Math.Round(taxAmount, 2),
-                    DetailTaxRatio: Math.Round(taxRatio, 2),
+                    DetailTaxR: Math.Round(taxRatio, 2),
                     DetailNotes: null);
             }).ToList();
 

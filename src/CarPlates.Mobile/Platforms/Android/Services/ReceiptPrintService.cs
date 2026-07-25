@@ -4,7 +4,6 @@ using Android.Content;
 using Android.OS;
 using Android.Print;
 using Android.Webkit;
-using Android.Widget;
 using CarPlates.Application.Common.Interfaces;
 using Java.IO;
 using Java.Util;
@@ -40,14 +39,17 @@ public class ReceiptPrintService : IReceiptPrintService
 
     private async Task PrintEscPosAsync(ReceiptApiResult receipt)
     {
-        var devices = BluetoothAdapter.DefaultAdapter?.BondedDevices?
-            .ToArray();
+        var adapter = BluetoothAdapter.DefaultAdapter;
+        if (adapter == null)
+            throw new System.InvalidOperationException("Bluetooth is not available on this device. Use A4 print instead.");
+
+        if (!adapter.IsEnabled)
+            throw new System.InvalidOperationException("Bluetooth is turned off. Please enable Bluetooth in settings, or use A4 print instead.");
+
+        var devices = adapter.BondedDevices?.ToArray();
 
         if (devices == null || devices.Length == 0)
-        {
-            ShowToast("No paired Bluetooth printer found. Pair a printer first.");
-            return;
-        }
+            throw new System.InvalidOperationException("No paired Bluetooth printer found. Pair a printer or use A4 print instead.");
 
         var device = devices[0];
         BluetoothSocket? socket = null;
@@ -62,12 +64,10 @@ public class ReceiptPrintService : IReceiptPrintService
             var data = BuildEscPosReceipt(receipt);
             await outputStream.WriteAsync(data);
             await outputStream.FlushAsync();
-
-            ShowToast("Receipt printed successfully");
         }
         catch (System.Exception ex)
         {
-            ShowToast($"Print failed: {ex.Message}");
+            throw new System.InvalidOperationException($"Print failed: {ex.Message}", ex);
         }
         finally
         {
@@ -211,13 +211,6 @@ public class ReceiptPrintService : IReceiptPrintService
 <p class='total'>Balance: {receipt.Balance:F2}</p>
 <p style='text-align:center;margin-top:30px;color:#888;'>Thank you for your visit!</p>
 </body></html>";
-    }
-
-    private static void ShowToast(string message)
-    {
-        var context = global::Android.App.Application.Context;
-        var toast = global::Android.Widget.Toast.MakeText(context, message, global::Android.Widget.ToastLength.Short);
-        toast?.Show();
     }
 
     private class ReceiptPrintAdapter(Activity activity, string html) : PrintDocumentAdapter
