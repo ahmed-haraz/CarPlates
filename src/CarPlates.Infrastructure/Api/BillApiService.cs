@@ -138,8 +138,8 @@ public class BillApiService(
                 dto.TransDate, dto.CustomerName, dto.Signature,
                 dto.Details?.Select(d => new BillLineItem(
                     d.DetailId, d.ItemID, d.ItemBarCode, d.Package, d.Qty, d.Price,
-                    d.DetailDiscount1, d.DetailDiscount2, d.DetailDiscount1Ratio,
-                    d.DetailTax, d.DetailTaxRatio, d.Value)).ToList() ?? []);
+                    d.DetailDiscount1, d.DetailDiscount2, d.DetailDiscountR1, d.DetailDiscountR2,
+                    d.DetailTax, d.DetailTaxR, d.Value)).ToList() ?? []);
         }
         catch (Exception ex)
         {
@@ -213,9 +213,10 @@ public class BillApiService(
         public double Price { get; set; }
         public double? DetailDiscount1 { get; set; }
         public double? DetailDiscount2 { get; set; }
-        public double? DetailDiscount1Ratio { get; set; }
+        public double? DetailDiscountR1 { get; set; }
+        public double? DetailDiscountR2 { get; set; }
         public double? DetailTax { get; set; }
-        public double? DetailTaxRatio { get; set; }
+        public double? DetailTaxR { get; set; }
         public double? Value { get; set; }
     }
 }

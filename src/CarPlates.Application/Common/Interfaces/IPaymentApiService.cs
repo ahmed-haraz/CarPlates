@@ -44,7 +44,8 @@ public record BillDetailApiItem(
     double Price,
     double? DetailDiscount1,
     double? DetailDiscount2,
-    double? DetailDiscount1Ratio,
+    double? DetailDiscountR1,
+    double? DetailDiscountR2,
     double? DetailTax,
-    double? DetailTaxRatio,
+    double? DetailTaxR,
     double? Value);

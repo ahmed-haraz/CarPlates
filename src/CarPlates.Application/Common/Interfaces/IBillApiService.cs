@@ -28,9 +28,10 @@ public record CreateBillLineRequest(
     double Price,
     double? DetailDiscount1,
     double? DetailDiscount2,
-    double? DetailDiscount1Ratio,
+    double? DetailDiscountR1,
+    double? DetailDiscountR2,
     double? DetailTax,
-    double? DetailTaxRatio,
+    double? DetailTaxR,
     string? DetailNotes);
 
 public record BillApiResult(bool Success, long? HeaderId, string? ErrorMessage);
@@ -83,7 +84,8 @@ public record BillLineItem(
     double Price,
     double? DetailDiscount1,
     double? DetailDiscount2,
-    double? DetailDiscount1Ratio,
+    double? DetailDiscountR1,
+    double? DetailDiscountR2,
     double? DetailTax,
-    double? DetailTaxRatio,
+    double? DetailTaxR,
     double? Value);

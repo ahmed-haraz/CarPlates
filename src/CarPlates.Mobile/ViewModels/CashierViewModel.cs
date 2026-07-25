@@ -125,12 +125,13 @@ public partial class CashierViewModel : BaseViewModel
     [RelayCommand]
     private async Task PrintBillAsync(BillApiItem bill)
     {
-        await ExecuteAsync(async () =>
+        try
         {
+            IsBusy = true;
             var detail = await _billApiService.GetBillByIdAsync(bill.HeaderId);
             if (detail == null)
             {
-                ShowAlert(AppResources.Error, "Unable to load bill details");
+                await Navigation.DisplayAlertAsync(AppResources.Error, "Unable to load bill details");
                 return;
             }
 
@@ -149,11 +150,21 @@ public partial class CashierViewModel : BaseViewModel
                 Payments: [],
                 Details: detail.Details.Select(d => new BillDetailApiItem(
                     d.DetailId, d.ItemID, d.ItemBarCode, d.Package, d.Qty, d.Price,
-                    d.DetailDiscount1, d.DetailDiscount2, d.DetailDiscount1Ratio,
-                    d.DetailTax, d.DetailTaxRatio, d.Value)).ToList());
+                    d.DetailDiscount1, d.DetailDiscount2, d.DetailDiscountR1, d.DetailDiscountR2,
+                    d.DetailTax, d.DetailTaxR, d.Value)).ToList());
 
             await _printService.PrintReceiptAsync(receipt, PrintFormat.Receipt);
-        });
+            await Navigation.DisplayAlertAsync("Print", "Receipt sent to printer");
+        }
+        catch (System.Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"[PrintBill] {ex}");
+            await Navigation.DisplayAlertAsync("Print Error", ex.Message);
+        }
+        finally
+        {
+            IsBusy = false;
+        }
     }
 
     partial void OnDateFromChanged(DateTime value)
