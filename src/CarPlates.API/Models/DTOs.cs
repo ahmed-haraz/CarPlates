@@ -186,6 +186,8 @@ public record CategoryDto(
 
 // ---- Customers (wh_Customers), for search/lookup rather than the full registration flow ----
 
+public record UpdateCustomerRequestDto(string Name_Ar, string Name_En, string? Mobile, string? Phone1, string? Email, string? Address);
+
 public record CustomerDto(
     int Id,
     string Code,

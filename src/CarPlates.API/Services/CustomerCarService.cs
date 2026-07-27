@@ -1,3 +1,4 @@
+using CarPlates.API.Common;
 using CarPlates.API.Data;
 using CarPlates.API.Interface;
 using CarPlates.API.Models;
@@ -39,6 +40,49 @@ public class CustomerCarService(ApplicationDbContext context) : ICustomerCarServ
             .ToListAsync();
 
         return [.. models.Select(m => new CarModelDto(m.ModelID, m.MakeID, m.Code, m.Name_ar, m.Name_en))];
+    }
+
+    public async Task<PagedResult<CarMakeDto>> GetMakesPagedAsync(
+        string? search, int page, int pageSize, CancellationToken cancellationToken = default)
+    {
+        var query = _context.CarMakes.AsNoTracking().Where(m => m.Status == 1);
+
+        if (!string.IsNullOrWhiteSpace(search))
+        {
+            query = query.Where(m =>
+                m.Name_ar.Contains(search) || m.Name_en.Contains(search));
+        }
+
+        query = query.OrderBy(m => m.Name_en ?? m.Name_ar);
+
+        var paged = await query.ToPagedResultAsync(page, pageSize, cancellationToken);
+        var items = paged.Items.Select(m => new CarMakeDto(m.MakeID, m.Code, m.Name_ar, m.Name_en, m.IconOriginalURL)).ToList();
+
+        return new PagedResult<CarMakeDto>(items, paged.TotalCount, paged.Page, paged.PageSize, paged.TotalPages);
+    }
+
+    public async Task<PagedResult<CarModelDto>> GetModelsPagedAsync(
+        int? makeId, string? search, int page, int pageSize, CancellationToken cancellationToken = default)
+    {
+        var query = _context.CarModels.AsNoTracking().Where(m => m.Status == 1);
+
+        if (makeId.HasValue)
+        {
+            query = query.Where(m => m.MakeID == makeId.Value);
+        }
+
+        if (!string.IsNullOrWhiteSpace(search))
+        {
+            query = query.Where(m =>
+                m.Name_ar.Contains(search) || m.Name_en.Contains(search));
+        }
+
+        query = query.OrderBy(m => m.Name_en ?? m.Name_ar);
+
+        var paged = await query.ToPagedResultAsync(page, pageSize, cancellationToken);
+        var items = paged.Items.Select(m => new CarModelDto(m.ModelID, m.MakeID, m.Code, m.Name_ar, m.Name_en)).ToList();
+
+        return new PagedResult<CarModelDto>(items, paged.TotalCount, paged.Page, paged.PageSize, paged.TotalPages);
     }
 
     public async Task<IReadOnlyList<VehicleTypeDto>> GetVehicleTypesAsync()

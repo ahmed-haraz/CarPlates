@@ -10,6 +10,8 @@ public interface ICustomerCarService
     Task<IReadOnlyList<VehicleTypeDto>> GetVehicleTypesAsync();
     Task<IReadOnlyList<EngineTypeDto>> GetEngineTypesAsync();
 
+    Task<PagedResult<CarMakeDto>> GetMakesPagedAsync(string? search, int page, int pageSize, CancellationToken cancellationToken = default);
+    Task<PagedResult<CarModelDto>> GetModelsPagedAsync(int? makeId, string? search, int page, int pageSize, CancellationToken cancellationToken = default);
     Task<CarMakeDto> CreateMakeAsync(RegisterCarMakeRequestDto request);
     Task<CarMakeDto> UpdateMakeAsync(int id, RegisterCarMakeRequestDto request);
     Task DeleteMakeAsync(int id);

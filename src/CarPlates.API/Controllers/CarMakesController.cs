@@ -12,6 +12,16 @@ public class CarMakesController(ICustomerCarService customerCarService) : Contro
 {
     private readonly ICustomerCarService _customerCarService = customerCarService;
 
+    [HttpGet]
+    public async Task<ActionResult<PagedResult<CarMakeDto>>> GetAll(
+        [FromQuery] string? search = null,
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 20,
+        CancellationToken cancellationToken = default)
+    {
+        return Ok(await _customerCarService.GetMakesPagedAsync(search, page, pageSize, cancellationToken));
+    }
+
     [HttpPost]
     public async Task<ActionResult<CarMakeDto>> Create([FromBody] RegisterCarMakeRequestDto request)
     {

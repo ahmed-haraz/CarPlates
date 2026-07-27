@@ -6,4 +6,6 @@ public interface ICustomerService
 {
     Task<PagedResult<CustomerDto>> GetAllAsync(string? search, int page, int pageSize, CancellationToken cancellationToken = default);
     Task<CustomerDto?> GetByIdAsync(int id, CancellationToken cancellationToken = default);
+    Task<CustomerDto> UpdateAsync(int id, UpdateCustomerRequestDto request);
+    Task DeleteAsync(int id);
 }

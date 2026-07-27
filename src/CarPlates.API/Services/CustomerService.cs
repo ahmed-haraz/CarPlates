@@ -42,6 +42,36 @@ public class CustomerService(ApplicationDbContext context) : ICustomerService
         return customer == null ? null : MapToDto(customer);
     }
 
+    public async Task<CustomerDto> UpdateAsync(int id, UpdateCustomerRequestDto request)
+    {
+        var customer = await _context.WhCustomers.FindAsync(id)
+            ?? throw new KeyNotFoundException($"Customer with ID {id} not found.");
+
+        customer.Name_Ar = request.Name_Ar;
+        customer.Name_En = request.Name_En;
+        customer.Mobile = request.Mobile;
+        customer.Phone1 = request.Phone1;
+        customer.email = request.Email;
+        customer.Address = request.Address;
+        customer.UpdateDateTime = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+
+        await _context.SaveChangesAsync();
+
+        return MapToDto(customer);
+    }
+
+    public async Task DeleteAsync(int id)
+    {
+        var customer = await _context.WhCustomers.FindAsync(id);
+        if (customer != null)
+        {
+            customer.Inactive = true;
+            customer.Status = 0;
+            customer.UpdateDateTime = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+            await _context.SaveChangesAsync();
+        }
+    }
+
     private static CustomerDto MapToDto(WhCustomer c) => new(
         c.Id, c.Code, c.Name_Ar, c.Name_En, c.Mobile, c.Phone1, c.email, c.Address);
 }
