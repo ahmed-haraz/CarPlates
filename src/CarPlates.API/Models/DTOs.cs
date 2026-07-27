@@ -7,7 +7,7 @@ public record LoginResponseDto(string AccessToken, string RefreshToken, UserDto 
 public record RefreshTokenRequestDto(string RefreshToken);
 public record LogoutRequestDto(string RefreshToken);
 public record UserDto(string Id, string Username, string Email, string FullName, int BranchId, int CashboxID, int CarId, int StoreId, int SalesRepID, int Usertype);
-public record RegisterRequestDto(int UserID,string Username, string Email,string Mobile, string Password, string FullName_En,string FullName_Ar,int BranchId,int CashboxID,int StoreID,int CarID,int SalesRepID,int UserType);
+public record RegisterRequestDto(int UserID, string Username, string Email, string Mobile, string Password, string FullName_En, string FullName_Ar, int BranchId, int CashboxID, int StoreID, int CarID, int SalesRepID, int UserType);
 
 // Vehicle DTOs
 public record VehicleDto(
@@ -102,9 +102,13 @@ public record SyncBatchResponseDto(int SyncedCount, int FailedCount, List<string
 
 // ---- Customer Cars (wh_CustomerCars / wh_Customers / wh_CustomersBranch) ----
 
-public record CarMakeDto(int MakeID, string MakeName);
+public record CarMakeDto(int MakeID, int Code, string Name_ar, string Name_en, string? IconOriginalURL);
 
-public record CarModelDto(int ModelID, int MakeID, string ModelName);
+public record RegisterCarMakeRequestDto(string? Code, string Name_ar, string Name_en);
+
+public record CarModelDto(int ModelID, int MakeID, int Code, string Name_ar, string Name_en);
+
+public record RegisterCarModelRequestDto(string? Code, int MakeID, string Name_ar, string Name_en);
 
 public record CustomerCarLookupDto(
     long Id,
@@ -162,7 +166,11 @@ public record CustomerCarScanResultDto(
 
 public record TechnicianDto(int Id, int? Code, string? Name_Ar, string? Name_En);
 
+public record RegisterTechnicianRequestDto(string? Code, string Name_Ar, string Name_En);
+
 public record WorkLocationDto(int Id, int? Code, string? Name_Ar, string? Name_En);
+
+public record RegisterWorkLocationRequestDto(string? Code, string Name_Ar, string Name_En);
 
 // ---- Categories (vw_wh_ItemSubGroups) ----
 

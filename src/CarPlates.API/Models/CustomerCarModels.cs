@@ -93,19 +93,31 @@ public class CustomerBranch
 public class CarMake
 {
     public int MakeID { get; set; }
-    public string MakeName { get; set; } = string.Empty;
+    public int Code { get; set; }
+    public string Name_ar { get; set; } = string.Empty;
+    public string Name_en { get; set; } = string.Empty;
     public string? IconThumbURL { get; set; }
     public string? IconOptimizedURL { get; set; }
     public string? IconOriginalURL { get; set; }
-    public DateTime? CreatedAt { get; set; }
+    public byte Status { get; set; } = 1;
+    public long? InsertUserID { get; set; }
+    public long? UpdateUserID { get; set; }
+    public long? InsertDateTime { get; set; }
+    public long? UpdateDateTime { get; set; }
 }
 
 public class CarModel
 {
     public int ModelID { get; set; }
     public int MakeID { get; set; }
-    public string ModelName { get; set; } = string.Empty;
-    public DateTime? CreatedAt { get; set; }
+    public int Code { get; set; }
+    public string Name_ar { get; set; } = string.Empty;
+    public string Name_en { get; set; } = string.Empty;
+    public byte Status { get; set; } = 1;
+    public long? InsertUserID { get; set; }
+    public long? UpdateUserID { get; set; }
+    public long? InsertDateTime { get; set; }
+    public long? UpdateDateTime { get; set; }
 }
 
 public class VehicleTypeLookup

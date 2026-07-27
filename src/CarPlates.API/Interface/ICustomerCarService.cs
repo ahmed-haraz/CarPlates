@@ -10,6 +10,14 @@ public interface ICustomerCarService
     Task<IReadOnlyList<VehicleTypeDto>> GetVehicleTypesAsync();
     Task<IReadOnlyList<EngineTypeDto>> GetEngineTypesAsync();
 
+    Task<CarMakeDto> CreateMakeAsync(RegisterCarMakeRequestDto request);
+    Task<CarMakeDto> UpdateMakeAsync(int id, RegisterCarMakeRequestDto request);
+    Task DeleteMakeAsync(int id);
+
+    Task<CarModelDto> CreateModelAsync(RegisterCarModelRequestDto request);
+    Task<CarModelDto> UpdateModelAsync(int id, RegisterCarModelRequestDto request);
+    Task DeleteModelAsync(int id);
+
     /// <summary>
     /// Looks the plate up in VW_WH_CustomerCarsFull. If it's already registered, returns it
     /// as-is (WasNewCar/WasNewCustomer/WasNewBranchLink all false). If not, returns a result

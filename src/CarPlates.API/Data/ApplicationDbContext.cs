@@ -113,14 +113,16 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
         {
             entity.ToTable("wh_CarMakes", t => t.ExcludeFromMigrations());
             entity.HasKey(m => m.MakeID);
-            entity.Property(m => m.MakeName).HasMaxLength(255).IsRequired();
+            entity.Property(m => m.Name_ar).HasMaxLength(255).IsRequired();
+            entity.Property(m => m.Name_en).HasMaxLength(255).IsRequired();
         });
 
         builder.Entity<CarModel>(entity =>
         {
             entity.ToTable("wh_CarModels", t => t.ExcludeFromMigrations());
             entity.HasKey(m => m.ModelID);
-            entity.Property(m => m.ModelName).HasMaxLength(255).IsRequired();
+            entity.Property(m => m.Name_ar).HasMaxLength(255).IsRequired();
+            entity.Property(m => m.Name_en).HasMaxLength(255).IsRequired();
             entity.HasIndex(m => m.MakeID);
         });
 

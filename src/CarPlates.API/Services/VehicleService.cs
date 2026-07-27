@@ -160,7 +160,7 @@ public class VehicleService(ApplicationDbContext context, ICustomerCarService cu
 
         var trimmed = brand.Trim();
         return await _context.CarMakes.AsNoTracking()
-            .Where(m => m.MakeName == trimmed)
+            .Where(m => m.Name_ar == trimmed || m.Name_en == trimmed)
             .Select(m => (int?)m.MakeID)
             .FirstOrDefaultAsync();
     }
@@ -170,7 +170,7 @@ public class VehicleService(ApplicationDbContext context, ICustomerCarService cu
         if (string.IsNullOrWhiteSpace(model)) return null;
 
         var trimmed = model.Trim();
-        var query = _context.CarModels.AsNoTracking().Where(m => m.ModelName == trimmed);
+        var query = _context.CarModels.AsNoTracking().Where(m => m.Name_ar == trimmed || m.Name_en == trimmed);
         if (makeId.HasValue)
         {
             query = query.Where(m => m.MakeID == makeId.Value);
