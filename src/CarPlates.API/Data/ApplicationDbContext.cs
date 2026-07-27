@@ -31,6 +31,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     public DbSet<ItemSubGroupView> Categories { get; set; } = null!;
     public DbSet<BillAttachment> BillAttachments { get; set; } = null!;
     public DbSet<WhPrTrans> WhPrTrans { get; set; } = null!;
+    public DbSet<fw_LOVStatments> LovStatments { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -228,6 +229,23 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
         {
             entity.ToView("vw_wh_ItemSubGroups");
             entity.HasNoKey();
+        });
+
+        builder.Entity<fw_LOVStatments>(entity =>
+        {
+            entity.ToTable("fw_LOVStatments", t => t.ExcludeFromMigrations());
+            entity.HasKey(e => e.ID);
+            entity.Property(e => e.LOVName_AR).HasMaxLength(200);
+            entity.Property(e => e.LOVName_EN).HasMaxLength(200);
+            entity.Property(e => e.SQLString).HasColumnType("nvarchar(max)");
+            entity.Property(e => e.SearchWith).HasMaxLength(10);
+            entity.Property(e => e.Code).HasMaxLength(100);
+            entity.Property(e => e.name).HasMaxLength(100);
+            entity.Property(e => e.NameEng).HasMaxLength(100);
+            entity.Property(e => e.MaxRecordCount).HasMaxLength(100);
+            entity.Property(e => e.Viewname).HasMaxLength(200);
+            entity.Property(e => e.TableName).HasMaxLength(200);
+            entity.Property(e => e.BranchTableName).HasMaxLength(200);
         });
     }
 }
