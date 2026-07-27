@@ -174,8 +174,12 @@ public class CustomerCarFull
     public string? PlateType { get; set; }
 
     public int? CarMakesID { get; set; }
+    public string? MakeName_Ar { get; set; }
+    public string? MakeName_En { get; set; }
     public string? MakeName { get; set; }
     public int? CarModelID { get; set; }
+    public string? ModelName_Ar { get; set; }
+    public string? ModelName_En { get; set; }
     public string? ModelName { get; set; }
 
     public int? VehicleTypeID { get; set; }

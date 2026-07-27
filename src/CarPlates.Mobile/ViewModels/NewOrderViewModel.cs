@@ -361,12 +361,15 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
 
             await Task.WhenAll(makesTask, vehicleTypesTask, engineTypesTask, techniciansTask, locationsTask, categoriesTask, itemsTask);
 
+            var isRtl = LocalizationResourceManager.Instance.IsRightToLeft;
             _makeIdsByName.Clear();
             Brands.Clear();
             foreach (var make in makesTask.Result)
             {
-                Brands.Add(make.MakeName);
-                _makeIdsByName[make.MakeName] = make.MakeID;
+                var name = isRtl ? (make.Name_Ar ?? make.Name_En ?? string.Empty)
+                                 : (make.Name_En ?? make.Name_Ar ?? string.Empty);
+                Brands.Add(name);
+                _makeIdsByName[name] = make.MakeID;
             }
             ResetBrandPaging();
 
@@ -688,10 +691,12 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
 
         await ExecuteAsync(async () =>
         {
+            var isRtl = LocalizationResourceManager.Instance.IsRightToLeft;
             var models = await _customerCarLookupService.GetModelsAsync(makeId);
             foreach (var model in models)
             {
-                AvailableModels.Add(model.ModelName);
+                AvailableModels.Add(isRtl ? (model.Name_Ar ?? model.Name_En ?? string.Empty)
+                                          : (model.Name_En ?? model.Name_Ar ?? string.Empty));
             }
             ResetModelPaging();
         });

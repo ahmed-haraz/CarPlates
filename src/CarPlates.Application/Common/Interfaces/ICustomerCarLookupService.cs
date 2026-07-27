@@ -1,3 +1,5 @@
+using CarPlates.Application.Common.DTOs;
+
 namespace CarPlates.Application.Common.Interfaces;
 
 public interface ICustomerCarLookupService
@@ -7,6 +9,15 @@ public interface ICustomerCarLookupService
     Task<IReadOnlyList<CarModelResult>> GetModelsAsync(int makeId, CancellationToken cancellationToken = default);
     Task<IReadOnlyList<VehicleTypeResult>> GetVehicleTypesAsync(CancellationToken cancellationToken = default);
     Task<IReadOnlyList<EngineTypeResult>> GetEngineTypesAsync(CancellationToken cancellationToken = default);
+
+    Task<PaginatedResult<CarMakeResult>> GetMakesPagedAsync(string? search = null, int page = 1, int pageSize = 20, CancellationToken cancellationToken = default);
+    Task<PaginatedResult<CarModelResult>> GetModelsPagedAsync(int? makeId = null, string? search = null, int page = 1, int pageSize = 20, CancellationToken cancellationToken = default);
+    Task<CarMakeResult> CreateMakeAsync(CreateMakeRequest request, CancellationToken cancellationToken = default);
+    Task<CarMakeResult> UpdateMakeAsync(int id, UpdateMakeRequest request, CancellationToken cancellationToken = default);
+    Task DeleteMakeAsync(int id, CancellationToken cancellationToken = default);
+    Task<CarModelResult> CreateModelAsync(CreateModelRequest request, CancellationToken cancellationToken = default);
+    Task<CarModelResult> UpdateModelAsync(int id, UpdateModelRequest request, CancellationToken cancellationToken = default);
+    Task DeleteModelAsync(int id, CancellationToken cancellationToken = default);
 }
 
 public record CustomerCarScanRequest(
@@ -38,12 +49,24 @@ public record CustomerCarScanResult(
     bool WasNewCustomer,
     bool WasNewBranchLink,
     long? CarHeaderId,
-    string? ErrorMessage);
+    string? ErrorMessage,
+    string? MakeName_Ar = null,
+    string? MakeName_En = null,
+    string? ModelName_Ar = null,
+    string? ModelName_En = null);
 
-public record CarMakeResult(int MakeID, string MakeName);
+public record CarMakeResult(int MakeID, int Code, string Name_Ar, string Name_En, string? IconOriginalURL);
 
-public record CarModelResult(int ModelID, int MakeID, string ModelName);
+public record CarModelResult(int ModelID, int MakeID, int Code, string Name_Ar, string Name_En);
 
 public record VehicleTypeResult(int Id, string? Name_Ar, string? Name_En);
 
 public record EngineTypeResult(int Id, string? Name_Ar, string? Name_En);
+
+public record CreateMakeRequest(string? Code, string Name_Ar, string Name_En);
+
+public record UpdateMakeRequest(string? Code, string Name_Ar, string Name_En);
+
+public record CreateModelRequest(string? Code, int MakeID, string Name_Ar, string Name_En);
+
+public record UpdateModelRequest(string? Code, int MakeID, string Name_Ar, string Name_En);

@@ -25,12 +25,23 @@ public class CustomerLookupService(IHttpClientFactory httpClientFactory) : ICust
         if (result == null) return new PaginatedResult<CustomerLookupResult>([], 0, page, pageSize, 0);
 
         return new PaginatedResult<CustomerLookupResult>(
-            result.Items.Select(c => new CustomerLookupResult(c.Id, c.Name_Ar, c.Name_En, c.Mobile, c.Phone1)).ToList(),
+            result.Items.Select(c => new CustomerLookupResult(c.Id, c.Code, c.Name_Ar, c.Name_En, c.Mobile, c.Phone1, c.Email, c.Address)).ToList(),
             result.TotalCount, result.Page, result.PageSize, result.TotalPages);
+    }
+
+    public async Task UpdateCustomerAsync(int id, UpdateCustomerRequest request, CancellationToken cancellationToken = default)
+    {
+        var response = await Client.PutAsJsonAsync($"customers/{id}", request, ApiJsonOptions.Default, cancellationToken);
+        response.EnsureSuccessStatusCode();
+    }
+
+    public async Task DeleteCustomerAsync(int id, CancellationToken cancellationToken = default)
+    {
+        var response = await Client.DeleteAsync($"customers/{id}", cancellationToken);
+        response.EnsureSuccessStatusCode();
     }
 
     private record CustomerApiResponse(int Id, string Code, string Name_Ar, string Name_En, string? Mobile, string? Phone1, string? Email, string? Address);
 
-    // Shape returned by the server's PagedResult<T> wrapper (see CarPlates.API.Models.PagedResult).
     private record ApiPagedResult<T>(List<T> Items, int TotalCount, int Page, int PageSize, int TotalPages);
 }
