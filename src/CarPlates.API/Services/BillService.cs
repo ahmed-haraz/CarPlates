@@ -241,7 +241,7 @@ public class BillService(ApplicationDbContext context) : IBillService
         int branchId, int? customerId, int? carHeaderId,
         int page, int pageSize, CancellationToken cancellationToken = default)
     {
-        var query = _context.TransHeaders.AsNoTracking().AsQueryable();
+        var query = _context.TransHeaders.AsNoTracking().Include(h => h.Details).AsQueryable();
 
         if (branchId > 0) query = query.Where(h => h.BranchID == branchId);
         if (customerId.HasValue) query = query.Where(h => h.CustomerId == customerId);
@@ -264,15 +264,14 @@ public class BillService(ApplicationDbContext context) : IBillService
         int page, int pageSize, string? userId = null, int? branchId = null,
         CancellationToken cancellationToken = default)
     {
-        var query = _context.TransHeaders.AsNoTracking().AsQueryable();
+        var query = _context.TransHeaders.AsNoTracking().Include(h => h.Details).AsQueryable();
 
         if (!string.IsNullOrWhiteSpace(search))
         {
-            var searchLower = search.ToLower();
             query = query.Where(h =>
-                (h.PlateNumber != null && h.PlateNumber.ToLower().Contains(searchLower)) ||
-                (h.ReferenceNo != null && h.ReferenceNo.ToLower().Contains(searchLower)) ||
-                (h.DocTransNo != null && h.DocTransNo.ToLower().Contains(searchLower)));
+                (h.PlateNumber != null && EF.Functions.Like(h.PlateNumber, $"%{search}%")) ||
+                (h.ReferenceNo != null && EF.Functions.Like(h.ReferenceNo, $"%{search}%")) ||
+                (h.DocTransNo != null && EF.Functions.Like(h.DocTransNo, $"%{search}%")));
         }
 
         if (transDateFrom.HasValue)
@@ -354,7 +353,7 @@ public class BillService(ApplicationDbContext context) : IBillService
             }
         }
 
-        var itemIds = h.Details.Select(d => d.ItemID).Distinct().ToList();
+        var itemIds = h.Details.Select(d => (int)d.ItemID).Distinct().ToList();
         var itemNames = await _context.ItemBarCodes.AsNoTracking()
             .Where(i => itemIds.Contains(i.ID))
             .Select(i => new { i.ID, Name = i.Name_En ?? i.Name_Ar ?? i.ItemBarCode })
