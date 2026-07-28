@@ -11,7 +11,7 @@ public class ItemSubGroupView
     public string? Name_AR { get; set; }
     public string? Name_En { get; set; }
     public string? Groupname { get; set; }
-    public byte Status { get; set; }
+    public int Status { get; set; }
     public int? ParentID { get; set; }
     public long? InsertUserID { get; set; }
     public long? UpdateUserID { get; set; }

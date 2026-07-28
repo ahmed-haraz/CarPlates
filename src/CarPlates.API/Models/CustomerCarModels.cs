@@ -57,7 +57,7 @@ public class WhCustomer
     public int? SupplierAcc { get; set; }
     public bool CallCenter { get; set; }
     public byte? ContractType { get; set; }
-    public byte Status { get; set; } = 1;
+    public int Status { get; set; } = 1;
     public int? Device_ID { get; set; }
     public double? Latitude { get; set; }
     public double? Longitude { get; set; }
@@ -78,7 +78,7 @@ public class CustomerBranch
     public string? Terminal_ID { get; set; }
     public int? ParentID { get; set; }
     public int? BranchID { get; set; }
-    public byte Status { get; set; } = 1;
+    public int Status { get; set; } = 1;
     public long? InsertUserID { get; set; }
     public long? UpdateUserID { get; set; }
     public long? InsertDateTime { get; set; }
@@ -93,7 +93,7 @@ public class CarMake
     public string Name_ar { get; set; } = string.Empty;
     public string Name_en { get; set; } = string.Empty;
     public string? IconOriginalURL { get; set; }
-    public byte Status { get; set; } = 1;
+    public int Status { get; set; } = 1;
     public long? InsertUserID { get; set; }
     public long? UpdateUserID { get; set; }
     public long? InsertDateTime { get; set; }
@@ -107,7 +107,7 @@ public class CarModel
     public int Code { get; set; }
     public string Name_ar { get; set; } = string.Empty;
     public string Name_en { get; set; } = string.Empty;
-    public byte Status { get; set; } = 1;
+    public int Status { get; set; } = 1;
     public long? InsertUserID { get; set; }
     public long? UpdateUserID { get; set; }
     public long? InsertDateTime { get; set; }
@@ -154,7 +154,7 @@ public class ScanEvent
     public double? Latitude { get; set; }
     public double? Longitude { get; set; }
     public string? Notes { get; set; }
-    public byte Status { get; set; } = 1;
+    public int Status { get; set; } = 1;
     public long? InsertUserID { get; set; }
     public long? UpdateUserID { get; set; }
     public long? InsertDateTime { get; set; }

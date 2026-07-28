@@ -131,7 +131,7 @@
                                 </FormattedString>
                             </Label.FormattedText>
                         </Label>
-                        <Label Text="{Binding SelectedVehicle.PlateNumber}"
+                        <Label Text="{Binding SelectedVehicle.PlateNumber, Converter={StaticResource ArabicToEnglishPlateConverter}}"
                                FontSize="14"
                                TextColor="{DynamicResource TextSecondary}" />
                     </VerticalStackLayout>

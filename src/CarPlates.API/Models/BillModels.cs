@@ -76,7 +76,7 @@ public class BillAttachment
     public string AttachmentType { get; set; } = "Photo"; // 'Photo' or 'Signature'
     public long? InsertUserID { get; set; }
     public long? InsertDateTime { get; set; }
-    public byte Status { get; set; } = 1;
+    public int Status { get; set; } = 1;
 
     public TransHeader? Header { get; set; }
 }

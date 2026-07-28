@@ -163,13 +163,13 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
 
         builder.Entity<CarsTechnician>(entity =>
         {
-            entity.ToView("wh_CarsTechnicians");
+            entity.ToTable("wh_CarsTechnician", t => t.ExcludeFromMigrations());
             entity.HasKey(t => t.Id);
         });
 
         builder.Entity<WorkLocation>(entity =>
         {
-            entity.ToView("wh_Cars_WorkLocations");
+            entity.ToTable("wh_WorkLocations", t => t.ExcludeFromMigrations());
             entity.HasKey(w => w.Id);
         });
 

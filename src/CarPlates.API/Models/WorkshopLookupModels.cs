@@ -7,7 +7,7 @@ public class CarsTechnician
     public int? Code { get; set; }
     public string? Name_ar { get; set; }
     public string? Name_en { get; set; }
-    public byte Status { get; set; }
+    public int Status { get; set; }
     public long? InsertUserID { get; set; }
     public long? InsertDateTime { get; set; }
     public long? UpdateUserID { get; set; }
@@ -21,7 +21,7 @@ public class WorkLocation
     public int? Code { get; set; }
     public string? Name_ar { get; set; }
     public string? Name_en { get; set; }
-    public byte Status { get; set; }
+    public int Status { get; set; }
     public long? InsertUserID { get; set; }
     public long? InsertDateTime { get; set; }
     public long? UpdateUserID { get; set; }

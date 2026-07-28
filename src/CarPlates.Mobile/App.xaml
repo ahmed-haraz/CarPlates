@@ -18,12 +18,9 @@
             <converters:IsStringEmptyConverter x:Key="IsStringEmptyConverter" />
             <converters:IsStringNotEmptyConverter x:Key="IsStringNotEmptyConverter" />
             <converters:ArabicToEnglishPlateConverter x:Key="ArabicToEnglishPlateConverter" />
-            <converters:EqualityToColorConverter x:Key="PlateTypeBgConverter"
-                                                  TrueColor="#E8F5E9"
-                                                  FalseColor="Transparent" />
             <converters:EqualityToColorConverter x:Key="PlateTypeStrokeConverter"
-                                                  TrueColor="#6750A4"
-                                                  FalseColor="#E0E0E0" />
+                                                  TrueColor="#1D4ED8"
+                                                  FalseColor="#DDE7F3" />
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="Resources/Styles/Colors.xaml" />
                 <ResourceDictionary Source="Resources/Styles/Theme.xaml" />

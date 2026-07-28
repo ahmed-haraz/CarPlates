@@ -346,70 +346,107 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
     // Pulls every reference list this form needs straight from the API: car makes,
     // vehicle/engine types, workshop technicians and locations, item categories, and an
     // unfiltered first page of the item catalog - nothing here is hardcoded any more.
+    // Each source is fetched independently so one backend issue doesn't block all data.
     [RelayCommand]
     private async Task LoadInitialDataAsync()
     {
         await ExecuteAsync(async () =>
         {
-            var makesTask = _customerCarLookupService.GetMakesAsync();
-            var vehicleTypesTask = _customerCarLookupService.GetVehicleTypesAsync();
-            var engineTypesTask = _customerCarLookupService.GetEngineTypesAsync();
-            var techniciansTask = _workshopLookupService.GetTechniciansAsync(pageSize: 100);
-            var locationsTask = _workshopLookupService.GetWorkLocationsAsync(pageSize: 100);
-            var categoriesTask = _itemLookupService.GetCategoriesAsync(pageSize: 100);
-            var itemsTask = _itemLookupService.SearchAsync(pageSize: 50);
-
-            await Task.WhenAll(makesTask, vehicleTypesTask, engineTypesTask, techniciansTask, locationsTask, categoriesTask, itemsTask);
-
             var isRtl = LocalizationResourceManager.Instance.IsRightToLeft;
-            _makeIdsByName.Clear();
-            Brands.Clear();
-            foreach (var make in makesTask.Result)
-            {
-                var name = isRtl ? (make.Name_Ar ?? make.Name_En ?? string.Empty)
-                                 : (make.Name_En ?? make.Name_Ar ?? string.Empty);
-                Brands.Add(name);
-                _makeIdsByName[name] = make.MakeID;
-            }
-            ResetBrandPaging();
 
-            VehicleTypes.Clear();
-            foreach (var type in vehicleTypesTask.Result)
+            var makes = await SafeFetchAsync(_customerCarLookupService.GetMakesAsync());
+            if (makes == null)
             {
-                VehicleTypes.Add(type.Name_En ?? type.Name_Ar ?? string.Empty);
+                ShowAlert("Loading Error", "Failed to load car brands. Check that the API server is running and the database table 'wh_CarMakes' has data.");
             }
-
-            EngineTypes.Clear();
-            foreach (var type in engineTypesTask.Result)
+            else
             {
-                EngineTypes.Add(type.Name_En ?? type.Name_Ar ?? string.Empty);
+                _makeIdsByName.Clear();
+                Brands.Clear();
+                foreach (var make in makes)
+                {
+                    var name = isRtl ? (make.Name_Ar ?? make.Name_En ?? string.Empty)
+                                     : (make.Name_En ?? make.Name_Ar ?? string.Empty);
+                    Brands.Add(name);
+                    _makeIdsByName[name] = make.MakeID;
+                }
+                ResetBrandPaging();
             }
 
-            Technicians.Clear();
-            foreach (var tech in techniciansTask.Result.Items)
+            var vehicleTypes = await SafeFetchAsync(_customerCarLookupService.GetVehicleTypesAsync());
+            if (vehicleTypes != null)
             {
-                Technicians.Add(new Technician { Id = tech.Id.ToString(), Name = tech.Name_En ?? tech.Name_Ar ?? string.Empty });
+                VehicleTypes.Clear();
+                foreach (var type in vehicleTypes)
+                {
+                    VehicleTypes.Add(type.Name_En ?? type.Name_Ar ?? string.Empty);
+                }
             }
 
-            Locations.Clear();
-            foreach (var location in locationsTask.Result.Items)
+            var engineTypes = await SafeFetchAsync(_customerCarLookupService.GetEngineTypesAsync());
+            if (engineTypes != null)
             {
-                Locations.Add(new WorkLocation { Id = location.Id.ToString(), Name = location.Name_En ?? location.Name_Ar ?? string.Empty, Type = location.Name_Ar ?? string.Empty });
-            }
-            FilteredLocations = new ObservableCollection<WorkLocation>(Locations);
-
-            ItemCategories.Clear();
-            Categories.Clear();
-            ItemCategories.Add(new ItemCategoryOption(null, "الكل")); // "All" - clears the category filter
-            foreach (var category in categoriesTask.Result.Items)
-            {
-                var categoryName = category.Name_En ?? category.Name_Ar ?? string.Empty;
-                ItemCategories.Add(new ItemCategoryOption(category.Id, categoryName));
-                Categories.Add(categoryName);
+                EngineTypes.Clear();
+                foreach (var type in engineTypes)
+                {
+                    EngineTypes.Add(type.Name_En ?? type.Name_Ar ?? string.Empty);
+                }
             }
 
-            ApplyItemResults(itemsTask.Result.Items);
+            var technicians = await SafeFetchAsync(_workshopLookupService.GetTechniciansAsync(pageSize: 100));
+            if (technicians != null)
+            {
+                Technicians.Clear();
+                foreach (var tech in technicians.Items)
+                {
+                    Technicians.Add(new Technician { Id = tech.Id.ToString(), Name = tech.Name_En ?? tech.Name_Ar ?? string.Empty });
+                }
+            }
+
+            var locations = await SafeFetchAsync(_workshopLookupService.GetWorkLocationsAsync(pageSize: 100));
+            if (locations != null)
+            {
+                Locations.Clear();
+                foreach (var location in locations.Items)
+                {
+                    Locations.Add(new WorkLocation { Id = location.Id.ToString(), Name = location.Name_En ?? location.Name_Ar ?? string.Empty, Type = location.Name_Ar ?? string.Empty });
+                }
+                FilteredLocations = new ObservableCollection<WorkLocation>(Locations);
+            }
+
+            var categories = await SafeFetchAsync(_itemLookupService.GetCategoriesAsync(pageSize: 100));
+            if (categories != null)
+            {
+                ItemCategories.Clear();
+                Categories.Clear();
+                ItemCategories.Add(new ItemCategoryOption(null, "الكل"));
+                foreach (var category in categories.Items)
+                {
+                    var categoryName = category.Name_En ?? category.Name_Ar ?? string.Empty;
+                    ItemCategories.Add(new ItemCategoryOption(category.Id, categoryName));
+                    Categories.Add(categoryName);
+                }
+            }
+
+            var items = await SafeFetchAsync(_itemLookupService.SearchAsync(pageSize: 50));
+            if (items != null)
+            {
+                ApplyItemResults(items.Items);
+            }
         });
+    }
+
+    private static async Task<T?> SafeFetchAsync<T>(Task<T> task)
+    {
+        try
+        {
+            return await task;
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"[NewOrderViewModel] Failed to fetch data: {ex.Message}");
+            return default;
+        }
     }
 
     partial void OnSelectedBrandChanged(string value)

@@ -25,6 +25,9 @@ public partial class DashboardViewModel : BaseViewModel
     private string _userName = "User";
 
     [ObservableProperty]
+    private bool _isRefreshing;
+
+    [ObservableProperty]
     private int _todayBills;
 
     [ObservableProperty]
@@ -74,7 +77,10 @@ public partial class DashboardViewModel : BaseViewModel
         {
             Console.WriteLine(ex.Message);
         }
-        
+        finally
+        {
+            IsRefreshing = false;
+        }
     }
 
     [RelayCommand]
