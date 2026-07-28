@@ -401,6 +401,8 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
                 {
                     Technicians.Add(new Technician { Id = tech.Id.ToString(), Name = tech.Name_En ?? tech.Name_Ar ?? string.Empty });
                 }
+                FilteredTechnicians = new ObservableCollection<Technician>(Technicians);
+                ResetTechnicianPaging();
             }
 
             var locations = await SafeFetchAsync(_workshopLookupService.GetWorkLocationsAsync(pageSize: 100));
