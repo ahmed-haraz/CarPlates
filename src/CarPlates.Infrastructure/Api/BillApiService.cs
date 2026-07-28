@@ -139,7 +139,9 @@ public class BillApiService(
                 dto.Details?.Select(d => new BillLineItem(
                     d.DetailId, d.ItemID, d.ItemBarCode, d.Package, d.Qty, d.Price,
                     d.DetailDiscount1, d.DetailDiscount2, d.DetailDiscountR1, d.DetailDiscountR2,
-                    d.DetailTax, d.DetailTaxR, d.Value)).ToList() ?? []);
+                    d.DetailTax, d.DetailTaxR, d.Value,
+                    d.TransPkgQty1, d.CostPrice, d.TransPkgPrice1, d.WholeProfit,
+                    d.Pkg2Qty, d.Pkg3Qty, d.OriginalPrice, d.WholePrice)).ToList() ?? []);
         }
         catch (Exception ex)
         {
@@ -218,5 +220,13 @@ public class BillApiService(
         public double? DetailTax { get; set; }
         public double? DetailTaxR { get; set; }
         public double? Value { get; set; }
+        public double? TransPkgQty1 { get; set; }
+        public double? CostPrice { get; set; }
+        public double? TransPkgPrice1 { get; set; }
+        public double? WholeProfit { get; set; }
+        public double? Pkg2Qty { get; set; }
+        public double? Pkg3Qty { get; set; }
+        public double? OriginalPrice { get; set; }
+        public double? WholePrice { get; set; }
     }
 }

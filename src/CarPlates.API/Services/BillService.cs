@@ -36,6 +36,40 @@ public class BillService(ApplicationDbContext context) : IBillService
                 + (decimal)lineTax,
                 2);
 
+            var pkg = d.Package;
+            var pkg2Qty = d.Pkg2Qty ?? 0;
+            var pkg3Qty = d.Pkg3Qty ?? 0;
+            var pkg1Price1 = d.Pkg1Price1 ?? 0;
+            var pkg2Price1 = d.Pkg2Price1 ?? 0;
+            var pkg3Price1 = d.Pkg3Price1 ?? 0;
+            var pkg1Price2 = d.Pkg1Price2 ?? 0;
+            var pkg2Price2 = d.Pkg2Price2 ?? 0;
+            var pkg3Price2 = d.Pkg3Price2 ?? 0;
+
+            var transPkgQty1 = pkg switch
+            {
+                1 => lineQty,
+                2 => lineQty * pkg2Qty,
+                3 => lineQty * pkg2Qty * pkg3Qty,
+                _ => lineQty
+            };
+
+            var costPrice = pkg switch
+            {
+                1 => pkg1Price1,
+                2 => pkg2Price1,
+                3 => pkg3Price1,
+                _ => pkg1Price1
+            };
+
+            var wholePrice = pkg switch
+            {
+                1 => pkg1Price2,
+                2 => pkg2Price2,
+                3 => pkg3Price2,
+                _ => pkg1Price2
+            };
+
             return new TransDetail
             {
                 ItemID = d.ItemID,
@@ -53,6 +87,14 @@ public class BillService(ApplicationDbContext context) : IBillService
                 DetailNotes = d.DetailNotes ?? "",
                 Status = 1,
                 DiamonQty = 0,
+                TransPkgQty1 = transPkgQty1,
+                CostPrice = costPrice,
+                TransPkgPrice1 = pkg1Price1,
+                WholeProfit = 0,
+                Pkg2Qty = pkg2Qty,
+                Pkg3Qty = pkg3Qty,
+                OriginalPrice = d.OriginalPrice ?? linePrice,
+                WholePrice = wholePrice,
                 InsertUserID = userIdLong,
                 UpdateUserID = userIdLong,
                 InsertDateTime = now,
@@ -64,9 +106,9 @@ public class BillService(ApplicationDbContext context) : IBillService
 
         // --- Req 1: Auto-create car in wh_customercars if not exists ---
         int? carHeaderId = dto.CarHeaderId;
+        var normalizedPlate = dto.ReferenceNo?.Trim().ToEnglishNumbers().ToUpperInvariant();
         if (!carHeaderId.HasValue && !string.IsNullOrWhiteSpace(dto.ReferenceNo) && dto.CustomerId.HasValue)
         {
-            var normalizedPlate = dto.ReferenceNo.Trim().ToEnglishNumbers().ToUpperInvariant();
             var existingCar = await _context.CustomerCars
                 .AsNoTracking()
                 .FirstOrDefaultAsync(c => c.PlateNumber == normalizedPlate, cancellationToken);
@@ -140,7 +182,6 @@ public class BillService(ApplicationDbContext context) : IBillService
             .MaxAsync(h => (int?)h.Code, cancellationToken) ?? 0;
         var newCode = maxCode + 1;
 
-        var normalizedPlate = dto.ReferenceNo?.Trim().ToEnglishNumbers().ToUpperInvariant();
         var header = new TransHeader
         {
             TransType = 3,
@@ -303,6 +344,8 @@ public class BillService(ApplicationDbContext context) : IBillService
             h.Signature,
             h.Details.Select(d => new BillDetailDto(
                 d.DetailId, d.ItemID, d.ItemBarCode, d.Package, d.Qty, d.Price,
-                d.DetailDiscount1, d.DetailDiscount2, d.DetailDiscountR1, d.DetailDiscountR2, d.DetailTax, d.DetailTaxR, d.Value)).ToList());
+                d.DetailDiscount1, d.DetailDiscount2, d.DetailDiscountR1, d.DetailDiscountR2, d.DetailTax, d.DetailTaxR, d.Value,
+                d.TransPkgQty1, d.CostPrice, d.TransPkgPrice1, d.WholeProfit,
+                d.Pkg2Qty, d.Pkg3Qty, d.OriginalPrice, d.WholePrice)).ToList());
     }
 }

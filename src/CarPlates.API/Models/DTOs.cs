@@ -227,7 +227,15 @@ public record ItemBarCodeDto(
     bool OpenSale = false,
     string? ItemDiscount1 = null,
     string? ItemDiscount2 = null,
-    string? ItemDiscount3 = null);
+    string? ItemDiscount3 = null,
+    double? Pkg2Qty = null,
+    double? Pkg3Qty = null,
+    double? Pkg1Price1 = null,
+    double? Pkg2Price1 = null,
+    double? Pkg3Price1 = null,
+    double? Pkg1Price2 = null,
+    double? Pkg2Price2 = null,
+    double? Pkg3Price2 = null);
 
 // ---- Bills (wh_TransHeader / wh_TransDetails) ----
 
@@ -243,7 +251,16 @@ public record CreateBillDetailDto(
     double? DetailDiscountR2 = null,
     double? DetailTax = null,
     double? DetailTaxR = null,
-    string? DetailNotes = null);
+    string? DetailNotes = null,
+    double? Pkg2Qty = null,
+    double? Pkg3Qty = null,
+    double? Pkg1Price1 = null,
+    double? Pkg2Price1 = null,
+    double? Pkg3Price1 = null,
+    double? Pkg1Price2 = null,
+    double? Pkg2Price2 = null,
+    double? Pkg3Price2 = null,
+    double? OriginalPrice = null);
 
 public record CreateBillDto(
     int? BranchID,
@@ -282,7 +299,15 @@ public record BillDetailDto(
     double? DetailDiscountR2,
     double? DetailTax,
     double? DetailTaxR,
-    double? Value);
+    double? Value,
+    double? TransPkgQty1 = null,
+    double? CostPrice = null,
+    double? TransPkgPrice1 = null,
+    double? WholeProfit = null,
+    double? Pkg2Qty = null,
+    double? Pkg3Qty = null,
+    double? OriginalPrice = null,
+    double? WholePrice = null);
 
 public record BillDto(
     long HeaderId,

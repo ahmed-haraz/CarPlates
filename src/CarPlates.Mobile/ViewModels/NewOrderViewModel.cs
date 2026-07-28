@@ -974,6 +974,15 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
             Discount3 = discount3,
             OpenSale = item.OpenSale,
             IsTaxable = taxRate > 0,
+            Pkg2Qty = item.Pkg2Qty ?? 0,
+            Pkg3Qty = item.Pkg3Qty ?? 0,
+            Pkg1Price1 = item.Pkg1Price1 ?? 0,
+            Pkg2Price1 = item.Pkg2Price1 ?? 0,
+            Pkg3Price1 = item.Pkg3Price1 ?? 0,
+            Pkg1Price2 = item.Pkg1Price2 ?? 0,
+            Pkg2Price2 = item.Pkg2Price2 ?? 0,
+            Pkg3Price2 = item.Pkg3Price2 ?? 0,
+            OriginalPrice = (double)price,
             TaxType = "VAT",
             TaxAmount = taxAmount,
             Package = item.Package.GetValueOrDefault(),
@@ -1289,10 +1298,11 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
                 var taxAmount = (double)ci.ServiceItem.TaxAmount;
                 var taxRatio = price > 0 ? taxAmount / price * 100 : 0;
 
+                var si = ci.ServiceItem;
                 return new CreateBillLineRequest(
-                    ItemBarCode: ci.ServiceItem.ItemBarCode ?? ci.ServiceItem.Id ?? string.Empty,
-                    ItemID: ci.ServiceItem.ItemID,
-                    Package: ci.ServiceItem.Package > 0 ? ci.ServiceItem.Package : null,
+                    ItemBarCode: si.ItemBarCode ?? si.Id ?? string.Empty,
+                    ItemID: si.ItemID,
+                    Package: si.Package > 0 ? si.Package : null,
                     Qty: qty,
                     Price: Math.Round(price, 2),
                     DetailDiscount1: Math.Round(totalDiscount, 2),
@@ -1301,7 +1311,16 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
                     DetailDiscountR2: null,
                     DetailTax: Math.Round(taxAmount, 2),
                     DetailTaxR: Math.Round(taxRatio, 2),
-                    DetailNotes: null);
+                    DetailNotes: null,
+                    Pkg2Qty: si.Pkg2Qty > 0 ? si.Pkg2Qty : null,
+                    Pkg3Qty: si.Pkg3Qty > 0 ? si.Pkg3Qty : null,
+                    Pkg1Price1: si.Pkg1Price1 > 0 ? si.Pkg1Price1 : null,
+                    Pkg2Price1: si.Pkg2Price1 > 0 ? si.Pkg2Price1 : null,
+                    Pkg3Price1: si.Pkg3Price1 > 0 ? si.Pkg3Price1 : null,
+                    Pkg1Price2: si.Pkg1Price2 > 0 ? si.Pkg1Price2 : null,
+                    Pkg2Price2: si.Pkg2Price2 > 0 ? si.Pkg2Price2 : null,
+                    Pkg3Price2: si.Pkg3Price2 > 0 ? si.Pkg3Price2 : null,
+                    OriginalPrice: si.OriginalPrice > 0 ? si.OriginalPrice : null);
             }).ToList();
 
             var isNewCar = SelectedVehicle?.CarHeaderId == null;

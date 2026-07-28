@@ -48,4 +48,12 @@ public record BillDetailApiItem(
     double? DetailDiscountR2,
     double? DetailTax,
     double? DetailTaxR,
-    double? Value);
+    double? Value,
+    double? TransPkgQty1 = null,
+    double? CostPrice = null,
+    double? TransPkgPrice1 = null,
+    double? WholeProfit = null,
+    double? Pkg2Qty = null,
+    double? Pkg3Qty = null,
+    double? OriginalPrice = null,
+    double? WholePrice = null);

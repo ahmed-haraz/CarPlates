@@ -27,6 +27,14 @@ public record ItemLookupResult(
     bool OpenSale = false,
     double? Discount1 = null,
     double? Discount2 = null,
-    double? Discount3 = null);
+    double? Discount3 = null,
+    double? Pkg2Qty = null,
+    double? Pkg3Qty = null,
+    double? Pkg1Price1 = null,
+    double? Pkg2Price1 = null,
+    double? Pkg3Price1 = null,
+    double? Pkg1Price2 = null,
+    double? Pkg2Price2 = null,
+    double? Pkg3Price2 = null);
 
 public record CategoryLookupResult(int Id, string? Name_Ar, string? Name_En, string? GroupName);

@@ -61,7 +61,8 @@ public class ItemLookupService(IHttpClientFactory httpClientFactory) : IItemLook
     private static ItemLookupResult ToResult(ItemApiResponse i) => new(
         i.Id, i.Name_Ar, i.Name_En, i.ItemBarCode, i.Package, i.PackagePrice, i.ItemGroupId,
         i.ItemGroupName_Ar, i.ItemGroupName_En, i.ItemTax,
-        i.OpenSale, ParseDiscount(i.ItemDiscount1), ParseDiscount(i.ItemDiscount2), ParseDiscount(i.ItemDiscount3));
+        i.OpenSale, ParseDiscount(i.ItemDiscount1), ParseDiscount(i.ItemDiscount2), ParseDiscount(i.ItemDiscount3),
+        i.Pkg2Qty, i.Pkg3Qty, i.Pkg1Price1, i.Pkg2Price1, i.Pkg3Price1, i.Pkg1Price2, i.Pkg2Price2, i.Pkg3Price2);
 
     private static double? ParseDiscount(string? value)
     {
@@ -77,7 +78,10 @@ public class ItemLookupService(IHttpClientFactory httpClientFactory) : IItemLook
         int? Package, string? PackageName, double? PackagePrice,
         int? ItemGroupId, string? ItemGroupName_Ar, string? ItemGroupName_En,
         double? ItemTax, byte? Status,
-        bool OpenSale = false, string? ItemDiscount1 = null, string? ItemDiscount2 = null, string? ItemDiscount3 = null);
+        bool OpenSale = false, string? ItemDiscount1 = null, string? ItemDiscount2 = null, string? ItemDiscount3 = null,
+        double? Pkg2Qty = null, double? Pkg3Qty = null,
+        double? Pkg1Price1 = null, double? Pkg2Price1 = null, double? Pkg3Price1 = null,
+        double? Pkg1Price2 = null, double? Pkg2Price2 = null, double? Pkg3Price2 = null);
 
     private record CategoryApiResponse(int Id, int? Code, string? Name_Ar, string? Name_En, string? GroupName, int? ParentID, int? BranchID, string? Image);
 

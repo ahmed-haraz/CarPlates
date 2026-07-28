@@ -43,7 +43,16 @@ public record CreateBillLineRequest(
     double? DetailDiscountR2,
     double? DetailTax,
     double? DetailTaxR,
-    string? DetailNotes);
+    string? DetailNotes,
+    double? Pkg2Qty = null,
+    double? Pkg3Qty = null,
+    double? Pkg1Price1 = null,
+    double? Pkg2Price1 = null,
+    double? Pkg3Price1 = null,
+    double? Pkg1Price2 = null,
+    double? Pkg2Price2 = null,
+    double? Pkg3Price2 = null,
+    double? OriginalPrice = null);
 
 public record BillApiResult(bool Success, long? HeaderId, string? ErrorMessage);
 public record BillSearchResult(bool Success, IReadOnlyList<BillApiItem> Items, int TotalCount, int Page, int TotalPages, string? ErrorMessage);
@@ -99,4 +108,12 @@ public record BillLineItem(
     double? DetailDiscountR2,
     double? DetailTax,
     double? DetailTaxR,
-    double? Value);
+    double? Value,
+    double? TransPkgQty1 = null,
+    double? CostPrice = null,
+    double? TransPkgPrice1 = null,
+    double? WholeProfit = null,
+    double? Pkg2Qty = null,
+    double? Pkg3Qty = null,
+    double? OriginalPrice = null,
+    double? WholePrice = null);

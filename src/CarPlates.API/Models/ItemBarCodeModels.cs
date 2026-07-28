@@ -33,4 +33,12 @@ public class ItemBarCodeView
     public string? ItemDiscount2 { get; set; }
     public string? ItemDiscount3 { get; set; }
     public byte? Status { get; set; }
+    public double? Pkg2Qty { get; set; }
+    public double? Pkg3Qty { get; set; }
+    public double? Pkg1Price1 { get; set; }
+    public double? Pkg2Price1 { get; set; }
+    public double? Pkg3Price1 { get; set; }
+    public double? Pkg1Price2 { get; set; }
+    public double? Pkg2Price2 { get; set; }
+    public double? Pkg3Price2 { get; set; }
 }
