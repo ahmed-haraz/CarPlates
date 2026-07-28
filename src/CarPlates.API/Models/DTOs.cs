@@ -265,7 +265,9 @@ public record CreateBillDto(
     long? Mileage = null,
     int? VehicleYear = null,
     string? Color = null,
-    string? PlateType = null);
+    string? PlateType = null,
+    int? WorkLocationID = null,
+    int? TechnicianID = null);
 
 public record BillDetailDto(
     long DetailId,

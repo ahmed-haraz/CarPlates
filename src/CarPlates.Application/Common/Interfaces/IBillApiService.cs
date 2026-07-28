@@ -27,7 +27,9 @@ public record CreateBillRequest(
     long? Mileage = null,
     int? VehicleYear = null,
     string? Color = null,
-    string? PlateType = null);
+    string? PlateType = null,
+    int? WorkLocationID = null,
+    int? TechnicianID = null);
 
 public record CreateBillLineRequest(
     string ItemBarCode,

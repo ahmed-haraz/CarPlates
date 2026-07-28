@@ -24,7 +24,17 @@ public class TransHeader
     public double? Total { get; set; }
     public double? NetTotal { get; set; }
     public double? Balance { get; set; }
+    public double? Benefit { get; set; }
+    public double? InstallmentValue { get; set; }
+    public int? InstallmentCount { get; set; }
+    public int? ShippingID { get; set; }
+    public double? TotalCurrency { get; set; }
+    public int? CostCenterID { get; set; }
+    public int? SalesID { get; set; }
     public string? ReferenceNo { get; set; }
+    public string? PlateNumber { get; set; }
+    public int? WorkLocationID { get; set; }
+    public int? TechnicianID { get; set; }
     public string? Signature { get; set; }
     public byte? Status { get; set; }
     public long? InsertUserID { get; set; }

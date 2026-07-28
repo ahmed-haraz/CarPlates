@@ -140,6 +140,7 @@ public class BillService(ApplicationDbContext context) : IBillService
             .MaxAsync(h => (int?)h.Code, cancellationToken) ?? 0;
         var newCode = maxCode + 1;
 
+        var normalizedPlate = dto.ReferenceNo?.Trim().ToEnglishNumbers().ToUpperInvariant();
         var header = new TransHeader
         {
             TransType = 3,
@@ -148,7 +149,7 @@ public class BillService(ApplicationDbContext context) : IBillService
             BranchID = branchId,
             CustomerId = dto.CustomerId ?? 0,
             EngineerId = dto.EngineerId ?? 0,
-            CarHeaderId = carHeaderId ?? 0,
+            CarHeaderId = 0,
             SalesRepId = salesRepId,
             StoreId = storeId,
             PayType = 2,
@@ -156,11 +157,21 @@ public class BillService(ApplicationDbContext context) : IBillService
             HdrTax = 0,
             Notes = dto.Notes ?? "",
             ReferenceNo = dto.ReferenceNo ?? "",
+            PlateNumber = normalizedPlate,
+            WorkLocationID = dto.WorkLocationID,
+            TechnicianID = dto.TechnicianID,
             Signature = dto.Signature ?? "",
             Total = total,
             NetTotal = total,
-            Paid = total,
+            Paid = 0,
             Balance = 0,
+            Benefit = 0,
+            InstallmentValue = 0,
+            InstallmentCount = 0,
+            ShippingID = 0,
+            TotalCurrency = total,
+            CostCenterID = 0,
+            SalesID = 0,
             Status = 1,
             InsertUserID = userIdLong,
             UpdateUserID = userIdLong,

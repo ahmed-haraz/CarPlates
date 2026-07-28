@@ -1309,7 +1309,7 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
                 BranchID: currentUser?.BranchId,
                 CustomerId: SelectedCustomer?.Id > 0 ? SelectedCustomer.Id : null,
                 EngineerId: SelectedTechnician != null && int.TryParse(SelectedTechnician.Id, out var engId) ? engId : null,
-                CarHeaderId: SelectedVehicle?.CarHeaderId,
+                CarHeaderId: null,
                 SalesRepId: currentUser?.SalesRepID,
                 StoreId: currentUser?.StoreId,
                 Notes: OrderNotes,
@@ -1324,7 +1324,9 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
                 Mileage: isNewCar ? (SelectedVehicle?.Mileage != 0 ? SelectedVehicle?.Mileage : NewMileage) : null,
                 VehicleYear: isNewCar ? (SelectedVehicle?.Year != 0 ? SelectedVehicle?.Year : SelectedVehicleYear) : null,
                 Color: isNewCar ? (SelectedVehicle?.Color ?? SelectedColor?.Name) : null,
-                PlateType: isNewCar ? (SelectedVehicle?.PlateType ?? NewPlateType) : null);
+                PlateType: isNewCar ? (SelectedVehicle?.PlateType ?? NewPlateType) : null,
+                WorkLocationID: SelectedLocation != null && int.TryParse(SelectedLocation.Id, out var locId) ? locId : null,
+                TechnicianID: SelectedTechnician != null && int.TryParse(SelectedTechnician.Id, out var techId) ? techId : null);
 
             var result = await _billApiService.CreateBillAsync(request);
 
