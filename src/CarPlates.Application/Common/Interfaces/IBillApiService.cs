@@ -76,7 +76,11 @@ public record BillApiItem(
     string? PlateNumber,
     int? TransDate,
     string? CustomerName,
-    string? Signature);
+    string? Signature,
+    string? WorkLocationName = null,
+    string? TechnicianName = null,
+    string? Color = null,
+    string? PlateType = null);
 
 public record BillDetailResult(
     long HeaderId,
@@ -96,7 +100,11 @@ public record BillDetailResult(
     int? TransDate,
     string? CustomerName,
     string? Signature,
-    IReadOnlyList<BillLineItem> Details);
+    string? WorkLocationName = null,
+    string? TechnicianName = null,
+    string? Color = null,
+    string? PlateType = null,
+    IReadOnlyList<BillLineItem>? Details = null);
 
 public record BillLineItem(
     long DetailId,
@@ -105,13 +113,13 @@ public record BillLineItem(
     int? Package,
     double Qty,
     double Price,
-    double? DetailDiscount1,
-    double? DetailDiscount2,
-    double? DetailDiscountR1,
-    double? DetailDiscountR2,
-    double? DetailTax,
-    double? DetailTaxR,
-    double? Value,
+    double? DetailDiscount1 = null,
+    double? DetailDiscount2 = null,
+    double? DetailDiscountR1 = null,
+    double? DetailDiscountR2 = null,
+    double? DetailTax = null,
+    double? DetailTaxR = null,
+    double? Value = null,
     double? TransPkgQty1 = null,
     double? CostPrice = null,
     double? TransPkgPrice1 = null,
@@ -119,4 +127,5 @@ public record BillLineItem(
     double? Pkg2Qty = null,
     double? Pkg3Qty = null,
     double? OriginalPrice = null,
-    double? WholePrice = null);
+    double? WholePrice = null,
+    string? ItemName = null);

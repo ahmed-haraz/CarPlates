@@ -315,7 +315,6 @@ public class BillService(ApplicationDbContext context) : IBillService
 
         return (todayBills, todayTotal);
     }
-
     private async Task<BillDto> MapToDtoAsync(TransHeader h, CancellationToken ct = default)
     {
         string? customerName = null;
@@ -325,6 +324,42 @@ public class BillService(ApplicationDbContext context) : IBillService
                 .FirstOrDefaultAsync(c => c.Id == h.CustomerId, ct);
             customerName = customer?.Name_En ?? customer?.Name_Ar;
         }
+
+        string? workLocationName = null;
+        if (h.WorkLocationID.HasValue)
+        {
+            var loc = await _context.WorkLocations.AsNoTracking()
+                .FirstOrDefaultAsync(w => w.Id == h.WorkLocationID.Value, ct);
+            workLocationName = loc?.Name_en ?? loc?.Name_ar;
+        }
+
+        string? technicianName = null;
+        if (h.TechnicianID.HasValue)
+        {
+            var tech = await _context.CarsTechnicians.AsNoTracking()
+                .FirstOrDefaultAsync(t => t.Id == h.TechnicianID.Value, ct);
+            technicianName = tech?.Name_en ?? tech?.Name_ar;
+        }
+
+        string? color = null;
+        string? plateType = null;
+        if (h.CarHeaderId.HasValue && h.CarHeaderId.Value > 0)
+        {
+            var car = await _context.CustomerCars.AsNoTracking()
+                .FirstOrDefaultAsync(c => c.Id == h.CarHeaderId.Value, ct);
+            if (car != null)
+            {
+                color = car.Color;
+                plateType = car.PlateType;
+            }
+        }
+
+        var itemIds = h.Details.Select(d => d.ItemID).Distinct().ToList();
+        var itemNames = await _context.ItemBarCodes.AsNoTracking()
+            .Where(i => itemIds.Contains(i.ID))
+            .Select(i => new { i.ID, Name = i.Name_En ?? i.Name_Ar ?? i.ItemBarCode })
+            .Distinct()
+            .ToDictionaryAsync(i => (long)i.ID, i => i.Name, ct);
 
         return new BillDto(
             h.HeaderId,
@@ -344,10 +379,16 @@ public class BillService(ApplicationDbContext context) : IBillService
             h.TransDate,
             customerName,
             h.Signature,
+            workLocationName,
+            technicianName,
+            color,
+            plateType,
             h.Details.Select(d => new BillDetailDto(
                 d.DetailId, d.ItemID, d.ItemBarCode, d.Package, d.Qty, d.Price,
-                d.DetailDiscount1, d.DetailDiscount2, d.DetailDiscountR1, d.DetailDiscountR2, d.DetailTax, d.DetailTaxR, d.Value,
+                d.DetailDiscount1, d.DetailDiscount2, d.DetailDiscountR1, d.DetailDiscountR2,
+                d.DetailTax, d.DetailTaxR, d.Value,
                 d.TransPkgQty1, d.CostPrice, d.TransPkgPrice1, d.WholeProfit,
-                d.Pkg2Qty, d.Pkg3Qty, d.OriginalPrice, d.WholePrice)).ToList());
+                d.Pkg2Qty, d.Pkg3Qty, d.OriginalPrice, d.WholePrice,
+                itemNames.GetValueOrDefault(d.ItemID))).ToList());
     }
 }

@@ -296,13 +296,13 @@ public record BillDetailDto(
     int? Package,
     double Qty,
     double Price,
-    double? DetailDiscount1,
-    double? DetailDiscount2,
-    double? DetailDiscountR1,
-    double? DetailDiscountR2,
-    double? DetailTax,
-    double? DetailTaxR,
-    double? Value,
+    double? DetailDiscount1 = null,
+    double? DetailDiscount2 = null,
+    double? DetailDiscountR1 = null,
+    double? DetailDiscountR2 = null,
+    double? DetailTax = null,
+    double? DetailTaxR = null,
+    double? Value = null,
     double? TransPkgQty1 = null,
     double? CostPrice = null,
     double? TransPkgPrice1 = null,
@@ -310,7 +310,8 @@ public record BillDetailDto(
     double? Pkg2Qty = null,
     double? Pkg3Qty = null,
     double? OriginalPrice = null,
-    double? WholePrice = null);
+    double? WholePrice = null,
+    string? ItemName = null);
 
 public record BillDto(
     long HeaderId,
@@ -330,7 +331,11 @@ public record BillDto(
     int? TransDate,
     string? CustomerName,
     string? Signature,
-    IReadOnlyList<BillDetailDto> Details);
+    string? WorkLocationName = null,
+    string? TechnicianName = null,
+    string? Color = null,
+    string? PlateType = null,
+    IReadOnlyList<BillDetailDto>? Details = null);
 
 public record PaymentDetailDto(
     byte PayType,
@@ -361,5 +366,9 @@ public record ReceiptDto(
     double Paid,
     double Balance,
     byte? PayType,
-    IReadOnlyList<PaymentDetailDto> Payments,
-    IReadOnlyList<BillDetailDto> Details);
+    string? WorkLocationName = null,
+    string? TechnicianName = null,
+    string? Color = null,
+    string? PlateType = null,
+    IReadOnlyList<PaymentDetailDto>? Payments = null,
+    IReadOnlyList<BillDetailDto>? Details = null);

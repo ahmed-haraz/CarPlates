@@ -93,19 +93,26 @@ public partial class CashierViewModel : BaseViewModel
             var receipt = await _paymentApiService.GetReceiptAsync(bill.HeaderId);
             if (receipt == null)
             {
-                var items = $"Bill #{bill.HeaderId}\nDate: {bill.TransDate}\nCustomer: {bill.CustomerName ?? "N/A"}\nPlate: {bill.PlateNumber ?? "N/A"}\nTotal: {bill.NetTotal:N2}\nPaid: {bill.Paid:N2}\nBalance: {bill.Balance:N2}";
+                var line1 = $"Bill #{bill.HeaderId}\nDate: {bill.TransDate}\nCustomer: {bill.CustomerName ?? "N/A"}\nPlate: {bill.PlateNumber ?? "N/A"}";
+                var line2 = $"Location: {bill.WorkLocationName ?? "N/A"}\nTechnician: {bill.TechnicianName ?? "N/A"}";
+                var line3 = $"Color: {bill.Color ?? "N/A"}\nPlate Type: {bill.PlateType ?? "N/A"}";
+                var items = $"{line1}\n{line2}\n{line3}\nTotal: {bill.NetTotal:N2}\nPaid: {bill.Paid:N2}\nBalance: {bill.Balance:N2}";
                 await Navigation.DisplayAlertAsync("Bill Details", items);
                 return;
             }
 
             var details = string.Join("\n",
-                receipt.Details.Select(d => $"  {d.ItemBarCode,-20} {d.Qty,5:F0} x {d.Price,8:F2}"));
+                receipt.Details.Select(d => $"  {d.ItemName ?? d.ItemBarCode,-25} {d.Qty,5:F0} x {d.Price,8:F2}"));
 
             var message = $"Receipt: {receipt.ReceiptNo ?? "N/A"}\n" +
                           $"Bill #{receipt.HeaderId}\n" +
                           $"Date: {receipt.TransDate}\n" +
                           $"Customer: {receipt.CustomerName ?? "N/A"}\n" +
-                           $"Plate: {receipt.PlateNumber ?? "N/A"}\n" +
+                          $"Plate: {receipt.PlateNumber ?? "N/A"}\n" +
+                          $"Location: {receipt.WorkLocationName ?? "N/A"}\n" +
+                          $"Technician: {receipt.TechnicianName ?? "N/A"}\n" +
+                          $"Color: {receipt.Color ?? "N/A"}\n" +
+                          $"Plate Type: {receipt.PlateType ?? "N/A"}\n" +
                           $"{new string('-', 32)}\n" +
                           $"{details}\n" +
                           $"{new string('-', 32)}\n" +
@@ -122,7 +129,8 @@ public partial class CashierViewModel : BaseViewModel
     {
         var paymentVm = IPlatformApplication.Current!.Services.GetRequiredService<PaymentViewModel>();
         paymentVm.LoadBill(bill.HeaderId, bill.DocTransNo, bill.CustomerName, bill.PlateNumber,
-            bill.Total, bill.NetTotal, bill.Paid, bill.Balance, bill.TransDate ?? 0);
+            bill.Total, bill.NetTotal, bill.Paid, bill.Balance, bill.TransDate ?? 0,
+            bill.WorkLocationName, bill.TechnicianName, bill.Color, bill.PlateType);
         var page = new Views.Actions.PaymentPage(paymentVm);
         await Navigation.PushPageAsync(page);
     }
@@ -153,11 +161,17 @@ public partial class CashierViewModel : BaseViewModel
                 Paid: detail.Paid,
                 Balance: detail.Balance,
                 PayType: detail.PayType,
+                WorkLocationName: detail.WorkLocationName,
+                TechnicianName: detail.TechnicianName,
+                Color: detail.Color,
+                PlateType: detail.PlateType,
                 Payments: [],
                 Details: detail.Details.Select(d => new BillDetailApiItem(
                     d.DetailId, d.ItemID, d.ItemBarCode, d.Package, d.Qty, d.Price,
                     d.DetailDiscount1, d.DetailDiscount2, d.DetailDiscountR1, d.DetailDiscountR2,
-                    d.DetailTax, d.DetailTaxR, d.Value)).ToList());
+                    d.DetailTax, d.DetailTaxR, d.Value,
+                    null, null, null, null, null, null, null, null,
+                    d.ItemName)).ToList());
 
             // 1. Show preview formatted exactly as the printed receipt
             var preview = BuildPrintPreview(detail);
@@ -213,16 +227,20 @@ public partial class CashierViewModel : BaseViewModel
     {
         var items = string.Join("\n",
             detail.Details.Select(d =>
-                $"  {d.ItemBarCode,-20} {d.Qty,5:F0} {d.Price,8:F2}"));
+                $"  {(d.ItemName ?? d.ItemBarCode),-25} {d.Qty,5:F0} {d.Price,8:F2}"));
 
         var preview = $"ARKAN MAINTENANCE\n" +
                       $"{new string('-', 32)}\n" +
                       $"Receipt: {detail.DocTransNo ?? "N/A"}\n" +
                       $"Date: {detail.TransDate}\n" +
                       $"Customer: {detail.CustomerName ?? "N/A"}\n" +
-                       $"Plate: {detail.PlateNumber ?? "N/A"}\n" +
+                      $"Plate: {detail.PlateNumber ?? "N/A"}\n" +
+                      $"Location: {detail.WorkLocationName ?? "N/A"}\n" +
+                      $"Technician: {detail.TechnicianName ?? "N/A"}\n" +
+                      $"Color: {detail.Color ?? "N/A"}\n" +
+                      $"Plate Type: {detail.PlateType ?? "N/A"}\n" +
                       $"{new string('-', 32)}\n" +
-                      $"  {"Item",-20} {"Qty",5} {"Price",8}\n" +
+                      $"  {"Item",-25} {"Qty",5} {"Price",8}\n" +
                       $"{items}\n" +
                       $"{new string('-', 32)}\n" +
                       $"Total:     {detail.Total,10:F2}\n" +

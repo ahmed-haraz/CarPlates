@@ -33,8 +33,12 @@ public record ReceiptApiResult(
     double Paid,
     double Balance,
     byte? PayType,
-    IReadOnlyList<PaymentDetailItem> Payments,
-    IReadOnlyList<BillDetailApiItem> Details);
+    string? WorkLocationName = null,
+    string? TechnicianName = null,
+    string? Color = null,
+    string? PlateType = null,
+    IReadOnlyList<PaymentDetailItem>? Payments = null,
+    IReadOnlyList<BillDetailApiItem>? Details = null);
 
 public record BillDetailApiItem(
     long DetailId,
@@ -43,13 +47,13 @@ public record BillDetailApiItem(
     int? Package,
     double Qty,
     double Price,
-    double? DetailDiscount1,
-    double? DetailDiscount2,
-    double? DetailDiscountR1,
-    double? DetailDiscountR2,
-    double? DetailTax,
-    double? DetailTaxR,
-    double? Value,
+    double? DetailDiscount1 = null,
+    double? DetailDiscount2 = null,
+    double? DetailDiscountR1 = null,
+    double? DetailDiscountR2 = null,
+    double? DetailTax = null,
+    double? DetailTaxR = null,
+    double? Value = null,
     double? TransPkgQty1 = null,
     double? CostPrice = null,
     double? TransPkgPrice1 = null,
@@ -57,4 +61,5 @@ public record BillDetailApiItem(
     double? Pkg2Qty = null,
     double? Pkg3Qty = null,
     double? OriginalPrice = null,
-    double? WholePrice = null);
+    double? WholePrice = null,
+    string? ItemName = null);

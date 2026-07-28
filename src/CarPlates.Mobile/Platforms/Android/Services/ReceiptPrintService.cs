@@ -199,16 +199,20 @@ public class ReceiptPrintService : IReceiptPrintService
         writer.WriteLine($"Date: {receipt.TransDate}");
         writer.WriteLine($"Customer: {receipt.CustomerName ?? "N/A"}");
         writer.WriteLine($"Plate: {receipt.PlateNumber ?? "N/A"}");
+        writer.WriteLine($"Location: {receipt.WorkLocationName ?? "N/A"}");
+        writer.WriteLine($"Technician: {receipt.TechnicianName ?? "N/A"}");
+        writer.WriteLine($"Color: {receipt.Color ?? "N/A"}");
+        writer.WriteLine($"Plate Type: {receipt.PlateType ?? "N/A"}");
         writer.WriteLine(new string('-', 32));
 
         ms.Write(boldOn, 0, boldOn.Length);
-        writer.WriteLine($"  {"Item",-20} {"Qty",5} {"Price",8}");
+        writer.WriteLine($"  {"Item",-25} {"Qty",5} {"Price",8}");
         writer.Flush();
         ms.Write(boldOff, 0, boldOff.Length);
 
         foreach (var detail in receipt.Details)
         {
-            writer.WriteLine($"  {detail.ItemBarCode,-20} {detail.Qty,5} {detail.Price,8:F2}");
+            writer.WriteLine($"  {(detail.ItemName ?? detail.ItemBarCode),-25} {detail.Qty,5} {detail.Price,8:F2}");
             writer.Flush();
         }
 
@@ -246,7 +250,7 @@ public class ReceiptPrintService : IReceiptPrintService
     {
         var itemsHtml = string.Join("",
             receipt.Details.Select(d =>
-                $"<tr><td>{System.Net.WebUtility.HtmlEncode(d.ItemBarCode)}</td><td>{d.Qty}</td><td>{d.Price:F2}</td><td>{(d.Value ?? 0):F2}</td></tr>"));
+                $"<tr><td>{System.Net.WebUtility.HtmlEncode(d.ItemName ?? d.ItemBarCode)}</td><td>{d.Qty}</td><td>{d.Price:F2}</td><td>{(d.Value ?? 0):F2}</td></tr>"));
 
         var paymentsHtml = string.Join("",
             receipt.Payments.Select(p =>
@@ -280,6 +284,10 @@ public class ReceiptPrintService : IReceiptPrintService
   <p><strong>Date:</strong> {receipt.TransDate}</p>
   <p><strong>Customer:</strong> {System.Net.WebUtility.HtmlEncode(receipt.CustomerName ?? "N/A")}</p>
   <p><strong>Plate:</strong> {System.Net.WebUtility.HtmlEncode(receipt.PlateNumber ?? "N/A")}</p>
+  <p><strong>Location:</strong> {System.Net.WebUtility.HtmlEncode(receipt.WorkLocationName ?? "N/A")}</p>
+  <p><strong>Technician:</strong> {System.Net.WebUtility.HtmlEncode(receipt.TechnicianName ?? "N/A")}</p>
+  <p><strong>Color:</strong> {System.Net.WebUtility.HtmlEncode(receipt.Color ?? "N/A")}</p>
+  <p><strong>Plate Type:</strong> {System.Net.WebUtility.HtmlEncode(receipt.PlateType ?? "N/A")}</p>
   <p><strong>Pay Type:</strong> {payType}</p>
 </div>
 <h3>Items</h3>
