@@ -138,7 +138,12 @@ public class SignaturePadView : GraphicsView, IDrawable
     private static void OnSignatureDataChanged(BindableObject bindable, object oldValue, object newValue)
     {
         var view = (SignaturePadView)bindable;
-        if (newValue is string data && data != view.Serialize())
+        if (string.IsNullOrWhiteSpace(newValue as string))
+        {
+            view._strokes.Clear();
+            view.Invalidate();
+        }
+        else if (newValue is string data && data != view.Serialize())
         {
             view.LoadSignature(data);
         }

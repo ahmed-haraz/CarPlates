@@ -366,7 +366,7 @@
                 <Border Style="{StaticResource Card}"
                         Padding="16"
                         IsVisible="{Binding HasSignature}">
-                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12" FlowDirection="LeftToRight">
                         <Button Grid.Column="0" Text="✕" WidthRequest="30" HeightRequest="30" Padding="0" BackgroundColor="Transparent" Command="{Binding ClearSignatureCommand}" HorizontalOptions="Start" />
                         <controls:SignaturePadView Grid.Column="1"
                                                    SignatureData="{Binding SignatureData}"
@@ -1305,6 +1305,7 @@
         <!-- Signature Pad -->
         <Grid Grid.Row="1"
               BackgroundColor="{DynamicResource Surface}"
+              FlowDirection="LeftToRight"
               IsVisible="{Binding IsSignaturePadVisible}">
             <Grid RowDefinitions="Auto,*,Auto">
                 <Grid Grid.Row="0" ColumnDefinitions="*,Auto" Padding="20">
