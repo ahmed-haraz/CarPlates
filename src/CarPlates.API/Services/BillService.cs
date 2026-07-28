@@ -2,6 +2,7 @@ using CarPlates.API.Common;
 using CarPlates.API.Data;
 using CarPlates.API.Interface;
 using CarPlates.API.Models;
+using CarPlates.Shared.Extensions;
 using Microsoft.EntityFrameworkCore;
 
 namespace CarPlates.API.Services;
@@ -65,21 +66,65 @@ public class BillService(ApplicationDbContext context) : IBillService
         int? carHeaderId = dto.CarHeaderId;
         if (!carHeaderId.HasValue && !string.IsNullOrWhiteSpace(dto.ReferenceNo) && dto.CustomerId.HasValue)
         {
+            var normalizedPlate = dto.ReferenceNo.Trim().ToEnglishNumbers().ToUpperInvariant();
             var existingCar = await _context.CustomerCars
                 .AsNoTracking()
-                .FirstOrDefaultAsync(c => c.PlateNumber == dto.ReferenceNo.ToUpperInvariant(), cancellationToken);
+                .FirstOrDefaultAsync(c => c.PlateNumber == normalizedPlate, cancellationToken);
             if (existingCar == null)
             {
                 var newCar = new CustomerCar
                 {
                     CustomerID = dto.CustomerId.Value,
-                    PlateNumber = dto.ReferenceNo.ToUpperInvariant(),
+                    PlateNumber = normalizedPlate,
+                    VIN = dto.Vin,
+                    Color = dto.Color,
+                    VehicleYear = dto.VehicleYear,
+                    Distance = dto.Mileage,
+                    PlateType = dto.PlateType,
+                    BranchID = dto.BranchID,
                     Status = 1,
                     InsertUserID = userIdLong,
                     UpdateUserID = userIdLong,
                     InsertDateTime = now,
                     UpdateDateTime = now,
                 };
+
+                if (!string.IsNullOrWhiteSpace(dto.VehicleBrand))
+                {
+                    var trimmed = dto.VehicleBrand.Trim();
+                    newCar.CarMakesID = await _context.CarMakes.AsNoTracking()
+                        .Where(m => m.Name_ar == trimmed || m.Name_en == trimmed)
+                        .Select(m => (int?)m.MakeID)
+                        .FirstOrDefaultAsync(cancellationToken);
+                }
+
+                if (!string.IsNullOrWhiteSpace(dto.VehicleModel) && newCar.CarMakesID.HasValue)
+                {
+                    var trimmed = dto.VehicleModel.Trim();
+                    newCar.CarModelID = await _context.CarModels.AsNoTracking()
+                        .Where(m => (m.Name_ar == trimmed || m.Name_en == trimmed) && m.MakeID == newCar.CarMakesID.Value)
+                        .Select(m => (int?)m.ModelID)
+                        .FirstOrDefaultAsync(cancellationToken);
+                }
+
+                if (!string.IsNullOrWhiteSpace(dto.VehicleTypeName))
+                {
+                    var trimmed = dto.VehicleTypeName.Trim();
+                    newCar.VehicleType = await _context.VehicleTypes.AsNoTracking()
+                        .Where(v => v.Name_ar == trimmed || v.Name_en == trimmed)
+                        .Select(v => (int?)v.Id)
+                        .FirstOrDefaultAsync(cancellationToken);
+                }
+
+                if (!string.IsNullOrWhiteSpace(dto.EngineTypeName))
+                {
+                    var trimmed = dto.EngineTypeName.Trim();
+                    newCar.EngineType = await _context.EngineTypes.AsNoTracking()
+                        .Where(e => e.Name_ar == trimmed || e.Name_en == trimmed)
+                        .Select(e => (int?)e.Id)
+                        .FirstOrDefaultAsync(cancellationToken);
+                }
+
                 _context.CustomerCars.Add(newCar);
                 await _context.SaveChangesAsync(cancellationToken);
                 carHeaderId = (int)newCar.Id;

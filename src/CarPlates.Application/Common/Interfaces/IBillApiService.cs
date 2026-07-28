@@ -18,7 +18,16 @@ public record CreateBillRequest(
     string? Notes,
     string? ReferenceNo,
     string? Signature,
-    IReadOnlyList<CreateBillLineRequest> Details);
+    IReadOnlyList<CreateBillLineRequest> Details,
+    string? Vin = null,
+    string? VehicleBrand = null,
+    string? VehicleModel = null,
+    string? VehicleTypeName = null,
+    string? EngineTypeName = null,
+    long? Mileage = null,
+    int? VehicleYear = null,
+    string? Color = null,
+    string? PlateType = null);
 
 public record CreateBillLineRequest(
     string ItemBarCode,

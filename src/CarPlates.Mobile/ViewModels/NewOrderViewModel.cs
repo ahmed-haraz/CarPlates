@@ -1304,6 +1304,7 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
                     DetailNotes: null);
             }).ToList();
 
+            var isNewCar = SelectedVehicle?.CarHeaderId == null;
             var request = new CreateBillRequest(
                 BranchID: currentUser?.BranchId,
                 CustomerId: SelectedCustomer?.Id > 0 ? SelectedCustomer.Id : null,
@@ -1314,7 +1315,16 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
                 Notes: OrderNotes,
                 ReferenceNo: plateNo,
                 Signature: SignatureData,
-                Details: billDetails);
+                Details: billDetails,
+                Vin: isNewCar ? (SelectedVehicle?.Vin ?? NewVin) : null,
+                VehicleBrand: isNewCar ? (SelectedVehicle?.Brand ?? SelectedBrand) : null,
+                VehicleModel: isNewCar ? (SelectedVehicle?.Model ?? SelectedModel) : null,
+                VehicleTypeName: isNewCar ? (SelectedVehicle?.VehicleType ?? SelectedVehicleType) : null,
+                EngineTypeName: isNewCar ? (SelectedVehicle?.EngineType ?? SelectedEngineType) : null,
+                Mileage: isNewCar ? (SelectedVehicle?.Mileage != 0 ? SelectedVehicle?.Mileage : NewMileage) : null,
+                VehicleYear: isNewCar ? (SelectedVehicle?.Year != 0 ? SelectedVehicle?.Year : SelectedVehicleYear) : null,
+                Color: isNewCar ? (SelectedVehicle?.Color ?? SelectedColor?.Name) : null,
+                PlateType: isNewCar ? (SelectedVehicle?.PlateType ?? NewPlateType) : null);
 
             var result = await _billApiService.CreateBillAsync(request);
 

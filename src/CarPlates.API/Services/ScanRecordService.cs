@@ -2,6 +2,7 @@ using CarPlates.API.Common;
 using CarPlates.API.Data;
 using CarPlates.API.Interface;
 using CarPlates.API.Models;
+using CarPlates.Shared.Extensions;
 using Microsoft.EntityFrameworkCore;
 
 namespace CarPlates.API.Services;
@@ -84,7 +85,7 @@ public class ScanRecordService(ApplicationDbContext context, ICustomerCarService
 
     public async Task<ScanRecordDto> CreateAsync(ScanRecordCreateDto dto, string? userId = null)
     {
-        var plateNumber = dto.PlateNumber.ToUpperInvariant();
+        var plateNumber = dto.PlateNumber.ToEnglishNumbers().ToUpperInvariant();
         var userIdLong = long.TryParse(userId, out var uid) ? uid : 0L;
         var now = long.Parse(DateTime.Now.ToString("yyyyMMddHHmmss"));
 

@@ -2,6 +2,7 @@ using CarPlates.API.Common;
 using CarPlates.API.Data;
 using CarPlates.API.Interface;
 using CarPlates.API.Models;
+using CarPlates.Shared.Extensions;
 using Microsoft.EntityFrameworkCore;
 
 namespace CarPlates.API.Services;
@@ -109,7 +110,7 @@ public class CustomerCarService(ApplicationDbContext context) : ICustomerCarServ
 
     public async Task<CustomerCarScanResultDto> ScanAsync(CustomerCarScanDto dto, string? userId)
     {
-        var normalizedPlate = dto.PlateNumber.Trim().ToUpperInvariant();
+        var normalizedPlate = dto.PlateNumber.Trim().ToEnglishNumbers().ToUpperInvariant();
 
         var existing = await _context.CustomerCarsFull
             .AsNoTracking()
@@ -130,7 +131,7 @@ public class CustomerCarService(ApplicationDbContext context) : ICustomerCarServ
 
     public async Task<CustomerCarScanResultDto> RegisterAsync(CustomerCarScanDto dto, string? userId)
     {
-        var normalizedPlate = dto.PlateNumber.Trim().ToUpperInvariant();
+        var normalizedPlate = dto.PlateNumber.Trim().ToEnglishNumbers().ToUpperInvariant();
         var userIdLong = long.TryParse(userId, out var uid) ? (long?)uid : null;
 
         var existing = await _context.CustomerCarsFull
