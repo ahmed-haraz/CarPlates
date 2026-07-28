@@ -106,6 +106,42 @@ public class PaymentService(ApplicationDbContext context, IUserContext userConte
             .Select(p => p.ReceiptNo)
             .FirstOrDefaultAsync(cancellationToken);
 
+        string? workLocationName = null;
+        if (header.WorkLocationID.HasValue)
+        {
+            var loc = await _context.WorkLocations.AsNoTracking()
+                .FirstOrDefaultAsync(w => w.Id == header.WorkLocationID.Value, cancellationToken);
+            workLocationName = loc?.Name_en ?? loc?.Name_ar;
+        }
+
+        string? technicianName = null;
+        if (header.TechnicianID.HasValue)
+        {
+            var tech = await _context.CarsTechnicians.AsNoTracking()
+                .FirstOrDefaultAsync(t => t.Id == header.TechnicianID.Value, cancellationToken);
+            technicianName = tech?.Name_en ?? tech?.Name_ar;
+        }
+
+        string? color = null;
+        string? plateType = null;
+        if (header.CarHeaderId.HasValue && header.CarHeaderId.Value > 0)
+        {
+            var car = await _context.CustomerCars.AsNoTracking()
+                .FirstOrDefaultAsync(c => c.Id == header.CarHeaderId.Value, cancellationToken);
+            if (car != null)
+            {
+                color = car.Color;
+                plateType = car.PlateType;
+            }
+        }
+
+        var itemIds = header.Details.Select(d => d.ItemID).Distinct().ToList();
+        var itemNames = await _context.ItemBarCodes.AsNoTracking()
+            .Where(i => itemIds.Contains(i.ID))
+            .Select(i => new { i.ID, Name = i.Name_En ?? i.Name_Ar ?? i.ItemBarCode })
+            .Distinct()
+            .ToDictionaryAsync(i => (long)i.ID, i => i.Name, cancellationToken);
+
         return new ReceiptDto(
             receiptNo,
             header.HeaderId,
@@ -113,15 +149,22 @@ public class PaymentService(ApplicationDbContext context, IUserContext userConte
             header.TransDate,
             customerName,
             header.ReferenceNo,
+            header.PlateNumber,
             header.Total ?? 0,
             header.NetTotal ?? 0,
             header.Paid ?? 0,
             header.Balance ?? 0,
             header.PayType,
+            workLocationName,
+            technicianName,
+            color,
+            plateType,
             payments,
             header.Details.Select(d => new BillDetailDto(
                 d.DetailId, d.ItemID, d.ItemBarCode, d.Package, d.Qty, d.Price,
-                d.DetailDiscount1, d.DetailDiscount2, d.DetailDiscountR1, d.DetailDiscountR2, d.DetailTax, d.DetailTaxR, d.Value)).ToList());
+                d.DetailDiscount1, d.DetailDiscount2, d.DetailDiscountR1, d.DetailDiscountR2, d.DetailTax, d.DetailTaxR, d.Value,
+                null, null, null, null, null, null, null, null,
+                itemNames.GetValueOrDefault(d.ItemID))).ToList());
     }
 
     private async Task<string> GenerateReceiptNoAsync(int transDate, CancellationToken cancellationToken)

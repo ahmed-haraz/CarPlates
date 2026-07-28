@@ -131,7 +131,7 @@
                                 </FormattedString>
                             </Label.FormattedText>
                         </Label>
-                        <Label Text="{Binding SelectedVehicle.PlateNumber}"
+                        <Label Text="{Binding SelectedVehicle.PlateNumber, Converter={StaticResource ArabicToEnglishPlateConverter}}"
                                FontSize="14"
                                TextColor="{DynamicResource TextSecondary}" />
                     </VerticalStackLayout>
@@ -366,7 +366,7 @@
                 <Border Style="{StaticResource Card}"
                         Padding="16"
                         IsVisible="{Binding HasSignature}">
-                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12" FlowDirection="LeftToRight">
                         <Button Grid.Column="0" Text="✕" WidthRequest="30" HeightRequest="30" Padding="0" BackgroundColor="Transparent" Command="{Binding ClearSignatureCommand}" HorizontalOptions="Start" />
                         <controls:SignaturePadView Grid.Column="1"
                                                    SignatureData="{Binding SignatureData}"
@@ -873,8 +873,8 @@
                     HorizontalOptions="Center"
                     WidthRequest="300"
                     MaximumHeightRequest="500">
-                <VerticalStackLayout Spacing="12">
-                    <Grid ColumnDefinitions="*,Auto">
+                <Grid RowDefinitions="Auto,Auto,*,Auto" RowSpacing="12">
+                    <Grid Grid.Row="0" ColumnDefinitions="*,Auto">
                         <Label Grid.Column="0"
                                Text="{loc:Translate Key=SelectTechnician}"
                                FontSize="18"
@@ -889,9 +889,11 @@
                                 Padding="0"
                                 Command="{Binding CloseTechnicianPopupCommand}" />
                     </Grid>
-                    <SearchBar Placeholder="{loc:Translate Key=Search}"
+                    <SearchBar Grid.Row="1"
+                               Placeholder="{loc:Translate Key=Search}"
                                Text="{Binding TechnicianSearchText}" />
-                    <CollectionView ItemsSource="{Binding PagedTechnicians}" HeightRequest="380">
+                    <CollectionView Grid.Row="2"
+                                    ItemsSource="{Binding PagedTechnicians}">
                         <CollectionView.ItemsLayout>
                             <GridItemsLayout Orientation="Vertical" Span="2" HorizontalItemSpacing="12" VerticalItemSpacing="12" />
                         </CollectionView.ItemsLayout>
@@ -909,12 +911,15 @@
                             </DataTemplate>
                         </CollectionView.ItemTemplate>
                     </CollectionView>
-                    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+                    <Grid Grid.Row="3"
+                          ColumnDefinitions="Auto,*,Auto"
+                          ColumnSpacing="12"
+                          IsVisible="{Binding Technicians.Count, Converter={StaticResource CountToBoolConverter}}">
                         <Button Grid.Column="0" Text="‹" Command="{Binding PreviousTechnicianPageCommand}" IsEnabled="{Binding CanGoToPreviousTechnicianPage}" />
                         <Label Grid.Column="1" Text="{Binding TechnicianPage, StringFormat='{0}'}" HorizontalOptions="Center" VerticalOptions="Center" />
                         <Button Grid.Column="2" Text="›" Command="{Binding NextTechnicianPageCommand}" IsEnabled="{Binding CanGoToNextTechnicianPage}" />
                     </Grid>
-                </VerticalStackLayout>
+                </Grid>
             </Border>
         </Grid>
 
@@ -1305,6 +1310,7 @@
         <!-- Signature Pad -->
         <Grid Grid.Row="1"
               BackgroundColor="{DynamicResource Surface}"
+              FlowDirection="LeftToRight"
               IsVisible="{Binding IsSignaturePadVisible}">
             <Grid RowDefinitions="Auto,*,Auto">
                 <Grid Grid.Row="0" ColumnDefinitions="*,Auto" Padding="20">

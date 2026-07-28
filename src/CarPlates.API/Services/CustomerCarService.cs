@@ -1,6 +1,8 @@
+using CarPlates.API.Common;
 using CarPlates.API.Data;
 using CarPlates.API.Interface;
 using CarPlates.API.Models;
+using CarPlates.Shared.Extensions;
 using Microsoft.EntityFrameworkCore;
 
 namespace CarPlates.API.Services;
@@ -24,10 +26,10 @@ public class CustomerCarService(ApplicationDbContext context) : ICustomerCarServ
     {
         var makes = await _context.CarMakes
             .AsNoTracking()
-            .OrderBy(m => m.MakeName)
+            .OrderBy(m => m.Name_en ?? m.Name_ar)
             .ToListAsync();
 
-        return [.. makes.Select(m => new CarMakeDto(m.MakeID, m.MakeName))];
+        return [.. makes.Select(m => new CarMakeDto(m.MakeID, m.Code, m.Name_ar, m.Name_en, m.IconOriginalURL))];
     }
 
     public async Task<IReadOnlyList<CarModelDto>> GetModelsAsync(int makeId)
@@ -35,10 +37,53 @@ public class CustomerCarService(ApplicationDbContext context) : ICustomerCarServ
         var models = await _context.CarModels
             .AsNoTracking()
             .Where(m => m.MakeID == makeId)
-            .OrderBy(m => m.ModelName)
+            .OrderBy(m => m.Name_en ?? m.Name_ar)
             .ToListAsync();
 
-        return [.. models.Select(m => new CarModelDto(m.ModelID, m.MakeID, m.ModelName))];
+        return [.. models.Select(m => new CarModelDto(m.ModelID, m.MakeID, m.Code, m.Name_ar, m.Name_en))];
+    }
+
+    public async Task<PagedResult<CarMakeDto>> GetMakesPagedAsync(
+        string? search, int page, int pageSize, CancellationToken cancellationToken = default)
+    {
+        var query = _context.CarMakes.AsNoTracking().Where(m => m.Status == 1);
+
+        if (!string.IsNullOrWhiteSpace(search))
+        {
+            query = query.Where(m =>
+                m.Name_ar.Contains(search) || m.Name_en.Contains(search));
+        }
+
+        query = query.OrderBy(m => m.Name_en ?? m.Name_ar);
+
+        var paged = await query.ToPagedResultAsync(page, pageSize, cancellationToken);
+        var items = paged.Items.Select(m => new CarMakeDto(m.MakeID, m.Code, m.Name_ar, m.Name_en, m.IconOriginalURL)).ToList();
+
+        return new PagedResult<CarMakeDto>(items, paged.TotalCount, paged.Page, paged.PageSize, paged.TotalPages);
+    }
+
+    public async Task<PagedResult<CarModelDto>> GetModelsPagedAsync(
+        int? makeId, string? search, int page, int pageSize, CancellationToken cancellationToken = default)
+    {
+        var query = _context.CarModels.AsNoTracking().Where(m => m.Status == 1);
+
+        if (makeId.HasValue)
+        {
+            query = query.Where(m => m.MakeID == makeId.Value);
+        }
+
+        if (!string.IsNullOrWhiteSpace(search))
+        {
+            query = query.Where(m =>
+                m.Name_ar.Contains(search) || m.Name_en.Contains(search));
+        }
+
+        query = query.OrderBy(m => m.Name_en ?? m.Name_ar);
+
+        var paged = await query.ToPagedResultAsync(page, pageSize, cancellationToken);
+        var items = paged.Items.Select(m => new CarModelDto(m.ModelID, m.MakeID, m.Code, m.Name_ar, m.Name_en)).ToList();
+
+        return new PagedResult<CarModelDto>(items, paged.TotalCount, paged.Page, paged.PageSize, paged.TotalPages);
     }
 
     public async Task<IReadOnlyList<VehicleTypeDto>> GetVehicleTypesAsync()
@@ -65,7 +110,7 @@ public class CustomerCarService(ApplicationDbContext context) : ICustomerCarServ
 
     public async Task<CustomerCarScanResultDto> ScanAsync(CustomerCarScanDto dto, string? userId)
     {
-        var normalizedPlate = dto.PlateNumber.Trim().ToUpperInvariant();
+        var normalizedPlate = dto.PlateNumber.Trim().ToEnglishNumbers().ToUpperInvariant();
 
         var existing = await _context.CustomerCarsFull
             .AsNoTracking()
@@ -86,7 +131,7 @@ public class CustomerCarService(ApplicationDbContext context) : ICustomerCarServ
 
     public async Task<CustomerCarScanResultDto> RegisterAsync(CustomerCarScanDto dto, string? userId)
     {
-        var normalizedPlate = dto.PlateNumber.Trim().ToUpperInvariant();
+        var normalizedPlate = dto.PlateNumber.Trim().ToEnglishNumbers().ToUpperInvariant();
         var userIdLong = long.TryParse(userId, out var uid) ? (long?)uid : null;
 
         var existing = await _context.CustomerCarsFull
@@ -180,6 +225,115 @@ public class CustomerCarService(ApplicationDbContext context) : ICustomerCarServ
         return new CustomerCarScanResultDto(MapToDto(full), WasNewCar: true, wasNewCustomer, wasNewBranchLink);
     }
 
+    private static bool ShouldAutoGen(string? code) =>
+        string.IsNullOrWhiteSpace(code) || code == "*";
+
+    private async Task<int> ResolveMakeCodeAsync(string? code)
+    {
+        if (!ShouldAutoGen(code) && int.TryParse(code, out var parsed)) return parsed;
+        return await _context.CarMakes.MaxAsync(m => (int?)m.Code) + 1 ?? 1;
+    }
+
+    private async Task<int> ResolveModelCodeAsync(string? code)
+    {
+        if (!ShouldAutoGen(code) && int.TryParse(code, out var parsed)) return parsed;
+        return await _context.CarModels.MaxAsync(m => (int?)m.Code) + 1 ?? 1;
+    }
+
+    public async Task<CarMakeDto> CreateMakeAsync(RegisterCarMakeRequestDto request)
+    {
+        var code = await ResolveMakeCodeAsync(request.Code);
+        var now = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+
+        var make = new CarMake
+        {
+            Code = code,
+            Name_ar = request.Name_ar,
+            Name_en = request.Name_en,
+            Status = 1,
+            InsertDateTime = now,
+            UpdateDateTime = now,
+        };
+
+        _context.CarMakes.Add(make);
+        await _context.SaveChangesAsync();
+
+        return new CarMakeDto(make.MakeID, make.Code, make.Name_ar, make.Name_en, make.IconOriginalURL);
+    }
+
+    public async Task<CarMakeDto> UpdateMakeAsync(int id, RegisterCarMakeRequestDto request)
+    {
+        var make = await _context.CarMakes.FindAsync(id)
+            ?? throw new KeyNotFoundException($"CarMake with ID {id} not found.");
+
+        make.Code = await ResolveMakeCodeAsync(request.Code);
+        make.Name_ar = request.Name_ar;
+        make.Name_en = request.Name_en;
+        make.UpdateDateTime = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+
+        await _context.SaveChangesAsync();
+
+        return new CarMakeDto(make.MakeID, make.Code, make.Name_ar, make.Name_en, make.IconOriginalURL);
+    }
+
+    public async Task DeleteMakeAsync(int id)
+    {
+        var make = await _context.CarMakes.FindAsync(id);
+        if (make != null)
+        {
+            make.Status = 0;
+            await _context.SaveChangesAsync();
+        }
+    }
+
+    public async Task<CarModelDto> CreateModelAsync(RegisterCarModelRequestDto request)
+    {
+        var code = await ResolveModelCodeAsync(request.Code);
+        var now = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+
+        var model = new CarModel
+        {
+            MakeID = request.MakeID,
+            Code = code,
+            Name_ar = request.Name_ar,
+            Name_en = request.Name_en,
+            Status = 1,
+            InsertDateTime = now,
+            UpdateDateTime = now,
+        };
+
+        _context.CarModels.Add(model);
+        await _context.SaveChangesAsync();
+
+        return new CarModelDto(model.ModelID, model.MakeID, model.Code, model.Name_ar, model.Name_en);
+    }
+
+    public async Task<CarModelDto> UpdateModelAsync(int id, RegisterCarModelRequestDto request)
+    {
+        var model = await _context.CarModels.FindAsync(id)
+            ?? throw new KeyNotFoundException($"CarModel with ID {id} not found.");
+
+        model.MakeID = request.MakeID;
+        model.Code = await ResolveModelCodeAsync(request.Code);
+        model.Name_ar = request.Name_ar;
+        model.Name_en = request.Name_en;
+        model.UpdateDateTime = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+
+        await _context.SaveChangesAsync();
+
+        return new CarModelDto(model.ModelID, model.MakeID, model.Code, model.Name_ar, model.Name_en);
+    }
+
+    public async Task DeleteModelAsync(int id)
+    {
+        var model = await _context.CarModels.FindAsync(id);
+        if (model != null)
+        {
+            model.Status = 0;
+            await _context.SaveChangesAsync();
+        }
+    }
+
     private static CustomerCarLookupDto MapToDto(CustomerCarFull c) => new(
         c.Id,
         c.PlateNumber,
@@ -187,8 +341,12 @@ public class CustomerCarService(ApplicationDbContext context) : ICustomerCarServ
         c.Color,
         c.VehicleYear,
         c.CarMakesID,
+        c.MakeName_Ar,
+        c.MakeName_En,
         c.MakeName,
         c.CarModelID,
+        c.ModelName_Ar,
+        c.ModelName_En,
         c.ModelName,
         c.VehicleTypeID,
         c.VehicleTypeName_En,

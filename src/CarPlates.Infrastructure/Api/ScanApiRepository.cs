@@ -68,7 +68,7 @@ public class ScanApiRepository(
         response.EnsureSuccessStatusCode();
 
         var api = await response.Content.ReadFromJsonAsync<List<ApiRecentScanDto>>(ApiJsonOptions.Default, cancellationToken) ?? [];
-        return api.Select(s => new RecentScanDto(s.Id, s.PlateNumber, s.VehicleBrand, s.AccessStatus, s.ScanTime)).ToList();
+        return api.Select(s => new RecentScanDto(s.Id, s.PlateNumber, s.VehicleBrandAr, s.VehicleBrandEn, s.AccessStatus, s.ScanTime)).ToList();
     }
 
     public async Task<IReadOnlyList<ScanRecordDto>> GetAllByPlateNumberAsync(string plateNumber, CancellationToken cancellationToken = default)
@@ -104,7 +104,7 @@ public class ScanApiRepository(
 
         var api = await response.Content.ReadFromJsonAsync<ApiScanRecordDto>(ApiJsonOptions.Default, cancellationToken);
         return api?.ToScanRecordDto()
-            ?? new ScanRecordDto(0, dto.PlateNumber, dto.PlateType, dto.Confidence, dto.PhotoPath, DateTime.Now, null, null, null, null, null);
+            ?? new ScanRecordDto(0, dto.PlateNumber, dto.PlateType, dto.Confidence, dto.PhotoPath, DateTime.Now, null, null, null, null, null, null, null, null);
     }
 
     public async Task<DashboardStatisticsDto> GetStatisticsAsync(CancellationToken cancellationToken = default)
@@ -125,17 +125,21 @@ public class ScanApiRepository(
         float Confidence,
         string? PhotoUrl,
         DateTime ScanTime,
-        string? Brand,
-        string? Model,
+        string? BrandAr,
+        string? BrandEn,
+        string? ModelAr,
+        string? ModelEn,
         string? Color,
-        string? OwnerName,
+        string? OwnerNameAr,
+        string? OwnerNameEn,
         string? AccessStatus)
     {
         public ScanRecordDto ToScanRecordDto() => new(
-            Id, PlateNumber, PlateType, Confidence, PhotoUrl, ScanTime, Brand, Model, Color, OwnerName, AccessStatus);
+            Id, PlateNumber, PlateType, Confidence, PhotoUrl, ScanTime,
+            BrandAr, BrandEn, ModelAr, ModelEn, Color, OwnerNameAr, OwnerNameEn, AccessStatus);
     }
 
-    private record ApiRecentScanDto(int Id, string PlateNumber, string? VehicleBrand, string? AccessStatus, DateTime ScanTime);
+    private record ApiRecentScanDto(int Id, string PlateNumber, string? VehicleBrandAr, string? VehicleBrandEn, string? AccessStatus, DateTime ScanTime);
 
     // Shape returned by the server's PagedResult<T> wrapper (see CarPlates.API.Models.PagedResult).
     private record ApiPagedResult<T>(List<T> Items, int TotalCount, int Page, int PageSize, int TotalPages);

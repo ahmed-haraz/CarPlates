@@ -24,7 +24,17 @@ public class TransHeader
     public double? Total { get; set; }
     public double? NetTotal { get; set; }
     public double? Balance { get; set; }
+    public double? Benefit { get; set; }
+    public double? InstallmentValue { get; set; }
+    public int? InstallmentCount { get; set; }
+    public int? ShippingID { get; set; }
+    public double? TotalCurrency { get; set; }
+    public int? CostCenterID { get; set; }
+    public int? SalesRepID { get; set; }
     public string? ReferenceNo { get; set; }
+    public string? PlateNumber { get; set; }
+    public int? WorkLocationID { get; set; }
+    public int? TechnicianID { get; set; }
     public string? Signature { get; set; }
     public byte? Status { get; set; }
     public long? InsertUserID { get; set; }
@@ -55,7 +65,15 @@ public class TransDetail
     public double? Value { get; set; }
     public string? DetailNotes { get; set; }
     public byte? Status { get; set; }
-    public double DiamonQty { get; set; }     // NOT NULL on the real table but has a DB default of 0
+    public double DiamonQty { get; set; }
+    public double? TransPkgQty1 { get; set; }
+    public double? CostPrice { get; set; }
+    public double? TransPkgPrice1 { get; set; }
+    public double? WholeProfit { get; set; }
+    public double? Pkg2Qty { get; set; }
+    public double? Pkg3Qty { get; set; }
+    public double? OriginalPrice { get; set; }
+    public double? WholePrice { get; set; }
     public long? InsertUserID { get; set; }
     public long? UpdateUserID { get; set; }
     public long? InsertDateTime { get; set; }
@@ -76,7 +94,7 @@ public class BillAttachment
     public string AttachmentType { get; set; } = "Photo"; // 'Photo' or 'Signature'
     public long? InsertUserID { get; set; }
     public long? InsertDateTime { get; set; }
-    public byte Status { get; set; } = 1;
+    public int Status { get; set; } = 1;
 
     public TransHeader? Header { get; set; }
 }

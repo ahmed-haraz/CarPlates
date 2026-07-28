@@ -7,7 +7,7 @@ public record LoginResponseDto(string AccessToken, string RefreshToken, UserDto 
 public record RefreshTokenRequestDto(string RefreshToken);
 public record LogoutRequestDto(string RefreshToken);
 public record UserDto(string Id, string Username, string Email, string FullName, int BranchId, int CashboxID, int CarId, int StoreId, int SalesRepID, int Usertype);
-public record RegisterRequestDto(string Username, string Email, string Password, string FullName);
+public record RegisterRequestDto(int UserID, string Username, string Email, string Mobile, string Password, string FullName_En, string FullName_Ar, int BranchId, int CashboxID, int StoreID, int CarID, int SalesRepID, int UserType);
 
 // Vehicle DTOs
 public record VehicleDto(
@@ -43,10 +43,13 @@ public record ScanRecordDto(
     string PlateNumber,
     string? PhotoUrl,
     DateTime? ScanTime,
-    string? Brand,
-    string? Model,
+    string? BrandAr,
+    string? BrandEn,
+    string? ModelAr,
+    string? ModelEn,
     string? Color,
-    string? OwnerName);
+    string? OwnerNameAr,
+    string? OwnerNameEn);
 
 // Scanning a plate only ever writes a wh_ScanRecords row (see ScanRecordService.CreateAsync).
 // It never creates/updates wh_Customers, wh_CustomersBranch, or wh_CustomerCars - registering
@@ -71,7 +74,8 @@ public record DashboardStatisticsDto(
 public record RecentScanDto(
     long Id,
     string PlateNumber,
-    string? VehicleBrand,
+    string? VehicleBrandAr,
+    string? VehicleBrandEn,
     DateTime? ScanTime);
 
 // Sync DTOs
@@ -102,9 +106,13 @@ public record SyncBatchResponseDto(int SyncedCount, int FailedCount, List<string
 
 // ---- Customer Cars (wh_CustomerCars / wh_Customers / wh_CustomersBranch) ----
 
-public record CarMakeDto(int MakeID, string MakeName);
+public record CarMakeDto(int MakeID, int Code, string Name_ar, string Name_en, string? IconOriginalURL);
 
-public record CarModelDto(int ModelID, int MakeID, string ModelName);
+public record RegisterCarMakeRequestDto(string? Code, string Name_ar, string Name_en);
+
+public record CarModelDto(int ModelID, int MakeID, int Code, string Name_ar, string Name_en);
+
+public record RegisterCarModelRequestDto(string? Code, int MakeID, string Name_ar, string Name_en);
 
 public record CustomerCarLookupDto(
     long Id,
@@ -113,8 +121,12 @@ public record CustomerCarLookupDto(
     string? Color,
     int? VehicleYear,
     int? CarMakesID,
+    string? MakeName_Ar,
+    string? MakeName_En,
     string? MakeName,
     int? CarModelID,
+    string? ModelName_Ar,
+    string? ModelName_En,
     string? ModelName,
     int? VehicleTypeID,
     string? VehicleTypeName_En,
@@ -162,7 +174,11 @@ public record CustomerCarScanResultDto(
 
 public record TechnicianDto(int Id, int? Code, string? Name_Ar, string? Name_En);
 
+public record RegisterTechnicianRequestDto(string? Code, string Name_Ar, string Name_En);
+
 public record WorkLocationDto(int Id, int? Code, string? Name_Ar, string? Name_En);
+
+public record RegisterWorkLocationRequestDto(string? Code, string Name_Ar, string Name_En);
 
 // ---- Categories (vw_wh_ItemSubGroups) ----
 
@@ -177,6 +193,8 @@ public record CategoryDto(
     string? Image);
 
 // ---- Customers (wh_Customers), for search/lookup rather than the full registration flow ----
+
+public record UpdateCustomerRequestDto(string Name_Ar, string Name_En, string? Mobile, string? Phone1, string? Email, string? Address);
 
 public record CustomerDto(
     int Id,
@@ -213,9 +231,42 @@ public record ItemBarCodeDto(
     bool OpenSale = false,
     string? ItemDiscount1 = null,
     string? ItemDiscount2 = null,
-    string? ItemDiscount3 = null);
+    string? ItemDiscount3 = null,
+    double? Pkg2Qty = null,
+    double? Pkg3Qty = null,
+    double? Pkg1Price1 = null,
+    double? Pkg2Price1 = null,
+    double? Pkg3Price1 = null,
+    double? Pkg1Price2 = null,
+    double? Pkg2Price2 = null,
+    double? Pkg3Price2 = null);
 
 // ---- Bills (wh_TransHeader / wh_TransDetails) ----
+
+public record CreateBillDto(
+    int? BranchID,
+    int? CustomerId,
+    int? EngineerId,
+    int? CarHeaderId,
+    int? SalesRepId,
+    int? StoreId,
+    byte? PayType,
+    string? Notes,
+    string? ReferenceNo,
+    string? PlateNumber,
+    string? Signature,
+    IReadOnlyList<CreateBillDetailDto> Details,
+    string? Vin = null,
+    string? VehicleBrand = null,
+    string? VehicleModel = null,
+    string? VehicleTypeName = null,
+    string? EngineTypeName = null,
+    long? Mileage = null,
+    int? VehicleYear = null,
+    string? Color = null,
+    string? PlateType = null,
+    int? WorkLocationID = null,
+    int? TechnicianID = null);
 
 public record CreateBillDetailDto(
     string ItemBarCode,
@@ -229,20 +280,18 @@ public record CreateBillDetailDto(
     double? DetailDiscountR2 = null,
     double? DetailTax = null,
     double? DetailTaxR = null,
-    string? DetailNotes = null);
+    string? DetailNotes = null,
+    double? Pkg2Qty = null,
+    double? Pkg3Qty = null,
+    double? Pkg1Price1 = null,
+    double? Pkg2Price1 = null,
+    double? Pkg3Price1 = null,
+    double? Pkg1Price2 = null,
+    double? Pkg2Price2 = null,
+    double? Pkg3Price2 = null,
+    double? OriginalPrice = null);
 
-public record CreateBillDto(
-    int? BranchID,
-    int? CustomerId,
-    int? EngineerId,
-    int? CarHeaderId,
-    int? SalesRepId,
-    int? StoreId,
-    byte? PayType,
-    string? Notes,
-    string? ReferenceNo,
-    string? Signature,
-    IReadOnlyList<CreateBillDetailDto> Details);
+
 
 public record BillDetailDto(
     long DetailId,
@@ -251,13 +300,22 @@ public record BillDetailDto(
     int? Package,
     double Qty,
     double Price,
-    double? DetailDiscount1,
-    double? DetailDiscount2,
-    double? DetailDiscountR1,
-    double? DetailDiscountR2,
-    double? DetailTax,
-    double? DetailTaxR,
-    double? Value);
+    double? DetailDiscount1 = null,
+    double? DetailDiscount2 = null,
+    double? DetailDiscountR1 = null,
+    double? DetailDiscountR2 = null,
+    double? DetailTax = null,
+    double? DetailTaxR = null,
+    double? Value = null,
+    double? TransPkgQty1 = null,
+    double? CostPrice = null,
+    double? TransPkgPrice1 = null,
+    double? WholeProfit = null,
+    double? Pkg2Qty = null,
+    double? Pkg3Qty = null,
+    double? OriginalPrice = null,
+    double? WholePrice = null,
+    string? ItemName = null);
 
 public record BillDto(
     long HeaderId,
@@ -273,10 +331,15 @@ public record BillDto(
     byte? PayType,
     string? Notes,
     string? ReferenceNo,
+    string? PlateNumber,
     int? TransDate,
     string? CustomerName,
     string? Signature,
-    IReadOnlyList<BillDetailDto> Details);
+    string? WorkLocationName = null,
+    string? TechnicianName = null,
+    string? Color = null,
+    string? PlateType = null,
+    IReadOnlyList<BillDetailDto>? Details = null);
 
 public record PaymentDetailDto(
     byte PayType,
@@ -301,10 +364,15 @@ public record ReceiptDto(
     int? TransDate,
     string? CustomerName,
     string? ReferenceNo,
+    string? PlateNumber,
     double Total,
     double NetTotal,
     double Paid,
     double Balance,
     byte? PayType,
-    IReadOnlyList<PaymentDetailDto> Payments,
-    IReadOnlyList<BillDetailDto> Details);
+    string? WorkLocationName = null,
+    string? TechnicianName = null,
+    string? Color = null,
+    string? PlateType = null,
+    IReadOnlyList<PaymentDetailDto>? Payments = null,
+    IReadOnlyList<BillDetailDto>? Details = null);

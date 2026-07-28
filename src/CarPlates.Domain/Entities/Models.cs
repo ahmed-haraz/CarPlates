@@ -50,6 +50,15 @@ public partial class ServiceItem : ObservableObject
     [ObservableProperty] private decimal _totalPrice; // Price - Discounts + Tax
     [ObservableProperty] private int _quantity = 1;
     [ObservableProperty] private int _package;
+    [ObservableProperty] private double _pkg2Qty;
+    [ObservableProperty] private double _pkg3Qty;
+    [ObservableProperty] private double _pkg1Price1;
+    [ObservableProperty] private double _pkg2Price1;
+    [ObservableProperty] private double _pkg3Price1;
+    [ObservableProperty] private double _pkg1Price2;
+    [ObservableProperty] private double _pkg2Price2;
+    [ObservableProperty] private double _pkg3Price2;
+    [ObservableProperty] private double _originalPrice;
     [ObservableProperty] private string? _icon;
 }
 

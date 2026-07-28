@@ -31,6 +31,9 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     public DbSet<ItemSubGroupView> Categories { get; set; } = null!;
     public DbSet<BillAttachment> BillAttachments { get; set; } = null!;
     public DbSet<WhPrTrans> WhPrTrans { get; set; } = null!;
+    public DbSet<fw_LOVStatments> LovStatments { get; set; } = null!;
+    public DbSet<PaymentGatewaySetting> PaymentGatewaySettings { get; set; } = null!;
+    public DbSet<VehicleColor> VehicleColors { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -112,14 +115,16 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
         {
             entity.ToTable("wh_CarMakes", t => t.ExcludeFromMigrations());
             entity.HasKey(m => m.MakeID);
-            entity.Property(m => m.MakeName).HasMaxLength(255).IsRequired();
+            entity.Property(m => m.Name_ar).HasMaxLength(255).IsRequired();
+            entity.Property(m => m.Name_en).HasMaxLength(255).IsRequired();
         });
 
         builder.Entity<CarModel>(entity =>
         {
             entity.ToTable("wh_CarModels", t => t.ExcludeFromMigrations());
             entity.HasKey(m => m.ModelID);
-            entity.Property(m => m.ModelName).HasMaxLength(255).IsRequired();
+            entity.Property(m => m.Name_ar).HasMaxLength(255).IsRequired();
+            entity.Property(m => m.Name_en).HasMaxLength(255).IsRequired();
             entity.HasIndex(m => m.MakeID);
         });
 
@@ -160,13 +165,13 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
 
         builder.Entity<CarsTechnician>(entity =>
         {
-            entity.ToView("wh_CarsTechnicians");
+            entity.ToTable("wh_CarsTechnician", t => t.ExcludeFromMigrations());
             entity.HasKey(t => t.Id);
         });
 
         builder.Entity<WorkLocation>(entity =>
         {
-            entity.ToView("wh_Cars_WorkLocations");
+            entity.ToTable("wh_WorkLocations", t => t.ExcludeFromMigrations());
             entity.HasKey(w => w.Id);
         });
 
@@ -184,6 +189,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
             entity.Property(h => h.DocTransNo).HasMaxLength(50);
             entity.Property(h => h.Notes).HasMaxLength(200);
             entity.Property(h => h.ReferenceNo).HasMaxLength(50);
+            entity.Property(h => h.PlateNumber).HasMaxLength(50);
             entity.HasIndex(h => h.CustomerId);
             entity.HasIndex(h => h.CarHeaderId);
             entity.HasMany(h => h.Details)
@@ -228,6 +234,44 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
         {
             entity.ToView("vw_wh_ItemSubGroups");
             entity.HasNoKey();
+        });
+
+        builder.Entity<VehicleColor>(entity =>
+        {
+            entity.ToTable("VehicleColors");
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Name).HasMaxLength(100);
+            entity.Property(e => e.NameAr).HasMaxLength(100);
+            entity.Property(e => e.HexCode).HasMaxLength(7);
+            entity.HasIndex(e => e.SortOrder);
+        });
+
+        builder.Entity<PaymentGatewaySetting>(entity =>
+        {
+            entity.ToTable("PaymentGatewaySettings");
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.GatewayName).HasMaxLength(100);
+            entity.Property(e => e.MerchantId).HasMaxLength(200);
+            entity.Property(e => e.ApiKey).HasMaxLength(500);
+            entity.Property(e => e.EndpointUrl).HasMaxLength(500);
+            entity.Property(e => e.AdditionalSettings).HasColumnType("nvarchar(max)");
+        });
+
+        builder.Entity<fw_LOVStatments>(entity =>
+        {
+            entity.ToTable("fw_LOVStatments", t => t.ExcludeFromMigrations());
+            entity.HasKey(e => e.ID);
+            entity.Property(e => e.LOVName_AR).HasMaxLength(200);
+            entity.Property(e => e.LOVName_EN).HasMaxLength(200);
+            entity.Property(e => e.SQLString).HasColumnType("nvarchar(max)");
+            entity.Property(e => e.SearchWith).HasMaxLength(10);
+            entity.Property(e => e.Code).HasMaxLength(100);
+            entity.Property(e => e.name).HasMaxLength(100);
+            entity.Property(e => e.NameEng).HasMaxLength(100);
+            entity.Property(e => e.MaxRecordCount).HasMaxLength(100);
+            entity.Property(e => e.Viewname).HasMaxLength(200);
+            entity.Property(e => e.TableName).HasMaxLength(200);
+            entity.Property(e => e.BranchTableName).HasMaxLength(200);
         });
     }
 }

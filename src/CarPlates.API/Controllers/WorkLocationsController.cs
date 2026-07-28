@@ -21,4 +21,25 @@ public class WorkLocationsController(IWorkshopLookupService lookupService) : Con
     {
         return Ok(await _lookupService.GetWorkLocationsAsync(search, page, pageSize, cancellationToken));
     }
+
+    [HttpPost]
+    public async Task<ActionResult<WorkLocationDto>> Register([FromBody] RegisterWorkLocationRequestDto request)
+    {
+        var workLocation = await _lookupService.RegisterWorkLocationAsync(request);
+        return CreatedAtAction(nameof(GetAll), new { id = workLocation.Id }, workLocation);
+    }
+
+    [HttpPut("{id:int}")]
+    public async Task<ActionResult<WorkLocationDto>> Update(int id, [FromBody] RegisterWorkLocationRequestDto request)
+    {
+        var workLocation = await _lookupService.UpdateWorkLocationAsync(id, request);
+        return Ok(workLocation);
+    }
+
+    [HttpDelete("{id:int}")]
+    public async Task<ActionResult> Delete(int id)
+    {
+        await _lookupService.DeleteWorkLocationAsync(id);
+        return NoContent();
+    }
 }

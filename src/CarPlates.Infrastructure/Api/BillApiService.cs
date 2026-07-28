@@ -78,7 +78,8 @@ public class BillApiService(
             var items = result.Items.Select(b => new BillApiItem(
                 b.HeaderId, b.DocTransNo, b.BranchID, b.CustomerId, b.EngineerId,
                 b.CarHeaderId, b.Total, b.NetTotal, b.Paid, b.Balance,
-                b.PayType, b.Notes, b.ReferenceNo, b.TransDate, b.CustomerName, b.Signature)).ToList();
+                b.PayType, b.Notes, b.ReferenceNo, b.PlateNumber, b.TransDate, b.CustomerName, b.Signature,
+                b.WorkLocationName, b.TechnicianName, b.Color, b.PlateType)).ToList();
 
             return new BillSearchResult(true, items, result.TotalCount, result.Page, result.TotalPages, null);
         }
@@ -134,12 +135,15 @@ public class BillApiService(
             return new BillDetailResult(
                 dto.HeaderId, dto.DocTransNo, dto.BranchID, dto.CustomerId,
                 dto.EngineerId, dto.CarHeaderId, dto.Total, dto.NetTotal,
-                dto.Paid, dto.Balance, dto.PayType, dto.Notes, dto.ReferenceNo,
+                dto.Paid, dto.Balance, dto.PayType, dto.Notes, dto.ReferenceNo, dto.PlateNumber,
                 dto.TransDate, dto.CustomerName, dto.Signature,
+                dto.WorkLocationName, dto.TechnicianName, dto.Color, dto.PlateType,
                 dto.Details?.Select(d => new BillLineItem(
                     d.DetailId, d.ItemID, d.ItemBarCode, d.Package, d.Qty, d.Price,
                     d.DetailDiscount1, d.DetailDiscount2, d.DetailDiscountR1, d.DetailDiscountR2,
-                    d.DetailTax, d.DetailTaxR, d.Value)).ToList() ?? []);
+                    d.DetailTax, d.DetailTaxR, d.Value,
+                    d.TransPkgQty1, d.CostPrice, d.TransPkgPrice1, d.WholeProfit,
+                    d.Pkg2Qty, d.Pkg3Qty, d.OriginalPrice, d.WholePrice, d.ItemName)).ToList() ?? []);
         }
         catch (Exception ex)
         {
@@ -177,9 +181,14 @@ public class BillApiService(
         public byte? PayType { get; set; }
         public string? Notes { get; set; }
         public string? ReferenceNo { get; set; }
+        public string? PlateNumber { get; set; }
         public int? TransDate { get; set; }
         public string? CustomerName { get; set; }
         public string? Signature { get; set; }
+        public string? WorkLocationName { get; set; }
+        public string? TechnicianName { get; set; }
+        public string? Color { get; set; }
+        public string? PlateType { get; set; }
     }
 
     private class BillFullDto
@@ -197,9 +206,14 @@ public class BillApiService(
         public byte? PayType { get; set; }
         public string? Notes { get; set; }
         public string? ReferenceNo { get; set; }
+        public string? PlateNumber { get; set; }
         public int? TransDate { get; set; }
         public string? CustomerName { get; set; }
         public string? Signature { get; set; }
+        public string? WorkLocationName { get; set; }
+        public string? TechnicianName { get; set; }
+        public string? Color { get; set; }
+        public string? PlateType { get; set; }
         public List<BillDetailDtoInternal>? Details { get; set; }
     }
 
@@ -218,5 +232,14 @@ public class BillApiService(
         public double? DetailTax { get; set; }
         public double? DetailTaxR { get; set; }
         public double? Value { get; set; }
+        public double? TransPkgQty1 { get; set; }
+        public double? CostPrice { get; set; }
+        public double? TransPkgPrice1 { get; set; }
+        public double? WholeProfit { get; set; }
+        public double? Pkg2Qty { get; set; }
+        public double? Pkg3Qty { get; set; }
+        public double? OriginalPrice { get; set; }
+        public double? WholePrice { get; set; }
+        public string? ItemName { get; set; }
     }
 }

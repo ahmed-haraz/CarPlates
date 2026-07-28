@@ -25,6 +25,15 @@ public partial class HistoryViewModel : BaseViewModel
     [ObservableProperty]
     private int _totalCount;
 
+    [ObservableProperty]
+    private bool _isDateFilterVisible;
+
+    [ObservableProperty]
+    private DateTime _dateFrom = DateTime.Today.AddDays(-7);
+
+    [ObservableProperty]
+    private DateTime _dateTo = DateTime.Today;
+
     public HistoryViewModel(IMediator mediator, INavigationService navigation) : base(navigation)
     {
         _mediator = mediator;
@@ -36,8 +45,13 @@ public partial class HistoryViewModel : BaseViewModel
     {
         await ExecuteAsync(async () =>
         {
+            var startDate = IsDateFilterVisible ? DateFrom : (DateTime?)null;
+            var endDate = IsDateFilterVisible ? DateTo : (DateTime?)null;
+
             var query = new GetScanHistoryQuery(
                 SearchQuery,
+                StartDate: startDate,
+                EndDate: endDate,
                 Page: 1,
                 PageSize: 50);
 
@@ -76,14 +90,28 @@ public partial class HistoryViewModel : BaseViewModel
     [RelayCommand]
     private async Task ExportAsync()
     {
-        // Export to CSV/JSON
         await Navigation.DisplayAlertAsync(AppResources.Export, AppResources.ExportComingSoon);
     }
 
     [RelayCommand]
-    private async Task FilterByDateAsync()
+    private void ToggleDateFilter()
     {
-        // Show date picker and filter
-        await Navigation.DisplayAlertAsync(AppResources.Search, AppResources.DateFilterComingSoon);
+        IsDateFilterVisible = !IsDateFilterVisible;
+    }
+
+    [RelayCommand]
+    private async Task ApplyDateFilterAsync()
+    {
+        IsDateFilterVisible = false;
+        await LoadHistoryAsync();
+    }
+
+    [RelayCommand]
+    private async Task ClearDateFilterAsync()
+    {
+        DateFrom = DateTime.Today.AddDays(-7);
+        DateTo = DateTime.Today;
+        IsDateFilterVisible = false;
+        await LoadHistoryAsync();
     }
 }

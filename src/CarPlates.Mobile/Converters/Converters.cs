@@ -135,3 +135,44 @@ public class BrandToImageConverter : IValueConverter
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         => throw new NotImplementedException();
 }
+
+/// <summary>
+/// <summary>
+/// Returns the Arabic value when the current UI culture is Arabic,
+/// otherwise returns the English value. Used to pick language-specific fields from DTOs.
+/// </summary>
+public class LanguageAwareConverter : IMultiValueConverter
+{
+    public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
+    {
+        if (values is [var arValue, var enValue])
+            return System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "ar"
+                ? arValue
+                : enValue;
+        return values?.FirstOrDefault();
+    }
+
+    public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
+        => throw new NotImplementedException();
+}
+
+/// <summary>
+/// Compares two values for equality and returns a Color based on the match.
+/// Used e.g. by the plate-type selector to highlight the currently-selected item.
+/// Declare in XAML resources with TrueColor/FalseColor properties set on the instance.
+/// </summary>
+public class EqualityToColorConverter : IMultiValueConverter
+{
+    public Color TrueColor { get; set; } = Colors.Transparent;
+    public Color FalseColor { get; set; } = Colors.Transparent;
+
+    public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
+    {
+        if (values is [var a, var b] && a?.ToString() == b?.ToString())
+            return TrueColor;
+        return FalseColor;
+    }
+
+    public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
+        => throw new NotImplementedException();
+}

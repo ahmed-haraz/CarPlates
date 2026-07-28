@@ -2,6 +2,7 @@ using CarPlates.API.Common;
 using CarPlates.API.Data;
 using CarPlates.API.Interface;
 using CarPlates.API.Models;
+using CarPlates.Shared.Extensions;
 using Microsoft.EntityFrameworkCore;
 
 namespace CarPlates.API.Services;
@@ -35,6 +36,40 @@ public class BillService(ApplicationDbContext context) : IBillService
                 + (decimal)lineTax,
                 2);
 
+            var pkg = d.Package;
+            var pkg2Qty = d.Pkg2Qty ?? 0;
+            var pkg3Qty = d.Pkg3Qty ?? 0;
+            var pkg1Price1 = d.Pkg1Price1 ?? 0;
+            var pkg2Price1 = d.Pkg2Price1 ?? 0;
+            var pkg3Price1 = d.Pkg3Price1 ?? 0;
+            var pkg1Price2 = d.Pkg1Price2 ?? 0;
+            var pkg2Price2 = d.Pkg2Price2 ?? 0;
+            var pkg3Price2 = d.Pkg3Price2 ?? 0;
+
+            var transPkgQty1 = pkg switch
+            {
+                1 => lineQty,
+                2 => lineQty * pkg2Qty,
+                3 => lineQty * pkg2Qty * pkg3Qty,
+                _ => lineQty
+            };
+
+            var costPrice = pkg switch
+            {
+                1 => pkg1Price1,
+                2 => pkg2Price1,
+                3 => pkg3Price1,
+                _ => pkg1Price1
+            };
+
+            var wholePrice = pkg switch
+            {
+                1 => pkg1Price2,
+                2 => pkg2Price2,
+                3 => pkg3Price2,
+                _ => pkg1Price2
+            };
+
             return new TransDetail
             {
                 ItemID = d.ItemID,
@@ -52,6 +87,14 @@ public class BillService(ApplicationDbContext context) : IBillService
                 DetailNotes = d.DetailNotes ?? "",
                 Status = 1,
                 DiamonQty = 0,
+                TransPkgQty1 = transPkgQty1,
+                CostPrice = costPrice,
+                TransPkgPrice1 = pkg1Price1,
+                WholeProfit = 0,
+                Pkg2Qty = pkg2Qty,
+                Pkg3Qty = pkg3Qty,
+                OriginalPrice = d.OriginalPrice ?? linePrice,
+                WholePrice = wholePrice,
                 InsertUserID = userIdLong,
                 UpdateUserID = userIdLong,
                 InsertDateTime = now,
@@ -63,23 +106,67 @@ public class BillService(ApplicationDbContext context) : IBillService
 
         // --- Req 1: Auto-create car in wh_customercars if not exists ---
         int? carHeaderId = dto.CarHeaderId;
-        if (!carHeaderId.HasValue && !string.IsNullOrWhiteSpace(dto.ReferenceNo) && dto.CustomerId.HasValue)
+        var normalizedPlate = dto.PlateNumber?.Trim().ToEnglishNumbers().ToUpperInvariant();
+        if (!carHeaderId.HasValue && !string.IsNullOrWhiteSpace(dto.PlateNumber) && dto.CustomerId.HasValue)
         {
             var existingCar = await _context.CustomerCars
                 .AsNoTracking()
-                .FirstOrDefaultAsync(c => c.PlateNumber == dto.ReferenceNo.ToUpperInvariant(), cancellationToken);
+                .FirstOrDefaultAsync(c => c.PlateNumber == normalizedPlate, cancellationToken);
             if (existingCar == null)
             {
                 var newCar = new CustomerCar
                 {
                     CustomerID = dto.CustomerId.Value,
-                    PlateNumber = dto.ReferenceNo.ToUpperInvariant(),
+                    PlateNumber = normalizedPlate,
+                    VIN = dto.Vin,
+                    Color = dto.Color,
+                    VehicleYear = dto.VehicleYear,
+                    Distance = dto.Mileage,
+                    PlateType = dto.PlateType,
+                    BranchID = dto.BranchID,
                     Status = 1,
                     InsertUserID = userIdLong,
                     UpdateUserID = userIdLong,
                     InsertDateTime = now,
                     UpdateDateTime = now,
                 };
+
+                if (!string.IsNullOrWhiteSpace(dto.VehicleBrand))
+                {
+                    var trimmed = dto.VehicleBrand.Trim();
+                    newCar.CarMakesID = await _context.CarMakes.AsNoTracking()
+                        .Where(m => m.Name_ar == trimmed || m.Name_en == trimmed)
+                        .Select(m => (int?)m.MakeID)
+                        .FirstOrDefaultAsync(cancellationToken);
+                }
+
+                if (!string.IsNullOrWhiteSpace(dto.VehicleModel) && newCar.CarMakesID.HasValue)
+                {
+                    var trimmed = dto.VehicleModel.Trim();
+                    newCar.CarModelID = await _context.CarModels.AsNoTracking()
+                        .Where(m => (m.Name_ar == trimmed || m.Name_en == trimmed) && m.MakeID == newCar.CarMakesID.Value)
+                        .Select(m => (int?)m.ModelID)
+                        .FirstOrDefaultAsync(cancellationToken);
+                }
+
+                if (!string.IsNullOrWhiteSpace(dto.VehicleTypeName))
+                {
+                    var trimmed = dto.VehicleTypeName.Trim();
+                    newCar.VehicleType = await _context.VehicleTypes.AsNoTracking()
+                        .Where(v => v.Name_ar == trimmed || v.Name_en == trimmed)
+                        .Select(v => (int?)v.Id)
+                        .FirstOrDefaultAsync(cancellationToken);
+                }
+
+                if (!string.IsNullOrWhiteSpace(dto.EngineTypeName))
+                {
+                    var trimmed = dto.EngineTypeName.Trim();
+                    newCar.EngineType = await _context.EngineTypes.AsNoTracking()
+                        .Where(e => e.Name_ar == trimmed || e.Name_en == trimmed)
+                        .Select(e => (int?)e.Id)
+                        .FirstOrDefaultAsync(cancellationToken);
+                }
+
                 _context.CustomerCars.Add(newCar);
                 await _context.SaveChangesAsync(cancellationToken);
                 carHeaderId = (int)newCar.Id;
@@ -103,7 +190,7 @@ public class BillService(ApplicationDbContext context) : IBillService
             BranchID = branchId,
             CustomerId = dto.CustomerId ?? 0,
             EngineerId = dto.EngineerId ?? 0,
-            CarHeaderId = carHeaderId ?? 0,
+            CarHeaderId = 0,
             SalesRepId = salesRepId,
             StoreId = storeId,
             PayType = 2,
@@ -111,11 +198,21 @@ public class BillService(ApplicationDbContext context) : IBillService
             HdrTax = 0,
             Notes = dto.Notes ?? "",
             ReferenceNo = dto.ReferenceNo ?? "",
+            PlateNumber = normalizedPlate ?? dto.PlateNumber,
+            WorkLocationID = dto.WorkLocationID,
+            TechnicianID = dto.TechnicianID,
             Signature = dto.Signature ?? "",
             Total = total,
             NetTotal = total,
-            Paid = total,
+            Paid = 0,
             Balance = 0,
+            Benefit = 0,
+            InstallmentValue = 0,
+            InstallmentCount = 0,
+            ShippingID = 0,
+            TotalCurrency = total,
+            CostCenterID = 0,
+            SalesRepID = 0,
             Status = 1,
             InsertUserID = userIdLong,
             UpdateUserID = userIdLong,
@@ -173,6 +270,7 @@ public class BillService(ApplicationDbContext context) : IBillService
         {
             var searchLower = search.ToLower();
             query = query.Where(h =>
+                (h.PlateNumber != null && h.PlateNumber.ToLower().Contains(searchLower)) ||
                 (h.ReferenceNo != null && h.ReferenceNo.ToLower().Contains(searchLower)) ||
                 (h.DocTransNo != null && h.DocTransNo.ToLower().Contains(searchLower)));
         }
@@ -217,7 +315,6 @@ public class BillService(ApplicationDbContext context) : IBillService
 
         return (todayBills, todayTotal);
     }
-
     private async Task<BillDto> MapToDtoAsync(TransHeader h, CancellationToken ct = default)
     {
         string? customerName = null;
@@ -227,6 +324,42 @@ public class BillService(ApplicationDbContext context) : IBillService
                 .FirstOrDefaultAsync(c => c.Id == h.CustomerId, ct);
             customerName = customer?.Name_En ?? customer?.Name_Ar;
         }
+
+        string? workLocationName = null;
+        if (h.WorkLocationID.HasValue)
+        {
+            var loc = await _context.WorkLocations.AsNoTracking()
+                .FirstOrDefaultAsync(w => w.Id == h.WorkLocationID.Value, ct);
+            workLocationName = loc?.Name_en ?? loc?.Name_ar;
+        }
+
+        string? technicianName = null;
+        if (h.TechnicianID.HasValue)
+        {
+            var tech = await _context.CarsTechnicians.AsNoTracking()
+                .FirstOrDefaultAsync(t => t.Id == h.TechnicianID.Value, ct);
+            technicianName = tech?.Name_en ?? tech?.Name_ar;
+        }
+
+        string? color = null;
+        string? plateType = null;
+        if (h.CarHeaderId.HasValue && h.CarHeaderId.Value > 0)
+        {
+            var car = await _context.CustomerCars.AsNoTracking()
+                .FirstOrDefaultAsync(c => c.Id == h.CarHeaderId.Value, ct);
+            if (car != null)
+            {
+                color = car.Color;
+                plateType = car.PlateType;
+            }
+        }
+
+        var itemIds = h.Details.Select(d => d.ItemID).Distinct().ToList();
+        var itemNames = await _context.ItemBarCodes.AsNoTracking()
+            .Where(i => itemIds.Contains(i.ID))
+            .Select(i => new { i.ID, Name = i.Name_En ?? i.Name_Ar ?? i.ItemBarCode })
+            .Distinct()
+            .ToDictionaryAsync(i => (long)i.ID, i => i.Name, ct);
 
         return new BillDto(
             h.HeaderId,
@@ -242,11 +375,20 @@ public class BillService(ApplicationDbContext context) : IBillService
             h.PayType,
             h.Notes,
             h.ReferenceNo,
+            h.PlateNumber,
             h.TransDate,
             customerName,
             h.Signature,
+            workLocationName,
+            technicianName,
+            color,
+            plateType,
             h.Details.Select(d => new BillDetailDto(
                 d.DetailId, d.ItemID, d.ItemBarCode, d.Package, d.Qty, d.Price,
-                d.DetailDiscount1, d.DetailDiscount2, d.DetailDiscountR1, d.DetailDiscountR2, d.DetailTax, d.DetailTaxR, d.Value)).ToList());
+                d.DetailDiscount1, d.DetailDiscount2, d.DetailDiscountR1, d.DetailDiscountR2,
+                d.DetailTax, d.DetailTaxR, d.Value,
+                d.TransPkgQty1, d.CostPrice, d.TransPkgPrice1, d.WholeProfit,
+                d.Pkg2Qty, d.Pkg3Qty, d.OriginalPrice, d.WholePrice,
+                itemNames.GetValueOrDefault(d.ItemID))).ToList());
     }
 }

@@ -41,12 +41,20 @@ public class ScanVehicleCommandHandler(
         VehicleDetailsDto? vehicleInfo = null;
         if (lookupResult.Success)
         {
+            var isRtl = System.Globalization.CultureInfo.CurrentUICulture.TextInfo.IsRightToLeft;
+            var brand = isRtl ? (lookupResult.MakeName_Ar ?? lookupResult.MakeName_En ?? lookupResult.MakeName)
+                              : (lookupResult.MakeName_En ?? lookupResult.MakeName_Ar ?? lookupResult.MakeName);
+            var model = isRtl ? (lookupResult.ModelName_Ar ?? lookupResult.ModelName_En ?? lookupResult.ModelName)
+                              : (lookupResult.ModelName_En ?? lookupResult.ModelName_Ar ?? lookupResult.ModelName);
+            var owner = isRtl ? (lookupResult.CustomerName_Ar ?? lookupResult.CustomerName_En)
+                              : (lookupResult.CustomerName_En ?? lookupResult.CustomerName_Ar);
+
             vehicleInfo = new VehicleDetailsDto(
                 request.PlateNumber,
-                lookupResult.MakeName,
-                lookupResult.ModelName,
+                brand,
+                model,
                 lookupResult.Color,
-                lookupResult.CustomerName_En ?? lookupResult.CustomerName_Ar,
+                owner,
                 null,
                 DateTime.UtcNow,
                 1,

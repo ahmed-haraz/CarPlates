@@ -64,5 +64,13 @@ public class ItemService(ApplicationDbContext context) : IItemService
         i.OpenSale ?? false,
         i.ItemDiscount1,
         i.ItemDiscount2,
-        i.ItemDiscount3);
+        i.ItemDiscount3,
+        i.Pkg2Qty,
+        i.Pkg3Qty,
+        i.Pkg1Price1,
+        i.Pkg2Price1,
+        i.Pkg3Price1,
+        i.Pkg1Price2,
+        i.Pkg2Price2,
+        i.Pkg3Price2);
 }

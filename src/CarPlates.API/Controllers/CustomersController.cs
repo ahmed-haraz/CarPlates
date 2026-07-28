@@ -29,4 +29,18 @@ public class CustomersController(ICustomerService customerService) : ControllerB
         if (customer == null) return NotFound();
         return Ok(customer);
     }
+
+    [HttpPut("{id:int}")]
+    public async Task<ActionResult<CustomerDto>> Update(int id, [FromBody] UpdateCustomerRequestDto request)
+    {
+        var customer = await _customerService.UpdateAsync(id, request);
+        return Ok(customer);
+    }
+
+    [HttpDelete("{id:int}")]
+    public async Task<ActionResult> Delete(int id)
+    {
+        await _customerService.DeleteAsync(id);
+        return NoContent();
+    }
 }

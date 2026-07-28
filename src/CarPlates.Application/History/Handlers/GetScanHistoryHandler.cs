@@ -26,7 +26,8 @@ public class GetScanHistoryHandler(IScanRepository scanRepository)
                 s.PlateType,
                 s.Confidence,
                 s.ScanTime,
-                s.VehicleBrand,
+                s.VehicleBrandAr,
+                s.VehicleBrandEn,
                 s.AccessStatus))
             .ToList();
 

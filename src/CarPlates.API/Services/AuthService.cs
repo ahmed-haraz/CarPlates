@@ -1,5 +1,6 @@
 using System.Security.Cryptography;
 using System.Text;
+using CarPlates.API.Common;
 using CarPlates.API.Configuration;
 using CarPlates.API.Data;
 using CarPlates.API.Interface;
@@ -170,10 +171,37 @@ public class AuthService(
             ));
     }
 
-    public Task<bool> RegisterAsync(RegisterRequestDto request)
+    public async Task<bool> RegisterAsync(RegisterRequestDto request)
     {
-        throw new NotSupportedException(
-            "User registration is managed by the legacy system.");
+        var exists = await _context.FwUsers.AnyAsync(u => u.UserName == request.Username);
+        if (exists)
+        {
+            return false;
+        }
+
+        _context.FwUsers.Add(new fw_Users
+        {
+            UserName = request.Username,
+            email = request.Email,
+            Password = LegacyDesEncrypt(request.Password),
+            UserFullName_En = request.FullName_En,
+            UserFullName_Ar = request.FullName_Ar,
+            BranchID = request.BranchId,
+            Status = 1,
+            CashBoxID = request.CashboxID,
+            InsertDateTime = ConverterHelper.GetDateTime(),
+            InsertUserID = request.UserID,
+            UpdateDateTime = 0,
+            UpdateUserID = 0,
+            Mobile = request.Mobile,
+            StoreID = request.StoreID,
+            CarID = request.CarID,
+            SalesRepID = request.SalesRepID,
+            UserType = request.UserType
+        });
+
+        await _context.SaveChangesAsync();
+        return true;
     }
 
     public async Task<UserDto?> GetUserAsync(string userId)

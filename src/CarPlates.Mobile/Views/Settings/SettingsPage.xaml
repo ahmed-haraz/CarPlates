@@ -109,7 +109,7 @@
                     <Label Text="Endpoint URL" Style="{StaticResource Body}" FontAttributes="Bold"/>
                     <Entry Placeholder="https://api.gateway.com" Text="{Binding PaymentEndpointUrl}"/>
                     <Label Text="Additional Settings (JSON)" Style="{StaticResource Body}" FontAttributes="Bold"/>
-                    <Editor Placeholder='{"key": "value"}' Text="{Binding PaymentAdditionalSettings}"
+                    <Editor Placeholder='{}{"key": "value"}' Text="{Binding PaymentAdditionalSettings}"
                             HeightRequest="60" FontSize="12"/>
                 </VerticalStackLayout>
             </Border>

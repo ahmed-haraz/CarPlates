@@ -1,4 +1,5 @@
 using CarPlates.Application.Common.Interfaces;
+using CarPlates.Shared.Models;
 
 namespace CarPlates.Infrastructure.Services;
 

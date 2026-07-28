@@ -16,7 +16,11 @@ public partial class PaymentViewModel : BaseViewModel
     [ObservableProperty] private long _headerId;
     [ObservableProperty] private string _docTransNo = string.Empty;
     [ObservableProperty] private string _customerName = string.Empty;
-    [ObservableProperty] private string _referenceNo = string.Empty;
+    [ObservableProperty] private string _plateNumber = string.Empty;
+    [ObservableProperty] private string _workLocationName = string.Empty;
+    [ObservableProperty] private string _technicianName = string.Empty;
+    [ObservableProperty] private string _color = string.Empty;
+    [ObservableProperty] private string _plateType = string.Empty;
     [ObservableProperty] private double _total;
     [ObservableProperty] private double _netTotal;
     [ObservableProperty] private double _paid;
@@ -52,13 +56,18 @@ public partial class PaymentViewModel : BaseViewModel
         Title = AppResources.Cashier;
     }
 
-    public void LoadBill(long headerId, string? docTransNo, string? customerName, string? referenceNo,
-        double total, double netTotal, double paid, double balance, int transDate)
+    public void LoadBill(long headerId, string? docTransNo, string? customerName, string? plateNumber,
+        double total, double netTotal, double paid, double balance, int transDate,
+        string? workLocationName = null, string? technicianName = null, string? color = null, string? plateType = null)
     {
         HeaderId = headerId;
         DocTransNo = docTransNo ?? string.Empty;
         CustomerName = customerName ?? string.Empty;
-        ReferenceNo = referenceNo ?? string.Empty;
+        PlateNumber = plateNumber ?? string.Empty;
+        WorkLocationName = workLocationName ?? string.Empty;
+        TechnicianName = technicianName ?? string.Empty;
+        Color = color ?? string.Empty;
+        PlateType = plateType ?? string.Empty;
         Total = total;
         NetTotal = netTotal;
         Paid = paid;
@@ -71,7 +80,7 @@ public partial class PaymentViewModel : BaseViewModel
         CardExpiry = string.Empty;
         CardCvv = string.Empty;
         CardholderName = string.Empty;
-        IsPaid = false;
+        IsPaid = balance <= 0;
         Receipt = null;
     }
 
@@ -96,61 +105,21 @@ public partial class PaymentViewModel : BaseViewModel
     [RelayCommand]
     private async Task PayAsync()
     {
-        var payments = new List<PaymentDetailItem>();
-        if (CashAmount > 0) payments.Add(new PaymentDetailItem(1, CashAmount));
-
-        bool useGateway = false;
-
-        // If Visa amount is set, try payment gateway if configured
-        if (VisaAmount > 0)
+        if (IsPaid || Balance <= 0)
         {
-            useGateway = _gatewayService.IsConfigured;
-            payments.Add(new PaymentDetailItem(2, VisaAmount));
-        }
-
-        if (BankAmount > 0) payments.Add(new PaymentDetailItem(3, BankAmount));
-
-        if (payments.Count == 0)
-        {
-            await Navigation.DisplayAlertAsync(AppResources.Error, "Enter at least one payment amount");
+            await Navigation.DisplayAlertAsync(AppResources.Error, "Bill is already fully paid");
             return;
         }
 
-        var totalPay = payments.Sum(p => p.Amount);
-        if (totalPay <= 0)
+        var payments = new List<PaymentDetailItem>
         {
-            await Navigation.DisplayAlertAsync(AppResources.Error, "Payment amount must be greater than zero");
-            return;
-        }
+            new(1, Balance)
+        };
+        CashAmount = Balance;
 
         IsProcessing = true;
         await ExecuteAsync(async () =>
         {
-            // Process via payment gateway for Visa if configured
-            if (useGateway && VisaAmount > 0)
-            {
-                var card = ParseCardInfo();
-                var gatewayRequest = new PaymentGatewayRequest
-                {
-                    Amount = (decimal)VisaAmount,
-                    Currency = "SAR",
-                    Card = card,
-                    Description = $"Bill #{HeaderId} - {CustomerName}",
-                    TransactionRef = $"BILL-{HeaderId}-{DateTime.UtcNow:yyyyMMddHHmmss}"
-                };
-
-                var gatewayResult = await _gatewayService.ProcessAsync(gatewayRequest);
-                if (!gatewayResult.Success)
-                {
-                    await Navigation.DisplayAlertAsync("Gateway Error",
-                        gatewayResult.Message ?? "Payment gateway declined the transaction");
-                    IsProcessing = false;
-                    return;
-                }
-
-                Notes = $"{Notes}; Gateway: {gatewayResult.TransactionId}";
-            }
-
             var request = new PayBillApiRequest(HeaderId, payments, Notes);
             var result = await _paymentApiService.PayAsync(request);
 
@@ -198,7 +167,7 @@ public partial class PaymentViewModel : BaseViewModel
         if (Receipt == null) return;
 
         var items = string.Join("\n",
-            Receipt.Details.Select(d => $"  {d.ItemBarCode,-20} {d.Qty,5:F0} x {d.Price,8:F2}"));
+            Receipt.Details.Select(d => $"  {(d.ItemName ?? d.ItemBarCode),-25} {d.Qty,5:F0} x {d.Price,8:F2}"));
 
         var payments = string.Join("\n",
             Receipt.Payments.Select(p =>
@@ -210,7 +179,11 @@ public partial class PaymentViewModel : BaseViewModel
         var message = $"Receipt: {Receipt.ReceiptNo}\n" +
                       $"Date: {Receipt.TransDate}\n" +
                       $"Customer: {Receipt.CustomerName ?? "N/A"}\n" +
-                      $"Plate: {Receipt.ReferenceNo ?? "N/A"}\n" +
+                      $"Plate: {Receipt.PlateNumber ?? "N/A"}\n" +
+                      $"Location: {Receipt.WorkLocationName ?? "N/A"}\n" +
+                      $"Technician: {Receipt.TechnicianName ?? "N/A"}\n" +
+                      $"Color: {Receipt.Color ?? "N/A"}\n" +
+                      $"Plate Type: {Receipt.PlateType ?? "N/A"}\n" +
                       $"{new string('-', 32)}\n" +
                       $"{items}\n" +
                       $"{new string('-', 32)}\n" +

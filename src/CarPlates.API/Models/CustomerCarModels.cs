@@ -16,6 +16,7 @@ public class CustomerCar
     public string? Color { get; set; }
     public int? VehicleStatus { get; set; }
     public string? PlateType { get; set; }
+    public int? BranchID { get; set; }
     public int? Status { get; set; }
     public long? InsertUserID { get; set; }
     public long? UpdateUserID { get; set; }
@@ -23,10 +24,7 @@ public class CustomerCar
     public long? UpdateDateTime { get; set; }
 }
 
-// ---- dbo.wh_Customers (writable table) ----
-// Only the columns we actually read/write are modelled with real names; every other
-// NOT NULL column on the real table has a DB-level DEFAULT constraint, so leaving the
-// matching CLR property at its default (0 / false) satisfies the constraint on insert.
+
 public class WhCustomer
 {
     public int Id { get; set; }
@@ -72,9 +70,7 @@ public class WhCustomer
     public bool IsTax { get; set; }
 }
 
-// ---- dbo.wh_CustomersBranch (writable table) ----
-// ParentID = wh_Customers.ID this branch link belongs to. BranchID = the branch the
-// customer is registered at (defaults to 1). (ParentID, BranchID) is unique.
+
 public class CustomerBranch
 {
     public int Id { get; set; }
@@ -93,19 +89,29 @@ public class CustomerBranch
 public class CarMake
 {
     public int MakeID { get; set; }
-    public string MakeName { get; set; } = string.Empty;
-    public string? IconThumbURL { get; set; }
-    public string? IconOptimizedURL { get; set; }
+    public int Code { get; set; }
+    public string Name_ar { get; set; } = string.Empty;
+    public string Name_en { get; set; } = string.Empty;
     public string? IconOriginalURL { get; set; }
-    public DateTime? CreatedAt { get; set; }
+    public int Status { get; set; } = 1;
+    public long? InsertUserID { get; set; }
+    public long? UpdateUserID { get; set; }
+    public long? InsertDateTime { get; set; }
+    public long? UpdateDateTime { get; set; }
 }
 
 public class CarModel
 {
     public int ModelID { get; set; }
     public int MakeID { get; set; }
-    public string ModelName { get; set; } = string.Empty;
-    public DateTime? CreatedAt { get; set; }
+    public int Code { get; set; }
+    public string Name_ar { get; set; } = string.Empty;
+    public string Name_en { get; set; } = string.Empty;
+    public int Status { get; set; } = 1;
+    public long? InsertUserID { get; set; }
+    public long? UpdateUserID { get; set; }
+    public long? InsertDateTime { get; set; }
+    public long? UpdateDateTime { get; set; }
 }
 
 public class VehicleTypeLookup
@@ -148,7 +154,7 @@ public class ScanEvent
     public double? Latitude { get; set; }
     public double? Longitude { get; set; }
     public string? Notes { get; set; }
-    public byte Status { get; set; } = 1;
+    public int Status { get; set; } = 1;
     public long? InsertUserID { get; set; }
     public long? UpdateUserID { get; set; }
     public long? InsertDateTime { get; set; }
@@ -168,8 +174,12 @@ public class CustomerCarFull
     public string? PlateType { get; set; }
 
     public int? CarMakesID { get; set; }
+    public string? MakeName_Ar { get; set; }
+    public string? MakeName_En { get; set; }
     public string? MakeName { get; set; }
     public int? CarModelID { get; set; }
+    public string? ModelName_Ar { get; set; }
+    public string? ModelName_En { get; set; }
     public string? ModelName { get; set; }
 
     public int? VehicleTypeID { get; set; }

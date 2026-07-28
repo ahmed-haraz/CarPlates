@@ -17,6 +17,7 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
     private readonly IBillApiService _billApiService;
     private readonly IBillAttachmentApiService _billAttachmentApiService;
     private readonly IAuthenticationService _authenticationService;
+    private readonly IVehicleColorApiService _vehicleColorService;
 
     // MakeName -> MakeID, so picking a brand can resolve the real ID needed to fetch models.
     private readonly Dictionary<string, int> _makeIdsByName = new();
@@ -137,127 +138,9 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
     public bool CanGoToNextTechnicianPage => TechnicianPage < TechnicianTotalPages;
     public bool IsPriceEditable => EditingServiceItem?.OpenSale == true;
 
-    // No API source for a generic color list (wh_CustomerCars.Color is free text) or the
-    // "add a custom service" category list, so these stay local. Colors carry a real swatch
-    // so the picker can show a color circle, not just a name.
-    public ObservableCollection<ColorOption> Colors { get; } =
-    [
-        new("Black", "أسود", "#000000", Color.FromArgb("#000000")),
-        new("Jet Black", "أسود جيت", "#0A0A0A", Color.FromArgb("#0A0A0A")),
-        new("Obsidian Black", "أسود أوبسيديان", "#1C1C1C", Color.FromArgb("#1C1C1C")),
-        new("Midnight Black", "أسود منتصف الليل", "#191970", Color.FromArgb("#191970")),
-        new("Graphite", "جرافيت", "#383838", Color.FromArgb("#383838")),
-        new("Charcoal", "فحمي", "#36454F", Color.FromArgb("#36454F")),
-        new("Dark Gray", "رمادي غامق", "#555555", Color.FromArgb("#555555")),
-        new("Gray", "رمادي", "#808080", Color.FromArgb("#808080")),
-        new("Silver", "فضي", "#C0C0C0", Color.FromArgb("#C0C0C0")),
-        new("Brilliant Silver", "فضي لامع", "#C8C8C8", Color.FromArgb("#C8C8C8")),
-        new("Aluminum", "ألمنيوم", "#A9A9A9", Color.FromArgb("#A9A9A9")),
-        new("Titanium", "تيتانيوم", "#878681", Color.FromArgb("#878681")),
-        new("Gunmetal", "رمادي معدني", "#2A3439", Color.FromArgb("#2A3439")),
-        new("Nardo Gray", "رمادي ناردو", "#8D9093", Color.FromArgb("#8D9093")),
-
-        new("White", "أبيض", "#FFFFFF", Color.FromArgb("#FFFFFF")),
-        new("Pearl White", "أبيض لؤلؤي", "#F8F8FF", Color.FromArgb("#F8F8FF")),
-        new("Ivory White", "أبيض عاجي", "#FFFFF0", Color.FromArgb("#FFFFF0")),
-        new("Snow White", "أبيض ثلجي", "#FFFAFA", Color.FromArgb("#FFFAFA")),
-        new("Cream", "كريمي", "#FFFDD0", Color.FromArgb("#FFFDD0")),
-        new("Beige", "بيج", "#F5F5DC", Color.FromArgb("#F5F5DC")),
-        new("Champagne", "شمباني", "#F7E7CE", Color.FromArgb("#F7E7CE")),
-
-        new("Gold", "ذهبي", "#FFD700", Color.FromArgb("#FFD700")),
-        new("Rose Gold", "ذهب وردي", "#B76E79", Color.FromArgb("#B76E79")),
-        new("Bronze", "برونزي", "#CD7F32", Color.FromArgb("#CD7F32")),
-        new("Copper", "نحاسي", "#B87333", Color.FromArgb("#B87333")),
-
-        new("Brown", "بني", "#8B4513", Color.FromArgb("#8B4513")),
-        new("Chocolate Brown", "بني شوكولاتة", "#7B3F00", Color.FromArgb("#7B3F00")),
-        new("Mocha", "موكا", "#967969", Color.FromArgb("#967969")),
-        new("Mahogany", "ماهوجني", "#C04000", Color.FromArgb("#C04000")),
-
-        new("Red", "أحمر", "#FF0000", Color.FromArgb("#FF0000")),
-        new("Bright Red", "أحمر فاقع", "#FF2400", Color.FromArgb("#FF2400")),
-        new("Candy Red", "أحمر حلوى", "#D2042D", Color.FromArgb("#D2042D")),
-        new("Ruby Red", "أحمر ياقوتي", "#9B111E", Color.FromArgb("#9B111E")),
-        new("Crimson", "أحمر قرمزي", "#DC143C", Color.FromArgb("#DC143C")),
-        new("Burgundy", "بورجوندي", "#800020", Color.FromArgb("#800020")),
-        new("Maroon", "أحمر كستنائي", "#800000", Color.FromArgb("#800000")),
-        new("Wine Red", "أحمر خمري", "#722F37", Color.FromArgb("#722F37")),
-
-        new("Orange", "برتقالي", "#FFA500", Color.FromArgb("#FFA500")),
-        new("Burnt Orange", "برتقالي محروق", "#CC5500", Color.FromArgb("#CC5500")),
-        new("Copper Orange", "برتقالي نحاسي", "#DA8A67", Color.FromArgb("#DA8A67")),
-
-        new("Yellow", "أصفر", "#FFFF00", Color.FromArgb("#FFFF00")),
-        new("Canary Yellow", "أصفر كناري", "#FFEF00", Color.FromArgb("#FFEF00")),
-        new("Lemon Yellow", "أصفر ليموني", "#FFF44F", Color.FromArgb("#FFF44F")),
-        new("Mustard", "خردلي", "#E1AD01", Color.FromArgb("#E1AD01")),
-
-        new("Green", "أخضر", "#008000", Color.FromArgb("#008000")),
-        new("British Racing Green", "أخضر سباق بريطاني", "#004225", Color.FromArgb("#004225")),
-        new("Forest Green", "أخضر غابي", "#228B22", Color.FromArgb("#228B22")),
-        new("Dark Green", "أخضر غامق", "#006400", Color.FromArgb("#006400")),
-        new("Olive Green", "أخضر زيتوني", "#556B2F", Color.FromArgb("#556B2F")),
-        new("Lime Green", "أخضر ليموني", "#32CD32", Color.FromArgb("#32CD32")),
-        new("Mint Green", "أخضر نعناعي", "#98FF98", Color.FromArgb("#98FF98")),
-        new("Emerald Green", "أخضر زمردي", "#50C878", Color.FromArgb("#50C878")),
-
-        new("Blue", "أزرق", "#0000FF", Color.FromArgb("#0000FF")),
-        new("Navy Blue", "أزرق كحلي", "#000080", Color.FromArgb("#000080")),
-        new("Dark Blue", "أزرق غامق", "#00008B", Color.FromArgb("#00008B")),
-        new("Royal Blue", "أزرق ملكي", "#4169E1", Color.FromArgb("#4169E1")),
-        new("Electric Blue", "أزرق كهربائي", "#7DF9FF", Color.FromArgb("#7DF9FF")),
-        new("Sky Blue", "أزرق سماوي", "#87CEEB", Color.FromArgb("#87CEEB")),
-        new("Light Blue", "أزرق فاتح", "#ADD8E6", Color.FromArgb("#ADD8E6")),
-        new("Aqua Blue", "أزرق مائي", "#00FFFF", Color.FromArgb("#00FFFF")),
-        new("Teal", "شرشيري", "#008080", Color.FromArgb("#008080")),
-        new("Turquoise", "فيروزي", "#40E0D0", Color.FromArgb("#40E0D0")),
-        new("Cyan", "سيان", "#00FFFF", Color.FromArgb("#00FFFF")),
-
-        new("Purple", "أرجواني", "#800080", Color.FromArgb("#800080")),
-        new("Deep Purple", "أرجواني غامق", "#673AB7", Color.FromArgb("#673AB7")),
-        new("Violet", "بنفسجي", "#8F00FF", Color.FromArgb("#8F00FF")),
-        new("Lavender", "خزامي", "#E6E6FA", Color.FromArgb("#E6E6FA")),
-        new("Plum", "برقوقي", "#8E4585", Color.FromArgb("#8E4585")),
-        new("Magenta", "ماجنتا", "#FF00FF", Color.FromArgb("#FF00FF")),
-
-        new("Pink", "وردي", "#FFC0CB", Color.FromArgb("#FFC0CB")),
-        new("Hot Pink", "وردي فاقع", "#FF69B4", Color.FromArgb("#FF69B4")),
-        new("Coral", "مرجاني", "#FF7F50", Color.FromArgb("#FF7F50")),
-
-        new("Pearl Blue", "أزرق لؤلؤي", "#6A8DFF", Color.FromArgb("#6A8DFF")),
-        new("Pearl Black", "أسود لؤلؤي", "#1A1A1A", Color.FromArgb("#1A1A1A")),
-        new("Pearl Red", "أحمر لؤلؤي", "#AA0114", Color.FromArgb("#AA0114")),
-        new("Pearl Gray", "رمادي لؤلؤي", "#B0B0B0", Color.FromArgb("#B0B0B0")),
-
-        new("Metallic Silver", "فضي معدني", "#BFC1C2", Color.FromArgb("#BFC1C2")),
-        new("Metallic Gray", "رمادي معدني", "#6E7072", Color.FromArgb("#6E7072")),
-        new("Metallic Blue", "أزرق معدني", "#3B6EA5", Color.FromArgb("#3B6EA5")),
-        new("Metallic Green", "أخضر معدني", "#2E8B57", Color.FromArgb("#2E8B57")),
-        new("Metallic Red", "أحمر معدني", "#B22222", Color.FromArgb("#B22222")),
-        new("Metallic Brown", "بني معدني", "#8B5A2B", Color.FromArgb("#8B5A2B")),
-        new("Metallic Bronze", "برونزي معدني", "#8C7853", Color.FromArgb("#8C7853")),
-
-        new("Matte Black", "أسود مطفي", "#121212", Color.FromArgb("#121212")),
-        new("Matte Gray", "رمادي مطفي", "#696969", Color.FromArgb("#696969")),
-        new("Matte White", "أبيض مطفي", "#F5F5F5", Color.FromArgb("#F5F5F5")),
-        new("Matte Blue", "أزرق مطفي", "#1E3A8A", Color.FromArgb("#1E3A8A")),
-        new("Matte Green", "أخضر مطفي", "#355E3B", Color.FromArgb("#355E3B")),
-        new("Matte Red", "أحمر مطفي", "#8B0000", Color.FromArgb("#8B0000")),
-
-        new("Satin Black", "أسود ساتان", "#242424", Color.FromArgb("#242424")),
-        new("Satin Silver", "فضي ساتان", "#AFAFAF", Color.FromArgb("#AFAFAF")),
-        new("Satin Blue", "أزرق ساتان", "#3A5FCD", Color.FromArgb("#3A5FCD")),
-        new("Satin Gray", "رمادي ساتان", "#7E7F7F", Color.FromArgb("#7E7F7F")),
-
-        new("Two-Tone Black/White", "ثنائي اللون أسود/أبيض", "#808080", Color.FromArgb("#808080")),
-        new("Two-Tone Red/Black", "ثنائي اللون أحمر/أسود", "#990000", Color.FromArgb("#990000")),
-        new("Two-Tone Blue/White", "ثنائي اللون أزرق/أبيض", "#4F81BD", Color.FromArgb("#4F81BD")),
-
-        new("Custom", "مخصص", "#FFFFFF", Color.FromArgb("#FFFFFF")),
-        new("Other", "آخر", "#999999", Color.FromArgb("#999999")),
-        new("Unknown", "غير معروف", "#CCCCCC", Color.FromArgb("#CCCCCC"))
-    ];
+    // Colors loaded from the API (VehicleColors table) in LoadInitialDataAsync.
+    // Each carries a real swatch so the picker can show a color circle, not just a name.
+    public ObservableCollection<ColorOption> Colors { get; } = [];
 
     public ObservableCollection<string> TaxTypes { get; } = new() { "VAT", "معفى من الضريبة" };
     public ObservableCollection<string> CountryCodes { get; } = new()
@@ -280,7 +163,8 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
         IItemLookupService itemLookupService,
         IBillApiService billApiService,
         IBillAttachmentApiService billAttachmentApiService,
-        IAuthenticationService authenticationService) : base(navigation)
+        IAuthenticationService authenticationService,
+        IVehicleColorApiService vehicleColorService) : base(navigation)
     {
         _customerCarLookupService = customerCarLookupService;
         _workshopLookupService = workshopLookupService;
@@ -289,9 +173,9 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
         _billApiService = billApiService;
         _billAttachmentApiService = billAttachmentApiService;
         _authenticationService = authenticationService;
+        _vehicleColorService = vehicleColorService;
 
         Title = LocalizationResourceManager.Instance["AddVehicle"];
-        SelectedColor = Colors.First();
         LoadVehicleYears();
         CartItems.CollectionChanged += OnCartItemsChanged;
         _ = LoadInitialDataAsync();
@@ -346,67 +230,122 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
     // Pulls every reference list this form needs straight from the API: car makes,
     // vehicle/engine types, workshop technicians and locations, item categories, and an
     // unfiltered first page of the item catalog - nothing here is hardcoded any more.
+    // Each source is fetched independently so one backend issue doesn't block all data.
     [RelayCommand]
     private async Task LoadInitialDataAsync()
     {
         await ExecuteAsync(async () =>
         {
-            var makesTask = _customerCarLookupService.GetMakesAsync();
-            var vehicleTypesTask = _customerCarLookupService.GetVehicleTypesAsync();
-            var engineTypesTask = _customerCarLookupService.GetEngineTypesAsync();
-            var techniciansTask = _workshopLookupService.GetTechniciansAsync(pageSize: 100);
-            var locationsTask = _workshopLookupService.GetWorkLocationsAsync(pageSize: 100);
-            var categoriesTask = _itemLookupService.GetCategoriesAsync(pageSize: 100);
-            var itemsTask = _itemLookupService.SearchAsync(pageSize: 50);
+            var isRtl = LocalizationResourceManager.Instance.IsRightToLeft;
 
-            await Task.WhenAll(makesTask, vehicleTypesTask, engineTypesTask, techniciansTask, locationsTask, categoriesTask, itemsTask);
-
-            _makeIdsByName.Clear();
-            Brands.Clear();
-            foreach (var make in makesTask.Result)
+            var makes = await SafeFetchAsync(_customerCarLookupService.GetMakesAsync());
+            if (makes == null)
             {
-                Brands.Add(make.MakeName);
-                _makeIdsByName[make.MakeName] = make.MakeID;
+                ShowAlert("Loading Error", "Failed to load car brands. Check that the API server is running and the database table 'wh_CarMakes' has data.");
             }
-            ResetBrandPaging();
-
-            VehicleTypes.Clear();
-            foreach (var type in vehicleTypesTask.Result)
+            else
             {
-                VehicleTypes.Add(type.Name_En ?? type.Name_Ar ?? string.Empty);
+                _makeIdsByName.Clear();
+                Brands.Clear();
+                foreach (var make in makes)
+                {
+                    var name = isRtl ? (make.Name_Ar ?? make.Name_En ?? string.Empty)
+                                     : (make.Name_En ?? make.Name_Ar ?? string.Empty);
+                    Brands.Add(name);
+                    _makeIdsByName[name] = make.MakeID;
+                }
+                ResetBrandPaging();
             }
 
-            EngineTypes.Clear();
-            foreach (var type in engineTypesTask.Result)
+            var vehicleTypes = await SafeFetchAsync(_customerCarLookupService.GetVehicleTypesAsync());
+            if (vehicleTypes != null)
             {
-                EngineTypes.Add(type.Name_En ?? type.Name_Ar ?? string.Empty);
+                VehicleTypes.Clear();
+                foreach (var type in vehicleTypes)
+                {
+                    VehicleTypes.Add(type.Name_En ?? type.Name_Ar ?? string.Empty);
+                }
             }
 
-            Technicians.Clear();
-            foreach (var tech in techniciansTask.Result.Items)
+            var engineTypes = await SafeFetchAsync(_customerCarLookupService.GetEngineTypesAsync());
+            if (engineTypes != null)
             {
-                Technicians.Add(new Technician { Id = tech.Id.ToString(), Name = tech.Name_En ?? tech.Name_Ar ?? string.Empty });
+                EngineTypes.Clear();
+                foreach (var type in engineTypes)
+                {
+                    EngineTypes.Add(type.Name_En ?? type.Name_Ar ?? string.Empty);
+                }
             }
 
-            Locations.Clear();
-            foreach (var location in locationsTask.Result.Items)
+            var technicians = await SafeFetchAsync(_workshopLookupService.GetTechniciansAsync(pageSize: 100));
+            if (technicians != null)
             {
-                Locations.Add(new WorkLocation { Id = location.Id.ToString(), Name = location.Name_En ?? location.Name_Ar ?? string.Empty, Type = location.Name_Ar ?? string.Empty });
-            }
-            FilteredLocations = new ObservableCollection<WorkLocation>(Locations);
-
-            ItemCategories.Clear();
-            Categories.Clear();
-            ItemCategories.Add(new ItemCategoryOption(null, "الكل")); // "All" - clears the category filter
-            foreach (var category in categoriesTask.Result.Items)
-            {
-                var categoryName = category.Name_En ?? category.Name_Ar ?? string.Empty;
-                ItemCategories.Add(new ItemCategoryOption(category.Id, categoryName));
-                Categories.Add(categoryName);
+                Technicians.Clear();
+                foreach (var tech in technicians.Items)
+                {
+                    Technicians.Add(new Technician { Id = tech.Id.ToString(), Name = tech.Name_En ?? tech.Name_Ar ?? string.Empty });
+                }
+                FilteredTechnicians = new ObservableCollection<Technician>(Technicians);
+                ResetTechnicianPaging();
             }
 
-            ApplyItemResults(itemsTask.Result.Items);
+            var locations = await SafeFetchAsync(_workshopLookupService.GetWorkLocationsAsync(pageSize: 100));
+            if (locations != null)
+            {
+                Locations.Clear();
+                foreach (var location in locations.Items)
+                {
+                    Locations.Add(new WorkLocation { Id = location.Id.ToString(), Name = location.Name_En ?? location.Name_Ar ?? string.Empty, Type = location.Name_Ar ?? string.Empty });
+                }
+                FilteredLocations = new ObservableCollection<WorkLocation>(Locations);
+            }
+
+            var categories = await SafeFetchAsync(_itemLookupService.GetCategoriesAsync(pageSize: 100));
+            if (categories != null)
+            {
+                ItemCategories.Clear();
+                Categories.Clear();
+                ItemCategories.Add(new ItemCategoryOption(null, "الكل"));
+                foreach (var category in categories.Items)
+                {
+                    var categoryName = category.Name_En ?? category.Name_Ar ?? string.Empty;
+                    ItemCategories.Add(new ItemCategoryOption(category.Id, categoryName));
+                    Categories.Add(categoryName);
+                }
+            }
+
+            var items = await SafeFetchAsync(_itemLookupService.SearchAsync(pageSize: 50));
+            if (items != null)
+            {
+                ApplyItemResults(items.Items);
+            }
+
+            var colors = await SafeFetchAsync(_vehicleColorService.GetAllAsync());
+            if (colors != null)
+            {
+                Colors.Clear();
+                foreach (var c in colors)
+                {
+                    Colors.Add(new ColorOption(c.Name, c.NameAr, c.HexCode, Color.FromArgb(c.HexCode)));
+                }
+                ResetColorPaging();
+                if (SelectedColor == null && Colors.Count > 0)
+                    SelectedColor = Colors[0];
+            }
         });
+    }
+
+    private static async Task<T?> SafeFetchAsync<T>(Task<T> task)
+    {
+        try
+        {
+            return await task;
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"[NewOrderViewModel] Failed to fetch data: {ex.Message}");
+            return default;
+        }
     }
 
     partial void OnSelectedBrandChanged(string value)
@@ -688,10 +627,12 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
 
         await ExecuteAsync(async () =>
         {
+            var isRtl = LocalizationResourceManager.Instance.IsRightToLeft;
             var models = await _customerCarLookupService.GetModelsAsync(makeId);
             foreach (var model in models)
             {
-                AvailableModels.Add(model.ModelName);
+                AvailableModels.Add(isRtl ? (model.Name_Ar ?? model.Name_En ?? string.Empty)
+                                          : (model.Name_En ?? model.Name_Ar ?? string.Empty));
             }
             ResetModelPaging();
         });
@@ -930,6 +871,15 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
             Discount3 = discount3,
             OpenSale = item.OpenSale,
             IsTaxable = taxRate > 0,
+            Pkg2Qty = item.Pkg2Qty ?? 0,
+            Pkg3Qty = item.Pkg3Qty ?? 0,
+            Pkg1Price1 = item.Pkg1Price1 ?? 0,
+            Pkg2Price1 = item.Pkg2Price1 ?? 0,
+            Pkg3Price1 = item.Pkg3Price1 ?? 0,
+            Pkg1Price2 = item.Pkg1Price2 ?? 0,
+            Pkg2Price2 = item.Pkg2Price2 ?? 0,
+            Pkg3Price2 = item.Pkg3Price2 ?? 0,
+            OriginalPrice = (double)price,
             TaxType = "VAT",
             TaxAmount = taxAmount,
             Package = item.Package.GetValueOrDefault(),
@@ -1245,10 +1195,11 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
                 var taxAmount = (double)ci.ServiceItem.TaxAmount;
                 var taxRatio = price > 0 ? taxAmount / price * 100 : 0;
 
+                var si = ci.ServiceItem;
                 return new CreateBillLineRequest(
-                    ItemBarCode: ci.ServiceItem.ItemBarCode ?? ci.ServiceItem.Id ?? string.Empty,
-                    ItemID: ci.ServiceItem.ItemID,
-                    Package: ci.ServiceItem.Package > 0 ? ci.ServiceItem.Package : null,
+                    ItemBarCode: si.ItemBarCode ?? si.Id ?? string.Empty,
+                    ItemID: si.ItemID,
+                    Package: si.Package > 0 ? si.Package : null,
                     Qty: qty,
                     Price: Math.Round(price, 2),
                     DetailDiscount1: Math.Round(totalDiscount, 2),
@@ -1257,20 +1208,42 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
                     DetailDiscountR2: null,
                     DetailTax: Math.Round(taxAmount, 2),
                     DetailTaxR: Math.Round(taxRatio, 2),
-                    DetailNotes: null);
+                    DetailNotes: null,
+                    Pkg2Qty: si.Pkg2Qty > 0 ? si.Pkg2Qty : null,
+                    Pkg3Qty: si.Pkg3Qty > 0 ? si.Pkg3Qty : null,
+                    Pkg1Price1: si.Pkg1Price1 > 0 ? si.Pkg1Price1 : null,
+                    Pkg2Price1: si.Pkg2Price1 > 0 ? si.Pkg2Price1 : null,
+                    Pkg3Price1: si.Pkg3Price1 > 0 ? si.Pkg3Price1 : null,
+                    Pkg1Price2: si.Pkg1Price2 > 0 ? si.Pkg1Price2 : null,
+                    Pkg2Price2: si.Pkg2Price2 > 0 ? si.Pkg2Price2 : null,
+                    Pkg3Price2: si.Pkg3Price2 > 0 ? si.Pkg3Price2 : null,
+                    OriginalPrice: si.OriginalPrice > 0 ? si.OriginalPrice : null);
             }).ToList();
 
+            var isNewCar = SelectedVehicle?.CarHeaderId == null;
             var request = new CreateBillRequest(
                 BranchID: currentUser?.BranchId,
                 CustomerId: SelectedCustomer?.Id > 0 ? SelectedCustomer.Id : null,
                 EngineerId: SelectedTechnician != null && int.TryParse(SelectedTechnician.Id, out var engId) ? engId : null,
-                CarHeaderId: SelectedVehicle?.CarHeaderId,
+                CarHeaderId: null,
                 SalesRepId: currentUser?.SalesRepID,
                 StoreId: currentUser?.StoreId,
                 Notes: OrderNotes,
-                ReferenceNo: plateNo,
+                ReferenceNo: null,
+                PlateNumber: plateNo,
                 Signature: SignatureData,
-                Details: billDetails);
+                Details: billDetails,
+                Vin: isNewCar ? (SelectedVehicle?.Vin ?? NewVin) : null,
+                VehicleBrand: isNewCar ? (SelectedVehicle?.Brand ?? SelectedBrand) : null,
+                VehicleModel: isNewCar ? (SelectedVehicle?.Model ?? SelectedModel) : null,
+                VehicleTypeName: isNewCar ? (SelectedVehicle?.VehicleType ?? SelectedVehicleType) : null,
+                EngineTypeName: isNewCar ? (SelectedVehicle?.EngineType ?? SelectedEngineType) : null,
+                Mileage: isNewCar ? (SelectedVehicle?.Mileage != 0 ? SelectedVehicle?.Mileage : NewMileage) : null,
+                VehicleYear: isNewCar ? (SelectedVehicle?.Year != 0 ? SelectedVehicle?.Year : SelectedVehicleYear) : null,
+                Color: isNewCar ? (SelectedVehicle?.Color ?? SelectedColor?.Name) : null,
+                PlateType: isNewCar ? (SelectedVehicle?.PlateType ?? NewPlateType) : null,
+                WorkLocationID: SelectedLocation != null && int.TryParse(SelectedLocation.Id, out var locId) ? locId : null,
+                TechnicianID: SelectedTechnician != null && int.TryParse(SelectedTechnician.Id, out var techId) ? techId : null);
 
             var result = await _billApiService.CreateBillAsync(request);
 
@@ -1282,16 +1255,24 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
 
             if (result.HeaderId.HasValue)
             {
+                var uploadErrors = new List<string>();
                 foreach (var photo in OrderPhotos)
                 {
-                    await _billAttachmentApiService.UploadAsync(result.HeaderId.Value, photo.Path, "Photo");
+                    var ok = await _billAttachmentApiService.UploadAsync(result.HeaderId.Value, photo.Path, "Photo");
+                    if (!ok) uploadErrors.Add(Path.GetFileName(photo.Path));
                 }
 
                 if (!string.IsNullOrWhiteSpace(SignatureData))
                 {
                     var sigPath = Path.Combine(FileSystem.CacheDirectory, $"sig-{Guid.NewGuid():N}.txt");
                     await File.WriteAllTextAsync(sigPath, SignatureData);
-                    await _billAttachmentApiService.UploadAsync(result.HeaderId.Value, sigPath, "Signature");
+                    var ok = await _billAttachmentApiService.UploadAsync(result.HeaderId.Value, sigPath, "Signature");
+                    if (!ok) uploadErrors.Add("Signature");
+                }
+
+                if (uploadErrors.Count > 0)
+                {
+                    System.Diagnostics.Debug.WriteLine($"Failed to upload {uploadErrors.Count} attachment(s): {string.Join(", ", uploadErrors)}");
                 }
             }
 
@@ -1574,7 +1555,7 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
         SelectedEngineType = null!;
         NewMileage = 0;
         NewYear = 2025;
-        SelectedColor = Colors.First();
+        SelectedColor = Colors.Count > 0 ? Colors[0] : null;
     }
 
     private void ClearNewServiceFields()
