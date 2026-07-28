@@ -7,10 +7,13 @@ public record ScanRecordDto(
     float Confidence,
     string? PhotoPath,
     DateTime ScanTime,
-    string? VehicleBrand,
-    string? VehicleModel,
+    string? VehicleBrandAr,
+    string? VehicleBrandEn,
+    string? VehicleModelAr,
+    string? VehicleModelEn,
     string? VehicleColor,
-    string? OwnerName,
+    string? OwnerNameAr,
+    string? OwnerNameEn,
     string? AccessStatus);
 
 public record ScanRecordListDto(
@@ -19,7 +22,8 @@ public record ScanRecordListDto(
     string PlateType,
     float Confidence,
     DateTime ScanTime,
-    string? VehicleBrand,
+    string? VehicleBrandAr,
+    string? VehicleBrandEn,
     string? AccessStatus);
 
 public record CreateScanRecordDto(
@@ -33,8 +37,11 @@ public record CreateScanRecordDto(
     string? Notes = null);
 
 public record UpdateVehicleInfoDto(
-    string? VehicleBrand,
-    string? VehicleModel,
+    string? VehicleBrandAr,
+    string? VehicleBrandEn,
+    string? VehicleModelAr,
+    string? VehicleModelEn,
     string? VehicleColor,
-    string? OwnerName,
+    string? OwnerNameAr,
+    string? OwnerNameEn,
     string? AccessStatus);

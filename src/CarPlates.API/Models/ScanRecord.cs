@@ -11,10 +11,13 @@ public class ScanRecord
     public double? Latitude { get; set; }
     public double? Longitude { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-    public string? Brand { get; set; }
-    public string? Model { get; set; }
+    public string? BrandAr { get; set; }
+    public string? BrandEn { get; set; }
+    public string? ModelAr { get; set; }
+    public string? ModelEn { get; set; }
     public string? Color { get; set; }
-    public string? OwnerName { get; set; }
+    public string? OwnerNameAr { get; set; }
+    public string? OwnerNameEn { get; set; }
     public string? OwnerPhone { get; set; }
     public string? Notes { get; set; }
     public DateTime? UpdatedAt { get; set; }

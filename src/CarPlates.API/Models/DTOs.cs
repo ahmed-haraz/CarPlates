@@ -43,10 +43,13 @@ public record ScanRecordDto(
     string PlateNumber,
     string? PhotoUrl,
     DateTime? ScanTime,
-    string? Brand,
-    string? Model,
+    string? BrandAr,
+    string? BrandEn,
+    string? ModelAr,
+    string? ModelEn,
     string? Color,
-    string? OwnerName);
+    string? OwnerNameAr,
+    string? OwnerNameEn);
 
 // Scanning a plate only ever writes a wh_ScanRecords row (see ScanRecordService.CreateAsync).
 // It never creates/updates wh_Customers, wh_CustomersBranch, or wh_CustomerCars - registering
@@ -71,7 +74,8 @@ public record DashboardStatisticsDto(
 public record RecentScanDto(
     long Id,
     string PlateNumber,
-    string? VehicleBrand,
+    string? VehicleBrandAr,
+    string? VehicleBrandEn,
     DateTime? ScanTime);
 
 // Sync DTOs

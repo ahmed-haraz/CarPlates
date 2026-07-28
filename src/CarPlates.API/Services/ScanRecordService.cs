@@ -80,6 +80,7 @@ public class ScanRecordService(ApplicationDbContext context, ICustomerCarService
             r.Id,
             r.PlateNumber,
             null,
+            null,
             r.ScanTime))];
     }
 
@@ -173,8 +174,11 @@ public class ScanRecordService(ApplicationDbContext context, ICustomerCarService
         s.PlateNumber,
         s.PhotoUrl,
         s.ScanTime,
-        s.Brand,
-        s.Model,
+        s.BrandAr,
+        s.BrandEn,
+        s.ModelAr,
+        s.ModelEn,
         s.Color,
-        s.OwnerName);
+        s.OwnerNameAr,
+        s.OwnerNameEn);
 }

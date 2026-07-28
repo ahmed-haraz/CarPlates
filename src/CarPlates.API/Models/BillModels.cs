@@ -30,7 +30,7 @@ public class TransHeader
     public int? ShippingID { get; set; }
     public double? TotalCurrency { get; set; }
     public int? CostCenterID { get; set; }
-    public int? SalesID { get; set; }
+    public int? SalesRepID { get; set; }
     public string? ReferenceNo { get; set; }
     public string? PlateNumber { get; set; }
     public int? WorkLocationID { get; set; }

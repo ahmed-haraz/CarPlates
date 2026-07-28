@@ -15,6 +15,7 @@ public record DashboardStatisticsDto(
 public record RecentScanDto(
     int Id,
     string PlateNumber,
-    string? VehicleBrand,
+    string? VehicleBrandAr,
+    string? VehicleBrandEn,
     string? AccessStatus,
     DateTime ScanTime);

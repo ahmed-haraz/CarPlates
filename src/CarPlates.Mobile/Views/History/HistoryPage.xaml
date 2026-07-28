@@ -14,7 +14,7 @@
         <converters:PlateFormatConverter x:Key="PlateFormatConverter" />
     </ContentPage.Resources>
 
-    <Grid RowDefinitions="Auto,Auto,Auto,*">
+    <Grid RowDefinitions="Auto,Auto,Auto,Auto,*">
         <!-- Search Bar -->
         <Grid Grid.Row="0"
               Padding="20,18,20,8"
@@ -30,11 +30,31 @@
             <Button Grid.Column="2"
                     Text="📅"
                     Style="{StaticResource IconButton}"
-                    Command="{Binding FilterByDateCommand}" />
+                    Command="{Binding ToggleDateFilterCommand}" />
+        </Grid>
+
+        <!-- Date Filter Panel -->
+        <Grid Grid.Row="1"
+              Padding="20,0,20,8"
+              ColumnDefinitions="*,*,Auto"
+              ColumnSpacing="8"
+              IsVisible="{Binding IsDateFilterVisible}">
+            <DatePicker Grid.Column="0"
+                        Date="{Binding DateFrom}"
+                        FontSize="13" />
+            <DatePicker Grid.Column="1"
+                        Date="{Binding DateTo}"
+                        FontSize="13" />
+            <HorizontalStackLayout Grid.Column="2" Spacing="4">
+                <Button Text="✓" Style="{StaticResource IconButton}"
+                        Command="{Binding ApplyDateFilterCommand}" />
+                <Button Text="✗" Style="{StaticResource IconButton}"
+                        Command="{Binding ClearDateFilterCommand}" />
+            </HorizontalStackLayout>
         </Grid>
 
         <!-- Error Banner -->
-        <Border Grid.Row="1"
+        <Border Grid.Row="2"
                 BackgroundColor="{StaticResource Error}"
                 Padding="14"
                 Margin="20,0,20,8"
@@ -46,7 +66,7 @@
         </Border>
 
         <!-- Stats Bar -->
-        <Grid Grid.Row="2"
+        <Grid Grid.Row="3"
               Padding="20,4"
               ColumnDefinitions="*,Auto">
             <Label Grid.Column="0"
@@ -60,7 +80,7 @@
         </Grid>
 
         <!-- Scan List -->
-        <RefreshView Grid.Row="3"
+        <RefreshView Grid.Row="4"
                      Command="{Binding RefreshCommand}"
                      IsRefreshing="{Binding IsRefreshing}">
             <CollectionView ItemsSource="{Binding ScanRecords}"
@@ -82,8 +102,14 @@
                                     <Label Text="{Binding PlateNumber, Converter={StaticResource PlateFormatConverter}}"
                                            Style="{StaticResource Body}"
                                            FontAttributes="Bold" />
-                                    <Label Text="{Binding VehicleBrand}"
-                                           Style="{StaticResource Caption}" />
+                                    <Label Style="{StaticResource Caption}">
+                                        <Label.Text>
+                                            <MultiBinding Converter="{StaticResource LanguageAwareConverter}">
+                                                <Binding Path="VehicleBrandAr" />
+                                                <Binding Path="VehicleBrandEn" />
+                                            </MultiBinding>
+                                        </Label.Text>
+                                    </Label>
                                     <Label Text="{Binding ScanTime, StringFormat='{0:MMM dd, yyyy HH:mm}'}"
                                            Style="{StaticResource Caption}" />
                                 </VerticalStackLayout>

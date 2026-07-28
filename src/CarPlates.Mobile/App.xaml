@@ -18,6 +18,7 @@
             <converters:IsStringEmptyConverter x:Key="IsStringEmptyConverter" />
             <converters:IsStringNotEmptyConverter x:Key="IsStringNotEmptyConverter" />
             <converters:ArabicToEnglishPlateConverter x:Key="ArabicToEnglishPlateConverter" />
+            <converters:LanguageAwareConverter x:Key="LanguageAwareConverter" />
             <converters:EqualityToColorConverter x:Key="PlateTypeStrokeConverter"
                                                   TrueColor="#1D4ED8"
                                                   FalseColor="#DDE7F3" />

@@ -128,8 +128,14 @@
                                         <Label Text="{Binding PlateNumber}"
                                                Style="{StaticResource Body}"
                                                FontAttributes="Bold"/>
-                                        <Label Text="{Binding VehicleBrand}"
-                                               Style="{StaticResource Caption}"/>
+                                        <Label Style="{StaticResource Caption}">
+                                            <Label.Text>
+                                                <MultiBinding Converter="{StaticResource LanguageAwareConverter}">
+                                                    <Binding Path="VehicleBrandAr" />
+                                                    <Binding Path="VehicleBrandEn" />
+                                                </MultiBinding>
+                                            </Label.Text>
+                                        </Label>
                                     </VerticalStackLayout>
                                     <VerticalStackLayout Grid.Column="2" HorizontalOptions="End">
                                         <Label Text="{Binding AccessStatus}"
