@@ -57,7 +57,7 @@ public class WhCustomer
     public int? SupplierAcc { get; set; }
     public bool CallCenter { get; set; }
     public byte? ContractType { get; set; }
-    public int Status { get; set; } = 1;
+    public byte Status { get; set; } = 1;
     public int? Device_ID { get; set; }
     public double? Latitude { get; set; }
     public double? Longitude { get; set; }
@@ -78,7 +78,7 @@ public class CustomerBranch
     public string? Terminal_ID { get; set; }
     public int? ParentID { get; set; }
     public int? BranchID { get; set; }
-    public int Status { get; set; } = 1;
+    public byte Status { get; set; } = 1;
     public long? InsertUserID { get; set; }
     public long? UpdateUserID { get; set; }
     public long? InsertDateTime { get; set; }
