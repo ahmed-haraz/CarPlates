@@ -106,8 +106,8 @@ public class BillService(ApplicationDbContext context) : IBillService
 
         // --- Req 1: Auto-create car in wh_customercars if not exists ---
         int? carHeaderId = dto.CarHeaderId;
-        var normalizedPlate = dto.ReferenceNo?.Trim().ToEnglishNumbers().ToUpperInvariant();
-        if (!carHeaderId.HasValue && !string.IsNullOrWhiteSpace(dto.ReferenceNo) && dto.CustomerId.HasValue)
+        var normalizedPlate = dto.PlateNumber?.Trim().ToEnglishNumbers().ToUpperInvariant();
+        if (!carHeaderId.HasValue && !string.IsNullOrWhiteSpace(dto.PlateNumber) && dto.CustomerId.HasValue)
         {
             var existingCar = await _context.CustomerCars
                 .AsNoTracking()
@@ -198,7 +198,7 @@ public class BillService(ApplicationDbContext context) : IBillService
             HdrTax = 0,
             Notes = dto.Notes ?? "",
             ReferenceNo = dto.ReferenceNo ?? "",
-            PlateNumber = normalizedPlate,
+            PlateNumber = normalizedPlate ?? dto.PlateNumber,
             WorkLocationID = dto.WorkLocationID,
             TechnicianID = dto.TechnicianID,
             Signature = dto.Signature ?? "",
@@ -270,6 +270,7 @@ public class BillService(ApplicationDbContext context) : IBillService
         {
             var searchLower = search.ToLower();
             query = query.Where(h =>
+                (h.PlateNumber != null && h.PlateNumber.ToLower().Contains(searchLower)) ||
                 (h.ReferenceNo != null && h.ReferenceNo.ToLower().Contains(searchLower)) ||
                 (h.DocTransNo != null && h.DocTransNo.ToLower().Contains(searchLower)));
         }
@@ -339,6 +340,7 @@ public class BillService(ApplicationDbContext context) : IBillService
             h.PayType,
             h.Notes,
             h.ReferenceNo,
+            h.PlateNumber,
             h.TransDate,
             customerName,
             h.Signature,

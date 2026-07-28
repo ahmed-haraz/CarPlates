@@ -78,7 +78,7 @@ public class BillApiService(
             var items = result.Items.Select(b => new BillApiItem(
                 b.HeaderId, b.DocTransNo, b.BranchID, b.CustomerId, b.EngineerId,
                 b.CarHeaderId, b.Total, b.NetTotal, b.Paid, b.Balance,
-                b.PayType, b.Notes, b.ReferenceNo, b.TransDate, b.CustomerName, b.Signature)).ToList();
+                b.PayType, b.Notes, b.ReferenceNo, b.PlateNumber, b.TransDate, b.CustomerName, b.Signature)).ToList();
 
             return new BillSearchResult(true, items, result.TotalCount, result.Page, result.TotalPages, null);
         }
@@ -134,7 +134,7 @@ public class BillApiService(
             return new BillDetailResult(
                 dto.HeaderId, dto.DocTransNo, dto.BranchID, dto.CustomerId,
                 dto.EngineerId, dto.CarHeaderId, dto.Total, dto.NetTotal,
-                dto.Paid, dto.Balance, dto.PayType, dto.Notes, dto.ReferenceNo,
+                dto.Paid, dto.Balance, dto.PayType, dto.Notes, dto.ReferenceNo, dto.PlateNumber,
                 dto.TransDate, dto.CustomerName, dto.Signature,
                 dto.Details?.Select(d => new BillLineItem(
                     d.DetailId, d.ItemID, d.ItemBarCode, d.Package, d.Qty, d.Price,
@@ -179,6 +179,7 @@ public class BillApiService(
         public byte? PayType { get; set; }
         public string? Notes { get; set; }
         public string? ReferenceNo { get; set; }
+        public string? PlateNumber { get; set; }
         public int? TransDate { get; set; }
         public string? CustomerName { get; set; }
         public string? Signature { get; set; }
@@ -199,6 +200,7 @@ public class BillApiService(
         public byte? PayType { get; set; }
         public string? Notes { get; set; }
         public string? ReferenceNo { get; set; }
+        public string? PlateNumber { get; set; }
         public int? TransDate { get; set; }
         public string? CustomerName { get; set; }
         public string? Signature { get; set; }

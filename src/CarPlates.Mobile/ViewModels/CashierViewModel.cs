@@ -93,7 +93,7 @@ public partial class CashierViewModel : BaseViewModel
             var receipt = await _paymentApiService.GetReceiptAsync(bill.HeaderId);
             if (receipt == null)
             {
-                var items = $"Bill #{bill.HeaderId}\nDate: {bill.TransDate}\nCustomer: {bill.CustomerName ?? "N/A"}\nPlate: {bill.ReferenceNo ?? "N/A"}\nTotal: {bill.NetTotal:N2}\nPaid: {bill.Paid:N2}\nBalance: {bill.Balance:N2}";
+                var items = $"Bill #{bill.HeaderId}\nDate: {bill.TransDate}\nCustomer: {bill.CustomerName ?? "N/A"}\nPlate: {bill.PlateNumber ?? "N/A"}\nTotal: {bill.NetTotal:N2}\nPaid: {bill.Paid:N2}\nBalance: {bill.Balance:N2}";
                 await Navigation.DisplayAlertAsync("Bill Details", items);
                 return;
             }
@@ -105,7 +105,7 @@ public partial class CashierViewModel : BaseViewModel
                           $"Bill #{receipt.HeaderId}\n" +
                           $"Date: {receipt.TransDate}\n" +
                           $"Customer: {receipt.CustomerName ?? "N/A"}\n" +
-                          $"Plate: {receipt.ReferenceNo ?? "N/A"}\n" +
+                           $"Plate: {receipt.PlateNumber ?? "N/A"}\n" +
                           $"{new string('-', 32)}\n" +
                           $"{details}\n" +
                           $"{new string('-', 32)}\n" +
@@ -121,7 +121,7 @@ public partial class CashierViewModel : BaseViewModel
     private async Task PayBillAsync(BillApiItem bill)
     {
         var paymentVm = IPlatformApplication.Current!.Services.GetRequiredService<PaymentViewModel>();
-        paymentVm.LoadBill(bill.HeaderId, bill.DocTransNo, bill.CustomerName, bill.ReferenceNo,
+        paymentVm.LoadBill(bill.HeaderId, bill.DocTransNo, bill.CustomerName, bill.PlateNumber,
             bill.Total, bill.NetTotal, bill.Paid, bill.Balance, bill.TransDate ?? 0);
         var page = new Views.Actions.PaymentPage(paymentVm);
         await Navigation.PushPageAsync(page);
@@ -147,6 +147,7 @@ public partial class CashierViewModel : BaseViewModel
                 TransDate: detail.TransDate,
                 CustomerName: detail.CustomerName,
                 ReferenceNo: detail.ReferenceNo,
+                PlateNumber: detail.PlateNumber,
                 Total: detail.Total,
                 NetTotal: detail.NetTotal,
                 Paid: detail.Paid,
@@ -219,7 +220,7 @@ public partial class CashierViewModel : BaseViewModel
                       $"Receipt: {detail.DocTransNo ?? "N/A"}\n" +
                       $"Date: {detail.TransDate}\n" +
                       $"Customer: {detail.CustomerName ?? "N/A"}\n" +
-                      $"Plate: {detail.ReferenceNo ?? "N/A"}\n" +
+                       $"Plate: {detail.PlateNumber ?? "N/A"}\n" +
                       $"{new string('-', 32)}\n" +
                       $"  {"Item",-20} {"Qty",5} {"Price",8}\n" +
                       $"{items}\n" +

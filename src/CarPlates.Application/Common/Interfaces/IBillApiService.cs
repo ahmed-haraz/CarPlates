@@ -17,6 +17,7 @@ public record CreateBillRequest(
     int? StoreId,
     string? Notes,
     string? ReferenceNo,
+    string? PlateNumber,
     string? Signature,
     IReadOnlyList<CreateBillLineRequest> Details,
     string? Vin = null,
@@ -72,6 +73,7 @@ public record BillApiItem(
     byte? PayType,
     string? Notes,
     string? ReferenceNo,
+    string? PlateNumber,
     int? TransDate,
     string? CustomerName,
     string? Signature);
@@ -90,6 +92,7 @@ public record BillDetailResult(
     byte? PayType,
     string? Notes,
     string? ReferenceNo,
+    string? PlateNumber,
     int? TransDate,
     string? CustomerName,
     string? Signature,

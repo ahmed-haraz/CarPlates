@@ -113,6 +113,7 @@ public class PaymentService(ApplicationDbContext context, IUserContext userConte
             header.TransDate,
             customerName,
             header.ReferenceNo,
+            header.PlateNumber,
             header.Total ?? 0,
             header.NetTotal ?? 0,
             header.Paid ?? 0,

@@ -239,6 +239,31 @@ public record ItemBarCodeDto(
 
 // ---- Bills (wh_TransHeader / wh_TransDetails) ----
 
+public record CreateBillDto(
+    int? BranchID,
+    int? CustomerId,
+    int? EngineerId,
+    int? CarHeaderId,
+    int? SalesRepId,
+    int? StoreId,
+    byte? PayType,
+    string? Notes,
+    string? ReferenceNo,
+    string? PlateNumber,
+    string? Signature,
+    IReadOnlyList<CreateBillDetailDto> Details,
+    string? Vin = null,
+    string? VehicleBrand = null,
+    string? VehicleModel = null,
+    string? VehicleTypeName = null,
+    string? EngineTypeName = null,
+    long? Mileage = null,
+    int? VehicleYear = null,
+    string? Color = null,
+    string? PlateType = null,
+    int? WorkLocationID = null,
+    int? TechnicianID = null);
+
 public record CreateBillDetailDto(
     string ItemBarCode,
     long ItemID,
@@ -262,29 +287,7 @@ public record CreateBillDetailDto(
     double? Pkg3Price2 = null,
     double? OriginalPrice = null);
 
-public record CreateBillDto(
-    int? BranchID,
-    int? CustomerId,
-    int? EngineerId,
-    int? CarHeaderId,
-    int? SalesRepId,
-    int? StoreId,
-    byte? PayType,
-    string? Notes,
-    string? ReferenceNo,
-    string? Signature,
-    IReadOnlyList<CreateBillDetailDto> Details,
-    string? Vin = null,
-    string? VehicleBrand = null,
-    string? VehicleModel = null,
-    string? VehicleTypeName = null,
-    string? EngineTypeName = null,
-    long? Mileage = null,
-    int? VehicleYear = null,
-    string? Color = null,
-    string? PlateType = null,
-    int? WorkLocationID = null,
-    int? TechnicianID = null);
+
 
 public record BillDetailDto(
     long DetailId,
@@ -323,6 +326,7 @@ public record BillDto(
     byte? PayType,
     string? Notes,
     string? ReferenceNo,
+    string? PlateNumber,
     int? TransDate,
     string? CustomerName,
     string? Signature,
@@ -351,6 +355,7 @@ public record ReceiptDto(
     int? TransDate,
     string? CustomerName,
     string? ReferenceNo,
+    string? PlateNumber,
     double Total,
     double NetTotal,
     double Paid,

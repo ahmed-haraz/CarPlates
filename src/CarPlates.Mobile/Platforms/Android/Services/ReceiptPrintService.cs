@@ -198,7 +198,7 @@ public class ReceiptPrintService : IReceiptPrintService
         writer.WriteLine($"Receipt: {receipt.ReceiptNo}");
         writer.WriteLine($"Date: {receipt.TransDate}");
         writer.WriteLine($"Customer: {receipt.CustomerName ?? "N/A"}");
-        writer.WriteLine($"Plate: {receipt.ReferenceNo ?? "N/A"}");
+        writer.WriteLine($"Plate: {receipt.PlateNumber ?? "N/A"}");
         writer.WriteLine(new string('-', 32));
 
         ms.Write(boldOn, 0, boldOn.Length);
@@ -279,7 +279,7 @@ public class ReceiptPrintService : IReceiptPrintService
   <p><strong>Receipt:</strong> {System.Net.WebUtility.HtmlEncode(receipt.ReceiptNo)}</p>
   <p><strong>Date:</strong> {receipt.TransDate}</p>
   <p><strong>Customer:</strong> {System.Net.WebUtility.HtmlEncode(receipt.CustomerName ?? "N/A")}</p>
-  <p><strong>Plate:</strong> {System.Net.WebUtility.HtmlEncode(receipt.ReferenceNo ?? "N/A")}</p>
+  <p><strong>Plate:</strong> {System.Net.WebUtility.HtmlEncode(receipt.PlateNumber ?? "N/A")}</p>
   <p><strong>Pay Type:</strong> {payType}</p>
 </div>
 <h3>Items</h3>

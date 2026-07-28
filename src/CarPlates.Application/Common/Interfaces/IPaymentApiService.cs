@@ -27,6 +27,7 @@ public record ReceiptApiResult(
     int? TransDate,
     string? CustomerName,
     string? ReferenceNo,
+    string? PlateNumber,
     double Total,
     double NetTotal,
     double Paid,

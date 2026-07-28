@@ -16,7 +16,7 @@ public partial class PaymentViewModel : BaseViewModel
     [ObservableProperty] private long _headerId;
     [ObservableProperty] private string _docTransNo = string.Empty;
     [ObservableProperty] private string _customerName = string.Empty;
-    [ObservableProperty] private string _referenceNo = string.Empty;
+    [ObservableProperty] private string _plateNumber = string.Empty;
     [ObservableProperty] private double _total;
     [ObservableProperty] private double _netTotal;
     [ObservableProperty] private double _paid;
@@ -52,13 +52,13 @@ public partial class PaymentViewModel : BaseViewModel
         Title = AppResources.Cashier;
     }
 
-    public void LoadBill(long headerId, string? docTransNo, string? customerName, string? referenceNo,
+    public void LoadBill(long headerId, string? docTransNo, string? customerName, string? plateNumber,
         double total, double netTotal, double paid, double balance, int transDate)
     {
         HeaderId = headerId;
         DocTransNo = docTransNo ?? string.Empty;
         CustomerName = customerName ?? string.Empty;
-        ReferenceNo = referenceNo ?? string.Empty;
+        PlateNumber = plateNumber ?? string.Empty;
         Total = total;
         NetTotal = netTotal;
         Paid = paid;
@@ -210,7 +210,7 @@ public partial class PaymentViewModel : BaseViewModel
         var message = $"Receipt: {Receipt.ReceiptNo}\n" +
                       $"Date: {Receipt.TransDate}\n" +
                       $"Customer: {Receipt.CustomerName ?? "N/A"}\n" +
-                      $"Plate: {Receipt.ReferenceNo ?? "N/A"}\n" +
+                       $"Plate: {Receipt.PlateNumber ?? "N/A"}\n" +
                       $"{new string('-', 32)}\n" +
                       $"{items}\n" +
                       $"{new string('-', 32)}\n" +

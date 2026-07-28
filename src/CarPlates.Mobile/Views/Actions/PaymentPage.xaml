@@ -25,7 +25,7 @@
                         </Label.Text>
                     </Label>
                     <Label Text="{Binding CustomerName, StringFormat='Customer: {0}'}" FontSize="13"/>
-                    <Label Text="{Binding ReferenceNo, StringFormat='Plate: {0}'}" FontSize="13"/>
+                    <Label Text="{Binding PlateNumber, StringFormat='Plate: {0}'}" FontSize="13"/>
                     <Label Text="{Binding NetTotal, StringFormat='Total: {0:N2} SAR'}" FontSize="14" FontAttributes="Bold" TextColor="{StaticResource Primary}"/>
                     <Label Text="{Binding Paid, StringFormat='Paid: {0:N2} SAR'}" FontSize="13"/>
                     <Label Text="{Binding Balance, StringFormat='Balance: {0:N2} SAR'}" FontSize="14" FontAttributes="Bold" TextColor="{StaticResource Error}"/>
