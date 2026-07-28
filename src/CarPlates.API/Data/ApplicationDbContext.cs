@@ -33,6 +33,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     public DbSet<WhPrTrans> WhPrTrans { get; set; } = null!;
     public DbSet<fw_LOVStatments> LovStatments { get; set; } = null!;
     public DbSet<PaymentGatewaySetting> PaymentGatewaySettings { get; set; } = null!;
+    public DbSet<VehicleColor> VehicleColors { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -233,6 +234,16 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
         {
             entity.ToView("vw_wh_ItemSubGroups");
             entity.HasNoKey();
+        });
+
+        builder.Entity<VehicleColor>(entity =>
+        {
+            entity.ToTable("VehicleColors");
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Name).HasMaxLength(100);
+            entity.Property(e => e.NameAr).HasMaxLength(100);
+            entity.Property(e => e.HexCode).HasMaxLength(7);
+            entity.HasIndex(e => e.SortOrder);
         });
 
         builder.Entity<PaymentGatewaySetting>(entity =>

@@ -17,6 +17,7 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
     private readonly IBillApiService _billApiService;
     private readonly IBillAttachmentApiService _billAttachmentApiService;
     private readonly IAuthenticationService _authenticationService;
+    private readonly IVehicleColorApiService _vehicleColorService;
 
     // MakeName -> MakeID, so picking a brand can resolve the real ID needed to fetch models.
     private readonly Dictionary<string, int> _makeIdsByName = new();
@@ -137,127 +138,9 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
     public bool CanGoToNextTechnicianPage => TechnicianPage < TechnicianTotalPages;
     public bool IsPriceEditable => EditingServiceItem?.OpenSale == true;
 
-    // No API source for a generic color list (wh_CustomerCars.Color is free text) or the
-    // "add a custom service" category list, so these stay local. Colors carry a real swatch
-    // so the picker can show a color circle, not just a name.
-    public ObservableCollection<ColorOption> Colors { get; } =
-    [
-        new("Black", "أسود", "#000000", Color.FromArgb("#000000")),
-        new("Jet Black", "أسود جيت", "#0A0A0A", Color.FromArgb("#0A0A0A")),
-        new("Obsidian Black", "أسود أوبسيديان", "#1C1C1C", Color.FromArgb("#1C1C1C")),
-        new("Midnight Black", "أسود منتصف الليل", "#191970", Color.FromArgb("#191970")),
-        new("Graphite", "جرافيت", "#383838", Color.FromArgb("#383838")),
-        new("Charcoal", "فحمي", "#36454F", Color.FromArgb("#36454F")),
-        new("Dark Gray", "رمادي غامق", "#555555", Color.FromArgb("#555555")),
-        new("Gray", "رمادي", "#808080", Color.FromArgb("#808080")),
-        new("Silver", "فضي", "#C0C0C0", Color.FromArgb("#C0C0C0")),
-        new("Brilliant Silver", "فضي لامع", "#C8C8C8", Color.FromArgb("#C8C8C8")),
-        new("Aluminum", "ألمنيوم", "#A9A9A9", Color.FromArgb("#A9A9A9")),
-        new("Titanium", "تيتانيوم", "#878681", Color.FromArgb("#878681")),
-        new("Gunmetal", "رمادي معدني", "#2A3439", Color.FromArgb("#2A3439")),
-        new("Nardo Gray", "رمادي ناردو", "#8D9093", Color.FromArgb("#8D9093")),
-
-        new("White", "أبيض", "#FFFFFF", Color.FromArgb("#FFFFFF")),
-        new("Pearl White", "أبيض لؤلؤي", "#F8F8FF", Color.FromArgb("#F8F8FF")),
-        new("Ivory White", "أبيض عاجي", "#FFFFF0", Color.FromArgb("#FFFFF0")),
-        new("Snow White", "أبيض ثلجي", "#FFFAFA", Color.FromArgb("#FFFAFA")),
-        new("Cream", "كريمي", "#FFFDD0", Color.FromArgb("#FFFDD0")),
-        new("Beige", "بيج", "#F5F5DC", Color.FromArgb("#F5F5DC")),
-        new("Champagne", "شمباني", "#F7E7CE", Color.FromArgb("#F7E7CE")),
-
-        new("Gold", "ذهبي", "#FFD700", Color.FromArgb("#FFD700")),
-        new("Rose Gold", "ذهب وردي", "#B76E79", Color.FromArgb("#B76E79")),
-        new("Bronze", "برونزي", "#CD7F32", Color.FromArgb("#CD7F32")),
-        new("Copper", "نحاسي", "#B87333", Color.FromArgb("#B87333")),
-
-        new("Brown", "بني", "#8B4513", Color.FromArgb("#8B4513")),
-        new("Chocolate Brown", "بني شوكولاتة", "#7B3F00", Color.FromArgb("#7B3F00")),
-        new("Mocha", "موكا", "#967969", Color.FromArgb("#967969")),
-        new("Mahogany", "ماهوجني", "#C04000", Color.FromArgb("#C04000")),
-
-        new("Red", "أحمر", "#FF0000", Color.FromArgb("#FF0000")),
-        new("Bright Red", "أحمر فاقع", "#FF2400", Color.FromArgb("#FF2400")),
-        new("Candy Red", "أحمر حلوى", "#D2042D", Color.FromArgb("#D2042D")),
-        new("Ruby Red", "أحمر ياقوتي", "#9B111E", Color.FromArgb("#9B111E")),
-        new("Crimson", "أحمر قرمزي", "#DC143C", Color.FromArgb("#DC143C")),
-        new("Burgundy", "بورجوندي", "#800020", Color.FromArgb("#800020")),
-        new("Maroon", "أحمر كستنائي", "#800000", Color.FromArgb("#800000")),
-        new("Wine Red", "أحمر خمري", "#722F37", Color.FromArgb("#722F37")),
-
-        new("Orange", "برتقالي", "#FFA500", Color.FromArgb("#FFA500")),
-        new("Burnt Orange", "برتقالي محروق", "#CC5500", Color.FromArgb("#CC5500")),
-        new("Copper Orange", "برتقالي نحاسي", "#DA8A67", Color.FromArgb("#DA8A67")),
-
-        new("Yellow", "أصفر", "#FFFF00", Color.FromArgb("#FFFF00")),
-        new("Canary Yellow", "أصفر كناري", "#FFEF00", Color.FromArgb("#FFEF00")),
-        new("Lemon Yellow", "أصفر ليموني", "#FFF44F", Color.FromArgb("#FFF44F")),
-        new("Mustard", "خردلي", "#E1AD01", Color.FromArgb("#E1AD01")),
-
-        new("Green", "أخضر", "#008000", Color.FromArgb("#008000")),
-        new("British Racing Green", "أخضر سباق بريطاني", "#004225", Color.FromArgb("#004225")),
-        new("Forest Green", "أخضر غابي", "#228B22", Color.FromArgb("#228B22")),
-        new("Dark Green", "أخضر غامق", "#006400", Color.FromArgb("#006400")),
-        new("Olive Green", "أخضر زيتوني", "#556B2F", Color.FromArgb("#556B2F")),
-        new("Lime Green", "أخضر ليموني", "#32CD32", Color.FromArgb("#32CD32")),
-        new("Mint Green", "أخضر نعناعي", "#98FF98", Color.FromArgb("#98FF98")),
-        new("Emerald Green", "أخضر زمردي", "#50C878", Color.FromArgb("#50C878")),
-
-        new("Blue", "أزرق", "#0000FF", Color.FromArgb("#0000FF")),
-        new("Navy Blue", "أزرق كحلي", "#000080", Color.FromArgb("#000080")),
-        new("Dark Blue", "أزرق غامق", "#00008B", Color.FromArgb("#00008B")),
-        new("Royal Blue", "أزرق ملكي", "#4169E1", Color.FromArgb("#4169E1")),
-        new("Electric Blue", "أزرق كهربائي", "#7DF9FF", Color.FromArgb("#7DF9FF")),
-        new("Sky Blue", "أزرق سماوي", "#87CEEB", Color.FromArgb("#87CEEB")),
-        new("Light Blue", "أزرق فاتح", "#ADD8E6", Color.FromArgb("#ADD8E6")),
-        new("Aqua Blue", "أزرق مائي", "#00FFFF", Color.FromArgb("#00FFFF")),
-        new("Teal", "شرشيري", "#008080", Color.FromArgb("#008080")),
-        new("Turquoise", "فيروزي", "#40E0D0", Color.FromArgb("#40E0D0")),
-        new("Cyan", "سيان", "#00FFFF", Color.FromArgb("#00FFFF")),
-
-        new("Purple", "أرجواني", "#800080", Color.FromArgb("#800080")),
-        new("Deep Purple", "أرجواني غامق", "#673AB7", Color.FromArgb("#673AB7")),
-        new("Violet", "بنفسجي", "#8F00FF", Color.FromArgb("#8F00FF")),
-        new("Lavender", "خزامي", "#E6E6FA", Color.FromArgb("#E6E6FA")),
-        new("Plum", "برقوقي", "#8E4585", Color.FromArgb("#8E4585")),
-        new("Magenta", "ماجنتا", "#FF00FF", Color.FromArgb("#FF00FF")),
-
-        new("Pink", "وردي", "#FFC0CB", Color.FromArgb("#FFC0CB")),
-        new("Hot Pink", "وردي فاقع", "#FF69B4", Color.FromArgb("#FF69B4")),
-        new("Coral", "مرجاني", "#FF7F50", Color.FromArgb("#FF7F50")),
-
-        new("Pearl Blue", "أزرق لؤلؤي", "#6A8DFF", Color.FromArgb("#6A8DFF")),
-        new("Pearl Black", "أسود لؤلؤي", "#1A1A1A", Color.FromArgb("#1A1A1A")),
-        new("Pearl Red", "أحمر لؤلؤي", "#AA0114", Color.FromArgb("#AA0114")),
-        new("Pearl Gray", "رمادي لؤلؤي", "#B0B0B0", Color.FromArgb("#B0B0B0")),
-
-        new("Metallic Silver", "فضي معدني", "#BFC1C2", Color.FromArgb("#BFC1C2")),
-        new("Metallic Gray", "رمادي معدني", "#6E7072", Color.FromArgb("#6E7072")),
-        new("Metallic Blue", "أزرق معدني", "#3B6EA5", Color.FromArgb("#3B6EA5")),
-        new("Metallic Green", "أخضر معدني", "#2E8B57", Color.FromArgb("#2E8B57")),
-        new("Metallic Red", "أحمر معدني", "#B22222", Color.FromArgb("#B22222")),
-        new("Metallic Brown", "بني معدني", "#8B5A2B", Color.FromArgb("#8B5A2B")),
-        new("Metallic Bronze", "برونزي معدني", "#8C7853", Color.FromArgb("#8C7853")),
-
-        new("Matte Black", "أسود مطفي", "#121212", Color.FromArgb("#121212")),
-        new("Matte Gray", "رمادي مطفي", "#696969", Color.FromArgb("#696969")),
-        new("Matte White", "أبيض مطفي", "#F5F5F5", Color.FromArgb("#F5F5F5")),
-        new("Matte Blue", "أزرق مطفي", "#1E3A8A", Color.FromArgb("#1E3A8A")),
-        new("Matte Green", "أخضر مطفي", "#355E3B", Color.FromArgb("#355E3B")),
-        new("Matte Red", "أحمر مطفي", "#8B0000", Color.FromArgb("#8B0000")),
-
-        new("Satin Black", "أسود ساتان", "#242424", Color.FromArgb("#242424")),
-        new("Satin Silver", "فضي ساتان", "#AFAFAF", Color.FromArgb("#AFAFAF")),
-        new("Satin Blue", "أزرق ساتان", "#3A5FCD", Color.FromArgb("#3A5FCD")),
-        new("Satin Gray", "رمادي ساتان", "#7E7F7F", Color.FromArgb("#7E7F7F")),
-
-        new("Two-Tone Black/White", "ثنائي اللون أسود/أبيض", "#808080", Color.FromArgb("#808080")),
-        new("Two-Tone Red/Black", "ثنائي اللون أحمر/أسود", "#990000", Color.FromArgb("#990000")),
-        new("Two-Tone Blue/White", "ثنائي اللون أزرق/أبيض", "#4F81BD", Color.FromArgb("#4F81BD")),
-
-        new("Custom", "مخصص", "#FFFFFF", Color.FromArgb("#FFFFFF")),
-        new("Other", "آخر", "#999999", Color.FromArgb("#999999")),
-        new("Unknown", "غير معروف", "#CCCCCC", Color.FromArgb("#CCCCCC"))
-    ];
+    // Colors loaded from the API (VehicleColors table) in LoadInitialDataAsync.
+    // Each carries a real swatch so the picker can show a color circle, not just a name.
+    public ObservableCollection<ColorOption> Colors { get; } = [];
 
     public ObservableCollection<string> TaxTypes { get; } = new() { "VAT", "معفى من الضريبة" };
     public ObservableCollection<string> CountryCodes { get; } = new()
@@ -280,7 +163,8 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
         IItemLookupService itemLookupService,
         IBillApiService billApiService,
         IBillAttachmentApiService billAttachmentApiService,
-        IAuthenticationService authenticationService) : base(navigation)
+        IAuthenticationService authenticationService,
+        IVehicleColorApiService vehicleColorService) : base(navigation)
     {
         _customerCarLookupService = customerCarLookupService;
         _workshopLookupService = workshopLookupService;
@@ -289,9 +173,9 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
         _billApiService = billApiService;
         _billAttachmentApiService = billAttachmentApiService;
         _authenticationService = authenticationService;
+        _vehicleColorService = vehicleColorService;
 
         Title = LocalizationResourceManager.Instance["AddVehicle"];
-        SelectedColor = Colors.First();
         LoadVehicleYears();
         CartItems.CollectionChanged += OnCartItemsChanged;
         _ = LoadInitialDataAsync();
@@ -434,6 +318,19 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
             if (items != null)
             {
                 ApplyItemResults(items.Items);
+            }
+
+            var colors = await SafeFetchAsync(_vehicleColorService.GetAllAsync());
+            if (colors != null)
+            {
+                Colors.Clear();
+                foreach (var c in colors)
+                {
+                    Colors.Add(new ColorOption(c.Name, c.NameAr, c.HexCode, Color.FromArgb(c.HexCode)));
+                }
+                ResetColorPaging();
+                if (SelectedColor == null && Colors.Count > 0)
+                    SelectedColor = Colors[0];
             }
         });
     }
@@ -1658,7 +1555,7 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
         SelectedEngineType = null!;
         NewMileage = 0;
         NewYear = 2025;
-        SelectedColor = Colors.First();
+        SelectedColor = Colors.Count > 0 ? Colors[0] : null;
     }
 
     private void ClearNewServiceFields()

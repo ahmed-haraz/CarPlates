@@ -72,6 +72,7 @@ builder.Services.AddScoped<IDeviceValidationService, DeviceValidationService>();
 builder.Services.AddScoped<IPaymentService, PaymentService>();
 builder.Services.AddScoped<ILovService, LovService>();
 builder.Services.AddScoped<IPaymentGatewaySettingsService, PaymentGatewaySettingsService>();
+builder.Services.AddScoped<IVehicleColorService, VehicleColorService>();
 builder.Services.AddHostedService<PublishIPMonitorService>();
 
 builder.Services.AddHttpClient("FwApi", client =>
