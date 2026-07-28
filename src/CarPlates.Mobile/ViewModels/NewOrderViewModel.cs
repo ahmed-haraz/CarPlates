@@ -1336,16 +1336,24 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
 
             if (result.HeaderId.HasValue)
             {
+                var uploadErrors = new List<string>();
                 foreach (var photo in OrderPhotos)
                 {
-                    await _billAttachmentApiService.UploadAsync(result.HeaderId.Value, photo.Path, "Photo");
+                    var ok = await _billAttachmentApiService.UploadAsync(result.HeaderId.Value, photo.Path, "Photo");
+                    if (!ok) uploadErrors.Add(Path.GetFileName(photo.Path));
                 }
 
                 if (!string.IsNullOrWhiteSpace(SignatureData))
                 {
                     var sigPath = Path.Combine(FileSystem.CacheDirectory, $"sig-{Guid.NewGuid():N}.txt");
                     await File.WriteAllTextAsync(sigPath, SignatureData);
-                    await _billAttachmentApiService.UploadAsync(result.HeaderId.Value, sigPath, "Signature");
+                    var ok = await _billAttachmentApiService.UploadAsync(result.HeaderId.Value, sigPath, "Signature");
+                    if (!ok) uploadErrors.Add("Signature");
+                }
+
+                if (uploadErrors.Count > 0)
+                {
+                    System.Diagnostics.Debug.WriteLine($"Failed to upload {uploadErrors.Count} attachment(s): {string.Join(", ", uploadErrors)}");
                 }
             }
 

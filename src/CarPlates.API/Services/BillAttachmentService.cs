@@ -20,9 +20,11 @@ public class BillAttachmentService(ApplicationDbContext context, IWebHostEnviron
         var uniqueName = $"{Guid.NewGuid():N}_{Path.GetFileName(fileName)}";
         var filePath = Path.Combine(attachmentDir, uniqueName);
 
+        long fileSize;
         await using (var fs = new FileStream(filePath, FileMode.Create, FileAccess.Write, FileShare.None))
         {
             await content.CopyToAsync(fs, cancellationToken);
+            fileSize = fs.Length;
         }
 
         var attachment = new BillAttachment
@@ -31,7 +33,7 @@ public class BillAttachmentService(ApplicationDbContext context, IWebHostEnviron
             FileName = fileName,
             FilePath = filePath,
             ContentType = contentType,
-            FileSize = content.Length,
+            FileSize = fileSize,
             AttachmentType = attachmentType,
             InsertUserID = userId,
             InsertDateTime = now,
