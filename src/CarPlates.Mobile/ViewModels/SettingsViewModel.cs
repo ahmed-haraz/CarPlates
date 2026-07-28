@@ -10,7 +10,7 @@ using CarPlates.Mobile.Views.About;
 using MediatR;
 using System.Globalization;
 using System.Net.Http.Json;
-using System.Text.Json;
+using CarPlates.Shared.Models;
 using AppTheme = CarPlates.Domain.Enums.AppTheme;
 
 namespace CarPlates.Mobile.ViewModels;
@@ -23,7 +23,7 @@ public partial class SettingsViewModel : BaseViewModel
     private readonly IThemeService _themeService;
     private readonly IApiConnectivityService _connectivityService;
     private readonly IHttpClientFactory _httpClientFactory;
-    private readonly IPaymentGatewayService _gatewayService;
+    private readonly IPaymentGatewaySettingsApiService _paymentSettingsService;
 
     [ObservableProperty]
     private bool _isDarkMode;
@@ -77,7 +77,7 @@ public partial class SettingsViewModel : BaseViewModel
         IThemeService themeService,
         IApiConnectivityService connectivityService,
         IHttpClientFactory httpClientFactory,
-        IPaymentGatewayService gatewayService,
+        IPaymentGatewaySettingsApiService paymentSettingsService,
         INavigationService navigation) : base(navigation)
     {
         _mediator = mediator;
@@ -86,7 +86,7 @@ public partial class SettingsViewModel : BaseViewModel
         _themeService = themeService;
         _connectivityService = connectivityService;
         _httpClientFactory = httpClientFactory;
-        _gatewayService = gatewayService;
+        _paymentSettingsService = paymentSettingsService;
         Title = AppResources.Settings;
     }
 
@@ -103,13 +103,14 @@ public partial class SettingsViewModel : BaseViewModel
             AutoResume = settings.AutoResume;
             NotificationsEnabled = settings.NotificationsEnabled;
 
-            // Load payment gateway config
-            PaymentGatewayEnabled = _gatewayService.Config.IsEnabled;
-            PaymentGatewayName = _gatewayService.Config.GatewayName;
-            PaymentMerchantId = _gatewayService.Config.MerchantId;
-            PaymentApiKey = _gatewayService.Config.ApiKey;
-            PaymentEndpointUrl = _gatewayService.Config.EndpointUrl;
-            PaymentAdditionalSettings = _gatewayService.Config.AdditionalSettings;
+            // Load payment gateway config from API
+            var paymentConfig = await _paymentSettingsService.GetAsync();
+            PaymentGatewayEnabled = paymentConfig.IsEnabled;
+            PaymentGatewayName = paymentConfig.GatewayName;
+            PaymentMerchantId = paymentConfig.MerchantId;
+            PaymentApiKey = paymentConfig.ApiKey;
+            PaymentEndpointUrl = paymentConfig.EndpointUrl;
+            PaymentAdditionalSettings = paymentConfig.AdditionalSettings;
         });
     }
 
@@ -126,8 +127,8 @@ public partial class SettingsViewModel : BaseViewModel
 
             await _settingsService.SaveSettingsAsync(settings);
 
-            // Save payment gateway config
-            _gatewayService.Config = new PaymentGatewayConfig
+            // Save payment gateway config via API
+            await _paymentSettingsService.SaveAsync(new PaymentGatewayConfig
             {
                 IsEnabled = PaymentGatewayEnabled,
                 GatewayName = PaymentGatewayName,
@@ -135,7 +136,7 @@ public partial class SettingsViewModel : BaseViewModel
                 ApiKey = PaymentApiKey,
                 EndpointUrl = PaymentEndpointUrl,
                 AdditionalSettings = PaymentAdditionalSettings
-            };
+            });
 
             LocalizationResourceManager.Instance.SetCulture(new CultureInfo(language));
             await Navigation.ApplyCurrentFlowDirectionAsync();

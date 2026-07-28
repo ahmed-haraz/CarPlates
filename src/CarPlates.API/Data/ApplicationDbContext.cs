@@ -32,6 +32,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     public DbSet<BillAttachment> BillAttachments { get; set; } = null!;
     public DbSet<WhPrTrans> WhPrTrans { get; set; } = null!;
     public DbSet<fw_LOVStatments> LovStatments { get; set; } = null!;
+    public DbSet<PaymentGatewaySetting> PaymentGatewaySettings { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -232,6 +233,17 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
         {
             entity.ToView("vw_wh_ItemSubGroups");
             entity.HasNoKey();
+        });
+
+        builder.Entity<PaymentGatewaySetting>(entity =>
+        {
+            entity.ToTable("PaymentGatewaySettings");
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.GatewayName).HasMaxLength(100);
+            entity.Property(e => e.MerchantId).HasMaxLength(200);
+            entity.Property(e => e.ApiKey).HasMaxLength(500);
+            entity.Property(e => e.EndpointUrl).HasMaxLength(500);
+            entity.Property(e => e.AdditionalSettings).HasColumnType("nvarchar(max)");
         });
 
         builder.Entity<fw_LOVStatments>(entity =>

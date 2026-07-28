@@ -106,6 +106,7 @@ public static class MauiProgram
 
         // Payment gateway (default stub — replace with a real gateway SDK)
         builder.Services.AddSingleton<IPaymentGatewayService, CarPlates.Infrastructure.Services.DefaultPaymentGatewayService>();
+        builder.Services.AddScoped<IPaymentGatewaySettingsApiService, CarPlates.Infrastructure.Api.PaymentGatewaySettingsApiService>();
 
         // ViewModels
         builder.Services.AddTransient<SplashViewModel>();
