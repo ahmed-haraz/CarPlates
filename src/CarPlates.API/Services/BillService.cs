@@ -90,7 +90,7 @@ public class BillService(ApplicationDbContext context) : IBillService
                 TransPkgQty1 = transPkgQty1,
                 CostPrice = costPrice,
                 TransPkgPrice1 = pkg1Price1,
-                WholeProfit = 0,
+                WholePriceProfit = 0,
                 Pkg2Qty = pkg2Qty,
                 Pkg3Qty = pkg3Qty,
                 OriginalPrice = d.OriginalPrice ?? linePrice,
@@ -386,7 +386,7 @@ public class BillService(ApplicationDbContext context) : IBillService
                 d.DetailId, d.ItemID, d.ItemBarCode, d.Package, d.Qty, d.Price,
                 d.DetailDiscount1, d.DetailDiscount2, d.DetailDiscountR1, d.DetailDiscountR2,
                 d.DetailTax, d.DetailTaxR, d.Value,
-                d.TransPkgQty1, d.CostPrice, d.TransPkgPrice1, d.WholeProfit,
+                d.TransPkgQty1, d.CostPrice, d.TransPkgPrice1, d.WholePriceProfit,
                 d.Pkg2Qty, d.Pkg3Qty, d.OriginalPrice, d.WholePrice,
                 itemNames.GetValueOrDefault(d.ItemID))).ToList());
     }

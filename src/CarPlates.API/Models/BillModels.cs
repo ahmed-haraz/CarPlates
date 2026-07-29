@@ -69,7 +69,7 @@ public class TransDetail
     public double? TransPkgQty1 { get; set; }
     public double? CostPrice { get; set; }
     public double? TransPkgPrice1 { get; set; }
-    public double? WholeProfit { get; set; }
+    public double? WholePriceProfit { get; set; }
     public double? Pkg2Qty { get; set; }
     public double? Pkg3Qty { get; set; }
     public double? OriginalPrice { get; set; }
