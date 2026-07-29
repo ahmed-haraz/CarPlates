@@ -2,6 +2,7 @@ using Android.App;
 using Android.Bluetooth;
 using Android.Content;
 using Android.Content.PM;
+using Android.Graphics;
 using Android.OS;
 using Android.Print;
 using AndroidX.Core.App;
@@ -10,6 +11,8 @@ using CarPlates.Application.Common.Interfaces;
 using Java.Util;
 using System.Net.Sockets;
 using System.Text;
+using Color = Android.Graphics.Color;
+using Paint = Android.Graphics.Paint;
 
 namespace CarPlates.Mobile.Platforms.Android.Services;
 
@@ -94,9 +97,20 @@ public class ReceiptPrintService : IReceiptPrintService
 
     private async Task PrintEscPosAsync(ReceiptApiResult receipt, string? printerName = null)
     {
+        var isArabic = IsPrintLanguageArabic;
         var text = await BuildEscPosTextAsync(receipt);
-        var data = BuildEscPosReceiptFromText(receipt, text);
-        await SendToPrinterAsync(data, printerName);
+
+        if (isArabic)
+        {
+            // Render as image to avoid code page / font issues with Arabic text
+            var data = await BuildEscPosImageAsync(text);
+            await SendToPrinterAsync(data, printerName);
+        }
+        else
+        {
+            var data = BuildEscPosReceiptFromText(receipt, text);
+            await SendToPrinterAsync(data, printerName);
+        }
     }
 
     private async Task PrintPlainTextAsync(ReceiptApiResult receipt, string? printerName = null)
@@ -328,6 +342,147 @@ public class ReceiptPrintService : IReceiptPrintService
     {
         var bytes = encoding.GetBytes(text + "\n");
         ms.Write(bytes, 0, bytes.Length);
+    }
+
+    /// <summary>Render receipt text as a bitmap and convert to ESC/POS raster image data.
+    /// This bypasses all code-page / font issues for Arabic glyphs.</summary>
+    private static Task<byte[]> BuildEscPosImageAsync(string text)
+    {
+        return Task.Run(() =>
+        {
+            using var bitmap = RenderTextToBitmap(text);
+            return BitmapToEscPosRaster(bitmap);
+        });
+    }
+
+    private static Bitmap RenderTextToBitmap(string text)
+    {
+        const int printerWidthDots = 384; // 58mm @ 203dpi typical for MTP-3B
+        const float fontSize = 18f;
+        const float lineSpacing = 4f;
+
+        var lines = text.Split('\n', StringSplitOptions.None);
+        using var measurePaint = new Paint { TextSize = fontSize, AntiAlias = true };
+        try { measurePaint.SetTypeface(Typeface.Create("sans-serif", TypefaceStyle.Normal)); } catch { }
+
+        float maxWidth = 0;
+        float totalHeight = 0;
+        var lineHeights = new float[lines.Length];
+
+        for (int i = 0; i < lines.Length; i++)
+        {
+            if (string.IsNullOrEmpty(lines[i]))
+            {
+                lineHeights[i] = measurePaint.FontSpacing;
+                totalHeight += lineHeights[i];
+                continue;
+            }
+
+            var widths = new float[lines[i].Length];
+            measurePaint.GetTextWidths(lines[i], 0, lines[i].Length, widths);
+            float lineWidth = 0;
+            foreach (var w in widths) lineWidth += Math.Abs(w);
+            if (lineWidth > maxWidth) maxWidth = lineWidth;
+
+            lineHeights[i] = measurePaint.FontSpacing;
+            totalHeight += lineHeights[i] + lineSpacing;
+        }
+
+        // Scale if text is wider than printer
+        float scale = 1f;
+        if (maxWidth > printerWidthDots)
+            scale = printerWidthDots / maxWidth;
+
+        int bmpWidth = (int)(maxWidth * scale) + 10;
+        if (bmpWidth < 100) bmpWidth = 384;
+        int bmpHeight = (int)totalHeight + 10;
+
+        var bitmap = Bitmap.CreateBitmap(bmpWidth, bmpHeight, Bitmap.Config.Argb8888)!;
+        using var canvas = new Canvas(bitmap);
+        canvas.DrawColor(Color.White);
+
+        using var paint = new Paint
+        {
+            TextSize = fontSize * scale,
+            AntiAlias = true,
+            Color = Color.Black
+        };
+        try { paint.SetTypeface(Typeface.Create("sans-serif", TypefaceStyle.Normal)); } catch { }
+
+        float y = Math.Abs(paint.Ascent()) + 4;
+        foreach (var line in lines)
+        {
+            if (string.IsNullOrEmpty(line))
+            {
+                y += paint.FontSpacing;
+                continue;
+            }
+
+            float x = 5;
+            canvas.DrawText(line, x, y, paint);
+            y += paint.FontSpacing + lineSpacing * scale;
+        }
+
+        return ToGrayscaleBitmap(bitmap);
+    }
+
+    /// <summary>Convert any Bitmap to a 1-bit black/white bitmap for printing.</summary>
+    private static Bitmap ToGrayscaleBitmap(Bitmap src)
+    {
+        var bmp = Bitmap.CreateBitmap(src.Width, src.Height, Bitmap.Config.Rgb565)!;
+        using var c = new Canvas(bmp);
+        c.DrawColor(Color.White);
+        using var p = new Paint { AntiAlias = true };
+        c.DrawBitmap(src, 0, 0, p);
+        return bmp;
+    }
+
+    /// <summary>Convert a black/white Bitmap to ESC/POS GS v 0 raster data (mode 0, 8-dot single density).</summary>
+    private static byte[] BitmapToEscPosRaster(Bitmap bitmap)
+    {
+        int w = bitmap.Width;
+        int h = bitmap.Height;
+        int widthBytes = (w + 7) / 8;
+        int dataLen = widthBytes * h;
+
+        byte[] data = new byte[dataLen];
+        for (int y = 0; y < h; y++)
+        {
+            for (int xb = 0; xb < widthBytes; xb++)
+            {
+                byte b = 0;
+                for (int bit = 0; bit < 8; bit++)
+                {
+                    int x = xb * 8 + bit;
+                    if (x < w)
+                    {
+                        int pixel = bitmap.GetPixel(x, y);
+                        int r = (pixel >> 16) & 0xFF;
+                        int g = (pixel >> 8) & 0xFF;
+                        int bl = pixel & 0xFF;
+                        bool isBlack = (r + g + bl) / 3 < 128;
+                        if (isBlack)
+                            b |= (byte)(1 << (7 - bit));
+                    }
+                }
+                data[y * widthBytes + xb] = b;
+            }
+        }
+
+        using var ms = new MemoryStream();
+        // GS v 0 m xL xH yL yH
+        byte[] header = {
+            0x1D, 0x76, 0x30, 0x00,
+            (byte)(widthBytes & 0xFF), (byte)((widthBytes >> 8) & 0xFF),
+            (byte)(h & 0xFF), (byte)((h >> 8) & 0xFF)
+        };
+        ms.Write(header, 0, header.Length);
+        ms.Write(data, 0, data.Length);
+        // Feed and cut
+        byte[] feedAndCut = { 0x1B, 0x64, 0x04, 0x1D, 0x56, 0x00 };
+        ms.Write(feedAndCut, 0, feedAndCut.Length);
+
+        return ms.ToArray();
     }
 
     private async Task<string> BuildA4HtmlAsync(ReceiptApiResult receipt)

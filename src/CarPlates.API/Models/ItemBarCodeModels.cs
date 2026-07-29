@@ -16,8 +16,8 @@ public class ItemBarCodeView
     public string ItemBarCode { get; set; } = string.Empty;
     public byte? Package { get; set; }
     public string? PackageName { get; set; }
-    public double? PackagePrice { get; set; }
-    public double? PackagePurchasePrice { get; set; }
+    public decimal? PackagePrice { get; set; }
+    public decimal? PackagePurchasePrice { get; set; }
     public int? ItemGroupId { get; set; }
     public string? ItemGroupName_AR { get; set; }
     public string? ItemGroupName_En { get; set; }
@@ -25,20 +25,20 @@ public class ItemBarCodeView
     public string? ItemSubGroupName_AR { get; set; }
     public string? ItemSubGroupName_EN { get; set; }
     public byte? ItemType { get; set; }
-    public double? ItemTax { get; set; }
-    public double? WarrantyTax { get; set; }
-    public double? TableTax { get; set; }
+    public decimal? ItemTax { get; set; }
+    public decimal? WarrantyTax { get; set; }
+    public decimal? TableTax { get; set; }
     public bool? OpenSale { get; set; }
     public string? ItemDiscount1 { get; set; }
     public string? ItemDiscount2 { get; set; }
     public string? ItemDiscount3 { get; set; }
     public byte? Status { get; set; }
-    public double? Pkg2Qty { get; set; }
-    public double? Pkg3Qty { get; set; }
-    public double? Pkg1Price1 { get; set; }
-    public double? Pkg2Price1 { get; set; }
-    public double? Pkg3Price1 { get; set; }
-    public double? Pkg1Price2 { get; set; }
-    public double? Pkg2Price2 { get; set; }
-    public double? Pkg3Price2 { get; set; }
+    public decimal? Pkg2Qty { get; set; }
+    public decimal? Pkg3Qty { get; set; }
+    public decimal? Pkg1Price1 { get; set; }
+    public decimal? Pkg2Price1 { get; set; }
+    public decimal? Pkg3Price1 { get; set; }
+    public decimal? Pkg1Price2 { get; set; }
+    public decimal? Pkg2Price2 { get; set; }
+    public decimal? Pkg3Price2 { get; set; }
 }

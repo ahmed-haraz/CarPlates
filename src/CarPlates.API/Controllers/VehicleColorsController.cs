@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace CarPlates.API.Controllers;
 
 [ApiController]
-[Route("api/v1/[controller]")]
+[Route("api/v1/vehicle-colors")]
 [Authorize]
 public class VehicleColorsController(IVehicleColorService service) : ControllerBase
 {
