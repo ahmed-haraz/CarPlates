@@ -26,7 +26,7 @@ public class TransHeader
     public double? Balance { get; set; }
     public double? Benefit { get; set; }
     public double? InstallmentValue { get; set; }
-    public int? InstallmentCount { get; set; }
+    public double? InstallmentCount { get; set; }
     public int? ShippingID { get; set; }
     public double? TotalCurrency { get; set; }
     public int? CostCenterID { get; set; }

@@ -208,7 +208,7 @@ public class BillService(ApplicationDbContext context) : IBillService
             Balance = 0,
             Benefit = 0,
             InstallmentValue = 0,
-            InstallmentCount = 0,
+            InstallmentCount = 0d,
             ShippingID = 0,
             TotalCurrency = total,
             CostCenterID = 0,

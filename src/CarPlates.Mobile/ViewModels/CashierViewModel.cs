@@ -25,6 +25,7 @@ public partial class CashierViewModel : BaseViewModel
     [ObservableProperty] private bool _showAllBills = true;
     [ObservableProperty] private bool _showPaidBills = false;
     [ObservableProperty] private bool _showUnpaidBills = false;
+    [ObservableProperty] private bool _isDateFilterVisible;
 
     public enum BillStatus { All, Paid, Unpaid }
 
@@ -42,6 +43,7 @@ public partial class CashierViewModel : BaseViewModel
         Title = AppResources.Cashier;
         _dateFrom = DateTime.Today;
         _dateTo = DateTime.Today;
+        _ = LoadBillsAsync();
     }
 
     [RelayCommand]
@@ -57,7 +59,9 @@ public partial class CashierViewModel : BaseViewModel
 
             if (result.Success)
             {
-                Bills = new ObservableCollection<BillApiItem>(result.Items);
+                Bills.Clear();
+                foreach (var item in result.Items)
+                    Bills.Add(item);
                 TotalPages = Math.Max(result.TotalPages, 1);
                 CanGoToPreviousPage = CurrentPage > 1;
                 CanGoToNextPage = CurrentPage < TotalPages;
@@ -82,6 +86,20 @@ public partial class CashierViewModel : BaseViewModel
     {
         if (CurrentPage >= TotalPages) return;
         CurrentPage++;
+        await LoadBillsAsync();
+    }
+
+    [RelayCommand]
+    private void ToggleDateFilter() => IsDateFilterVisible = !IsDateFilterVisible;
+
+    [RelayCommand]
+    private async Task ApplyDateFilterAsync() => await LoadBillsAsync();
+
+    [RelayCommand]
+    private async Task ClearDateFilterAsync()
+    {
+        DateFrom = DateTime.Today;
+        DateTo = DateTime.Today;
         await LoadBillsAsync();
     }
 
@@ -313,7 +331,9 @@ public partial class CashierViewModel : BaseViewModel
                 break;
         }
 
-        Bills = new ObservableCollection<BillApiItem>(filteredBills);
+        Bills.Clear();
+        foreach (var item in filteredBills)
+            Bills.Add(item);
         TotalPages = Math.Max(result.TotalPages, 1);
         CanGoToPreviousPage = CurrentPage > 1;
         CanGoToNextPage = CurrentPage < TotalPages;
