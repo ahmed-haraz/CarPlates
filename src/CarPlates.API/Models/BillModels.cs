@@ -26,7 +26,7 @@ public class TransHeader
     public double? Balance { get; set; }
     public double? Benefit { get; set; }
     public double? InstallmentValue { get; set; }
-    public int? InstallmentCount { get; set; }
+    public double? InstallmentCount { get; set; }
     public int? ShippingID { get; set; }
     public double? TotalCurrency { get; set; }
     public int? CostCenterID { get; set; }
@@ -69,7 +69,7 @@ public class TransDetail
     public double? TransPkgQty1 { get; set; }
     public double? CostPrice { get; set; }
     public double? TransPkgPrice1 { get; set; }
-    public double? WholeProfit { get; set; }
+    public double? WholePriceProfit { get; set; }
     public double? Pkg2Qty { get; set; }
     public double? Pkg3Qty { get; set; }
     public double? OriginalPrice { get; set; }

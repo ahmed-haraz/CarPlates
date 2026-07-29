@@ -12,6 +12,7 @@ using System.Globalization;
 using System.Net.Http.Json;
 using CarPlates.Shared.Models;
 using AppTheme = CarPlates.Domain.Enums.AppTheme;
+using System.Collections.ObjectModel;
 
 namespace CarPlates.Mobile.ViewModels;
 
@@ -24,6 +25,7 @@ public partial class SettingsViewModel : BaseViewModel
     private readonly IApiConnectivityService _connectivityService;
     private readonly IHttpClientFactory _httpClientFactory;
     private readonly IPaymentGatewaySettingsApiService _paymentSettingsService;
+    private readonly IReceiptPrintService _printService;
 
     [ObservableProperty]
     private bool _isDarkMode;
@@ -68,7 +70,24 @@ public partial class SettingsViewModel : BaseViewModel
     [ObservableProperty]
     private string _paymentAdditionalSettings = string.Empty;
 
+    // Print settings
+    [ObservableProperty] private string _selectedPrinter = string.Empty;
+    [ObservableProperty] private string _printerIp = string.Empty;
+    [ObservableProperty] private int _selectedPrintFormatIndex;
+    [ObservableProperty] private bool _useSavedPrintSettings;
+    [ObservableProperty] private bool _isIpEntryEnabled = true;
+
+    partial void OnSelectedPrinterChanged(string value) => IsIpEntryEnabled = string.IsNullOrWhiteSpace(value);
+
     public List<string> AvailableLanguages { get; } = new() { "English", "العربية" };
+    public ObservableCollection<string> AvailablePrinters { get; } = new();
+    public List<string> PrintFormatOptions { get; } = new()
+    {
+        "ESC/POS Formatted",
+        "A4 Page",
+        "Receipt via Driver",
+        "Plain Text (universal)"
+    };
 
     public SettingsViewModel(
         IMediator mediator,
@@ -78,6 +97,7 @@ public partial class SettingsViewModel : BaseViewModel
         IApiConnectivityService connectivityService,
         IHttpClientFactory httpClientFactory,
         IPaymentGatewaySettingsApiService paymentSettingsService,
+        IReceiptPrintService printService,
         INavigationService navigation) : base(navigation)
     {
         _mediator = mediator;
@@ -87,6 +107,7 @@ public partial class SettingsViewModel : BaseViewModel
         _connectivityService = connectivityService;
         _httpClientFactory = httpClientFactory;
         _paymentSettingsService = paymentSettingsService;
+        _printService = printService;
         Title = AppResources.Settings;
     }
 
@@ -111,7 +132,23 @@ public partial class SettingsViewModel : BaseViewModel
             PaymentApiKey = paymentConfig.ApiKey;
             PaymentEndpointUrl = paymentConfig.EndpointUrl;
             PaymentAdditionalSettings = paymentConfig.AdditionalSettings;
+
+            // Load print settings from Preferences
+            await RefreshPrintersAsync();
+            SelectedPrinter = Preferences.Get("print_default_printer", string.Empty);
+            PrinterIp = Preferences.Get("print_default_ip", string.Empty);
+            SelectedPrintFormatIndex = Preferences.Get("print_default_format", 0);
+            UseSavedPrintSettings = Preferences.Get("print_auto_print", false);
         });
+    }
+
+    [RelayCommand]
+    private async Task RefreshPrintersAsync()
+    {
+        var printers = await _printService.GetAvailablePrintersAsync();
+        AvailablePrinters.Clear();
+        foreach (var p in printers)
+            AvailablePrinters.Add(p);
     }
 
     [RelayCommand]
@@ -137,6 +174,12 @@ public partial class SettingsViewModel : BaseViewModel
                 EndpointUrl = PaymentEndpointUrl,
                 AdditionalSettings = PaymentAdditionalSettings
             });
+
+            // Save print settings
+            Preferences.Set("print_default_printer", SelectedPrinter ?? string.Empty);
+            Preferences.Set("print_default_ip", PrinterIp ?? string.Empty);
+            Preferences.Set("print_default_format", SelectedPrintFormatIndex);
+            Preferences.Set("print_auto_print", UseSavedPrintSettings);
 
             LocalizationResourceManager.Instance.SetCulture(new CultureInfo(language));
             await Navigation.ApplyCurrentFlowDirectionAsync();

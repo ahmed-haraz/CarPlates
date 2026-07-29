@@ -14,8 +14,8 @@
 
 		<TreatWarningsAsErrors>false</TreatWarningsAsErrors>
 
-		<ApplicationTitle>ArkanMaintenance</ApplicationTitle>
-		<ApplicationId>com.softarkan.maintenance</ApplicationId>
+		<ApplicationTitle>ArkanServices</ApplicationTitle>
+		<ApplicationId>com.softarkan.services</ApplicationId>
 
 		<ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
 		<ApplicationVersion>1</ApplicationVersion>
@@ -64,6 +64,8 @@
 		<PackageReference Include="MediatR" Version="14.2.0" />
 
 		<PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="10.0.9" />
+
+		<PackageReference Include="System.Text.Encoding.CodePages" Version="9.0.0" />
 
 		<PackageReference Include="Microsoft.Maui.Controls" Version="10.0.80" />
 		

@@ -4,11 +4,12 @@ using Android.Content;
 using Android.Content.PM;
 using Android.OS;
 using Android.Print;
-using Android.Runtime;
 using AndroidX.Core.App;
 using AndroidX.Core.Content;
 using CarPlates.Application.Common.Interfaces;
 using Java.Util;
+using System.Net.Sockets;
+using System.Text;
 
 namespace CarPlates.Mobile.Platforms.Android.Services;
 
@@ -22,41 +23,89 @@ public class ReceiptPrintService : IReceiptPrintService
 
     public async Task PrintReceiptAsync(ReceiptApiResult receipt, string? printerName = null, PrintFormat format = PrintFormat.Receipt)
     {
-        if (format == PrintFormat.A4)
+        switch (format)
         {
-            PrintA4(receipt);
-        }
-        else
-        {
-            await PrintEscPosAsync(receipt, printerName);
+            case PrintFormat.A4:
+                PrintA4(receipt);
+                break;
+            case PrintFormat.ReceiptViaDriver:
+                PrintReceiptViaDriver(receipt);
+                break;
+            case PrintFormat.PlainText:
+                await PrintPlainTextAsync(receipt, printerName);
+                break;
+            case PrintFormat.Receipt:
+            default:
+                await PrintEscPosAsync(receipt, printerName);
+                break;
         }
     }
 
     public Task<IReadOnlyList<string>> GetAvailablePrintersAsync()
     {
+        var printers = new List<string>();
+
         var adapter = BluetoothAdapter.DefaultAdapter;
-        if (adapter == null)
-            return Task.FromResult<IReadOnlyList<string>>(Array.Empty<string>());
+        if (adapter != null)
+        {
+            var paired = adapter.BondedDevices?
+                .Select(d => d.Name ?? d.Address ?? "Unknown")
+                .ToList() ?? new List<string>();
+            printers.AddRange(paired);
+        }
 
-        var paired = adapter.BondedDevices?
-            .Select(d => d.Name ?? d.Address ?? "Unknown")
-            .ToList() ?? new List<string>();
-
-        return Task.FromResult<IReadOnlyList<string>>(paired);
+        return Task.FromResult<IReadOnlyList<string>>(printers);
     }
 
     private async Task PrintEscPosAsync(ReceiptApiResult receipt, string? printerName = null)
     {
-        // Ensure Bluetooth is enabled (handles permissions + enable flow)
+        var data = BuildEscPosReceipt(receipt);
+        await SendToPrinterAsync(data, printerName);
+    }
+
+    private async Task PrintPlainTextAsync(ReceiptApiResult receipt, string? printerName = null)
+    {
+        var text = BuildPlainTextReceipt(receipt);
+        var data = Encoding.UTF8.GetBytes(text);
+        await SendToPrinterAsync(data, printerName);
+    }
+
+    private async Task SendToPrinterAsync(byte[] data, string? printerName = null)
+    {
+        if (!string.IsNullOrWhiteSpace(printerName) && printerName.Contains(':'))
+        {
+            await SendViaNetworkAsync(data, printerName);
+            return;
+        }
+
+        await SendViaBluetoothAsync(data, printerName);
+    }
+
+    private async Task SendViaNetworkAsync(byte[] data, string address)
+    {
+        var parts = address.Split(':');
+        var ip = parts[0].Trim();
+        var port = parts.Length > 1 && int.TryParse(parts[1].Trim(), out var p) ? p : 9100;
+
+        using var tcpClient = new TcpClient();
+        using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(15));
+        await tcpClient.ConnectAsync(ip, port, cts.Token);
+        await using var stream = tcpClient.GetStream();
+        await stream.WriteAsync(data, cts.Token);
+        await stream.FlushAsync(cts.Token);
+    }
+
+    private async Task SendViaBluetoothAsync(byte[] data, string? printerName = null)
+    {
         await EnsureBluetoothEnabledAsync();
 
         var adapter = BluetoothAdapter.DefaultAdapter;
         if (adapter == null)
-            throw new InvalidOperationException("Bluetooth is not available on this device. Use A4 print instead.");
+            throw new InvalidOperationException("Bluetooth is not available on this device.");
 
         var devices = adapter.BondedDevices?.ToArray();
         if (devices == null || devices.Length == 0)
-            throw new InvalidOperationException("No paired Bluetooth printer found. Pair a printer or use A4 print instead.");
+            throw new InvalidOperationException("No paired Bluetooth printer found. Pair a printer, use a network IP, or print via driver instead.");
 
         BluetoothDevice? device;
         if (!string.IsNullOrWhiteSpace(printerName))
@@ -82,7 +131,6 @@ public class ReceiptPrintService : IReceiptPrintService
             await socket.ConnectAsync();
 
             var outputStream = socket.OutputStream;
-            var data = BuildEscPosReceipt(receipt);
             await outputStream.WriteAsync(data);
             await outputStream.FlushAsync();
         }
@@ -105,16 +153,14 @@ public class ReceiptPrintService : IReceiptPrintService
         if (adapter == null) return;
         if (adapter.IsEnabled) return;
 
-        // Try silent enable first (works on older APIs)
         try
         {
             adapter.Enable();
             await Task.Delay(500);
             if (adapter.IsEnabled) return;
         }
-        catch { /* fall through to intent-based approach */ }
+        catch { }
 
-        // Ask user to turn on Bluetooth via system dialog
         var activity = Platform.CurrentActivity;
         if (activity == null)
             throw new InvalidOperationException("Please enable Bluetooth in settings to print via ESC/POS.");
@@ -128,7 +174,7 @@ public class ReceiptPrintService : IReceiptPrintService
         var enabled = await tcs.Task;
 
         if (!enabled)
-            throw new InvalidOperationException("Bluetooth was not enabled. Please enable Bluetooth and try again, or use A4 print.");
+            throw new InvalidOperationException("Bluetooth was not enabled. Please enable Bluetooth and try again.");
     }
 
     private static async Task EnsureBluetoothConnectPermissionAsync()
@@ -149,10 +195,20 @@ public class ReceiptPrintService : IReceiptPrintService
         var granted = await tcs.Task;
 
         if (!granted)
-            throw new InvalidOperationException("Bluetooth permission denied. Grant it in Settings or use A4 print.");
+            throw new InvalidOperationException("Bluetooth permission denied. Grant it in Settings or use network/driver print.");
     }
 
     private void PrintA4(ReceiptApiResult receipt)
+    {
+        PrintHtml(receipt, BuildA4Html(receipt), "Receipt A4");
+    }
+
+    private void PrintReceiptViaDriver(ReceiptApiResult receipt)
+    {
+        PrintHtml(receipt, BuildReceiptViaDriverHtml(receipt), "Receipt");
+    }
+
+    private void PrintHtml(ReceiptApiResult receipt, string html, string jobName)
     {
         var activity = Platform.CurrentActivity;
         if (activity == null) return;
@@ -160,22 +216,17 @@ public class ReceiptPrintService : IReceiptPrintService
         var printManager = activity.GetSystemService(Context.PrintService) as PrintManager;
         if (printManager == null) return;
 
-        var html = BuildA4Html(receipt);
         var adapter = new ReceiptPrintAdapter(activity, html);
-
-        var attributes = new PrintAttributes.Builder()
-            .SetMediaSize(PrintAttributes.MediaSize.IsoA4)
-            .Build();
-
-        printManager.Print("Receipt", adapter, attributes);
+        printManager.Print(jobName, adapter, null);
     }
 
     private static byte[] BuildEscPosReceipt(ReceiptApiResult receipt)
     {
         using var ms = new MemoryStream();
-        var writer = new StreamWriter(ms, System.Text.Encoding.UTF8);
+        var encoding = GetArabicEncoding();
 
         byte[] init = { 0x1B, 0x40 };
+        byte[] arabicCP = { 0x1B, 0x74, 0x11 };
         byte[] center = { 0x1B, 0x61, 0x01 };
         byte[] left = { 0x1B, 0x61, 0x00 };
         byte[] boldOn = { 0x1B, 0x45, 0x01 };
@@ -185,65 +236,112 @@ public class ReceiptPrintService : IReceiptPrintService
         byte[] cut = { 0x1D, 0x56, 0x00 };
 
         ms.Write(init, 0, init.Length);
+        ms.Write(arabicCP, 0, arabicCP.Length);
         ms.Write(center, 0, center.Length);
         ms.Write(doubleH, 0, doubleH.Length);
 
-        writer.WriteLine("ARKAN MAINTENANCE");
-        writer.Flush();
+        WriteLine(ms, encoding, "ARKAN SERVICES");
 
         ms.Write(boldOff, 0, boldOff.Length);
         ms.Write(normal, 0, normal.Length);
 
-        writer.WriteLine(new string('-', 32));
-        writer.WriteLine($"Receipt: {receipt.ReceiptNo}");
-        writer.WriteLine($"Date: {receipt.TransDate}");
-        writer.WriteLine($"Customer: {receipt.CustomerName ?? "N/A"}");
-        writer.WriteLine($"Plate: {receipt.PlateNumber ?? "N/A"}");
-        writer.WriteLine($"Location: {receipt.WorkLocationName ?? "N/A"}");
-        writer.WriteLine($"Technician: {receipt.TechnicianName ?? "N/A"}");
-        writer.WriteLine($"Color: {receipt.Color ?? "N/A"}");
-        writer.WriteLine($"Plate Type: {receipt.PlateType ?? "N/A"}");
-        writer.WriteLine(new string('-', 32));
+        WriteLine(ms, encoding, new string('-', 32));
+        WriteLine(ms, encoding, $"Receipt: {receipt.ReceiptNo}");
+        WriteLine(ms, encoding, $"Date: {receipt.TransDate}");
+        WriteLine(ms, encoding, $"Customer: {receipt.CustomerName ?? "N/A"}");
+        WriteLine(ms, encoding, $"Plate: {receipt.PlateNumber ?? "N/A"}");
+        WriteLine(ms, encoding, $"Location: {receipt.WorkLocationName ?? "N/A"}");
+        WriteLine(ms, encoding, $"Technician: {receipt.TechnicianName ?? "N/A"}");
+        WriteLine(ms, encoding, $"Color: {receipt.Color ?? "N/A"}");
+        WriteLine(ms, encoding, $"Plate Type: {receipt.PlateType ?? "N/A"}");
+        WriteLine(ms, encoding, new string('-', 32));
 
         ms.Write(boldOn, 0, boldOn.Length);
-        writer.WriteLine($"  {"Item",-25} {"Qty",5} {"Price",8}");
-        writer.Flush();
+        WriteLine(ms, encoding, $"  {"Item",-25} {"Qty",5} {"Price",8}");
         ms.Write(boldOff, 0, boldOff.Length);
 
         foreach (var detail in receipt.Details)
         {
-            writer.WriteLine($"  {(detail.ItemName ?? detail.ItemBarCode),-25} {detail.Qty,5} {detail.Price,8:F2}");
-            writer.Flush();
+            WriteLine(ms, encoding, $"  {(detail.ItemName ?? detail.ItemBarCode),-25} {detail.Qty,5} {detail.Price,8:F2}");
         }
 
-        writer.WriteLine(new string('-', 32));
+        WriteLine(ms, encoding, new string('-', 32));
         ms.Write(boldOn, 0, boldOn.Length);
-        writer.WriteLine($"  Total:     {receipt.Total,10:F2}");
-        writer.WriteLine($"  Paid:      {receipt.Paid,10:F2}");
-        writer.WriteLine($"  Balance:   {receipt.Balance,10:F2}");
-        writer.Flush();
+        WriteLine(ms, encoding, $"  Total:     {receipt.Total,10:F2}");
+        WriteLine(ms, encoding, $"  Paid:      {receipt.Paid,10:F2}");
+        WriteLine(ms, encoding, $"  Balance:   {receipt.Balance,10:F2}");
         ms.Write(boldOff, 0, boldOff.Length);
 
         if (receipt.Payments.Any())
         {
-            writer.WriteLine(new string('-', 32));
+            WriteLine(ms, encoding, new string('-', 32));
             foreach (var p in receipt.Payments)
             {
                 var method = p.PayType switch { 1 => "Cash", 2 => "Visa", 3 => "Bank", _ => "Other" };
-                writer.WriteLine($"  {method,-12} {p.Amount,10:F2}");
-                writer.Flush();
+                WriteLine(ms, encoding, $"  {method,-12} {p.Amount,10:F2}");
             }
         }
 
-        writer.WriteLine(string.Empty);
-        writer.WriteLine("Thank you for your visit!");
-        writer.Flush();
+        WriteLine(ms, encoding, string.Empty);
+        WriteLine(ms, encoding, "Thank you for your visit!");
 
         byte[] feed = { 0x1B, 0x64, 0x04 };
         ms.Write(feed, 0, feed.Length);
         ms.Write(cut, 0, cut.Length);
 
         return ms.ToArray();
+    }
+
+    private static Encoding GetArabicEncoding()
+    {
+        try { return Encoding.GetEncoding("windows-1256"); }
+        catch { return Encoding.UTF8; }
+    }
+
+    private static void WriteLine(MemoryStream ms, Encoding encoding, string text)
+    {
+        var bytes = encoding.GetBytes(text + "\n");
+        ms.Write(bytes, 0, bytes.Length);
+    }
+
+    private static string BuildPlainTextReceipt(ReceiptApiResult receipt)
+    {
+        var sb = new StringBuilder();
+        sb.AppendLine("ARKAN SERVICES");
+        sb.AppendLine(new string('-', 32));
+        sb.AppendLine($"Receipt: {receipt.ReceiptNo}");
+        sb.AppendLine($"Date: {receipt.TransDate}");
+        sb.AppendLine($"Customer: {receipt.CustomerName ?? "N/A"}");
+        sb.AppendLine($"Plate: {receipt.PlateNumber ?? "N/A"}");
+        sb.AppendLine($"Location: {receipt.WorkLocationName ?? "N/A"}");
+        sb.AppendLine($"Technician: {receipt.TechnicianName ?? "N/A"}");
+        sb.AppendLine($"Color: {receipt.Color ?? "N/A"}");
+        sb.AppendLine($"Plate Type: {receipt.PlateType ?? "N/A"}");
+        sb.AppendLine(new string('-', 32));
+        sb.Append("  ").Append("Item".PadRight(25)).Append(" ").AppendLine("Qty    Price");
+        foreach (var detail in receipt.Details)
+        {
+            var name = detail.ItemName ?? detail.ItemBarCode ?? "";
+            sb.Append("  ").Append(name.PadRight(25))
+              .Append(" ").Append(detail.Qty.ToString("F0").PadLeft(5))
+              .Append(" ").AppendLine(detail.Price.ToString("F2").PadLeft(8));
+        }
+        sb.AppendLine(new string('-', 32));
+        sb.AppendLine($"  Total:     {receipt.Total,10:F2}");
+        sb.AppendLine($"  Paid:      {receipt.Paid,10:F2}");
+        sb.AppendLine($"  Balance:   {receipt.Balance,10:F2}");
+        if (receipt.Payments.Any())
+        {
+            sb.AppendLine(new string('-', 32));
+            foreach (var p in receipt.Payments)
+            {
+                var method = p.PayType switch { 1 => "Cash", 2 => "Visa", 3 => "Bank", _ => "Other" };
+                sb.Append("  ").Append(method.PadRight(12)).AppendLine(p.Amount.ToString("F2").PadLeft(10));
+            }
+        }
+        sb.AppendLine();
+        sb.AppendLine("Thank you for your visit!");
+        return sb.ToString();
     }
 
     private static string BuildA4Html(ReceiptApiResult receipt)
@@ -278,7 +376,7 @@ public class ReceiptPrintService : IReceiptPrintService
   .total {{ font-weight: bold; font-size: 1.1em; }}
   .header {{ margin-bottom: 20px; }}
 </style></head><body>
-<h1>ARKAN MAINTENANCE</h1>
+<h1>ARKAN SERVICES</h1>
 <div class='header'>
   <p><strong>Receipt:</strong> {System.Net.WebUtility.HtmlEncode(receipt.ReceiptNo)}</p>
   <p><strong>Date:</strong> {receipt.TransDate}</p>
@@ -299,6 +397,46 @@ public class ReceiptPrintService : IReceiptPrintService
 <p class='total'>Paid: {receipt.Paid:F2}</p>
 <p class='total'>Balance: {receipt.Balance:F2}</p>
 <p style='text-align:center;margin-top:30px;color:#888;'>Thank you for your visit!</p>
+</body></html>";
+    }
+
+    private static string BuildReceiptViaDriverHtml(ReceiptApiResult receipt)
+    {
+        var itemsHtml = string.Join("",
+            receipt.Details.Select(d =>
+                $"<tr><td>{System.Net.WebUtility.HtmlEncode(d.ItemName ?? d.ItemBarCode)}</td><td>{d.Qty}</td><td>{d.Price:F2}</td></tr>"));
+
+        var paymentsHtml = string.Join("",
+            receipt.Payments.Select(p =>
+            {
+                var method = p.PayType switch { 1 => "Cash", 2 => "Visa", 3 => "Bank Transfer", _ => "Other" };
+                return $"<tr><td>{method}</td><td style='text-align:right'>{p.Amount:F2}</td></tr>";
+            }));
+
+        return $@"<!DOCTYPE html>
+<html><head><meta charset='utf-8'><style>
+  body {{ font-family: 'Courier New', monospace; font-size: 12px; margin: 0; padding: 8px; }}
+  h2 {{ text-align: center; margin: 4px 0; }}
+  table {{ width: 100%; border-collapse: collapse; }}
+  th, td {{ padding: 2px 4px; text-align: left; }}
+  th {{ border-bottom: 1px solid #000; }}
+  .right {{ text-align: right; }}
+  .center {{ text-align: center; }}
+  .total {{ font-weight: bold; }}
+  .line {{ border-top: 1px dashed #000; margin: 4px 0; }}
+</style></head><body>
+<h2>ARKAN SERVICES</h2>
+<p class='center'>Receipt: {System.Net.WebUtility.HtmlEncode(receipt.ReceiptNo)}<br/>Date: {receipt.TransDate}<br/>Customer: {System.Net.WebUtility.HtmlEncode(receipt.CustomerName ?? "N/A")}<br/>Plate: {System.Net.WebUtility.HtmlEncode(receipt.PlateNumber ?? "N/A")}</p>
+<div class='line'></div>
+<table><tr><th>Item</th><th>Qty</th><th>Price</th></tr>{itemsHtml}</table>
+<div class='line'></div>
+<table>
+<tr class='total'><td>Total:</td><td class='right'>{receipt.Total:F2}</td></tr>
+<tr><td>Paid:</td><td class='right'>{receipt.Paid:F2}</td></tr>
+<tr><td>Balance:</td><td class='right'>{receipt.Balance:F2}</td></tr>
+</table>
+{(!receipt.Payments.Any() ? "" : $@"<div class='line'></div><table>{paymentsHtml}</table>")}
+<p class='center' style='margin-top:12px;'>Thank you for your visit!</p>
 </body></html>";
     }
 

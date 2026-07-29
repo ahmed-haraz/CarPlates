@@ -9,62 +9,63 @@
              Title="{Binding Title}"
              BackgroundColor="{DynamicResource Background}">
 
-    <Grid RowDefinitions="Auto,Auto,Auto,*,Auto">
+    <Grid RowDefinitions="Auto,Auto,Auto,Auto,*,Auto">
 
-        
-
-        <!-- Search Bar -->
-        <SearchBar Grid.Row="1"
-                   Placeholder="{loc:Translate Key=SearchByPlate}"
-                   Text="{Binding SearchText}"
-                   Margin="16,8" />
-
-        <!-- Date Filters + Pagination + Status Filter -->
-        <Grid Grid.Row="2" Padding="16,0" ColumnDefinitions="*,*,Auto,58,58" ColumnSpacing="8">
-            <DatePicker Grid.Column="0" Date="{Binding DateFrom}" FontSize="13" />
-            <DatePicker Grid.Column="1" Date="{Binding DateTo}" FontSize="13" />
-            <HorizontalStackLayout Grid.Column="2" VerticalOptions="Center" Spacing="8">
-                <Border StrokeShape="RoundRectangle 12" Padding="6,4" BackgroundColor="{DynamicResource Surface}"
-                        StrokeThickness="0" IsVisible="{Binding ShowAllBills}">
-                    <Label Text="All" FontSize="12" TextColor="{DynamicResource TextSecondary}" />
-                </Border>
-                <Border StrokeShape="RoundRectangle 12" Padding="6,4" BackgroundColor="{DynamicResource Surface}"
-                        StrokeThickness="0" IsVisible="{Binding ShowPaidBills}">
-                    <Label Text="Paid" FontSize="12" TextColor="{DynamicResource Success}" />
-                </Border>
-                <Border StrokeShape="RoundRectangle 12" Padding="6,4" BackgroundColor="{DynamicResource Surface}"
-                        StrokeThickness="0" IsVisible="{Binding ShowUnpaidBills}">
-                    <Label Text="Unpaid" FontSize="12" TextColor="{DynamicResource Warning}" />
-                </Border>
-            </HorizontalStackLayout>
-            <Border Grid.Column="3" Style="{StaticResource Card}" Padding="0" WidthRequest="48" HeightRequest="48"
-                    IsEnabled="{Binding CanGoToPreviousPage}">
-                <Border.GestureRecognizers>
-                    <TapGestureRecognizer Command="{Binding PreviousPageCommand}" />
-                </Border.GestureRecognizers>
-                <Grid HorizontalOptions="Center" VerticalOptions="Center">
-                    <Image WidthRequest="22" HeightRequest="22"
-                           helpers:IconHelper.Glyph="&#xe909;"
-                           helpers:IconHelper.LightColorResourceKey="IconLight"
-                           helpers:IconHelper.DarkColorResourceKey="IconDark" />
-                </Grid>
-            </Border>
-            <Border Grid.Column="4" Style="{StaticResource Card}" Padding="0" WidthRequest="48" HeightRequest="48"
-                    IsEnabled="{Binding CanGoToNextPage}">
-                <Border.GestureRecognizers>
-                    <TapGestureRecognizer Command="{Binding NextPageCommand}" />
-                </Border.GestureRecognizers>
-                <Grid HorizontalOptions="Center" VerticalOptions="Center">
-                    <Image WidthRequest="22" HeightRequest="22"
-                           helpers:IconHelper.Glyph="&#xe90a;"
-                           helpers:IconHelper.LightColorResourceKey="IconLight"
-                           helpers:IconHelper.DarkColorResourceKey="IconDark" />
-                </Grid>
-            </Border>
+        <!-- Search Bar + Toggle buttons -->
+        <Grid Grid.Row="0"
+              Padding="20,18,20,8"
+              ColumnDefinitions="*,Auto,Auto">
+            <SearchBar Grid.Column="0"
+                       Placeholder="{loc:Translate Key=SearchByPlate}"
+                       Text="{Binding SearchText}" />
+            <Button Grid.Column="1"
+                    Text="🔍"
+                    Style="{StaticResource IconButton}"
+                    Command="{Binding LoadBillsCommand}" />
+            <Button Grid.Column="2"
+                    Text="📅"
+                    Style="{StaticResource IconButton}"
+                    Command="{Binding ToggleDateFilterCommand}" />
         </Grid>
 
+        <!-- Date Filter Panel (toggleable) -->
+        <Grid Grid.Row="1"
+              Padding="20,0,20,8"
+              ColumnDefinitions="*,*,Auto"
+              ColumnSpacing="8"
+              IsVisible="{Binding IsDateFilterVisible}">
+            <DatePicker Grid.Column="0"
+                        Date="{Binding DateFrom}"
+                        FontSize="13" />
+            <DatePicker Grid.Column="1"
+                        Date="{Binding DateTo}"
+                        FontSize="13" />
+            <HorizontalStackLayout Grid.Column="2" Spacing="4">
+                <Button Text="✓" Style="{StaticResource IconButton}"
+                        Command="{Binding ApplyDateFilterCommand}" />
+                <Button Text="✗" Style="{StaticResource IconButton}"
+                        Command="{Binding ClearDateFilterCommand}" />
+            </HorizontalStackLayout>
+        </Grid>
+
+        <!-- Status filter indicators -->
+        <HorizontalStackLayout Grid.Row="2" Padding="20,4" Spacing="8">
+            <Border StrokeShape="RoundRectangle 12" Padding="8,4" BackgroundColor="{DynamicResource Surface}"
+                    StrokeThickness="0" IsVisible="{Binding ShowAllBills}">
+                <Label Text="All" FontSize="12" TextColor="{DynamicResource TextSecondary}" />
+            </Border>
+            <Border StrokeShape="RoundRectangle 12" Padding="8,4" BackgroundColor="{DynamicResource Surface}"
+                    StrokeThickness="0" IsVisible="{Binding ShowPaidBills}">
+                <Label Text="Paid" FontSize="12" TextColor="{DynamicResource Success}" />
+            </Border>
+            <Border StrokeShape="RoundRectangle 12" Padding="8,4" BackgroundColor="{DynamicResource Surface}"
+                    StrokeThickness="0" IsVisible="{Binding ShowUnpaidBills}">
+                <Label Text="Unpaid" FontSize="12" TextColor="{DynamicResource Warning}" />
+            </Border>
+        </HorizontalStackLayout>
+
         <!-- Bills List -->
-        <CollectionView Grid.Row="3"
+        <CollectionView Grid.Row="4"
                         ItemsSource="{Binding Bills}"
                         Margin="16,8"
                         EmptyView="{loc:Translate Key=NoBillsFound}">
@@ -133,14 +134,49 @@
             </CollectionView.ItemTemplate>
         </CollectionView>
 
-        <!-- Page indicator -->
-        <Label Grid.Row="4"
-               HorizontalOptions="Center"
-               FontSize="12" TextColor="{DynamicResource TextSecondary}"
-               Text="{Binding CurrentPage, StringFormat='Page {0}'}" />
+        <!-- Pagination bar at bottom -->
+        <Grid Grid.Row="5"
+              Padding="20,8,20,16"
+              ColumnDefinitions="Auto,*,Auto"
+              ColumnSpacing="12">
+            <Border Grid.Column="0" Style="{StaticResource Card}" Padding="0" WidthRequest="48" HeightRequest="48"
+                    IsEnabled="{Binding CanGoToPreviousPage}">
+                <Border.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding PreviousPageCommand}" />
+                </Border.GestureRecognizers>
+                <Grid HorizontalOptions="Center" VerticalOptions="Center">
+                    <Image WidthRequest="22" HeightRequest="22"
+                           helpers:IconHelper.Glyph="&#xebab;"
+                           helpers:IconHelper.LightColorResourceKey="IconLight"
+                           helpers:IconHelper.DarkColorResourceKey="IconDark" />
+                </Grid>
+            </Border>
+            <Label Grid.Column="1"
+                   HorizontalOptions="Center" VerticalOptions="Center"
+                   FontSize="14" TextColor="{DynamicResource TextSecondary}">
+                <Label.Text>
+                    <MultiBinding StringFormat="Page {0} of {1}">
+                        <Binding Path="CurrentPage" />
+                        <Binding Path="TotalPages" />
+                    </MultiBinding>
+                </Label.Text>
+            </Label>
+            <Border Grid.Column="2" Style="{StaticResource Card}" Padding="0" WidthRequest="48" HeightRequest="48"
+                    IsEnabled="{Binding CanGoToNextPage}">
+                <Border.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding NextPageCommand}" />
+                </Border.GestureRecognizers>
+                <Grid HorizontalOptions="Center" VerticalOptions="Center">
+                    <Image WidthRequest="22" HeightRequest="22"
+                           helpers:IconHelper.Glyph="&#xebac;"
+                           helpers:IconHelper.LightColorResourceKey="IconLight"
+                           helpers:IconHelper.DarkColorResourceKey="IconDark" />
+                </Grid>
+            </Border>
+        </Grid>
 
         <!-- Loading overlay -->
-        <Border Grid.Row="3"
+        <Border Grid.Row="4"
                 BackgroundColor="#80FFFFFF"
                 IsVisible="{Binding IsBusy}"
                 HorizontalOptions="Fill" VerticalOptions="Fill">

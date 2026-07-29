@@ -144,9 +144,68 @@ public partial class PaymentViewModel : BaseViewModel
     {
         if (Receipt == null) return;
 
+        // Check saved print settings for direct printing
+        if (TryGetSavedPrintSettings(out var savedPrinter, out var savedFormat))
+        {
+            await _printService.PrintReceiptAsync(Receipt, savedPrinter, savedFormat);
+            await Navigation.DisplayAlertAsync("Print", "Receipt sent to printer");
+            return;
+        }
+
         await ExecuteAsync(async () =>
         {
-            await _printService.PrintReceiptAsync(Receipt, format: PrintFormat.Receipt);
+            var printers = (await _printService.GetAvailablePrintersAsync()).ToList();
+            var options = new List<string>();
+            options.AddRange(printers);
+            options.Add("Print via Driver (any printer)");
+            options.Add("Enter printer IP...");
+            options.Add("Plain Text (universal)");
+
+            var selected = await Navigation.DisplayActionSheetAsync(
+                "Select Printer", "Cancel", null, [.. options]);
+
+            if (selected == "Cancel" || selected == null)
+                return;
+
+            if (selected == "Print via Driver (any printer)")
+            {
+                await _printService.PrintReceiptAsync(Receipt, null, PrintFormat.ReceiptViaDriver);
+            }
+            else if (selected == "Plain Text (universal)")
+            {
+                if (printers.Count > 0)
+                {
+                    await _printService.PrintReceiptAsync(Receipt, printers[0], PrintFormat.PlainText);
+                }
+                else
+                {
+                    var ip = await Navigation.DisplayPromptAsync(
+                        "Network Printer",
+                        "No Bluetooth printer found. Enter printer IP:Port:",
+                        "Print", "Cancel",
+                        placeholder: "IP:Port (default port 9100)");
+                    if (string.IsNullOrWhiteSpace(ip)) return;
+                    await _printService.PrintReceiptAsync(Receipt, ip.Trim(), PrintFormat.PlainText);
+                }
+            }
+            else if (selected == "Enter printer IP...")
+            {
+                var ip = await Navigation.DisplayPromptAsync(
+                    "Network Printer",
+                    "Enter printer IP address (e.g. 192.168.1.100:9100):",
+                    "Print", "Cancel",
+                    placeholder: "IP:Port (default port 9100)");
+                if (string.IsNullOrWhiteSpace(ip)) return;
+                var fmt = await PickPrintFormatAsync();
+                await _printService.PrintReceiptAsync(Receipt, ip.Trim(), fmt);
+            }
+            else
+            {
+                var fmt = await PickPrintFormatAsync();
+                await _printService.PrintReceiptAsync(Receipt, selected, fmt);
+            }
+
+            await Navigation.DisplayAlertAsync("Print", "Receipt sent to printer");
         });
     }
 
@@ -196,6 +255,39 @@ public partial class PaymentViewModel : BaseViewModel
                       $"Thank you!";
 
         await Navigation.DisplayAlertAsync("Receipt Preview", message);
+    }
+
+    private static bool TryGetSavedPrintSettings(out string? printerName, out PrintFormat format)
+    {
+        format = PrintFormat.Receipt;
+        printerName = null;
+
+        if (!Preferences.Get("print_auto_print", false))
+            return false;
+
+        format = (PrintFormat)Preferences.Get("print_default_format", 0);
+        var savedPrinter = Preferences.Get("print_default_printer", string.Empty);
+        var savedIp = Preferences.Get("print_default_ip", string.Empty);
+
+        if (!string.IsNullOrWhiteSpace(savedPrinter))
+            printerName = savedPrinter;
+        else if (!string.IsNullOrWhiteSpace(savedIp))
+            printerName = savedIp;
+        else
+            return false;
+
+        return true;
+    }
+
+    private async Task<PrintFormat> PickPrintFormatAsync()
+    {
+        var format = await Navigation.DisplayActionSheetAsync(
+            "Print Format", "Cancel", null, "Formatted (ESC/POS)", "Plain Text (universal)");
+        return format switch
+        {
+            "Plain Text (universal)" => PrintFormat.PlainText,
+            _ => PrintFormat.Receipt
+        };
     }
 
     private CardInfo? ParseCardInfo()
