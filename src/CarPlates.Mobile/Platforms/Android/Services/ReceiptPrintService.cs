@@ -358,12 +358,13 @@ public class ReceiptPrintService : IReceiptPrintService
     private static Bitmap RenderTextToBitmap(string text)
     {
         const int printerWidthDots = 384; // 58mm @ 203dpi typical for MTP-3B
-        const float fontSize = 18f;
-        const float lineSpacing = 4f;
+        const float fontSize = 24f;
+        const float lineSpacing = 2f;
+        const int padding = 8;
 
         var lines = text.Split('\n', StringSplitOptions.None);
         using var measurePaint = new Paint { TextSize = fontSize, AntiAlias = true };
-        try { measurePaint.SetTypeface(Typeface.Create("sans-serif", TypefaceStyle.Normal)); } catch { }
+        try { measurePaint.SetTypeface(Typeface.Create("sans-serif", TypefaceStyle.Bold)); } catch { }
 
         float maxWidth = 0;
         float totalHeight = 0;
@@ -390,12 +391,12 @@ public class ReceiptPrintService : IReceiptPrintService
 
         // Scale if text is wider than printer
         float scale = 1f;
-        if (maxWidth > printerWidthDots)
-            scale = printerWidthDots / maxWidth;
+        if (maxWidth > printerWidthDots - padding * 2)
+            scale = (printerWidthDots - padding * 2) / maxWidth;
 
-        int bmpWidth = (int)(maxWidth * scale) + 10;
-        if (bmpWidth < 100) bmpWidth = 384;
-        int bmpHeight = (int)totalHeight + 10;
+        int bmpWidth = (int)(maxWidth * scale) + padding * 2;
+        if (bmpWidth < printerWidthDots) bmpWidth = printerWidthDots;
+        int bmpHeight = (int)totalHeight + padding * 2;
 
         var bitmap = Bitmap.CreateBitmap(bmpWidth, bmpHeight, Bitmap.Config.Argb8888)!;
         using var canvas = new Canvas(bitmap);
@@ -405,11 +406,13 @@ public class ReceiptPrintService : IReceiptPrintService
         {
             TextSize = fontSize * scale,
             AntiAlias = true,
-            Color = Color.Black
+            Color = Color.Black,
+            TextAlign = Paint.Align.Right
         };
-        try { paint.SetTypeface(Typeface.Create("sans-serif", TypefaceStyle.Normal)); } catch { }
+        try { paint.SetTypeface(Typeface.Create("sans-serif", TypefaceStyle.Bold)); } catch { }
 
-        float y = Math.Abs(paint.Ascent()) + 4;
+        float y = Math.Abs(paint.Ascent()) + padding;
+        float rightX = bmpWidth - padding;
         foreach (var line in lines)
         {
             if (string.IsNullOrEmpty(line))
@@ -418,8 +421,7 @@ public class ReceiptPrintService : IReceiptPrintService
                 continue;
             }
 
-            float x = 5;
-            canvas.DrawText(line, x, y, paint);
+            canvas.DrawText(line, rightX, y, paint);
             y += paint.FontSpacing + lineSpacing * scale;
         }
 
