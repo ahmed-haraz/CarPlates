@@ -118,8 +118,8 @@ public partial class SettingsViewModel : BaseViewModel
         "17 - CP1250 (Central Europe)",
         "18 - CP1251 (Cyrillic Windows)",
         "19 - CP874 (Thai)",
+        "20 - CP861 (Icelandic)",
     };
-
     public SettingsViewModel(
         IMediator mediator,
         ISettingsService settingsService,

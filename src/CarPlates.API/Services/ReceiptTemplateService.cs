@@ -85,6 +85,31 @@ public class ReceiptTemplateService(ApplicationDbContext context) : IReceiptTemp
                 Format = "EscPos",
                 Content = DefaultEscPosTemplate,
                 UpdatedBy = "system"
+            },
+            // Arabic variants
+            new()
+            {
+                Format = "A4_ar",
+                Content = DefaultA4TemplateAr,
+                UpdatedBy = "system"
+            },
+            new()
+            {
+                Format = "Driver_ar",
+                Content = DefaultDriverTemplateAr,
+                UpdatedBy = "system"
+            },
+            new()
+            {
+                Format = "PlainText_ar",
+                Content = DefaultPlainTextTemplateAr,
+                UpdatedBy = "system"
+            },
+            new()
+            {
+                Format = "EscPos_ar",
+                Content = DefaultEscPosTemplateAr,
+                UpdatedBy = "system"
             }
         };
 
@@ -175,7 +200,7 @@ Plate Type: {PlateType}
 {Footer}";
 
     private static readonly string DefaultEscPosTemplate = @"{CompanyName}
---------------------------------
+-------------------------------
 Receipt: {ReceiptNo}
 Date: {Date}
 Customer: {CustomerName}
@@ -184,13 +209,111 @@ Location: {Location}
 Technician: {Technician}
 Color: {Color}
 Plate Type: {PlateType}
---------------------------------
+-------------------------------
   Item                      Qty    Price
 {ItemsText}
---------------------------------
+-------------------------------
   Total:       {Total}
   Paid:        {Paid}
   Balance:     {Balance}
+{PaymentsText}
+
+{Footer}";
+
+    // ----- Arabic templates -----
+
+    private static readonly string DefaultA4TemplateAr = @"<!DOCTYPE html>
+<html><head><meta charset='utf-8'><style>
+  body { font-family: Arial; padding: 20px; }
+  h1 { color: #333; text-align: center; }
+  table { width: 100%; border-collapse: collapse; margin: 10px 0; }
+  th, td { border: 1px solid #ddd; padding: 8px; text-align: right; }
+  th { background: #f5f5f5; }
+  .total { font-weight: bold; font-size: 1.1em; }
+</style></head><body>
+<h1>{CompanyName}</h1>
+<div class='header'>
+  <p><strong>رقم الإيصال:</strong> {ReceiptNo}</p>
+  <p><strong>التاريخ:</strong> {Date}</p>
+  <p><strong>العميل:</strong> {CustomerName}</p>
+  <p><strong>اللوحة:</strong> {PlateNumber}</p>
+  <p><strong>الموقع:</strong> {Location}</p>
+  <p><strong>الفني:</strong> {Technician}</p>
+</div>
+<h3>الأصناف</h3>
+<table><tr><th>الصنف</th><th>الكمية</th><th>السعر</th><th>الإجمالي</th></tr>{Items}</table>
+{Payments}
+<hr/>
+<p class='total'>الإجمالي: {Total}</p>
+<p class='total'>المدفوع: {Paid}</p>
+<p class='total'>المتبقي: {Balance}</p>
+<p style='text-align:center;margin-top:30px;color:#888;'>{Footer}</p>
+</body></html>";
+
+    private static readonly string DefaultDriverTemplateAr = @"<!DOCTYPE html>
+<html><head><meta charset='utf-8'><style>
+  body { font-family: 'Courier New', monospace; font-size: 12px; margin: 0; padding: 8px; }
+  h2 { text-align: center; margin: 4px 0; }
+  table { width: 100%; border-collapse: collapse; }
+  th, td { padding: 2px 4px; text-align: right; }
+  th { border-bottom: 1px solid #000; }
+  .right { text-align: left; }
+  .center { text-align: center; }
+  .total { font-weight: bold; }
+  .line { border-top: 1px dashed #000; margin: 4px 0; }
+</style></head><body>
+<h2>{CompanyName}</h2>
+<p class='center'>رقم الإيصال: {ReceiptNo}<br/>التاريخ: {Date}<br/>العميل: {CustomerName}<br/>اللوحة: {PlateNumber}</p>
+<div class='line'></div>
+<table><tr><th>الصنف</th><th>الكمية</th><th>السعر</th></tr>{Items}</table>
+<div class='line'></div>
+<table>
+<tr class='total'><td>الإجمالي:</td><td class='right'>{Total}</td></tr>
+<tr><td>المدفوع:</td><td class='right'>{Paid}</td></tr>
+<tr><td>المتبقي:</td><td class='right'>{Balance}</td></tr>
+</table>
+{Payments}
+<p class='center' style='margin-top:12px;'>{Footer}</p>
+</body></html>";
+
+    private static readonly string DefaultPlainTextTemplateAr = @"{CompanyName}
+-------------------------------
+رقم الإيصال: {ReceiptNo}
+التاريخ: {Date}
+العميل: {CustomerName}
+اللوحة: {PlateNumber}
+الموقع: {Location}
+الفني: {Technician}
+اللون: {Color}
+نوع اللوحة: {PlateType}
+-------------------------------
+  الكمية   السعر       الصنف
+{ItemsText}
+-------------------------------
+  الإجمالي:       {Total}
+  المدفوع:        {Paid}
+  المتبقي:        {Balance}
+{PaymentsText}
+
+{Footer}";
+
+    private static readonly string DefaultEscPosTemplateAr = @"{CompanyName}
+-------------------------------
+رقم الإيصال: {ReceiptNo}
+التاريخ: {Date}
+العميل: {CustomerName}
+اللوحة: {PlateNumber}
+الموقع: {Location}
+الفني: {Technician}
+اللون: {Color}
+نوع اللوحة: {PlateType}
+-------------------------------
+  الكمية   السعر       الصنف
+{ItemsText}
+-------------------------------
+  الإجمالي:       {Total}
+  المدفوع:        {Paid}
+  المتبقي:        {Balance}
 {PaymentsText}
 
 {Footer}";

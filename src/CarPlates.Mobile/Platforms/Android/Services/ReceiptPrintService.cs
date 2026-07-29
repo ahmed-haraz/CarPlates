@@ -261,28 +261,30 @@ public class ReceiptPrintService : IReceiptPrintService
     }
 
     private static readonly (byte EscPosValue, string EncodingName)[] CodepageMap = new (byte EscPosValue, string EncodingName)[]
-{
-    (0x00, "ibm437"),       // 0  - CP437  USA/Europe
-    (0x01, "ibm850"),       // 1  - CP850  Multilingual Latin I
-    (0x02, "ibm860"),       // 2  - CP860  Portuguese
-    (0x03, "ibm863"),       // 3  - CP863  Canadian French
-    (0x04, "ibm865"),       // 4  - CP865  Nordic
-    (0x05, "windows-1252"), // 5  - CP1252 Latin I Windows
-    (0x06, "ibm866"),       // 6  - CP866  Cyrillic 2
-    (0x07, "ibm852"),       // 7  - CP852  Latin II
-    (0x08, "ibm858"),       // 8  - CP858  Multilingual + Euro
-    (0x09, "ibm862"),       // 9  - CP862  Hebrew
-    (0x0A, "ibm864"),       // 10 - CP864  Arabic PC864 [MTP-3B default]
-    (0x0B, "windows-1256"), // 11 - CP1256 Arabic Windows
-    (0x0C, "windows-1255"), // 12 - CP1255 Hebrew Windows
-    (0x0D, "ibm737"),       // 13 - CP737  Greek
-    (0x0E, "windows-1253"), // 14 - CP1253 Greek Windows
-    (0x0F, "ibm857"),       // 15 - CP857  Turkish
-    (0x10, "windows-1254"), // 16 - CP1254 Turkish Windows
-    (0x11, "windows-1250"), // 17 - CP1250 Central Europe
-    (0x12, "windows-1251"), // 18 - CP1251 Cyrillic Windows
-    (0x13, "ibm874"),       // 19 - CP874  Thai
-};
+    {
+        (0x00, "ibm437"),       // 0  - CP437  USA/Europe
+        (0x01, "ibm850"),       // 1  - CP850  Multilingual Latin I
+        (0x02, "ibm860"),       // 2  - CP860  Portuguese
+        (0x06, "ibm861"),       // 6  - CP861  Icelandic
+        (0x03, "ibm863"),       // 3  - CP863  Canadian French
+        (0x04, "ibm865"),       // 4  - CP865  Nordic
+        (0x05, "windows-1252"), // 5  - CP1252 Latin I Windows
+        (0x06, "ibm866"),       // 6  - CP866  Cyrillic 2
+        (0x07, "ibm852"),       // 7  - CP852  Latin II
+        (0x08, "ibm858"),       // 8  - CP858  Multilingual + Euro
+        (0x09, "ibm862"),       // 9  - CP862  Hebrew
+        (0x0A, "ibm864"),       // 10 - CP864  Arabic PC864 [MTP-3B default]
+        (0x0B, "windows-1256"), // 11 - CP1256 Arabic Windows
+        (0x0C, "windows-1255"), // 12 - CP1255 Hebrew Windows
+        (0x0D, "ibm737"),       // 13 - CP737  Greek
+        (0x0E, "windows-1253"), // 14 - CP1253 Greek Windows
+        (0x0F, "ibm857"),       // 15 - CP857  Turkish
+        (0x10, "windows-1254"), // 16 - CP1254 Turkish Windows
+        (0x11, "windows-1250"), // 17 - CP1250 Central Europe
+        (0x12, "windows-1251"), // 18 - CP1251 Cyrillic Windows
+        (0x13, "ibm874"),       // 19 - CP874  Thai
+    };
+
     private static (byte escPosValue, Encoding encoding) GetCodepageSettings()
     {
         var idx = Preferences.Get("print_codepage", 10);
@@ -332,7 +334,8 @@ public class ReceiptPrintService : IReceiptPrintService
     {
         var isArabic = IsPrintLanguageArabic;
         var fallback = isArabic ? BuiltInA4Ar : BuiltInA4;
-        var template = await _templateService.GetTemplateAsync("A4") ?? fallback;
+        var format = isArabic ? "A4_ar" : "A4";
+        var template = await _templateService.GetTemplateAsync(format) ?? fallback;
         return RenderHtmlTemplate(template, receipt);
     }
 
@@ -340,7 +343,8 @@ public class ReceiptPrintService : IReceiptPrintService
     {
         var isArabic = IsPrintLanguageArabic;
         var fallback = isArabic ? BuiltInDriverAr : BuiltInDriver;
-        var template = await _templateService.GetTemplateAsync("Driver") ?? fallback;
+        var format = isArabic ? "Driver_ar" : "Driver";
+        var template = await _templateService.GetTemplateAsync(format) ?? fallback;
         return RenderHtmlTemplate(template, receipt);
     }
 
@@ -348,7 +352,8 @@ public class ReceiptPrintService : IReceiptPrintService
     {
         var isArabic = IsPrintLanguageArabic;
         var fallback = isArabic ? BuiltInPlainTextAr : BuiltInPlainText;
-        var template = await _templateService.GetTemplateAsync("PlainText") ?? fallback;
+        var format = isArabic ? "PlainText_ar" : "PlainText";
+        var template = await _templateService.GetTemplateAsync(format) ?? fallback;
         return RenderTextTemplate(template, receipt);
     }
 
@@ -356,7 +361,8 @@ public class ReceiptPrintService : IReceiptPrintService
     {
         var isArabic = IsPrintLanguageArabic;
         var fallback = isArabic ? BuiltInEscPosAr : BuiltInEscPos;
-        var template = await _templateService.GetTemplateAsync("EscPos") ?? fallback;
+        var format = isArabic ? "EscPos_ar" : "EscPos";
+        var template = await _templateService.GetTemplateAsync(format) ?? fallback;
         return RenderTextTemplate(template, receipt);
     }
 
