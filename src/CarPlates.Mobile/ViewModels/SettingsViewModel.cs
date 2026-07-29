@@ -81,6 +81,9 @@ public partial class SettingsViewModel : BaseViewModel
 
     public List<string> AvailableLanguages { get; } = new() { "English", "العربية" };
     public ObservableCollection<string> AvailablePrinters { get; } = new();
+    [ObservableProperty]
+    private bool _hasPrinters;
+
     public List<string> PrintFormatOptions { get; } = new()
     {
         "ESC/POS Formatted",
@@ -133,8 +136,7 @@ public partial class SettingsViewModel : BaseViewModel
             PaymentEndpointUrl = paymentConfig.EndpointUrl;
             PaymentAdditionalSettings = paymentConfig.AdditionalSettings;
 
-            // Load print settings from Preferences
-            await RefreshPrintersAsync();
+            // Load print settings from Preferences (don't scan printers on load — user clicks Refresh)
             SelectedPrinter = Preferences.Get("print_default_printer", string.Empty);
             PrinterIp = Preferences.Get("print_default_ip", string.Empty);
             SelectedPrintFormatIndex = Preferences.Get("print_default_format", 0);
@@ -151,10 +153,12 @@ public partial class SettingsViewModel : BaseViewModel
             AvailablePrinters.Clear();
             foreach (var p in printers)
                 AvailablePrinters.Add(p);
+            HasPrinters = AvailablePrinters.Count > 0;
         }
         catch (Exception ex)
         {
             System.Diagnostics.Debug.WriteLine($"[Settings] RefreshPrinters: {ex.Message}");
+            HasPrinters = false;
         }
     }
 
@@ -171,16 +175,26 @@ public partial class SettingsViewModel : BaseViewModel
 
             await _settingsService.SaveSettingsAsync(settings);
 
-            // Save payment gateway config via API
-            await _paymentSettingsService.SaveAsync(new PaymentGatewayConfig
+            // Save payment gateway config via API (only if enabled)
+            if (PaymentGatewayEnabled)
             {
-                IsEnabled = PaymentGatewayEnabled,
-                GatewayName = PaymentGatewayName,
-                MerchantId = PaymentMerchantId,
-                ApiKey = PaymentApiKey,
-                EndpointUrl = PaymentEndpointUrl,
-                AdditionalSettings = PaymentAdditionalSettings
-            });
+                try
+                {
+                    await _paymentSettingsService.SaveAsync(new PaymentGatewayConfig
+                    {
+                        IsEnabled = true,
+                        GatewayName = PaymentGatewayName,
+                        MerchantId = PaymentMerchantId,
+                        ApiKey = PaymentApiKey,
+                        EndpointUrl = PaymentEndpointUrl,
+                        AdditionalSettings = PaymentAdditionalSettings
+                    });
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine($"[Settings] Failed to save payment gateway settings: {ex.Message}");
+                }
+            }
 
             // Save print settings
             Preferences.Set("print_default_printer", SelectedPrinter ?? string.Empty);

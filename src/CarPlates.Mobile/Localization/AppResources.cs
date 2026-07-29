@@ -175,4 +175,6 @@ public static class AppResources
     public static string Signature => LocalizationResourceManager.Instance["Signature"];
     public static string CurrencySAR => LocalizationResourceManager.Instance["CurrencySAR"];
     public static string VATLabel => LocalizationResourceManager.Instance["VATLabel"];
+    public static string SessionExpiredTitle => LocalizationResourceManager.Instance["SessionExpiredTitle"];
+    public static string SessionExpiredMessage => LocalizationResourceManager.Instance["SessionExpiredMessage"];
 }

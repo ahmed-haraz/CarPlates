@@ -41,24 +41,16 @@ public class ReceiptPrintService : IReceiptPrintService
         }
     }
 
-    public Task<IReadOnlyList<string>> GetAvailablePrintersAsync()
+    public async Task<IReadOnlyList<string>> GetAvailablePrintersAsync()
     {
         var printers = new List<string>();
 
         try
         {
-            var activity = Platform.CurrentActivity;
-
-            // Check permission upfront (Android 12+)
-            if (OperatingSystem.IsAndroidVersionAtLeast(31) && activity != null)
+            if (OperatingSystem.IsAndroidVersionAtLeast(31))
             {
-                bool hasPermission = ContextCompat.CheckSelfPermission(
-                    activity, global::Android.Manifest.Permission.BluetoothConnect) == Permission.Granted;
-                if (!hasPermission)
-                {
-                    System.Diagnostics.Debug.WriteLine("[GetAvailablePrinters] BLUETOOTH_CONNECT not granted - returning empty");
-                    return Task.FromResult<IReadOnlyList<string>>(printers);
-                }
+                var granted = await EnsureBluetoothConnectPermissionAsync();
+                if (!granted) return printers;
             }
 
             var adapter = BluetoothAdapter.DefaultAdapter;
@@ -75,7 +67,7 @@ public class ReceiptPrintService : IReceiptPrintService
             System.Diagnostics.Debug.WriteLine($"[GetAvailablePrinters] {ex.Message}");
         }
 
-        return Task.FromResult<IReadOnlyList<string>>(printers);
+        return printers;
     }
 
     private async Task PrintEscPosAsync(ReceiptApiResult receipt, string? printerName = null)
@@ -168,7 +160,11 @@ public class ReceiptPrintService : IReceiptPrintService
     private static async Task EnsureBluetoothEnabledAsync()
     {
         if (OperatingSystem.IsAndroidVersionAtLeast(31))
-            await EnsureBluetoothConnectPermissionAsync();
+        {
+            bool granted = await EnsureBluetoothConnectPermissionAsync();
+            if (!granted)
+                throw new InvalidOperationException("Bluetooth permission denied.");
+        }
 
         var adapter = BluetoothAdapter.DefaultAdapter;
         if (adapter == null) return;
@@ -198,13 +194,13 @@ public class ReceiptPrintService : IReceiptPrintService
             throw new InvalidOperationException("Bluetooth was not enabled. Please enable Bluetooth and try again.");
     }
 
-    private static async Task EnsureBluetoothConnectPermissionAsync()
+    private static async Task<bool> EnsureBluetoothConnectPermissionAsync()
     {
         var activity = Platform.CurrentActivity;
-        if (activity == null) return;
+        if (activity == null) return false;
 
         bool hasPermission = ContextCompat.CheckSelfPermission(activity, global::Android.Manifest.Permission.BluetoothConnect) == Permission.Granted;
-        if (hasPermission) return;
+        if (hasPermission) return true;
 
         var tcs = new TaskCompletionSource<bool>();
         PermissionTcs = tcs;
@@ -213,10 +209,7 @@ public class ReceiptPrintService : IReceiptPrintService
             [global::Android.Manifest.Permission.BluetoothConnect, global::Android.Manifest.Permission.BluetoothScan],
             RequestBluetoothPermission);
 
-        var granted = await tcs.Task;
-
-        if (!granted)
-            throw new InvalidOperationException("Bluetooth permission denied. Grant it in Settings or use network/driver print.");
+        return await tcs.Task;
     }
 
     private void PrintA4(ReceiptApiResult receipt)

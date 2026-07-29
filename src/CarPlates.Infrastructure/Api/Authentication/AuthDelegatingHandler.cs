@@ -12,6 +12,14 @@ public class AuthDelegatingHandler(ITokenStorage tokenStorage, IApiUrlProvider a
     private readonly ITokenStorage _tokenStorage = tokenStorage;
     private readonly IApiUrlProvider _apiUrlProvider = apiUrlProvider;
 
+    /// <summary>Raised when the session is forcibly revoked (e.g. user logged in from another device).</summary>
+    public static event Func<Task>? SessionRevoked;
+
+    private static bool _sessionRevokedFired;
+
+    /// <summary>Resets the flag so the event can fire again on a subsequent session.</summary>
+    public static void ResetSessionRevokedFlag() => _sessionRevokedFired = false;
+
     // Guards against concurrent requests each independently kicking off a
     // refresh when a token expires; only one refresh call happens at a time
     // and the rest wait for and reuse its result.
@@ -68,6 +76,7 @@ public class AuthDelegatingHandler(ITokenStorage tokenStorage, IApiUrlProvider a
             if (!refreshResponse.IsSuccessStatusCode)
             {
                 await _tokenStorage.ClearTokensAsync();
+                await RaiseSessionRevokedAsync();
                 return response;
             }
 
@@ -75,6 +84,7 @@ public class AuthDelegatingHandler(ITokenStorage tokenStorage, IApiUrlProvider a
             if (result == null)
             {
                 await _tokenStorage.ClearTokensAsync();
+                await RaiseSessionRevokedAsync();
                 return response;
             }
 
@@ -107,6 +117,23 @@ public class AuthDelegatingHandler(ITokenStorage tokenStorage, IApiUrlProvider a
         var retryRequest = await CloneRequestAsync(originalRequest);
         retryRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
         return await base.SendAsync(retryRequest, cancellationToken);
+    }
+
+    private static async Task RaiseSessionRevokedAsync()
+    {
+        if (_sessionRevokedFired) return;
+        _sessionRevokedFired = true;
+
+        try
+        {
+            var handler = SessionRevoked;
+            if (handler != null)
+                await handler.Invoke();
+        }
+        catch
+        {
+            // Swallow — the subscriber is responsible for its own error handling.
+        }
     }
 
     private static async Task<HttpRequestMessage> CloneRequestAsync(HttpRequestMessage original)

@@ -780,4 +780,10 @@
   <data name="VATLabel" xml:space="preserve">
     <value>VAT 15%</value>
   </data>
+  <data name="SessionExpiredTitle" xml:space="preserve">
+    <value>Session Expired</value>
+  </data>
+  <data name="SessionExpiredMessage" xml:space="preserve">
+    <value>You have been logged in from another device.</value>
+  </data>
 </root>

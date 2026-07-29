@@ -1,6 +1,7 @@
 using System.Text.Json;
 using CarPlates.Application.Common.DTOs;
 using CarPlates.Application.Common.Interfaces;
+using CarPlates.Infrastructure.Api.Authentication;
 using CarPlates.Shared.Constants;
 using Microsoft.Maui.Storage;
 
@@ -12,6 +13,8 @@ public class TokenStorage : ITokenStorage
 
     public async Task SaveTokenAsync(string accessToken, string refreshToken)
     {
+        AuthDelegatingHandler.ResetSessionRevokedFlag();
+
         await SecureStorage.SetAsync(AuthConstants.AccessTokenKey, accessToken);
         await SecureStorage.SetAsync(AuthConstants.RefreshTokenKey, refreshToken);
         await SecureStorage.SetAsync(AuthConstants.TokenExpiryKey, 
