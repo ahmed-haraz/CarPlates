@@ -167,9 +167,9 @@ Plate Type: {PlateType}
   Item                      Qty    Price
 {ItemsText}
 --------------------------------
-  Total:       {Total,10}
-  Paid:        {Paid,10}
-  Balance:     {Balance,10}
+  Total:       {Total}
+  Paid:        {Paid}
+  Balance:     {Balance}
 {PaymentsText}
 
 {Footer}";
@@ -188,9 +188,9 @@ Plate Type: {PlateType}
   Item                      Qty    Price
 {ItemsText}
 --------------------------------
-  Total:       {Total,10}
-  Paid:        {Paid,10}
-  Balance:     {Balance,10}
+  Total:       {Total}
+  Paid:        {Paid}
+  Balance:     {Balance}
 {PaymentsText}
 
 {Footer}";

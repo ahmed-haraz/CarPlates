@@ -310,13 +310,17 @@ public class ReceiptPrintService : IReceiptPrintService
 
     private async Task<string> BuildPlainTextReceiptAsync(ReceiptApiResult receipt)
     {
-        var template = await _templateService.GetTemplateAsync("PlainText") ?? BuiltInPlainText;
+        var isArabic = IsPrintLanguageArabic;
+        var fallback = isArabic ? BuiltInPlainTextAr : BuiltInPlainText;
+        var template = await _templateService.GetTemplateAsync("PlainText") ?? fallback;
         return RenderTextTemplate(template, receipt);
     }
 
     private async Task<string> BuildEscPosTextAsync(ReceiptApiResult receipt)
     {
-        var template = await _templateService.GetTemplateAsync("EscPos") ?? BuiltInEscPos;
+        var isArabic = IsPrintLanguageArabic;
+        var fallback = isArabic ? BuiltInEscPosAr : BuiltInEscPos;
+        var template = await _templateService.GetTemplateAsync("EscPos") ?? fallback;
         return RenderTextTemplate(template, receipt);
     }
 
@@ -361,6 +365,15 @@ public class ReceiptPrintService : IReceiptPrintService
             .Replace("{Footer}", footer)
             .Replace("{CompanyName}", companyName);
 
+        if (isArabic)
+        {
+            result = result
+                .Replace("text-align: left", "text-align: right")
+                .Replace("text-align:center", "text-align:center")
+                .Replace("<html>", "<html dir=\"rtl\">")
+                .Replace("<style>", "<style>\n  body { direction: rtl; }\n");
+        }
+
         return result;
     }
 
@@ -371,15 +384,21 @@ public class ReceiptPrintService : IReceiptPrintService
         var companyAddress = isArabic ? DefaultCompanyAddressAr : DefaultCompanyAddress;
         var footer = isArabic ? DefaultFooterAr : DefaultFooter;
 
-        var itemsText = string.Join("\n",
-            receipt.Details.Select(d =>
-                $"  {(d.ItemName ?? d.ItemBarCode),-25} {d.Qty,5:F0} {d.Price,8:F2}"));
+        var itemsText = isArabic
+            ? string.Join("\n",
+                receipt.Details.Select(d =>
+                    $"  {d.Qty,5:F0} {d.Price,8:F2} {(d.ItemName ?? d.ItemBarCode),25}"))
+            : string.Join("\n",
+                receipt.Details.Select(d =>
+                    $"  {(d.ItemName ?? d.ItemBarCode),-25} {d.Qty,5:F0} {d.Price,8:F2}"));
 
         var paymentsText = receipt.Payments.Any()
             ? $"{new string('-', 32)}\n{string.Join("\n", receipt.Payments.Select(p =>
             {
                 var method = p.PayType switch { 1 => "Cash", 2 => "Visa", 3 => "Bank", _ => "Other" };
-                return $"  {method,-12} {p.Amount,10:F2}";
+                return isArabic
+                    ? $"  {p.Amount,10:F2}  {method,12}"
+                    : $"  {method,-12} {p.Amount,10:F2}";
             }))}"
             : "";
 
@@ -477,9 +496,9 @@ public class ReceiptPrintService : IReceiptPrintService
         "  Item                      Qty    Price\n" +
         "{ItemsText}\n" +
         "--------------------------------\n" +
-        "  Total:       {Total,10}\n" +
-        "  Paid:        {Paid,10}\n" +
-        "  Balance:     {Balance,10}\n" +
+        "  Total:       {Total}\n" +
+        "  Paid:        {Paid}\n" +
+        "  Balance:     {Balance}\n" +
         "{PaymentsText}\n" +
         "\n" +
         "{Footer}";
@@ -499,9 +518,53 @@ public class ReceiptPrintService : IReceiptPrintService
         "  Item                      Qty    Price\n" +
         "{ItemsText}\n" +
         "--------------------------------\n" +
-        "  Total:       {Total,10}\n" +
-        "  Paid:        {Paid,10}\n" +
-        "  Balance:     {Balance,10}\n" +
+        "  Total:       {Total}\n" +
+        "  Paid:        {Paid}\n" +
+        "  Balance:     {Balance}\n" +
+        "{PaymentsText}\n" +
+        "\n" +
+        "{Footer}";
+
+    private const string BuiltInPlainTextAr =
+        "{CompanyName}\n" +
+        "--------------------------------\n" +
+        "رقم الإيصال: {ReceiptNo}\n" +
+        "التاريخ: {Date}\n" +
+        "العميل: {CustomerName}\n" +
+        "اللوحة: {PlateNumber}\n" +
+        "الموقع: {Location}\n" +
+        "الفني: {Technician}\n" +
+        "اللون: {Color}\n" +
+        "نوع اللوحة: {PlateType}\n" +
+        "--------------------------------\n" +
+        "  الكمية   السعر       الصنف\n" +
+        "{ItemsText}\n" +
+        "--------------------------------\n" +
+        "  الإجمالي:       {Total}\n" +
+        "  المدفوع:        {Paid}\n" +
+        "  المتبقي:        {Balance}\n" +
+        "{PaymentsText}\n" +
+        "\n" +
+        "{Footer}";
+
+    private const string BuiltInEscPosAr =
+        "{CompanyName}\n" +
+        "--------------------------------\n" +
+        "رقم الإيصال: {ReceiptNo}\n" +
+        "التاريخ: {Date}\n" +
+        "العميل: {CustomerName}\n" +
+        "اللوحة: {PlateNumber}\n" +
+        "الموقع: {Location}\n" +
+        "الفني: {Technician}\n" +
+        "اللون: {Color}\n" +
+        "نوع اللوحة: {PlateType}\n" +
+        "--------------------------------\n" +
+        "  الكمية   السعر       الصنف\n" +
+        "{ItemsText}\n" +
+        "--------------------------------\n" +
+        "  الإجمالي:       {Total}\n" +
+        "  المدفوع:        {Paid}\n" +
+        "  المتبقي:        {Balance}\n" +
         "{PaymentsText}\n" +
         "\n" +
         "{Footer}";
