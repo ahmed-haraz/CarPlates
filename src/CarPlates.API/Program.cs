@@ -19,6 +19,26 @@ Log.Logger = new LoggerConfiguration()
 
 builder.Host.UseSerilog();
 
+var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Value ?? "";
+var origins = allowedOrigins
+    .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+    .Where(o => Uri.TryCreate(o, UriKind.Absolute, out _))
+    .ToArray();
+
+if (origins.Length > 0)
+{
+    builder.Services.AddCors(options =>
+    {
+        options.AddPolicy("AllowWebApp", policy =>
+        {
+            policy.WithOrigins(origins)
+                  .AllowAnyMethod()
+                  .AllowAnyHeader()
+                  .AllowCredentials();
+        });
+    });
+}
+
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSignalR();
@@ -101,6 +121,8 @@ app.UseSerilogRequestLogging();
 //app.UseHttpsRedirection();
 
 app.UseMiddleware<ExceptionMiddleware>();
+
+app.UseCors("AllowWebApp");
 
 app.UseAuthentication();
 app.UseAuthorization();

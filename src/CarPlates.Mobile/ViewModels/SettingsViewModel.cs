@@ -145,10 +145,17 @@ public partial class SettingsViewModel : BaseViewModel
     [RelayCommand]
     private async Task RefreshPrintersAsync()
     {
-        var printers = await _printService.GetAvailablePrintersAsync();
-        AvailablePrinters.Clear();
-        foreach (var p in printers)
-            AvailablePrinters.Add(p);
+        try
+        {
+            var printers = await _printService.GetAvailablePrintersAsync();
+            AvailablePrinters.Clear();
+            foreach (var p in printers)
+                AvailablePrinters.Add(p);
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"[Settings] RefreshPrinters: {ex.Message}");
+        }
     }
 
     [RelayCommand]

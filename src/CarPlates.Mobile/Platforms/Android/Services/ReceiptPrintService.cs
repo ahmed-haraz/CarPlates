@@ -45,13 +45,34 @@ public class ReceiptPrintService : IReceiptPrintService
     {
         var printers = new List<string>();
 
-        var adapter = BluetoothAdapter.DefaultAdapter;
-        if (adapter != null)
+        try
         {
-            var paired = adapter.BondedDevices?
-                .Select(d => d.Name ?? d.Address ?? "Unknown")
-                .ToList() ?? new List<string>();
-            printers.AddRange(paired);
+            var activity = Platform.CurrentActivity;
+
+            // Check permission upfront (Android 12+)
+            if (OperatingSystem.IsAndroidVersionAtLeast(31) && activity != null)
+            {
+                bool hasPermission = ContextCompat.CheckSelfPermission(
+                    activity, global::Android.Manifest.Permission.BluetoothConnect) == Permission.Granted;
+                if (!hasPermission)
+                {
+                    System.Diagnostics.Debug.WriteLine("[GetAvailablePrinters] BLUETOOTH_CONNECT not granted - returning empty");
+                    return Task.FromResult<IReadOnlyList<string>>(printers);
+                }
+            }
+
+            var adapter = BluetoothAdapter.DefaultAdapter;
+            if (adapter != null)
+            {
+                var paired = adapter.BondedDevices?
+                    .Select(d => d.Name ?? d.Address ?? "Unknown")
+                    .ToList() ?? new List<string>();
+                printers.AddRange(paired);
+            }
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"[GetAvailablePrinters] {ex.Message}");
         }
 
         return Task.FromResult<IReadOnlyList<string>>(printers);
