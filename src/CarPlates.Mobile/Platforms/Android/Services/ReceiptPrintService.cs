@@ -262,14 +262,18 @@ public class ReceiptPrintService : IReceiptPrintService
     private static byte[] BuildEscPosReceiptFromText(ReceiptApiResult receipt, string textTemplate)
     {
         using var ms = new MemoryStream();
-        var encoding = GetArabicEncoding();
+        var isArabic = IsPrintLanguageArabic;
 
         byte[] init = { 0x1B, 0x40 };
-        byte[] arabicCP = { 0x1B, 0x74, 0x11 };
+        byte[] codePage = isArabic
+            ? new byte[] { 0x1B, 0x74, 0x1E }  // PC864 Arabic
+            : new byte[] { 0x1B, 0x74, 0x00 }; // PC437 default
         byte[] cut = { 0x1D, 0x56, 0x00 };
 
+        var encoding = isArabic ? GetArabicEncoding() : Encoding.UTF8;
+
         ms.Write(init, 0, init.Length);
-        ms.Write(arabicCP, 0, arabicCP.Length);
+        ms.Write(codePage, 0, codePage.Length);
 
         var lines = textTemplate.Split('\n');
         foreach (var line in lines)
@@ -286,8 +290,8 @@ public class ReceiptPrintService : IReceiptPrintService
 
     private static Encoding GetArabicEncoding()
     {
-        try { return Encoding.GetEncoding("windows-1256"); }
-        catch { return Encoding.UTF8; }
+        try { return Encoding.GetEncoding("ibm864"); }
+        catch { try { return Encoding.GetEncoding("windows-1256"); } catch { return Encoding.UTF8; } }
     }
 
     private static void WriteLine(MemoryStream ms, Encoding encoding, string text)
@@ -298,13 +302,17 @@ public class ReceiptPrintService : IReceiptPrintService
 
     private async Task<string> BuildA4HtmlAsync(ReceiptApiResult receipt)
     {
-        var template = await _templateService.GetTemplateAsync("A4") ?? BuiltInA4;
+        var isArabic = IsPrintLanguageArabic;
+        var fallback = isArabic ? BuiltInA4Ar : BuiltInA4;
+        var template = await _templateService.GetTemplateAsync("A4") ?? fallback;
         return RenderHtmlTemplate(template, receipt);
     }
 
     private async Task<string> BuildReceiptViaDriverHtmlAsync(ReceiptApiResult receipt)
     {
-        var template = await _templateService.GetTemplateAsync("Driver") ?? BuiltInDriver;
+        var isArabic = IsPrintLanguageArabic;
+        var fallback = isArabic ? BuiltInDriverAr : BuiltInDriver;
+        var template = await _templateService.GetTemplateAsync("Driver") ?? fallback;
         return RenderHtmlTemplate(template, receipt);
     }
 
@@ -336,11 +344,17 @@ public class ReceiptPrintService : IReceiptPrintService
                 $"<tr><td>{System.Net.WebUtility.HtmlEncode(d.ItemName ?? d.ItemBarCode)}</td><td>{d.Qty}</td><td>{d.Price:F2}</td><td>{(d.Value ?? 0):F2}</td></tr>"));
 
         var paymentsHtml = receipt.Payments.Any()
-            ? $"<h3>Payments</h3><table><tr><th>Method</th><th>Amount</th></tr>{string.Join("", receipt.Payments.Select(p =>
-            {
-                var method = p.PayType switch { 1 => "Cash", 2 => "Visa", 3 => "Bank Transfer", _ => "Other" };
-                return $"<tr><td>{method}</td><td>{p.Amount:F2}</td></tr>";
-            }))}</table>"
+            ? (isArabic
+                ? $"<h3>المدفوعات</h3><table><tr><th>طريقة الدفع</th><th>المبلغ</th></tr>{string.Join("", receipt.Payments.Select(p =>
+                {
+                    var method = p.PayType switch { 1 => "نقداً", 2 => "فيزا", 3 => "تحويل بنكي", _ => "أخرى" };
+                    return $"<tr><td>{method}</td><td>{p.Amount:F2}</td></tr>";
+                }))}</table>"
+                : $"<h3>Payments</h3><table><tr><th>Method</th><th>Amount</th></tr>{string.Join("", receipt.Payments.Select(p =>
+                {
+                    var method = p.PayType switch { 1 => "Cash", 2 => "Visa", 3 => "Bank Transfer", _ => "Other" };
+                    return $"<tr><td>{method}</td><td>{p.Amount:F2}</td></tr>";
+                }))}</table>")
             : "";
 
         var result = template
@@ -356,7 +370,9 @@ public class ReceiptPrintService : IReceiptPrintService
             .Replace("{Technician}", System.Net.WebUtility.HtmlEncode(receipt.TechnicianName ?? "N/A"))
             .Replace("{Color}", System.Net.WebUtility.HtmlEncode(receipt.Color ?? "N/A"))
             .Replace("{PlateType}", System.Net.WebUtility.HtmlEncode(receipt.PlateType ?? "N/A"))
-            .Replace("{PayType}", receipt.PayType switch { 1 => "Cash", 2 => "Visa", 3 => "Bank Transfer", 4 => "Multiple", _ => "N/A" })
+            .Replace("{PayType}", isArabic
+                ? receipt.PayType switch { 1 => "نقداً", 2 => "فيزا", 3 => "تحويل بنكي", 4 => "متعدد", _ => "N/A" }
+                : receipt.PayType switch { 1 => "Cash", 2 => "Visa", 3 => "Bank Transfer", 4 => "Multiple", _ => "N/A" })
             .Replace("{Items}", itemsHtml)
             .Replace("{Payments}", paymentsHtml)
             .Replace("{Total}", receipt.Total.ToString("F2"))
@@ -395,7 +411,9 @@ public class ReceiptPrintService : IReceiptPrintService
         var paymentsText = receipt.Payments.Any()
             ? $"{new string('-', 32)}\n{string.Join("\n", receipt.Payments.Select(p =>
             {
-                var method = p.PayType switch { 1 => "Cash", 2 => "Visa", 3 => "Bank", _ => "Other" };
+                var method = isArabic
+                    ? p.PayType switch { 1 => "نقداً", 2 => "فيزا", 3 => "بنك", _ => "أخرى" }
+                    : p.PayType switch { 1 => "Cash", 2 => "Visa", 3 => "Bank", _ => "Other" };
                 return isArabic
                     ? $"  {p.Amount,10:F2}  {method,12}"
                     : $"  {method,-12} {p.Amount,10:F2}";
@@ -476,6 +494,60 @@ public class ReceiptPrintService : IReceiptPrintService
         "<tr class='total'><td>Total:</td><td class='right'>{Total}</td></tr>\n" +
         "<tr><td>Paid:</td><td class='right'>{Paid}</td></tr>\n" +
         "<tr><td>Balance:</td><td class='right'>{Balance}</td></tr>\n" +
+        "</table>\n" +
+        "{Payments}\n" +
+        "<p class='center' style='margin-top:12px;'>{Footer}</p>\n" +
+        "</body></html>";
+
+    private const string BuiltInA4Ar =
+        "<!DOCTYPE html>\n<html><head><meta charset='utf-8'><style>\n" +
+        "  body { font-family: Arial; padding: 20px; }\n" +
+        "  h1 { color: #333; text-align: center; }\n" +
+        "  table { width: 100%; border-collapse: collapse; margin: 10px 0; }\n" +
+        "  th, td { border: 1px solid #ddd; padding: 8px; text-align: right; }\n" +
+        "  th { background: #f5f5f5; }\n" +
+        "  .total { font-weight: bold; font-size: 1.1em; }\n" +
+        "</style></head><body>\n" +
+        "<h1>{CompanyName}</h1>\n" +
+        "<div class='header'>\n" +
+        "  <p><strong>رقم الإيصال:</strong> {ReceiptNo}</p>\n" +
+        "  <p><strong>التاريخ:</strong> {Date}</p>\n" +
+        "  <p><strong>العميل:</strong> {CustomerName}</p>\n" +
+        "  <p><strong>اللوحة:</strong> {PlateNumber}</p>\n" +
+        "  <p><strong>الموقع:</strong> {Location}</p>\n" +
+        "  <p><strong>الفني:</strong> {Technician}</p>\n" +
+        "</div>\n" +
+        "<h3>الأصناف</h3>\n" +
+        "<table><tr><th>الصنف</th><th>الكمية</th><th>السعر</th><th>الإجمالي</th></tr>{Items}</table>\n" +
+        "{Payments}\n" +
+        "<hr/>\n" +
+        "<p class='total'>الإجمالي: {Total}</p>\n" +
+        "<p class='total'>المدفوع: {Paid}</p>\n" +
+        "<p class='total'>المتبقي: {Balance}</p>\n" +
+        "<p style='text-align:center;margin-top:30px;color:#888;'>{Footer}</p>\n" +
+        "</body></html>";
+
+    private const string BuiltInDriverAr =
+        "<!DOCTYPE html>\n<html><head><meta charset='utf-8'><style>\n" +
+        "  body { font-family: 'Courier New', monospace; font-size: 12px; margin: 0; padding: 8px; }\n" +
+        "  h2 { text-align: center; margin: 4px 0; }\n" +
+        "  table { width: 100%; border-collapse: collapse; }\n" +
+        "  th, td { padding: 2px 4px; text-align: right; }\n" +
+        "  th { border-bottom: 1px solid #000; }\n" +
+        "  .right { text-align: left; }\n" +
+        "  .center { text-align: center; }\n" +
+        "  .total { font-weight: bold; }\n" +
+        "  .line { border-top: 1px dashed #000; margin: 4px 0; }\n" +
+        "</style></head><body>\n" +
+        "<h2>{CompanyName}</h2>\n" +
+        "<p class='center'>رقم الإيصال: {ReceiptNo}<br/>التاريخ: {Date}<br/>العميل: {CustomerName}<br/>اللوحة: {PlateNumber}</p>\n" +
+        "<div class='line'></div>\n" +
+        "<table><tr><th>الصنف</th><th>الكمية</th><th>السعر</th></tr>{Items}</table>\n" +
+        "<div class='line'></div>\n" +
+        "<table>\n" +
+        "<tr class='total'><td>الإجمالي:</td><td class='right'>{Total}</td></tr>\n" +
+        "<tr><td>المدفوع:</td><td class='right'>{Paid}</td></tr>\n" +
+        "<tr><td>المتبقي:</td><td class='right'>{Balance}</td></tr>\n" +
         "</table>\n" +
         "{Payments}\n" +
         "<p class='center' style='margin-top:12px;'>{Footer}</p>\n" +
