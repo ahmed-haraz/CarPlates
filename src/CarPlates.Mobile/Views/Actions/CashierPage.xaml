@@ -114,18 +114,22 @@
 
                             <!-- Action buttons -->
                             <HorizontalStackLayout Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2"
-                                                   Spacing="8" Margin="0,4,0,0">
-                                <Button Text="Preview" FontSize="11" HeightRequest="30" Padding="8,0"
+                                                   Spacing="6" Margin="0,4,0,0">
+                                <Button Text="Preview" FontSize="10" HeightRequest="28" Padding="6,0"
                                         Style="{StaticResource SecondaryButton}"
                                         Command="{Binding Source={RelativeSource AncestorType={x:Type vm:CashierViewModel}}, Path=PreviewBillCommand}"
                                         CommandParameter="{Binding .}"/>
-                                <Button Text="Pay" FontSize="11" HeightRequest="30" Padding="8,0"
+                                <Button Text="Pay" FontSize="10" HeightRequest="28" Padding="6,0"
                                         Style="{StaticResource PrimaryButton}"
                                         Command="{Binding Source={RelativeSource AncestorType={x:Type vm:CashierViewModel}}, Path=PayBillCommand}"
                                         CommandParameter="{Binding .}"/>
-                                <Button Text="Print" FontSize="11" HeightRequest="30" Padding="8,0"
+                                <Button Text="Print Rec." FontSize="10" HeightRequest="28" Padding="6,0"
                                         Style="{StaticResource SecondaryButton}"
                                         Command="{Binding Source={RelativeSource AncestorType={x:Type vm:CashierViewModel}}, Path=PrintBillCommand}"
+                                        CommandParameter="{Binding .}"/>
+                                <Button Text="Print A4" FontSize="10" HeightRequest="28" Padding="6,0"
+                                        Style="{StaticResource SecondaryButton}"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:CashierViewModel}}, Path=PrintA4BillCommand}"
                                         CommandParameter="{Binding .}"/>
                             </HorizontalStackLayout>
                         </Grid>

@@ -108,37 +108,34 @@ public partial class CashierViewModel : BaseViewModel
     {
         await ExecuteAsync(async () =>
         {
-            var receipt = await _paymentApiService.GetReceiptAsync(bill.HeaderId);
-            if (receipt == null)
+            var detail = await _billApiService.GetBillByIdAsync(bill.HeaderId);
+            if (detail == null)
             {
-                var line1 = $"Bill #{bill.HeaderId}\nDate: {bill.TransDate}\nCustomer: {bill.CustomerName ?? "N/A"}\nPlate: {bill.PlateNumber ?? "N/A"}";
-                var line2 = $"Location: {bill.WorkLocationName ?? "N/A"}\nTechnician: {bill.TechnicianName ?? "N/A"}";
-                var line3 = $"Color: {bill.Color ?? "N/A"}\nPlate Type: {bill.PlateType ?? "N/A"}";
-                var items = $"{line1}\n{line2}\n{line3}\nTotal: {bill.NetTotal:N2}\nPaid: {bill.Paid:N2}\nBalance: {bill.Balance:N2}";
-                await Navigation.DisplayAlertAsync("Bill Details", items);
+                await Navigation.DisplayAlertAsync(AppResources.Error, "Unable to load bill details");
                 return;
             }
 
-            var details = string.Join("\n",
-                receipt.Details.Select(d => $"  {d.ItemName ?? d.ItemBarCode,-25} {d.Qty,5:F0} x {d.Price,8:F2}"));
+            var preview = BuildPrintPreview(detail);
 
-            var message = $"Receipt: {receipt.ReceiptNo ?? "N/A"}\n" +
-                          $"Bill #{receipt.HeaderId}\n" +
-                          $"Date: {receipt.TransDate}\n" +
-                          $"Customer: {receipt.CustomerName ?? "N/A"}\n" +
-                          $"Plate: {receipt.PlateNumber ?? "N/A"}\n" +
-                          $"Location: {receipt.WorkLocationName ?? "N/A"}\n" +
-                          $"Technician: {receipt.TechnicianName ?? "N/A"}\n" +
-                          $"Color: {receipt.Color ?? "N/A"}\n" +
-                          $"Plate Type: {receipt.PlateType ?? "N/A"}\n" +
-                          $"{new string('-', 32)}\n" +
-                          $"{details}\n" +
-                          $"{new string('-', 32)}\n" +
-                          $"Total:     {receipt.Total,10:F2}\n" +
-                          $"Paid:      {receipt.Paid,10:F2}\n" +
-                          $"Balance:   {receipt.Balance,10:F2}";
+            // If the bill has been paid, append payment info
+            if (detail.Paid > 0)
+            {
+                var receipt = await _paymentApiService.GetReceiptAsync(bill.HeaderId);
+                if (receipt?.Payments != null && receipt.Payments.Count > 0)
+                {
+                    var payments = string.Join("\n",
+                        receipt.Payments.Select(p =>
+                        {
+                            var method = p.PayType switch { 1 => "Cash", 2 => "Visa", 3 => "Bank", _ => "Other" };
+                            return $"  {method,-12} {p.Amount,10:F2}";
+                        }));
+                    preview += $"\n{new string('-', 32)}\n{payments}";
+                }
 
-            await Navigation.DisplayAlertAsync("Bill Preview", message);
+                preview += $"\nReceipt No: {receipt?.ReceiptNo ?? "N/A"}";
+            }
+
+            await Navigation.DisplayAlertAsync("Bill Preview", preview);
         });
     }
 
@@ -190,7 +187,6 @@ public partial class CashierViewModel : BaseViewModel
             options.Add("Print via Driver (any printer)");
             options.Add("Enter printer IP...");
             options.Add("Plain Text (universal)");
-            options.Add("Print A4");
 
             var selected = await Navigation.DisplayActionSheetAsync(
                 "Select Printer", "Cancel", null, [.. options]);
@@ -198,11 +194,7 @@ public partial class CashierViewModel : BaseViewModel
             if (selected == "Cancel" || selected == null)
                 return;
 
-            if (selected == "Print A4")
-            {
-                await _printService.PrintReceiptAsync(receipt, null, PrintFormat.A4);
-            }
-            else if (selected == "Print via Driver (any printer)")
+            if (selected == "Print via Driver (any printer)")
             {
                 await _printService.PrintReceiptAsync(receipt, null, PrintFormat.ReceiptViaDriver);
             }
@@ -245,6 +237,34 @@ public partial class CashierViewModel : BaseViewModel
         catch (Exception ex)
         {
             System.Diagnostics.Debug.WriteLine($"[PrintBill] {ex}");
+            await Navigation.DisplayAlertAsync("Print Error", ex.Message);
+        }
+        finally
+        {
+            IsBusy = false;
+        }
+    }
+
+    [RelayCommand]
+    private async Task PrintA4BillAsync(BillApiItem bill)
+    {
+        try
+        {
+            IsBusy = true;
+            var detail = await _billApiService.GetBillByIdAsync(bill.HeaderId);
+            if (detail == null)
+            {
+                await Navigation.DisplayAlertAsync(AppResources.Error, "Unable to load bill details");
+                return;
+            }
+
+            var receipt = BuildReceiptResult(detail);
+            await _printService.PrintReceiptAsync(receipt, format: PrintFormat.A4);
+            await Navigation.DisplayAlertAsync("Print", "Receipt sent to printer");
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"[PrintA4] {ex}");
             await Navigation.DisplayAlertAsync("Print Error", ex.Message);
         }
         finally
