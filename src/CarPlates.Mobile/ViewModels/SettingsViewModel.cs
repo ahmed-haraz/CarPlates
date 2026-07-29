@@ -77,6 +77,7 @@ public partial class SettingsViewModel : BaseViewModel
     [ObservableProperty] private bool _useSavedPrintSettings;
     [ObservableProperty] private bool _isIpEntryEnabled = true;
     [ObservableProperty] private int _selectedPrintLanguageIndex;
+    [ObservableProperty] private int _selectedCodepageIndex;
 
     partial void OnSelectedPrinterChanged(string value) => IsIpEntryEnabled = string.IsNullOrWhiteSpace(value);
 
@@ -94,6 +95,30 @@ public partial class SettingsViewModel : BaseViewModel
     };
 
     public List<string> PrintLanguageOptions { get; } = new() { "English", "العربية" };
+
+    public List<string> CodepageOptions { get; } = new()
+    {
+        "0 - CP437  (USA/Europe) [default]",
+        "1 - CP850  (Multilingual Latin I)",
+        "2 - CP860  (Portuguese)",
+        "3 - CP863  (Canadian French)",
+        "4 - CP865  (Nordic)",
+        "5 - CP1252 (Latin I Windows)",
+        "6 - CP866  (Cyrillic 2)",
+        "7 - CP852  (Latin II)",
+        "8 - CP858  (Multilingual + Euro)",
+        "9 - CP862  (Hebrew)",
+        "10 - CP864 (Arabic PC864) [MTP-3B]",
+        "11 - CP1256 (Arabic Windows)",
+        "12 - CP1255 (Hebrew Windows)",
+        "13 - CP737 (Greek)",
+        "14 - CP1253 (Greek Windows)",
+        "15 - CP857 (Turkish)",
+        "16 - CP1254 (Turkish Windows)",
+        "17 - CP1250 (Central Europe)",
+        "18 - CP1251 (Cyrillic Windows)",
+        "19 - CP874 (Thai)",
+    };
 
     public SettingsViewModel(
         IMediator mediator,
@@ -145,6 +170,7 @@ public partial class SettingsViewModel : BaseViewModel
             SelectedPrintFormatIndex = Preferences.Get("print_default_format", 0);
             UseSavedPrintSettings = Preferences.Get("print_auto_print", false);
             SelectedPrintLanguageIndex = Preferences.Get("print_language", 0);
+            SelectedCodepageIndex = Preferences.Get("print_codepage", 10); // 10 = CP864 Arabic
         });
     }
 
@@ -206,6 +232,7 @@ public partial class SettingsViewModel : BaseViewModel
             Preferences.Set("print_default_format", SelectedPrintFormatIndex);
             Preferences.Set("print_auto_print", UseSavedPrintSettings);
             Preferences.Set("print_language", SelectedPrintLanguageIndex);
+            Preferences.Set("print_codepage", SelectedCodepageIndex);
 
             LocalizationResourceManager.Instance.SetCulture(new CultureInfo(language));
             await Navigation.ApplyCurrentFlowDirectionAsync();

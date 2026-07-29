@@ -102,7 +102,8 @@ public class ReceiptPrintService : IReceiptPrintService
     private async Task PrintPlainTextAsync(ReceiptApiResult receipt, string? printerName = null)
     {
         var text = await BuildPlainTextReceiptAsync(receipt);
-        var data = Encoding.UTF8.GetBytes(text);
+        var (_, encoding) = GetCodepageSettings();
+        var data = encoding.GetBytes(text);
         await SendToPrinterAsync(data, printerName);
     }
 
@@ -259,18 +260,51 @@ public class ReceiptPrintService : IReceiptPrintService
         printManager.Print(jobName, adapter, null);
     }
 
+    private static readonly (byte EscPosValue, string EncodingName)[] CodepageMap = new (byte EscPosValue, string EncodingName)[]
+{
+    (0x00, "ibm437"),       // 0  - CP437  USA/Europe
+    (0x01, "ibm850"),       // 1  - CP850  Multilingual Latin I
+    (0x02, "ibm860"),       // 2  - CP860  Portuguese
+    (0x03, "ibm863"),       // 3  - CP863  Canadian French
+    (0x04, "ibm865"),       // 4  - CP865  Nordic
+    (0x05, "windows-1252"), // 5  - CP1252 Latin I Windows
+    (0x06, "ibm866"),       // 6  - CP866  Cyrillic 2
+    (0x07, "ibm852"),       // 7  - CP852  Latin II
+    (0x08, "ibm858"),       // 8  - CP858  Multilingual + Euro
+    (0x09, "ibm862"),       // 9  - CP862  Hebrew
+    (0x0A, "ibm864"),       // 10 - CP864  Arabic PC864 [MTP-3B default]
+    (0x0B, "windows-1256"), // 11 - CP1256 Arabic Windows
+    (0x0C, "windows-1255"), // 12 - CP1255 Hebrew Windows
+    (0x0D, "ibm737"),       // 13 - CP737  Greek
+    (0x0E, "windows-1253"), // 14 - CP1253 Greek Windows
+    (0x0F, "ibm857"),       // 15 - CP857  Turkish
+    (0x10, "windows-1254"), // 16 - CP1254 Turkish Windows
+    (0x11, "windows-1250"), // 17 - CP1250 Central Europe
+    (0x12, "windows-1251"), // 18 - CP1251 Cyrillic Windows
+    (0x13, "ibm874"),       // 19 - CP874  Thai
+};
+    private static (byte escPosValue, Encoding encoding) GetCodepageSettings()
+    {
+        var idx = Preferences.Get("print_codepage", 10);
+        if (idx < 0 || idx >= CodepageMap.Length)
+            idx = 10;
+
+        var (escPosValue, encodingName) = CodepageMap[idx];
+        Encoding encoding;
+        try { encoding = Encoding.GetEncoding(encodingName); }
+        catch { encoding = Encoding.UTF8; }
+
+        return (escPosValue, encoding);
+    }
+
     private static byte[] BuildEscPosReceiptFromText(ReceiptApiResult receipt, string textTemplate)
     {
         using var ms = new MemoryStream();
-        var isArabic = IsPrintLanguageArabic;
+        var (escPosValue, encoding) = GetCodepageSettings();
 
         byte[] init = { 0x1B, 0x40 };
-        byte[] codePage = isArabic
-            ? new byte[] { 0x1B, 0x74, 0x1E }  // PC864 Arabic
-            : new byte[] { 0x1B, 0x74, 0x00 }; // PC437 default
+        byte[] codePage = { 0x1B, 0x74, escPosValue };
         byte[] cut = { 0x1D, 0x56, 0x00 };
-
-        var encoding = isArabic ? GetArabicEncoding() : Encoding.UTF8;
 
         ms.Write(init, 0, init.Length);
         ms.Write(codePage, 0, codePage.Length);
@@ -286,12 +320,6 @@ public class ReceiptPrintService : IReceiptPrintService
         ms.Write(cut, 0, cut.Length);
 
         return ms.ToArray();
-    }
-
-    private static Encoding GetArabicEncoding()
-    {
-        try { return Encoding.GetEncoding("ibm864"); }
-        catch { try { return Encoding.GetEncoding("windows-1256"); } catch { return Encoding.UTF8; } }
     }
 
     private static void WriteLine(MemoryStream ms, Encoding encoding, string text)

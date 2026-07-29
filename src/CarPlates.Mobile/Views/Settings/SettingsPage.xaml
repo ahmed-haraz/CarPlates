@@ -153,6 +153,10 @@
                     <Label Text="Print Language" Style="{StaticResource Body}" FontAttributes="Bold"/>
                     <Picker ItemsSource="{Binding PrintLanguageOptions}"
                             SelectedIndex="{Binding SelectedPrintLanguageIndex}"/>
+
+                    <Label Text="Code Page" Style="{StaticResource Body}" FontAttributes="Bold"/>
+                    <Picker ItemsSource="{Binding CodepageOptions}"
+                            SelectedIndex="{Binding SelectedCodepageIndex}"/>
                 </VerticalStackLayout>
             </Border>
 
