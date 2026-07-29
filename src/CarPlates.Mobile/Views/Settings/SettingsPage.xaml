@@ -149,6 +149,10 @@
                     <Label Text="Print Format" Style="{StaticResource Body}" FontAttributes="Bold"/>
                     <Picker ItemsSource="{Binding PrintFormatOptions}"
                             SelectedIndex="{Binding SelectedPrintFormatIndex}"/>
+
+                    <Label Text="Print Language" Style="{StaticResource Body}" FontAttributes="Bold"/>
+                    <Picker ItemsSource="{Binding PrintLanguageOptions}"
+                            SelectedIndex="{Binding SelectedPrintLanguageIndex}"/>
                 </VerticalStackLayout>
             </Border>
 

@@ -76,6 +76,7 @@ public partial class SettingsViewModel : BaseViewModel
     [ObservableProperty] private int _selectedPrintFormatIndex;
     [ObservableProperty] private bool _useSavedPrintSettings;
     [ObservableProperty] private bool _isIpEntryEnabled = true;
+    [ObservableProperty] private int _selectedPrintLanguageIndex;
 
     partial void OnSelectedPrinterChanged(string value) => IsIpEntryEnabled = string.IsNullOrWhiteSpace(value);
 
@@ -91,6 +92,8 @@ public partial class SettingsViewModel : BaseViewModel
         "Receipt via Driver",
         "Plain Text (universal)"
     };
+
+    public List<string> PrintLanguageOptions { get; } = new() { "English", "العربية" };
 
     public SettingsViewModel(
         IMediator mediator,
@@ -141,6 +144,7 @@ public partial class SettingsViewModel : BaseViewModel
             PrinterIp = Preferences.Get("print_default_ip", string.Empty);
             SelectedPrintFormatIndex = Preferences.Get("print_default_format", 0);
             UseSavedPrintSettings = Preferences.Get("print_auto_print", false);
+            SelectedPrintLanguageIndex = Preferences.Get("print_language", 0);
         });
     }
 
@@ -201,6 +205,7 @@ public partial class SettingsViewModel : BaseViewModel
             Preferences.Set("print_default_ip", PrinterIp ?? string.Empty);
             Preferences.Set("print_default_format", SelectedPrintFormatIndex);
             Preferences.Set("print_auto_print", UseSavedPrintSettings);
+            Preferences.Set("print_language", SelectedPrintLanguageIndex);
 
             LocalizationResourceManager.Instance.SetCulture(new CultureInfo(language));
             await Navigation.ApplyCurrentFlowDirectionAsync();

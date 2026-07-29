@@ -279,7 +279,14 @@ public partial class CashierViewModel : BaseViewModel
             detail.Details.Select(d =>
                 $"  {(d.ItemName ?? d.ItemBarCode),-25} {d.Qty,5:F0} {d.Price,8:F2}"));
 
-        var preview = $"ARKAN SERVICES\n" +
+        var isArabic = Preferences.Get("print_language", 0) == 1;
+        var companyName = isArabic
+            ? Preferences.Get("print_company_name_ar", "أركان للخدمات")
+            : Preferences.Get("print_company_name", "ARKAN SERVICES");
+        var footer = isArabic
+            ? Preferences.Get("print_footer_ar", "شكراً لزيارتكم!")
+            : Preferences.Get("print_footer", "Thank you for your visit!");
+        var preview = $"{companyName}\n" +
                       $"{new string('-', 32)}\n" +
                       $"Receipt: {detail.DocTransNo ?? "N/A"}\n" +
                       $"Date: {detail.TransDate}\n" +
@@ -296,7 +303,7 @@ public partial class CashierViewModel : BaseViewModel
                       $"Total:     {detail.Total,10:F2}\n" +
                       $"Paid:      {detail.Paid,10:F2}\n" +
                       $"Balance:   {detail.Balance,10:F2}\n" +
-                      $"Thank you for your visit!";
+                      $"{footer}";
 
         return preview;
     }

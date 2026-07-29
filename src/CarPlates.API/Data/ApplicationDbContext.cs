@@ -34,6 +34,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     public DbSet<fw_LOVStatments> LovStatments { get; set; } = null!;
     public DbSet<PaymentGatewaySetting> PaymentGatewaySettings { get; set; } = null!;
     public DbSet<VehicleColor> VehicleColors { get; set; } = null!;
+    public DbSet<ReceiptTemplate> ReceiptTemplates { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -272,6 +273,16 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
             entity.Property(e => e.Viewname).HasMaxLength(200);
             entity.Property(e => e.TableName).HasMaxLength(200);
             entity.Property(e => e.BranchTableName).HasMaxLength(200);
+        });
+
+        builder.Entity<ReceiptTemplate>(entity =>
+        {
+            entity.ToTable("ReceiptTemplates");
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Format).HasMaxLength(20).IsRequired();
+            entity.Property(e => e.Content).HasColumnType("nvarchar(max)").IsRequired();
+            entity.Property(e => e.UpdatedBy).HasMaxLength(100);
+            entity.HasIndex(e => e.Format).IsUnique();
         });
     }
 }

@@ -15,21 +15,43 @@ namespace CarPlates.Mobile.Platforms.Android.Services;
 
 public class ReceiptPrintService : IReceiptPrintService
 {
+    private readonly IReceiptTemplateService _templateService;
+
+    /// <summary>Default company info used when no template is available.</summary>
+    internal static string DefaultCompanyName { get; set; } = "ARKAN SERVICES";
+    internal static string DefaultCompanyAddress { get; set; } = "";
+    internal static string DefaultCompanyPhone { get; set; } = "";
+    internal static string DefaultCompanyTaxNumber { get; set; } = "";
+    internal static string DefaultFooter { get; set; } = "Thank you for your visit!";
+
+    // Arabic defaults for bilingual printing
+    internal static string DefaultCompanyNameAr { get; set; } = "أركان للخدمات";
+    internal static string DefaultCompanyAddressAr { get; set; } = "";
+    internal static string DefaultFooterAr { get; set; } = "شكراً لزيارتكم!";
+
+    internal static bool IsPrintLanguageArabic =>
+        Preferences.Get("print_language", 0) == 1;
+
     internal const int RequestEnableBluetooth = 9001;
     internal const int RequestBluetoothPermission = 9002;
 
     internal static TaskCompletionSource<bool>? EnableBluetoothTcs { get; set; }
     internal static TaskCompletionSource<bool>? PermissionTcs { get; set; }
 
+    public ReceiptPrintService(IReceiptTemplateService templateService)
+    {
+        _templateService = templateService;
+    }
+
     public async Task PrintReceiptAsync(ReceiptApiResult receipt, string? printerName = null, PrintFormat format = PrintFormat.Receipt)
     {
         switch (format)
         {
             case PrintFormat.A4:
-                PrintA4(receipt);
+                await PrintA4Async(receipt);
                 break;
             case PrintFormat.ReceiptViaDriver:
-                PrintReceiptViaDriver(receipt);
+                await PrintReceiptViaDriverAsync(receipt);
                 break;
             case PrintFormat.PlainText:
                 await PrintPlainTextAsync(receipt, printerName);
@@ -72,13 +94,14 @@ public class ReceiptPrintService : IReceiptPrintService
 
     private async Task PrintEscPosAsync(ReceiptApiResult receipt, string? printerName = null)
     {
-        var data = BuildEscPosReceipt(receipt);
+        var text = await BuildEscPosTextAsync(receipt);
+        var data = BuildEscPosReceiptFromText(receipt, text);
         await SendToPrinterAsync(data, printerName);
     }
 
     private async Task PrintPlainTextAsync(ReceiptApiResult receipt, string? printerName = null)
     {
-        var text = BuildPlainTextReceipt(receipt);
+        var text = await BuildPlainTextReceiptAsync(receipt);
         var data = Encoding.UTF8.GetBytes(text);
         await SendToPrinterAsync(data, printerName);
     }
@@ -212,14 +235,16 @@ public class ReceiptPrintService : IReceiptPrintService
         return await tcs.Task;
     }
 
-    private void PrintA4(ReceiptApiResult receipt)
+    private async Task PrintA4Async(ReceiptApiResult receipt)
     {
-        PrintHtml(receipt, BuildA4Html(receipt), "Receipt A4");
+        var html = await BuildA4HtmlAsync(receipt);
+        PrintHtml(receipt, html, "Receipt A4");
     }
 
-    private void PrintReceiptViaDriver(ReceiptApiResult receipt)
+    private async Task PrintReceiptViaDriverAsync(ReceiptApiResult receipt)
     {
-        PrintHtml(receipt, BuildReceiptViaDriverHtml(receipt), "Receipt");
+        var html = await BuildReceiptViaDriverHtmlAsync(receipt);
+        PrintHtml(receipt, html, "Receipt");
     }
 
     private void PrintHtml(ReceiptApiResult receipt, string html, string jobName)
@@ -234,70 +259,23 @@ public class ReceiptPrintService : IReceiptPrintService
         printManager.Print(jobName, adapter, null);
     }
 
-    private static byte[] BuildEscPosReceipt(ReceiptApiResult receipt)
+    private static byte[] BuildEscPosReceiptFromText(ReceiptApiResult receipt, string textTemplate)
     {
         using var ms = new MemoryStream();
         var encoding = GetArabicEncoding();
 
         byte[] init = { 0x1B, 0x40 };
         byte[] arabicCP = { 0x1B, 0x74, 0x11 };
-        byte[] center = { 0x1B, 0x61, 0x01 };
-        byte[] left = { 0x1B, 0x61, 0x00 };
-        byte[] boldOn = { 0x1B, 0x45, 0x01 };
-        byte[] boldOff = { 0x1B, 0x45, 0x00 };
-        byte[] doubleH = { 0x1B, 0x64, 0x01 };
-        byte[] normal = { 0x1B, 0x64, 0x00 };
         byte[] cut = { 0x1D, 0x56, 0x00 };
 
         ms.Write(init, 0, init.Length);
         ms.Write(arabicCP, 0, arabicCP.Length);
-        ms.Write(center, 0, center.Length);
-        ms.Write(doubleH, 0, doubleH.Length);
 
-        WriteLine(ms, encoding, "ARKAN SERVICES");
-
-        ms.Write(boldOff, 0, boldOff.Length);
-        ms.Write(normal, 0, normal.Length);
-
-        WriteLine(ms, encoding, new string('-', 32));
-        WriteLine(ms, encoding, $"Receipt: {receipt.ReceiptNo}");
-        WriteLine(ms, encoding, $"Date: {receipt.TransDate}");
-        WriteLine(ms, encoding, $"Customer: {receipt.CustomerName ?? "N/A"}");
-        WriteLine(ms, encoding, $"Plate: {receipt.PlateNumber ?? "N/A"}");
-        WriteLine(ms, encoding, $"Location: {receipt.WorkLocationName ?? "N/A"}");
-        WriteLine(ms, encoding, $"Technician: {receipt.TechnicianName ?? "N/A"}");
-        WriteLine(ms, encoding, $"Color: {receipt.Color ?? "N/A"}");
-        WriteLine(ms, encoding, $"Plate Type: {receipt.PlateType ?? "N/A"}");
-        WriteLine(ms, encoding, new string('-', 32));
-
-        ms.Write(boldOn, 0, boldOn.Length);
-        WriteLine(ms, encoding, $"  {"Item",-25} {"Qty",5} {"Price",8}");
-        ms.Write(boldOff, 0, boldOff.Length);
-
-        foreach (var detail in receipt.Details)
+        var lines = textTemplate.Split('\n');
+        foreach (var line in lines)
         {
-            WriteLine(ms, encoding, $"  {(detail.ItemName ?? detail.ItemBarCode),-25} {detail.Qty,5} {detail.Price,8:F2}");
+            WriteLine(ms, encoding, line.TrimEnd('\r'));
         }
-
-        WriteLine(ms, encoding, new string('-', 32));
-        ms.Write(boldOn, 0, boldOn.Length);
-        WriteLine(ms, encoding, $"  Total:     {receipt.Total,10:F2}");
-        WriteLine(ms, encoding, $"  Paid:      {receipt.Paid,10:F2}");
-        WriteLine(ms, encoding, $"  Balance:   {receipt.Balance,10:F2}");
-        ms.Write(boldOff, 0, boldOff.Length);
-
-        if (receipt.Payments.Any())
-        {
-            WriteLine(ms, encoding, new string('-', 32));
-            foreach (var p in receipt.Payments)
-            {
-                var method = p.PayType switch { 1 => "Cash", 2 => "Visa", 3 => "Bank", _ => "Other" };
-                WriteLine(ms, encoding, $"  {method,-12} {p.Amount,10:F2}");
-            }
-        }
-
-        WriteLine(ms, encoding, string.Empty);
-        WriteLine(ms, encoding, "Thank you for your visit!");
 
         byte[] feed = { 0x1B, 0x64, 0x04 };
         ms.Write(feed, 0, feed.Length);
@@ -318,141 +296,215 @@ public class ReceiptPrintService : IReceiptPrintService
         ms.Write(bytes, 0, bytes.Length);
     }
 
-    private static string BuildPlainTextReceipt(ReceiptApiResult receipt)
+    private async Task<string> BuildA4HtmlAsync(ReceiptApiResult receipt)
     {
-        var sb = new StringBuilder();
-        sb.AppendLine("ARKAN SERVICES");
-        sb.AppendLine(new string('-', 32));
-        sb.AppendLine($"Receipt: {receipt.ReceiptNo}");
-        sb.AppendLine($"Date: {receipt.TransDate}");
-        sb.AppendLine($"Customer: {receipt.CustomerName ?? "N/A"}");
-        sb.AppendLine($"Plate: {receipt.PlateNumber ?? "N/A"}");
-        sb.AppendLine($"Location: {receipt.WorkLocationName ?? "N/A"}");
-        sb.AppendLine($"Technician: {receipt.TechnicianName ?? "N/A"}");
-        sb.AppendLine($"Color: {receipt.Color ?? "N/A"}");
-        sb.AppendLine($"Plate Type: {receipt.PlateType ?? "N/A"}");
-        sb.AppendLine(new string('-', 32));
-        sb.Append("  ").Append("Item".PadRight(25)).Append(" ").AppendLine("Qty    Price");
-        foreach (var detail in receipt.Details)
-        {
-            var name = detail.ItemName ?? detail.ItemBarCode ?? "";
-            sb.Append("  ").Append(name.PadRight(25))
-              .Append(" ").Append(detail.Qty.ToString("F0").PadLeft(5))
-              .Append(" ").AppendLine(detail.Price.ToString("F2").PadLeft(8));
-        }
-        sb.AppendLine(new string('-', 32));
-        sb.AppendLine($"  Total:     {receipt.Total,10:F2}");
-        sb.AppendLine($"  Paid:      {receipt.Paid,10:F2}");
-        sb.AppendLine($"  Balance:   {receipt.Balance,10:F2}");
-        if (receipt.Payments.Any())
-        {
-            sb.AppendLine(new string('-', 32));
-            foreach (var p in receipt.Payments)
-            {
-                var method = p.PayType switch { 1 => "Cash", 2 => "Visa", 3 => "Bank", _ => "Other" };
-                sb.Append("  ").Append(method.PadRight(12)).AppendLine(p.Amount.ToString("F2").PadLeft(10));
-            }
-        }
-        sb.AppendLine();
-        sb.AppendLine("Thank you for your visit!");
-        return sb.ToString();
+        var template = await _templateService.GetTemplateAsync("A4") ?? BuiltInA4;
+        return RenderHtmlTemplate(template, receipt);
     }
 
-    private static string BuildA4Html(ReceiptApiResult receipt)
+    private async Task<string> BuildReceiptViaDriverHtmlAsync(ReceiptApiResult receipt)
     {
+        var template = await _templateService.GetTemplateAsync("Driver") ?? BuiltInDriver;
+        return RenderHtmlTemplate(template, receipt);
+    }
+
+    private async Task<string> BuildPlainTextReceiptAsync(ReceiptApiResult receipt)
+    {
+        var template = await _templateService.GetTemplateAsync("PlainText") ?? BuiltInPlainText;
+        return RenderTextTemplate(template, receipt);
+    }
+
+    private async Task<string> BuildEscPosTextAsync(ReceiptApiResult receipt)
+    {
+        var template = await _templateService.GetTemplateAsync("EscPos") ?? BuiltInEscPos;
+        return RenderTextTemplate(template, receipt);
+    }
+
+    private string RenderHtmlTemplate(string template, ReceiptApiResult receipt)
+    {
+        var isArabic = IsPrintLanguageArabic;
+        var companyName = isArabic ? DefaultCompanyNameAr : DefaultCompanyName;
+        var companyAddress = isArabic ? DefaultCompanyAddressAr : DefaultCompanyAddress;
+        var footer = isArabic ? DefaultFooterAr : DefaultFooter;
+
         var itemsHtml = string.Join("",
             receipt.Details.Select(d =>
                 $"<tr><td>{System.Net.WebUtility.HtmlEncode(d.ItemName ?? d.ItemBarCode)}</td><td>{d.Qty}</td><td>{d.Price:F2}</td><td>{(d.Value ?? 0):F2}</td></tr>"));
 
-        var paymentsHtml = string.Join("",
-            receipt.Payments.Select(p =>
+        var paymentsHtml = receipt.Payments.Any()
+            ? $"<h3>Payments</h3><table><tr><th>Method</th><th>Amount</th></tr>{string.Join("", receipt.Payments.Select(p =>
             {
                 var method = p.PayType switch { 1 => "Cash", 2 => "Visa", 3 => "Bank Transfer", _ => "Other" };
                 return $"<tr><td>{method}</td><td>{p.Amount:F2}</td></tr>";
-            }));
+            }))}</table>"
+            : "";
 
-        var payType = receipt.PayType switch
-        {
-            1 => "Cash",
-            2 => "Visa",
-            3 => "Bank Transfer",
-            4 => "Multiple",
-            _ => "N/A"
-        };
+        var result = template
+            .Replace("{CompanyName}", companyName)
+            .Replace("{CompanyAddress}", companyAddress)
+            .Replace("{CompanyPhone}", DefaultCompanyPhone)
+            .Replace("{CompanyTaxNumber}", DefaultCompanyTaxNumber)
+            .Replace("{ReceiptNo}", System.Net.WebUtility.HtmlEncode(receipt.ReceiptNo ?? "N/A"))
+            .Replace("{Date}", receipt.TransDate?.ToString() ?? "N/A")
+            .Replace("{CustomerName}", System.Net.WebUtility.HtmlEncode(receipt.CustomerName ?? "N/A"))
+            .Replace("{PlateNumber}", System.Net.WebUtility.HtmlEncode(receipt.PlateNumber ?? "N/A"))
+            .Replace("{Location}", System.Net.WebUtility.HtmlEncode(receipt.WorkLocationName ?? "N/A"))
+            .Replace("{Technician}", System.Net.WebUtility.HtmlEncode(receipt.TechnicianName ?? "N/A"))
+            .Replace("{Color}", System.Net.WebUtility.HtmlEncode(receipt.Color ?? "N/A"))
+            .Replace("{PlateType}", System.Net.WebUtility.HtmlEncode(receipt.PlateType ?? "N/A"))
+            .Replace("{PayType}", receipt.PayType switch { 1 => "Cash", 2 => "Visa", 3 => "Bank Transfer", 4 => "Multiple", _ => "N/A" })
+            .Replace("{Items}", itemsHtml)
+            .Replace("{Payments}", paymentsHtml)
+            .Replace("{Total}", receipt.Total.ToString("F2"))
+            .Replace("{Paid}", receipt.Paid.ToString("F2"))
+            .Replace("{Balance}", receipt.Balance.ToString("F2"))
+            .Replace("{Footer}", footer)
+            .Replace("{CompanyName}", companyName);
 
-        return $@"<!DOCTYPE html>
-<html><head><meta charset='utf-8'><style>
-  body {{ font-family: Arial; padding: 20px; }}
-  h1 {{ color: #333; text-align: center; }}
-  table {{ width: 100%; border-collapse: collapse; margin: 10px 0; }}
-  th, td {{ border: 1px solid #ddd; padding: 8px; text-align: left; }}
-  th {{ background: #f5f5f5; }}
-  .total {{ font-weight: bold; font-size: 1.1em; }}
-  .header {{ margin-bottom: 20px; }}
-</style></head><body>
-<h1>ARKAN SERVICES</h1>
-<div class='header'>
-  <p><strong>Receipt:</strong> {System.Net.WebUtility.HtmlEncode(receipt.ReceiptNo)}</p>
-  <p><strong>Date:</strong> {receipt.TransDate}</p>
-  <p><strong>Customer:</strong> {System.Net.WebUtility.HtmlEncode(receipt.CustomerName ?? "N/A")}</p>
-  <p><strong>Plate:</strong> {System.Net.WebUtility.HtmlEncode(receipt.PlateNumber ?? "N/A")}</p>
-  <p><strong>Location:</strong> {System.Net.WebUtility.HtmlEncode(receipt.WorkLocationName ?? "N/A")}</p>
-  <p><strong>Technician:</strong> {System.Net.WebUtility.HtmlEncode(receipt.TechnicianName ?? "N/A")}</p>
-  <p><strong>Color:</strong> {System.Net.WebUtility.HtmlEncode(receipt.Color ?? "N/A")}</p>
-  <p><strong>Plate Type:</strong> {System.Net.WebUtility.HtmlEncode(receipt.PlateType ?? "N/A")}</p>
-  <p><strong>Pay Type:</strong> {payType}</p>
-</div>
-<h3>Items</h3>
-<table><tr><th>Item</th><th>Qty</th><th>Price</th><th>Total</th></tr>{itemsHtml}</table>
-<h3>Payments</h3>
-<table><tr><th>Method</th><th>Amount</th></tr>{paymentsHtml}</table>
-<hr/>
-<p class='total'>Total: {receipt.Total:F2}</p>
-<p class='total'>Paid: {receipt.Paid:F2}</p>
-<p class='total'>Balance: {receipt.Balance:F2}</p>
-<p style='text-align:center;margin-top:30px;color:#888;'>Thank you for your visit!</p>
-</body></html>";
+        return result;
     }
 
-    private static string BuildReceiptViaDriverHtml(ReceiptApiResult receipt)
+    private string RenderTextTemplate(string template, ReceiptApiResult receipt)
     {
-        var itemsHtml = string.Join("",
+        var isArabic = IsPrintLanguageArabic;
+        var companyName = isArabic ? DefaultCompanyNameAr : DefaultCompanyName;
+        var companyAddress = isArabic ? DefaultCompanyAddressAr : DefaultCompanyAddress;
+        var footer = isArabic ? DefaultFooterAr : DefaultFooter;
+
+        var itemsText = string.Join("\n",
             receipt.Details.Select(d =>
-                $"<tr><td>{System.Net.WebUtility.HtmlEncode(d.ItemName ?? d.ItemBarCode)}</td><td>{d.Qty}</td><td>{d.Price:F2}</td></tr>"));
+                $"  {(d.ItemName ?? d.ItemBarCode),-25} {d.Qty,5:F0} {d.Price,8:F2}"));
 
-        var paymentsHtml = string.Join("",
-            receipt.Payments.Select(p =>
+        var paymentsText = receipt.Payments.Any()
+            ? $"{new string('-', 32)}\n{string.Join("\n", receipt.Payments.Select(p =>
             {
-                var method = p.PayType switch { 1 => "Cash", 2 => "Visa", 3 => "Bank Transfer", _ => "Other" };
-                return $"<tr><td>{method}</td><td style='text-align:right'>{p.Amount:F2}</td></tr>";
-            }));
+                var method = p.PayType switch { 1 => "Cash", 2 => "Visa", 3 => "Bank", _ => "Other" };
+                return $"  {method,-12} {p.Amount,10:F2}";
+            }))}"
+            : "";
 
-        return $@"<!DOCTYPE html>
-<html><head><meta charset='utf-8'><style>
-  body {{ font-family: 'Courier New', monospace; font-size: 12px; margin: 0; padding: 8px; }}
-  h2 {{ text-align: center; margin: 4px 0; }}
-  table {{ width: 100%; border-collapse: collapse; }}
-  th, td {{ padding: 2px 4px; text-align: left; }}
-  th {{ border-bottom: 1px solid #000; }}
-  .right {{ text-align: right; }}
-  .center {{ text-align: center; }}
-  .total {{ font-weight: bold; }}
-  .line {{ border-top: 1px dashed #000; margin: 4px 0; }}
-</style></head><body>
-<h2>ARKAN SERVICES</h2>
-<p class='center'>Receipt: {System.Net.WebUtility.HtmlEncode(receipt.ReceiptNo)}<br/>Date: {receipt.TransDate}<br/>Customer: {System.Net.WebUtility.HtmlEncode(receipt.CustomerName ?? "N/A")}<br/>Plate: {System.Net.WebUtility.HtmlEncode(receipt.PlateNumber ?? "N/A")}</p>
-<div class='line'></div>
-<table><tr><th>Item</th><th>Qty</th><th>Price</th></tr>{itemsHtml}</table>
-<div class='line'></div>
-<table>
-<tr class='total'><td>Total:</td><td class='right'>{receipt.Total:F2}</td></tr>
-<tr><td>Paid:</td><td class='right'>{receipt.Paid:F2}</td></tr>
-<tr><td>Balance:</td><td class='right'>{receipt.Balance:F2}</td></tr>
-</table>
-{(!receipt.Payments.Any() ? "" : $@"<div class='line'></div><table>{paymentsHtml}</table>")}
-<p class='center' style='margin-top:12px;'>Thank you for your visit!</p>
-</body></html>";
+        var result = template
+            .Replace("{CompanyName}", companyName)
+            .Replace("{CompanyAddress}", companyAddress)
+            .Replace("{CompanyPhone}", DefaultCompanyPhone)
+            .Replace("{CompanyTaxNumber}", DefaultCompanyTaxNumber)
+            .Replace("{ReceiptNo}", receipt.ReceiptNo ?? "N/A")
+            .Replace("{Date}", receipt.TransDate?.ToString() ?? "N/A")
+            .Replace("{CustomerName}", receipt.CustomerName ?? "N/A")
+            .Replace("{PlateNumber}", receipt.PlateNumber ?? "N/A")
+            .Replace("{Location}", receipt.WorkLocationName ?? "N/A")
+            .Replace("{Technician}", receipt.TechnicianName ?? "N/A")
+            .Replace("{Color}", receipt.Color ?? "N/A")
+            .Replace("{PlateType}", receipt.PlateType ?? "N/A")
+            .Replace("{Total}", receipt.Total.ToString("F2"))
+            .Replace("{Paid}", receipt.Paid.ToString("F2"))
+            .Replace("{Balance}", receipt.Balance.ToString("F2"))
+            .Replace("{ItemsText}", itemsText)
+            .Replace("{PaymentsText}", paymentsText)
+            .Replace("{Footer}", footer)
+            .Replace("{CompanyName}", companyName);
+
+        return result;
     }
+
+    // Built-in fallback templates (used when server is unreachable)
+    private const string BuiltInA4 =
+        "<!DOCTYPE html>\n<html><head><meta charset='utf-8'><style>\n" +
+        "  body { font-family: Arial; padding: 20px; }\n" +
+        "  h1 { color: #333; text-align: center; }\n" +
+        "  table { width: 100%; border-collapse: collapse; margin: 10px 0; }\n" +
+        "  th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }\n" +
+        "  th { background: #f5f5f5; }\n" +
+        "  .total { font-weight: bold; font-size: 1.1em; }\n" +
+        "</style></head><body>\n" +
+        "<h1>{CompanyName}</h1>\n" +
+        "<div class='header'>\n" +
+        "  <p><strong>Receipt:</strong> {ReceiptNo}</p>\n" +
+        "  <p><strong>Date:</strong> {Date}</p>\n" +
+        "  <p><strong>Customer:</strong> {CustomerName}</p>\n" +
+        "  <p><strong>Plate:</strong> {PlateNumber}</p>\n" +
+        "  <p><strong>Location:</strong> {Location}</p>\n" +
+        "  <p><strong>Technician:</strong> {Technician}</p>\n" +
+        "</div>\n" +
+        "<h3>Items</h3>\n" +
+        "<table><tr><th>Item</th><th>Qty</th><th>Price</th><th>Total</th></tr>{Items}</table>\n" +
+        "{Payments}\n" +
+        "<hr/>\n" +
+        "<p class='total'>Total: {Total}</p>\n" +
+        "<p class='total'>Paid: {Paid}</p>\n" +
+        "<p class='total'>Balance: {Balance}</p>\n" +
+        "<p style='text-align:center;margin-top:30px;color:#888;'>{Footer}</p>\n" +
+        "</body></html>";
+
+    private const string BuiltInDriver =
+        "<!DOCTYPE html>\n<html><head><meta charset='utf-8'><style>\n" +
+        "  body { font-family: 'Courier New', monospace; font-size: 12px; margin: 0; padding: 8px; }\n" +
+        "  h2 { text-align: center; margin: 4px 0; }\n" +
+        "  table { width: 100%; border-collapse: collapse; }\n" +
+        "  th, td { padding: 2px 4px; text-align: left; }\n" +
+        "  th { border-bottom: 1px solid #000; }\n" +
+        "  .right { text-align: right; }\n" +
+        "  .center { text-align: center; }\n" +
+        "  .total { font-weight: bold; }\n" +
+        "  .line { border-top: 1px dashed #000; margin: 4px 0; }\n" +
+        "</style></head><body>\n" +
+        "<h2>{CompanyName}</h2>\n" +
+        "<p class='center'>Receipt: {ReceiptNo}<br/>Date: {Date}<br/>Customer: {CustomerName}<br/>Plate: {PlateNumber}</p>\n" +
+        "<div class='line'></div>\n" +
+        "<table><tr><th>Item</th><th>Qty</th><th>Price</th></tr>{Items}</table>\n" +
+        "<div class='line'></div>\n" +
+        "<table>\n" +
+        "<tr class='total'><td>Total:</td><td class='right'>{Total}</td></tr>\n" +
+        "<tr><td>Paid:</td><td class='right'>{Paid}</td></tr>\n" +
+        "<tr><td>Balance:</td><td class='right'>{Balance}</td></tr>\n" +
+        "</table>\n" +
+        "{Payments}\n" +
+        "<p class='center' style='margin-top:12px;'>{Footer}</p>\n" +
+        "</body></html>";
+
+    private const string BuiltInPlainText =
+        "{CompanyName}\n" +
+        "--------------------------------\n" +
+        "Receipt: {ReceiptNo}\n" +
+        "Date: {Date}\n" +
+        "Customer: {CustomerName}\n" +
+        "Plate: {PlateNumber}\n" +
+        "Location: {Location}\n" +
+        "Technician: {Technician}\n" +
+        "Color: {Color}\n" +
+        "Plate Type: {PlateType}\n" +
+        "--------------------------------\n" +
+        "  Item                      Qty    Price\n" +
+        "{ItemsText}\n" +
+        "--------------------------------\n" +
+        "  Total:       {Total,10}\n" +
+        "  Paid:        {Paid,10}\n" +
+        "  Balance:     {Balance,10}\n" +
+        "{PaymentsText}\n" +
+        "\n" +
+        "{Footer}";
+
+    private const string BuiltInEscPos =
+        "{CompanyName}\n" +
+        "--------------------------------\n" +
+        "Receipt: {ReceiptNo}\n" +
+        "Date: {Date}\n" +
+        "Customer: {CustomerName}\n" +
+        "Plate: {PlateNumber}\n" +
+        "Location: {Location}\n" +
+        "Technician: {Technician}\n" +
+        "Color: {Color}\n" +
+        "Plate Type: {PlateType}\n" +
+        "--------------------------------\n" +
+        "  Item                      Qty    Price\n" +
+        "{ItemsText}\n" +
+        "--------------------------------\n" +
+        "  Total:       {Total,10}\n" +
+        "  Paid:        {Paid,10}\n" +
+        "  Balance:     {Balance,10}\n" +
+        "{PaymentsText}\n" +
+        "\n" +
+        "{Footer}";
 
     private class ReceiptPrintAdapter : PrintDocumentAdapter
     {

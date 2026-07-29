@@ -93,6 +93,7 @@ builder.Services.AddScoped<IPaymentService, PaymentService>();
 builder.Services.AddScoped<ILovService, LovService>();
 builder.Services.AddScoped<IPaymentGatewaySettingsService, PaymentGatewaySettingsService>();
 builder.Services.AddScoped<IVehicleColorService, VehicleColorService>();
+builder.Services.AddScoped<IReceiptTemplateService, ReceiptTemplateService>();
 builder.Services.AddHostedService<PublishIPMonitorService>();
 
 builder.Services.AddHttpClient("FwApi", client =>
