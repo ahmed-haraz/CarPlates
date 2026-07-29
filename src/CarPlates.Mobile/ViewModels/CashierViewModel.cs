@@ -198,34 +198,39 @@ public partial class CashierViewModel : BaseViewModel
 
             // 2. Pick printer
             var printers = (await _printService.GetAvailablePrintersAsync()).ToList();
+            var options = new List<string>();
+            options.AddRange(printers);
+            options.Add("Print via Driver (any printer)");
+            options.Add("Enter printer IP...");
+            options.Add("Print A4");
 
-            if (printers.Count == 0)
+            var selected = await Navigation.DisplayActionSheetAsync(
+                "Select Printer", "Cancel", null, [.. options]);
+
+            if (selected == "Cancel" || selected == null)
+                return;
+
+            if (selected == "Print A4")
             {
-                var noBt = await Navigation.DisplayActionSheetAsync(
-                    "No Bluetooth printers found. Print as A4?", "Cancel", null, "Print A4");
-                if (noBt == "Print A4")
-                    await _printService.PrintReceiptAsync(receipt, null, PrintFormat.A4);
-                else
-                    return;
+                await _printService.PrintReceiptAsync(receipt, null, PrintFormat.A4);
+            }
+            else if (selected == "Print via Driver (any printer)")
+            {
+                await _printService.PrintReceiptAsync(receipt, null, PrintFormat.ReceiptViaDriver);
+            }
+            else if (selected == "Enter printer IP...")
+            {
+                var ip = await Navigation.DisplayPromptAsync(
+                    "Network Printer",
+                    "Enter printer IP address (e.g. 192.168.1.100:9100):",
+                    "Print", "Cancel",
+                    placeholder: "IP:Port (default port 9100)");
+                if (string.IsNullOrWhiteSpace(ip)) return;
+                await _printService.PrintReceiptAsync(receipt, ip.Trim(), PrintFormat.Receipt);
             }
             else
             {
-                var options = printers.Cast<string>().ToList();
-                options.Add("Print A4");
-                var selected = await Navigation.DisplayActionSheetAsync(
-                    "Select Printer", "Cancel", null, [.. options]);
-
-                if (selected == "Cancel" || selected == null)
-                    return;
-
-                if (selected == "Print A4")
-                {
-                    await _printService.PrintReceiptAsync(receipt, null, PrintFormat.A4);
-                }
-                else
-                {
-                    await _printService.PrintReceiptAsync(receipt, selected, PrintFormat.Receipt);
-                }
+                await _printService.PrintReceiptAsync(receipt, selected, PrintFormat.Receipt);
             }
 
             await Navigation.DisplayAlertAsync("Print", "Receipt sent to printer");
@@ -247,7 +252,7 @@ public partial class CashierViewModel : BaseViewModel
             detail.Details.Select(d =>
                 $"  {(d.ItemName ?? d.ItemBarCode),-25} {d.Qty,5:F0} {d.Price,8:F2}"));
 
-        var preview = $"ARKAN MAINTENANCE\n" +
+        var preview = $"ARKAN SERVICES\n" +
                       $"{new string('-', 32)}\n" +
                       $"Receipt: {detail.DocTransNo ?? "N/A"}\n" +
                       $"Date: {detail.TransDate}\n" +

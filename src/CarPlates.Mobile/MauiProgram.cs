@@ -23,6 +23,7 @@ using CommunityToolkit.Maui;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using System.Reflection;
+using System.Text;
 
 using CarPlates.Application.Common.Interfaces;
 #if ANDROID
@@ -39,6 +40,8 @@ public static class MauiProgram
 {
     public static MauiApp CreateMauiApp()
     {
+        Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+
         var builder = MauiApp.CreateBuilder();
         builder
             .UseMauiApp<App>()
