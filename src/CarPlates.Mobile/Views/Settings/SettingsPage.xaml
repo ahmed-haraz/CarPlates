@@ -114,6 +114,40 @@
                 </VerticalStackLayout>
             </Border>
 
+            <!-- Print Settings -->
+            <Label Text="Print Settings" Style="{StaticResource Title}" Margin="0,8,0,0"/>
+            <Border Style="{StaticResource Card}">
+                <VerticalStackLayout Spacing="12">
+                    <Grid ColumnDefinitions="*,Auto">
+                        <Label Grid.Column="0" Text="Use saved print settings" Style="{StaticResource Body}" VerticalOptions="Center"/>
+                        <Switch Grid.Column="1" IsToggled="{Binding UseSavedPrintSettings}"/>
+                    </Grid>
+
+                    <BoxView HeightRequest="1" Color="{DynamicResource Border}" Margin="0,4"/>
+
+                    <Label Text="Default Printer" Style="{StaticResource Body}" FontAttributes="Bold"/>
+                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                        <Picker Grid.Column="0"
+                                ItemsSource="{Binding AvailablePrinters}"
+                                SelectedItem="{Binding SelectedPrinter}"/>
+                        <Button Grid.Column="1" Text="Refresh"
+                                Command="{Binding RefreshPrintersCommand}"
+                                HeightRequest="40" FontSize="12"
+                                Padding="12,0"/>
+                    </Grid>
+
+                    <Label Text="Or enter network printer IP:Port" Style="{StaticResource Caption}"/>
+                    <Entry Placeholder="192.168.1.100:9100" Text="{Binding PrinterIp}"
+                           IsEnabled="{Binding IsIpEntryEnabled}"/>
+
+                    <BoxView HeightRequest="1" Color="{DynamicResource Border}" Margin="0,4"/>
+
+                    <Label Text="Print Format" Style="{StaticResource Body}" FontAttributes="Bold"/>
+                    <Picker ItemsSource="{Binding PrintFormatOptions}"
+                            SelectedIndex="{Binding SelectedPrintFormatIndex}"/>
+                </VerticalStackLayout>
+            </Border>
+
             <!-- Data Management -->
             <Label Text="{loc:Translate Key=DataManagement}" Style="{StaticResource Title}" Margin="0,8,0,0"/>
             <Border Style="{StaticResource Card}">

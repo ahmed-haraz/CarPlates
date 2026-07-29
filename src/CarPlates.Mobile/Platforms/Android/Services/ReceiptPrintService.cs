@@ -31,6 +31,9 @@ public class ReceiptPrintService : IReceiptPrintService
             case PrintFormat.ReceiptViaDriver:
                 PrintReceiptViaDriver(receipt);
                 break;
+            case PrintFormat.PlainText:
+                await PrintPlainTextAsync(receipt, printerName);
+                break;
             case PrintFormat.Receipt:
             default:
                 await PrintEscPosAsync(receipt, printerName);
@@ -56,16 +59,29 @@ public class ReceiptPrintService : IReceiptPrintService
 
     private async Task PrintEscPosAsync(ReceiptApiResult receipt, string? printerName = null)
     {
+        var data = BuildEscPosReceipt(receipt);
+        await SendToPrinterAsync(data, printerName);
+    }
+
+    private async Task PrintPlainTextAsync(ReceiptApiResult receipt, string? printerName = null)
+    {
+        var text = BuildPlainTextReceipt(receipt);
+        var data = Encoding.UTF8.GetBytes(text);
+        await SendToPrinterAsync(data, printerName);
+    }
+
+    private async Task SendToPrinterAsync(byte[] data, string? printerName = null)
+    {
         if (!string.IsNullOrWhiteSpace(printerName) && printerName.Contains(':'))
         {
-            await PrintViaNetworkAsync(receipt, printerName);
+            await SendViaNetworkAsync(data, printerName);
             return;
         }
 
-        await PrintViaBluetoothAsync(receipt, printerName);
+        await SendViaBluetoothAsync(data, printerName);
     }
 
-    private async Task PrintViaNetworkAsync(ReceiptApiResult receipt, string address)
+    private async Task SendViaNetworkAsync(byte[] data, string address)
     {
         var parts = address.Split(':');
         var ip = parts[0].Trim();
@@ -75,12 +91,11 @@ public class ReceiptPrintService : IReceiptPrintService
         using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(15));
         await tcpClient.ConnectAsync(ip, port, cts.Token);
         await using var stream = tcpClient.GetStream();
-        var data = BuildEscPosReceipt(receipt);
         await stream.WriteAsync(data, cts.Token);
         await stream.FlushAsync(cts.Token);
     }
 
-    private async Task PrintViaBluetoothAsync(ReceiptApiResult receipt, string? printerName = null)
+    private async Task SendViaBluetoothAsync(byte[] data, string? printerName = null)
     {
         await EnsureBluetoothEnabledAsync();
 
@@ -116,7 +131,6 @@ public class ReceiptPrintService : IReceiptPrintService
             await socket.ConnectAsync();
 
             var outputStream = socket.OutputStream;
-            var data = BuildEscPosReceipt(receipt);
             await outputStream.WriteAsync(data);
             await outputStream.FlushAsync();
         }
@@ -288,6 +302,46 @@ public class ReceiptPrintService : IReceiptPrintService
     {
         var bytes = encoding.GetBytes(text + "\n");
         ms.Write(bytes, 0, bytes.Length);
+    }
+
+    private static string BuildPlainTextReceipt(ReceiptApiResult receipt)
+    {
+        var sb = new StringBuilder();
+        sb.AppendLine("ARKAN SERVICES");
+        sb.AppendLine(new string('-', 32));
+        sb.AppendLine($"Receipt: {receipt.ReceiptNo}");
+        sb.AppendLine($"Date: {receipt.TransDate}");
+        sb.AppendLine($"Customer: {receipt.CustomerName ?? "N/A"}");
+        sb.AppendLine($"Plate: {receipt.PlateNumber ?? "N/A"}");
+        sb.AppendLine($"Location: {receipt.WorkLocationName ?? "N/A"}");
+        sb.AppendLine($"Technician: {receipt.TechnicianName ?? "N/A"}");
+        sb.AppendLine($"Color: {receipt.Color ?? "N/A"}");
+        sb.AppendLine($"Plate Type: {receipt.PlateType ?? "N/A"}");
+        sb.AppendLine(new string('-', 32));
+        sb.Append("  ").Append("Item".PadRight(25)).Append(" ").AppendLine("Qty    Price");
+        foreach (var detail in receipt.Details)
+        {
+            var name = detail.ItemName ?? detail.ItemBarCode ?? "";
+            sb.Append("  ").Append(name.PadRight(25))
+              .Append(" ").Append(detail.Qty.ToString("F0").PadLeft(5))
+              .Append(" ").AppendLine(detail.Price.ToString("F2").PadLeft(8));
+        }
+        sb.AppendLine(new string('-', 32));
+        sb.AppendLine($"  Total:     {receipt.Total,10:F2}");
+        sb.AppendLine($"  Paid:      {receipt.Paid,10:F2}");
+        sb.AppendLine($"  Balance:   {receipt.Balance,10:F2}");
+        if (receipt.Payments.Any())
+        {
+            sb.AppendLine(new string('-', 32));
+            foreach (var p in receipt.Payments)
+            {
+                var method = p.PayType switch { 1 => "Cash", 2 => "Visa", 3 => "Bank", _ => "Other" };
+                sb.Append("  ").Append(method.PadRight(12)).AppendLine(p.Amount.ToString("F2").PadLeft(10));
+            }
+        }
+        sb.AppendLine();
+        sb.AppendLine("Thank you for your visit!");
+        return sb.ToString();
     }
 
     private static string BuildA4Html(ReceiptApiResult receipt)

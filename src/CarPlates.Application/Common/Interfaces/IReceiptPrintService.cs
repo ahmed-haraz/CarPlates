@@ -4,7 +4,8 @@ public enum PrintFormat
 {
     Receipt,
     A4,
-    ReceiptViaDriver
+    ReceiptViaDriver,
+    PlainText
 }
 
 public interface IReceiptPrintService

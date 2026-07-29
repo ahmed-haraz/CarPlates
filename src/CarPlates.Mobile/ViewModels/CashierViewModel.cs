@@ -166,30 +166,17 @@ public partial class CashierViewModel : BaseViewModel
                 return;
             }
 
-            var receipt = new ReceiptApiResult(
-                ReceiptNo: null,
-                HeaderId: detail.HeaderId,
-                DocTransNo: detail.DocTransNo,
-                TransDate: detail.TransDate,
-                CustomerName: detail.CustomerName,
-                ReferenceNo: detail.ReferenceNo,
-                PlateNumber: detail.PlateNumber,
-                Total: detail.Total,
-                NetTotal: detail.NetTotal,
-                Paid: detail.Paid,
-                Balance: detail.Balance,
-                PayType: detail.PayType,
-                WorkLocationName: detail.WorkLocationName,
-                TechnicianName: detail.TechnicianName,
-                Color: detail.Color,
-                PlateType: detail.PlateType,
-                Payments: [],
-                Details: detail.Details.Select(d => new BillDetailApiItem(
-                    d.DetailId, d.ItemID, d.ItemBarCode, d.Package, d.Qty, d.Price,
-                    d.DetailDiscount1, d.DetailDiscount2, d.DetailDiscountR1, d.DetailDiscountR2,
-                    d.DetailTax, d.DetailTaxR, d.Value,
-                    null, null, null, null, null, null, null, null,
-                    d.ItemName)).ToList());
+            var receipt = BuildReceiptResult(detail);
+
+            // Check if user has saved print settings for direct printing
+            if (TryGetSavedPrintSettings(out var savedPrinter, out var savedFormat))
+            {
+                await Navigation.DisplayAlertAsync("Print Preview", BuildPrintPreview(detail));
+                IsBusy = false;
+                await _printService.PrintReceiptAsync(receipt, savedPrinter, savedFormat);
+                await Navigation.DisplayAlertAsync("Print", "Receipt sent to printer");
+                return;
+            }
 
             // 1. Show preview formatted exactly as the printed receipt
             var preview = BuildPrintPreview(detail);
@@ -202,6 +189,7 @@ public partial class CashierViewModel : BaseViewModel
             options.AddRange(printers);
             options.Add("Print via Driver (any printer)");
             options.Add("Enter printer IP...");
+            options.Add("Plain Text (universal)");
             options.Add("Print A4");
 
             var selected = await Navigation.DisplayActionSheetAsync(
@@ -218,6 +206,23 @@ public partial class CashierViewModel : BaseViewModel
             {
                 await _printService.PrintReceiptAsync(receipt, null, PrintFormat.ReceiptViaDriver);
             }
+            else if (selected == "Plain Text (universal)")
+            {
+                if (printers.Count > 0)
+                {
+                    await _printService.PrintReceiptAsync(receipt, printers[0], PrintFormat.PlainText);
+                }
+                else
+                {
+                    var ip = await Navigation.DisplayPromptAsync(
+                        "Network Printer",
+                        "No Bluetooth printer found. Enter printer IP:Port:",
+                        "Print", "Cancel",
+                        placeholder: "IP:Port (default port 9100)");
+                    if (string.IsNullOrWhiteSpace(ip)) return;
+                    await _printService.PrintReceiptAsync(receipt, ip.Trim(), PrintFormat.PlainText);
+                }
+            }
             else if (selected == "Enter printer IP...")
             {
                 var ip = await Navigation.DisplayPromptAsync(
@@ -226,11 +231,13 @@ public partial class CashierViewModel : BaseViewModel
                     "Print", "Cancel",
                     placeholder: "IP:Port (default port 9100)");
                 if (string.IsNullOrWhiteSpace(ip)) return;
-                await _printService.PrintReceiptAsync(receipt, ip.Trim(), PrintFormat.Receipt);
+                var fmt = await PickPrintFormatAsync();
+                await _printService.PrintReceiptAsync(receipt, ip.Trim(), fmt);
             }
             else
             {
-                await _printService.PrintReceiptAsync(receipt, selected, PrintFormat.Receipt);
+                var fmt = await PickPrintFormatAsync();
+                await _printService.PrintReceiptAsync(receipt, selected, fmt);
             }
 
             await Navigation.DisplayAlertAsync("Print", "Receipt sent to printer");
@@ -283,6 +290,67 @@ public partial class CashierViewModel : BaseViewModel
     partial void OnDateToChanged(DateTime value)
     {
         _ = LoadBillsAsync();
+    }
+
+    private static ReceiptApiResult BuildReceiptResult(BillDetailResult detail)
+    {
+        return new ReceiptApiResult(
+            ReceiptNo: null,
+            HeaderId: detail.HeaderId,
+            DocTransNo: detail.DocTransNo,
+            TransDate: detail.TransDate,
+            CustomerName: detail.CustomerName,
+            ReferenceNo: detail.ReferenceNo,
+            PlateNumber: detail.PlateNumber,
+            Total: detail.Total,
+            NetTotal: detail.NetTotal,
+            Paid: detail.Paid,
+            Balance: detail.Balance,
+            PayType: detail.PayType,
+            WorkLocationName: detail.WorkLocationName,
+            TechnicianName: detail.TechnicianName,
+            Color: detail.Color,
+            PlateType: detail.PlateType,
+            Payments: [],
+            Details: detail.Details.Select(d => new BillDetailApiItem(
+                d.DetailId, d.ItemID, d.ItemBarCode, d.Package, d.Qty, d.Price,
+                d.DetailDiscount1, d.DetailDiscount2, d.DetailDiscountR1, d.DetailDiscountR2,
+                d.DetailTax, d.DetailTaxR, d.Value,
+                null, null, null, null, null, null, null, null,
+                d.ItemName)).ToList());
+    }
+
+    private static bool TryGetSavedPrintSettings(out string? printerName, out PrintFormat format)
+    {
+        format = PrintFormat.Receipt;
+        printerName = null;
+
+        if (!Preferences.Get("print_auto_print", false))
+            return false;
+
+        format = (PrintFormat)Preferences.Get("print_default_format", 0);
+        var savedPrinter = Preferences.Get("print_default_printer", string.Empty);
+        var savedIp = Preferences.Get("print_default_ip", string.Empty);
+
+        if (!string.IsNullOrWhiteSpace(savedPrinter))
+            printerName = savedPrinter;
+        else if (!string.IsNullOrWhiteSpace(savedIp))
+            printerName = savedIp;
+        else
+            return false;
+
+        return true;
+    }
+
+    private async Task<PrintFormat> PickPrintFormatAsync()
+    {
+        var format = await Navigation.DisplayActionSheetAsync(
+            "Print Format", "Cancel", null, "Formatted (ESC/POS)", "Plain Text (universal)");
+        return format switch
+        {
+            "Plain Text (universal)" => PrintFormat.PlainText,
+            _ => PrintFormat.Receipt
+        };
     }
 
     partial void OnShowAllBillsChanged(bool value)
