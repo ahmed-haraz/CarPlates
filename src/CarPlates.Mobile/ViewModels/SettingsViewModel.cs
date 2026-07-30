@@ -78,6 +78,7 @@ public partial class SettingsViewModel : BaseViewModel
     [ObservableProperty] private bool _isIpEntryEnabled = true;
     [ObservableProperty] private int _selectedPrintLanguageIndex;
     [ObservableProperty] private int _selectedCodepageIndex;
+    [ObservableProperty] private int _selectedPrinterWidthIndex;
 
     partial void OnSelectedPrinterChanged(string value) => IsIpEntryEnabled = string.IsNullOrWhiteSpace(value);
 
@@ -119,6 +120,12 @@ public partial class SettingsViewModel : BaseViewModel
         "18 - CP1251 (Cyrillic Windows)",
         "19 - CP874 (Thai)",
         "20 - CP861 (Icelandic)",
+    };
+
+    public List<string> PrinterWidthOptions { get; } = new()
+    {
+        "58mm (384 dots)",
+        "80mm (576 dots)"
     };
     public SettingsViewModel(
         IMediator mediator,
@@ -171,6 +178,7 @@ public partial class SettingsViewModel : BaseViewModel
             UseSavedPrintSettings = Preferences.Get("print_auto_print", false);
             SelectedPrintLanguageIndex = Preferences.Get("print_language", 0);
             SelectedCodepageIndex = Preferences.Get("print_codepage", 10); // 10 = CP864 Arabic
+            SelectedPrinterWidthIndex = Preferences.Get("print_width", 0); // 0 = 58mm
         });
     }
 
@@ -233,6 +241,7 @@ public partial class SettingsViewModel : BaseViewModel
             Preferences.Set("print_auto_print", UseSavedPrintSettings);
             Preferences.Set("print_language", SelectedPrintLanguageIndex);
             Preferences.Set("print_codepage", SelectedCodepageIndex);
+            Preferences.Set("print_width", SelectedPrinterWidthIndex);
 
             LocalizationResourceManager.Instance.SetCulture(new CultureInfo(language));
             await Navigation.ApplyCurrentFlowDirectionAsync();

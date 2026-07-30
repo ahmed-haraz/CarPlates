@@ -357,7 +357,8 @@ public class ReceiptPrintService : IReceiptPrintService
 
     private static Bitmap RenderTextToBitmap(string text)
     {
-        const int printerWidthDots = 384; // 58mm @ 203dpi typical for MTP-3B
+        var widthIndex = Preferences.Get("print_width", 0);
+        int printerWidthDots = widthIndex switch { 1 => 576, _ => 384 };
         const float fontSize = 24f;
         const float lineSpacing = 2f;
         const int padding = 8;

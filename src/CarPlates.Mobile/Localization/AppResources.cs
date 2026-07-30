@@ -207,6 +207,7 @@ public static class AppResources
     public static string PrintFormat => LocalizationResourceManager.Instance["PrintFormat"];
     public static string PrintLanguage => LocalizationResourceManager.Instance["PrintLanguage"];
     public static string CodePage => LocalizationResourceManager.Instance["CodePage"];
+    public static string PrinterWidth => LocalizationResourceManager.Instance["PrinterWidth"];
     public static string All => LocalizationResourceManager.Instance["All"];
     public static string Paid => LocalizationResourceManager.Instance["Paid"];
     public static string Unpaid => LocalizationResourceManager.Instance["Unpaid"];
