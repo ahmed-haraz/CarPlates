@@ -2,12 +2,11 @@ using CarPlates.Application.Common.DTOs;
 using CarPlates.Application.Common.Interfaces;
 using CarPlates.Domain.Entities;
 using CarPlates.Mobile.Helpers;
-using CarPlates.Shared.Extensions;
 using CarPlates.Mobile.Localization;
 using CarPlates.Mobile.Navigation;
+using CarPlates.Shared.Extensions;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using Microsoft.Maui.Devices.Sensors;
 using System.Collections.ObjectModel;
 
 namespace CarPlates.Mobile.ViewModels;
@@ -24,7 +23,6 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
     private readonly IVehicleColorApiService _vehicleColorService;
     private readonly IScanRepository _scanRepository;
 
-    // MakeName -> MakeID, so picking a brand can resolve the real ID needed to fetch models.
     private readonly Dictionary<string, int> _makeIdsByName = new();
 
     [ObservableProperty] private Vehicle _selectedVehicle = null!;
@@ -72,11 +70,11 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
     [ObservableProperty] private string _newPlateType = "خصوصي";
     [ObservableProperty] private string _newVin = string.Empty;
 
-partial void OnNewVinChanged(string value)
-{
-    _newVin = value.ToEnglishNumbers();
-    OnPropertyChanged(nameof(NewVin));
-}
+    partial void OnNewVinChanged(string value)
+    {
+        _newVin = value.ToEnglishNumbers();
+        OnPropertyChanged(nameof(NewVin));
+    }
     [ObservableProperty] private string _selectedBrand = string.Empty;
     [ObservableProperty] private string _selectedModel = string.Empty;
     [ObservableProperty] private string _selectedVehicleType = string.Empty;
@@ -101,7 +99,6 @@ partial void OnNewVinChanged(string value)
 
     private const int PopupPageSize = 25;
 
-    // Loaded from the API instead of seeded locally.
     [ObservableProperty] private ObservableCollection<WorkLocation> _locations = new();
     [ObservableProperty] private ObservableCollection<Technician> _technicians = new();
     [ObservableProperty] private ObservableCollection<string> _availableModels = new();
@@ -166,8 +163,6 @@ partial void OnNewVinChanged(string value)
     public bool CanGoToNextTechnicianPage => TechnicianPage < TechnicianTotalPages;
     public bool IsPriceEditable => EditingServiceItem?.OpenSale == true;
 
-    // Colors loaded from the API (VehicleColors table) in LoadInitialDataAsync.
-    // Each carries a real swatch so the picker can show a color circle, not just a name.
     public ObservableCollection<ColorOption> Colors { get; } = [];
 
     public ObservableCollection<string> TaxTypes { get; } = new() { "VAT", "معفى من الضريبة" };
@@ -246,9 +241,6 @@ partial void OnNewVinChanged(string value)
         SelectedVehicleYear = currentYear;
     }
 
-    // Replaces Shell's [QueryProperty]/routing-based parameter passing. When the scanner
-    // couldn't find a vehicle for the detected plate, it navigates here with the plate
-    // number already known so the user doesn't have to retype it in the "Add Vehicle" form.
     public virtual void ApplyQueryAttributes(IDictionary<string, object> query)
     {
         if (query.TryGetValue("plateNumber", out var value) && value is string plate && !string.IsNullOrWhiteSpace(plate))
@@ -257,10 +249,6 @@ partial void OnNewVinChanged(string value)
         }
     }
 
-    // Pulls every reference list this form needs straight from the API: car makes,
-    // vehicle/engine types, workshop technicians and locations, item categories, and an
-    // unfiltered first page of the item catalog - nothing here is hardcoded any more.
-    // Each source is fetched independently so one backend issue doesn't block all data.
     [RelayCommand]
     private async Task LoadInitialDataAsync()
     {
@@ -411,8 +399,6 @@ partial void OnNewVinChanged(string value)
         _ = UpdateModelsForBrandAsync(value);
     }
 
-    // Brand/Model/Color use a custom image-grid popup instead of a native Picker, since a
-    // native Picker can't show an icon or swatch next to each option on any platform.
     [RelayCommand]
     private void ShowBrandPopup()
     {
@@ -707,9 +693,6 @@ partial void OnNewVinChanged(string value)
         IsCustomerPopupVisible = false;
     }
 
-    // Searches wh_Customers by mobile/phone/name via the API instead of filtering a
-    // hardcoded local list. Multiple matches are left in Customers for the popup to list;
-    // an exact phone match is selected immediately.
     [RelayCommand]
     private async Task SearchCustomerAsync()
     {
@@ -867,9 +850,6 @@ partial void OnNewVinChanged(string value)
         NewServiceItem = null!;
     }
 
-    // Searches the real item catalog (vw_wh_ItemBarCodes) by name/barcode, optionally
-    // narrowed to the selected category (vw_wh_ItemSubGroups), instead of filtering an
-    // in-memory list.
     [RelayCommand]
     private async Task FilterServicesAsync()
     {
@@ -1673,10 +1653,8 @@ partial void OnNewVinChanged(string value)
     }
 }
 
-// Wraps a category for the item-search filter picker; Id is null for the "All" entry.
 public record ItemCategoryOption(int? Id, string Name);
 
-// Pairs a color name (EN + AR) with a real swatch and hex code so the color picker can show it.
 public record ColorOption(string Name, string NameAr, string HexCode, Color Swatch);
 
 public record OrderPhoto(string Path);
