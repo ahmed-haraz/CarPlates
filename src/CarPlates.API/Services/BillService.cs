@@ -309,48 +309,6 @@ public class BillService(ApplicationDbContext context, IWebHostEnvironment env) 
         _context.TransHeaders.Add(header);
         await _context.SaveChangesAsync(cancellationToken);
 
-        // --- 4. Save scan record to wh_scanrecords with location ---
-        if (!string.IsNullOrWhiteSpace(normalizedPlate))
-        {
-            var lat = dto.Latitude.HasValue && dto.Latitude.Value != 0 ? dto.Latitude : null;
-            var lng = dto.Longitude.HasValue && dto.Longitude.Value != 0 ? dto.Longitude : null;
-            var carId = carHeaderId.HasValue && carHeaderId > 0 ? carHeaderId.Value : (long?)null;
-
-            var existingScan = await _context.ScanEvents
-                .Where(s => s.PlateNumber == normalizedPlate && s.CustomerCarID == null)
-                .OrderByDescending(s => s.Id)
-                .FirstOrDefaultAsync(cancellationToken);
-
-            if (existingScan != null)
-            {
-                existingScan.CustomerCarID = existingScan.CustomerCarID ?? carId;
-                existingScan.Latitude = existingScan.Latitude ?? lat;
-                existingScan.Longitude = existingScan.Longitude ?? lng;
-                existingScan.UpdateUserID = userIdLong;
-                existingScan.UpdateDateTime = now;
-            }
-            else
-            {
-                _context.ScanEvents.Add(new ScanEvent
-                {
-                    PlateNumber = normalizedPlate,
-                    CustomerCarID = carId,
-                    DeviceId = null,
-                    BranchID = branchId,
-                    Latitude = lat,
-                    Longitude = lng,
-                    Notes = dto.Notes,
-                    ScanTime = DateTime.Now,
-                    Status = 1,
-                    InsertUserID = userIdLong,
-                    UpdateUserID = userIdLong,
-                    InsertDateTime = now,
-                    UpdateDateTime = now,
-                });
-            }
-            await _context.SaveChangesAsync(cancellationToken);
-        }
-
         // --- 5. Save signature as bill attachment if provided ---
         if (!string.IsNullOrWhiteSpace(dto.Signature))
         {
