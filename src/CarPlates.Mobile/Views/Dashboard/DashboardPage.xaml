@@ -15,7 +15,7 @@
                 <Border Style="{StaticResource HeroCard}">
                     <Grid RowDefinitions="Auto,Auto,Auto" ColumnDefinitions="*,Auto" RowSpacing="12">
                         <VerticalStackLayout Grid.Row="0" Grid.Column="0" Spacing="2">
-                            <Label Text="LIVE CONTROL CENTER" Style="{StaticResource Eyebrow}" TextColor="{StaticResource Accent}" />
+                            <Label Text="{loc:Translate Key=LiveControlCenter}" Style="{StaticResource Eyebrow}" TextColor="{StaticResource Accent}" />
                             <Label Text="{Binding UserName}" Style="{StaticResource Headline}" TextColor="White" />
                             <Label Text="{loc:Translate Key=WelcomeBackComma}" Style="{StaticResource Subtitle}" TextColor="#D7E7FF" />
                         </VerticalStackLayout>

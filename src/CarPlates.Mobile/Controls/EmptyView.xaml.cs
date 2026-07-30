@@ -1,3 +1,5 @@
+using CarPlates.Mobile.Localization;
+
 namespace CarPlates.Mobile.Controls;
 
 public partial class EmptyView : ContentView
@@ -6,10 +8,10 @@ public partial class EmptyView : ContentView
         nameof(Icon), typeof(string), typeof(EmptyView), "📭");
 
     public static readonly BindableProperty TitleProperty = BindableProperty.Create(
-        nameof(Title), typeof(string), typeof(EmptyView), "No Data");
+        nameof(Title), typeof(string), typeof(EmptyView), AppResources.NoData);
 
     public static readonly BindableProperty DescriptionProperty = BindableProperty.Create(
-        nameof(Description), typeof(string), typeof(EmptyView), "There's nothing to show here yet");
+        nameof(Description), typeof(string), typeof(EmptyView), AppResources.NothingToShow);
 
     public string Icon
     {

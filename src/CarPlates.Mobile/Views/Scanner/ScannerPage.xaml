@@ -68,8 +68,15 @@
                         <Label Text="{Binding DetectedPlate}"
                                Style="{StaticResource Title}"
                                FontSize="20" />
-                        <Label Text="{Binding DetectionConfidence, StringFormat='Confidence: {0:P0}'}"
-                               Style="{StaticResource Caption}" />
+                        <Label Style="{StaticResource Caption}">
+                            <Label.FormattedText>
+                                <FormattedString>
+                                    <Span Text="{loc:Translate Key=ConfidencePrefix}" />
+                                    <Span Text=": " />
+                                    <Span Text="{Binding DetectionConfidence, StringFormat='{0:P0}'}" />
+                                </FormattedString>
+                            </Label.FormattedText>
+                        </Label>
                     </VerticalStackLayout>
                     <ActivityIndicator Grid.Column="1"
                                        IsRunning="{Binding IsBusy}"

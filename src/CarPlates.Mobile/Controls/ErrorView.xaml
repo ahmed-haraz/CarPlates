@@ -6,16 +6,16 @@
     <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Spacing="16">
         <Label Text="⚠️" FontSize="64" HorizontalOptions="Center"/>
         <Label x:Name="ErrorTitle"
-               Text="Something went wrong"
+               Text="{loc:Translate Key=SomethingWentWrong}"
                Style="{StaticResource Title}"
                HorizontalOptions="Center"/>
         <Label x:Name="ErrorDescription"
-               Text="Please try again later"
+               Text="{loc:Translate Key=PleaseTryAgainLater}"
                Style="{StaticResource Body}"
                HorizontalOptions="Center"
                HorizontalTextAlignment="Center"/>
         <Button x:Name="RetryButton"
-                Text="Retry"
+                Text="{loc:Translate Key=Retry}"
                 Style="{StaticResource PrimaryButton}"
                 HorizontalOptions="Center"/>
     </VerticalStackLayout>

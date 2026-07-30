@@ -70,7 +70,7 @@
                             <VerticalStackLayout Spacing="3"
                                                  HorizontalOptions="Center"
                                                  VerticalOptions="Center">
-                                <Label Text="KSA"
+                                <Label Text="{loc:Translate Key=KSA}"
                                        FontSize="11"
                                        TextColor="White"
                                        HorizontalOptions="Center"
@@ -79,10 +79,6 @@
                                          HeightRequest="2"
                                          Color="White"
                                          HorizontalOptions="Center" />
-                                <Label Text="●"
-                                       FontSize="12"
-                                       TextColor="White"
-                                       HorizontalOptions="Center" />
                             </VerticalStackLayout>
                         </Border>
 
