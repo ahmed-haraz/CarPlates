@@ -89,10 +89,11 @@ public class BillService(ApplicationDbContext context, IWebHostEnvironment env) 
         if ((!resolvedCustomerId.HasValue || resolvedCustomerId == 0) && !string.IsNullOrWhiteSpace(normalizedPlate))
         {
             var allCodes = await _context.WhCustomers
-                .Where(c => c.Code != null && c.Code.All(char.IsDigit))
+                .Where(c => c.Code != null)
                 .Select(c => c.Code)
                 .ToListAsync(cancellationToken);
-            var maxNum = allCodes.Select(c => int.TryParse(c, out var n) ? n : 0).DefaultIfEmpty(0).Max();
+            var digitCodes = allCodes.Where(c => c.All(char.IsDigit));
+            var maxNum = digitCodes.Select(c => int.TryParse(c, out var n) ? n : 0).DefaultIfEmpty(0).Max();
 
             var storedMobile = dto.CustomerMobile?.TrimStart('0');
             var newCustomer = new WhCustomer
