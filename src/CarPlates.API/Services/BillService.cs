@@ -212,7 +212,6 @@ public class BillService(ApplicationDbContext context) : IBillService
             ShippingID = 0,
             TotalCurrency = total,
             CostCenterID = 0,
-            SalesRepID = 0,
             Status = 1,
             InsertUserID = userIdLong,
             UpdateUserID = userIdLong,
