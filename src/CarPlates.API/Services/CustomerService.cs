@@ -19,11 +19,12 @@ public class CustomerService(ApplicationDbContext context) : ICustomerService
 
         if (!string.IsNullOrWhiteSpace(search))
         {
+            var searchMobile = search.TrimStart('0');
             query = query.Where(c =>
                 c.Name_Ar.Contains(search) ||
                 c.Name_En.Contains(search) ||
-                (c.Mobile != null && c.Mobile.Contains(search)) ||
-                (c.Phone1 != null && c.Phone1.Contains(search)));
+                (c.Mobile != null && c.Mobile.Contains(searchMobile)) ||
+                (c.Phone1 != null && c.Phone1.Contains(searchMobile)));
         }
 
         query = query.OrderBy(c => c.Name_En);

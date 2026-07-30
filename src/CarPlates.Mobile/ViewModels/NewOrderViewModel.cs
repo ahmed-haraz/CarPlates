@@ -2,6 +2,7 @@ using CarPlates.Application.Common.DTOs;
 using CarPlates.Application.Common.Interfaces;
 using CarPlates.Domain.Entities;
 using CarPlates.Mobile.Helpers;
+using CarPlates.Shared.Extensions;
 using CarPlates.Mobile.Localization;
 using CarPlates.Mobile.Navigation;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -45,6 +46,24 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
     [ObservableProperty] private bool _isSignaturePadVisible = false;
     [ObservableProperty] private string _searchPhoneNumber = string.Empty;
     [ObservableProperty] private string _selectedCountryCode = "+966";
+
+    partial void OnSearchPhoneNumberChanged(string value)
+    {
+        if (SelectedCountryCode == "+20" && !string.IsNullOrEmpty(value) && value[0] == '0')
+        {
+            _searchPhoneNumber = value.TrimStart('0');
+            OnPropertyChanged(nameof(SearchPhoneNumber));
+        }
+    }
+
+    partial void OnSelectedCountryCodeChanged(string value)
+    {
+        if (value == "+20" && !string.IsNullOrEmpty(_searchPhoneNumber) && _searchPhoneNumber[0] == '0')
+        {
+            _searchPhoneNumber = _searchPhoneNumber.TrimStart('0');
+            OnPropertyChanged(nameof(SearchPhoneNumber));
+        }
+    }
     [ObservableProperty] private string _customerSearchMessage = string.Empty;
     [ObservableProperty] private string _newCustomerFirstName = string.Empty;
     [ObservableProperty] private string _newCustomerLastName = string.Empty;
@@ -52,6 +71,12 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
     [ObservableProperty] private string _newPlateNumber = string.Empty;
     [ObservableProperty] private string _newPlateType = "خصوصي";
     [ObservableProperty] private string _newVin = string.Empty;
+
+partial void OnNewVinChanged(string value)
+{
+    _newVin = value.ToEnglishNumbers();
+    OnPropertyChanged(nameof(NewVin));
+}
     [ObservableProperty] private string _selectedBrand = string.Empty;
     [ObservableProperty] private string _selectedModel = string.Empty;
     [ObservableProperty] private string _selectedVehicleType = string.Empty;
@@ -148,8 +173,8 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
     public ObservableCollection<string> TaxTypes { get; } = new() { "VAT", "معفى من الضريبة" };
     public ObservableCollection<string> CountryCodes { get; } = new()
     {
-        "+966", "+971", "+973", "+974", "+965", "+968", "+962", "+963", "+964", "+967",
-        "+20", "+27", "+30", "+31", "+32", "+33", "+34", "+36", "+39", "+40", "+41", "+43",
+        "+966",
+        "+20",
     };
     public ObservableCollection<Vehicle> Vehicles { get; } = new();
 
@@ -694,11 +719,18 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
             return;
         }
 
+        if (!IsValidPhoneForCountry(SearchPhoneNumber, SelectedCountryCode))
+        {
+            ShowAlert(string.Empty, AppResources.InvalidPhoneNumber);
+            return;
+        }
+
         CustomerSearchMessage = string.Empty;
 
         await ExecuteAsync(async () =>
         {
-            var fullPhone = SelectedCountryCode + SearchPhoneNumber;
+            var phone = SelectedCountryCode == "+20" ? SearchPhoneNumber.TrimStart('0') : SearchPhoneNumber;
+            var fullPhone = SelectedCountryCode + phone;
             var results = await _customerLookupService.SearchAsync(fullPhone, pageSize: 20);
 
             Customers.Clear();
@@ -722,10 +754,23 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
             }
             else
             {
-                NewCustomerPhone = fullPhone;
+                NewCustomerPhone = SearchPhoneNumber;
                 CustomerSearchMessage = AppResources.CustomerNotFound;
             }
         });
+    }
+
+    private static bool IsValidPhoneForCountry(string phone, string countryCode)
+    {
+        if (string.IsNullOrWhiteSpace(phone) || !phone.All(char.IsDigit))
+            return false;
+
+        return countryCode switch
+        {
+            "+966" => phone.Length == 9 && phone.StartsWith('5'),
+            "+20" => (phone.Length == 10 && phone.StartsWith('1')) || (phone.Length == 11 && phone.StartsWith("01")),
+            _ => phone.Length >= 6,
+        };
     }
 
     [RelayCommand]
@@ -737,7 +782,7 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
             return;
         }
 
-        if (string.IsNullOrWhiteSpace(NewCustomerPhone) || NewCustomerPhone.Length != 9 || !NewCustomerPhone.StartsWith('5') || !NewCustomerPhone.All(char.IsDigit))
+        if (string.IsNullOrWhiteSpace(NewCustomerPhone) || !IsValidPhoneForCountry(NewCustomerPhone, SelectedCountryCode))
         {
             ShowAlert(string.Empty, AppResources.InvalidPhoneNumber);
             return;

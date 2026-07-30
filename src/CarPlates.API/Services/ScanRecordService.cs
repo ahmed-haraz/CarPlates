@@ -155,7 +155,11 @@ public class ScanRecordService(ApplicationDbContext context, ICustomerCarService
                 var createDto = new ScanRecordCreateDto(
                     recordDto.PlateNumber,
                     recordDto.PhotoUrl,
-                    null, null, null,100);
+                    recordDto.DeviceId,
+                    recordDto.Latitude,
+                    recordDto.Longitude,
+                    recordDto.BranchID ?? 0,
+                    recordDto.Notes);
 
                 await CreateAsync(createDto, userId);
                 synced++;

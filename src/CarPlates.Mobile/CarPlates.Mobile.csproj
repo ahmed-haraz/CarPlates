@@ -48,6 +48,10 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <Page Include="..\..\..\..\..\..\Downloads\signature.svg" Link="Resources\Images\signature.svg" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<ProjectReference Include="..\CarPlates.Application\CarPlates.Application.csproj" />
 		<ProjectReference Include="..\CarPlates.Infrastructure\CarPlates.Infrastructure.csproj" />
 		<ProjectReference Include="..\CarPlates.Shared\CarPlates.Shared.csproj" />
