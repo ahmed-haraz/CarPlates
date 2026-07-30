@@ -47,6 +47,7 @@ public partial class ServiceItem : ObservableObject
     [ObservableProperty] private bool _isTaxable;
     [ObservableProperty] private string? _taxType; // VAT
     [ObservableProperty] private decimal _taxAmount;
+    [ObservableProperty] private double _itemTax; // tax rate percentage from API (e.g. 15 for 15%)
     [ObservableProperty] private decimal _totalPrice; // Price - Discounts + Tax
     [ObservableProperty] private int _quantity = 1;
     [ObservableProperty] private int _package;

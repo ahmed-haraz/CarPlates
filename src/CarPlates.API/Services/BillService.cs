@@ -45,19 +45,20 @@ public class BillService(ApplicationDbContext context, IWebHostEnvironment env) 
             }
             else
             {
-                var allCodes = await _context.WhCustomers
-                    .Where(c => c.Code != null && c.Code.All(char.IsDigit))
-                    .Select(c => c.Code)
-                    .ToListAsync(cancellationToken);
-                var maxNum = allCodes.Select(c => int.TryParse(c, out var n) ? n : 0).DefaultIfEmpty(0).Max();
+            var allCodes = await _context.WhCustomers
+                .Where(c => c.Code != null)
+                .Select(c => c.Code)
+                .ToListAsync(cancellationToken);
+            var digitCodes = allCodes.Where(c => c.All(char.IsDigit));
+            var maxNum = digitCodes.Select(c => int.TryParse(c, out var n) ? n : 0).DefaultIfEmpty(0).Max();
 
-                var storedMobile = searchMobile.TrimStart('0');
-                var newCustomer = new WhCustomer
-                {
-                    Code = (maxNum + 1).ToString(),
-                    Name_Ar = string.IsNullOrWhiteSpace(dto.CustomerName_Ar) ? "غير معروف" : dto.CustomerName_Ar,
-                    Name_En = string.IsNullOrWhiteSpace(dto.CustomerName_En) ? "Unknown" : dto.CustomerName_En,
-                    Mobile = storedMobile,
+            var storedMobile = searchMobile.TrimStart('0');
+            var newCustomer = new WhCustomer
+            {
+                Code = (maxNum + 1).ToString(),
+                Name_Ar = string.IsNullOrWhiteSpace(dto.CustomerName_Ar) ? "غير معروف" : dto.CustomerName_Ar,
+                Name_En = string.IsNullOrWhiteSpace(dto.CustomerName_En) ? "Unknown" : dto.CustomerName_En,
+                Mobile = storedMobile,
                     Phone1 = dto.CustomerPhone1,
                     StoreID = branchId,
                     InsertUserID = userIdLong,

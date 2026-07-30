@@ -580,6 +580,7 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
             IsTaxable = item.IsTaxable,
             TaxType = item.TaxType,
             TaxAmount = item.TaxAmount,
+            ItemTax = item.ItemTax,
             TotalPrice = item.TotalPrice,
             Quantity = 1,
             Package = item.Package,
@@ -597,7 +598,8 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
         if (decimal.TryParse(value, out var price) && price >= 0)
         {
             EditingServiceItem.Price = price;
-            var taxAmount = EditingServiceItem.IsTaxable ? price * 0.15m : 0;
+            var taxRate = EditingServiceItem.ItemTax > 0 ? (decimal)EditingServiceItem.ItemTax / 100m : 0.15m;
+            var taxAmount = EditingServiceItem.IsTaxable ? price * taxRate : 0;
             EditingServiceItem.TaxAmount = taxAmount;
             var afterDiscount = price - EditingServiceItem.Discount1 - EditingServiceItem.Discount2 - EditingServiceItem.Discount3;
             EditingServiceItem.TotalPrice = afterDiscount + taxAmount;
@@ -936,6 +938,7 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
             OriginalPrice = (double)price,
             TaxType = "VAT",
             TaxAmount = taxAmount,
+            ItemTax = item.ItemTax ?? 0,
             Package = item.Package.GetValueOrDefault(),
             TotalPrice = afterDiscount + taxAmount
         };
@@ -1287,6 +1290,7 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
                 }).ToList();
 
                 var isNewCar = SelectedVehicle?.CarHeaderId == null;
+                var isNewCustomer = SelectedCustomer?.Id <= 0;
                 var request = new CreateBillRequest(
                     BranchID: currentUser?.BranchId,
                     CustomerId: SelectedCustomer?.Id > 0 ? SelectedCustomer.Id : null,
@@ -1309,7 +1313,10 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
                     Color: isNewCar ? (SelectedVehicle?.Color ?? SelectedColor?.Name) : null,
                     PlateType: isNewCar ? (SelectedVehicle?.PlateType ?? NewPlateType) : null,
                     WorkLocationID: SelectedLocation != null && int.TryParse(SelectedLocation.Id, out var locId) ? locId : null,
-                    TechnicianID: SelectedTechnician != null && int.TryParse(SelectedTechnician.Id, out var techId) ? techId : null);
+                    TechnicianID: SelectedTechnician != null && int.TryParse(SelectedTechnician.Id, out var techId) ? techId : null,
+                    CustomerMobile: isNewCustomer ? SelectedCustomer?.PhoneNumber : null,
+                    CustomerName_Ar: isNewCustomer ? SelectedCustomer?.FirstName : null,
+                    CustomerName_En: isNewCustomer ? SelectedCustomer?.LastName : null);
 
                 var result = await _billApiService.CreateBillAsync(request);
 

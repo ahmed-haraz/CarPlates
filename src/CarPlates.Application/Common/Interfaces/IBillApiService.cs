@@ -30,7 +30,11 @@ public record CreateBillRequest(
     string? Color = null,
     string? PlateType = null,
     int? WorkLocationID = null,
-    int? TechnicianID = null);
+    int? TechnicianID = null,
+    string? CustomerMobile = null,
+    string? CustomerName_Ar = null,
+    string? CustomerName_En = null,
+    string? CustomerPhone1 = null);
 
 public record CreateBillLineRequest(
     string ItemBarCode,
