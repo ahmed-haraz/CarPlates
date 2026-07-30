@@ -40,27 +40,47 @@
             <DatePicker Grid.Column="1"
                         Date="{Binding DateTo}"
                         FontSize="13" />
-            <HorizontalStackLayout Grid.Column="2" Spacing="4">
-                <Button Text="✓" Style="{StaticResource IconButton}"
+            <HorizontalStackLayout Grid.Column="2"
+                                   Spacing="4">
+                <Button Text="✓"
+                        Style="{StaticResource IconButton}"
                         Command="{Binding ApplyDateFilterCommand}" />
-                <Button Text="✗" Style="{StaticResource IconButton}"
+                <Button Text="✗"
+                        Style="{StaticResource IconButton}"
                         Command="{Binding ClearDateFilterCommand}" />
             </HorizontalStackLayout>
         </Grid>
 
         <!-- Status filter indicators -->
-        <HorizontalStackLayout Grid.Row="2" Padding="20,4" Spacing="8">
-            <Border StrokeShape="RoundRectangle 12" Padding="8,4" BackgroundColor="{DynamicResource Surface}"
-                    StrokeThickness="0" IsVisible="{Binding ShowAllBills}">
-                <Label Text="{loc:Translate Key=All}" FontSize="12" TextColor="{DynamicResource TextSecondary}" />
+        <HorizontalStackLayout Grid.Row="2"
+                               Padding="20,4"
+                               Spacing="8">
+            <Border StrokeShape="RoundRectangle 12"
+                    Padding="8,4"
+                    BackgroundColor="{DynamicResource Surface}"
+                    StrokeThickness="0"
+                    IsVisible="{Binding ShowAllBills}">
+                <Label Text="{loc:Translate Key=All}"
+                       FontSize="12"
+                       TextColor="{DynamicResource TextSecondary}" />
             </Border>
-            <Border StrokeShape="RoundRectangle 12" Padding="8,4" BackgroundColor="{DynamicResource Surface}"
-                    StrokeThickness="0" IsVisible="{Binding ShowPaidBills}">
-                <Label Text="{loc:Translate Key=Paid}" FontSize="12" TextColor="{DynamicResource Success}" />
+            <Border StrokeShape="RoundRectangle 12"
+                    Padding="8,4"
+                    BackgroundColor="{DynamicResource Surface}"
+                    StrokeThickness="0"
+                    IsVisible="{Binding ShowPaidBills}">
+                <Label Text="{loc:Translate Key=Paid}"
+                       FontSize="12"
+                       TextColor="{DynamicResource Success}" />
             </Border>
-            <Border StrokeShape="RoundRectangle 12" Padding="8,4" BackgroundColor="{DynamicResource Surface}"
-                    StrokeThickness="0" IsVisible="{Binding ShowUnpaidBills}">
-                <Label Text="{loc:Translate Key=Unpaid}" FontSize="12" TextColor="{DynamicResource Warning}" />
+            <Border StrokeShape="RoundRectangle 12"
+                    Padding="8,4"
+                    BackgroundColor="{DynamicResource Surface}"
+                    StrokeThickness="0"
+                    IsVisible="{Binding ShowUnpaidBills}">
+                <Label Text="{loc:Translate Key=Unpaid}"
+                       FontSize="12"
+                       TextColor="{DynamicResource Warning}" />
             </Border>
         </HorizontalStackLayout>
 
@@ -71,11 +91,17 @@
                         EmptyView="{loc:Translate Key=NoBillsFound}">
             <CollectionView.ItemTemplate>
                 <DataTemplate x:DataType="x:Object">
-                    <Border Style="{StaticResource Card}" Margin="0,4" Padding="16">
-                        <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto,Auto,Auto" RowSpacing="4">
+                    <Border Style="{StaticResource Card}"
+                            Margin="0,4"
+                            Padding="16">
+                        <Grid ColumnDefinitions="*,Auto"
+                              RowDefinitions="Auto,Auto,Auto,Auto"
+                              RowSpacing="4">
                             <!-- Bill Number + Date -->
-                            <Label Grid.Row="0" Grid.Column="0"
-                                   FontSize="16" FontAttributes="Bold">
+                            <Label Grid.Row="0"
+                                   Grid.Column="0"
+                                   FontSize="16"
+                                   FontAttributes="Bold">
                                 <Label.FormattedText>
                                     <FormattedString>
                                         <Span Text="#" />
@@ -85,8 +111,11 @@
                                     </FormattedString>
                                 </Label.FormattedText>
                             </Label>
-                            <Label Grid.Row="0" Grid.Column="1"
-                                   FontSize="20" FontAttributes="Bold" TextColor="{StaticResource Primary}">
+                            <Label Grid.Row="0"
+                                   Grid.Column="1"
+                                   FontSize="20"
+                                   FontAttributes="Bold"
+                                   TextColor="{StaticResource Primary}">
                                 <Label.FormattedText>
                                     <FormattedString>
                                         <Span Text="{Binding NetTotal, StringFormat='{0:N2}'}" />
@@ -97,8 +126,11 @@
                             </Label>
 
                             <!-- Plate Number + Customer -->
-                            <Label Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
-                                   FontSize="13" TextColor="{DynamicResource TextSecondary}">
+                            <Label Grid.Row="1"
+                                   Grid.Column="0"
+                                   Grid.ColumnSpan="2"
+                                   FontSize="13"
+                                   TextColor="{DynamicResource TextSecondary}">
                                 <Label.FormattedText>
                                     <FormattedString>
                                         <Span Text="{loc:Translate Key=Plate}" />
@@ -113,8 +145,11 @@
                             </Label>
 
                             <!-- Paid / Balance -->
-                            <Label Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2"
-                                   FontSize="12" TextColor="{DynamicResource TextSecondary}">
+                            <Label Grid.Row="2"
+                                   Grid.Column="0"
+                                   Grid.ColumnSpan="2"
+                                   FontSize="12"
+                                   TextColor="{DynamicResource TextSecondary}">
                                 <Label.FormattedText>
                                     <FormattedString>
                                         <Span Text="{loc:Translate Key=Paid}" />
@@ -128,24 +163,39 @@
                             </Label>
 
                             <!-- Action buttons -->
-                            <HorizontalStackLayout Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2"
-                                                   Spacing="6" Margin="0,4,0,0">
-                            <Button Text="{loc:Translate Key=Preview}" FontSize="10" HeightRequest="28" Padding="6,0"
-                                    Style="{StaticResource SecondaryButton}"
-                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:CashierViewModel}}, Path=PreviewBillCommand}"
-                                    CommandParameter="{Binding .}"/>
-                                <Button Text="{loc:Translate Key=Pay}" FontSize="10" HeightRequest="28" Padding="6,0"
-                                    Style="{StaticResource PrimaryButton}"
-                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:CashierViewModel}}, Path=PayBillCommand}"
-                                    CommandParameter="{Binding .}"/>
-                                <Button Text="{loc:Translate Key=PrintRec}" FontSize="10" HeightRequest="28" Padding="6,0"
-                                    Style="{StaticResource SecondaryButton}"
-                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:CashierViewModel}}, Path=PrintBillCommand}"
-                                    CommandParameter="{Binding .}"/>
-                                <Button Text="{loc:Translate Key=PrintA4}" FontSize="10" HeightRequest="28" Padding="6,0"
-                                    Style="{StaticResource SecondaryButton}"
-                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:CashierViewModel}}, Path=PrintA4BillCommand}"
-                                    CommandParameter="{Binding .}"/>
+                            <HorizontalStackLayout Grid.Row="3"
+                                                   Grid.Column="0"
+                                                   Grid.ColumnSpan="2"
+                                                   Spacing="6"
+                                                   Margin="0,4,0,0">
+                                <Button Text="{loc:Translate Key=Preview}"
+                                        FontSize="10"
+                                        HeightRequest="28"
+                                        Padding="6,0"
+                                        Style="{StaticResource SecondaryButton}"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:CashierViewModel}}, Path=PreviewBillCommand}"
+                                        CommandParameter="{Binding .}" />
+                                <Button Text="{loc:Translate Key=Pay}"
+                                        FontSize="10"
+                                        HeightRequest="28"
+                                        Padding="6,0"
+                                        Style="{StaticResource PrimaryButton}"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:CashierViewModel}}, Path=PayBillCommand}"
+                                        CommandParameter="{Binding .}" />
+                                <Button Text="{loc:Translate Key=PrintRec}"
+                                        FontSize="10"
+                                        HeightRequest="28"
+                                        Padding="6,0"
+                                        Style="{StaticResource SecondaryButton}"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:CashierViewModel}}, Path=PrintBillCommand}"
+                                        CommandParameter="{Binding .}" />
+                                <Button Text="{loc:Translate Key=PrintA4}"
+                                        FontSize="10"
+                                        HeightRequest="28"
+                                        Padding="6,0"
+                                        Style="{StaticResource SecondaryButton}"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:CashierViewModel}}, Path=PrintA4BillCommand}"
+                                        CommandParameter="{Binding .}" />
                             </HorizontalStackLayout>
                         </Grid>
                     </Border>
@@ -158,33 +208,45 @@
               Padding="20,8,20,16"
               ColumnDefinitions="Auto,*,Auto"
               ColumnSpacing="12">
-            <Border Grid.Column="0" Style="{StaticResource Card}" Padding="0" WidthRequest="48" HeightRequest="48"
+            <Border Grid.Column="0"
+                    Style="{StaticResource Card}"
+                    Padding="0"
+                    WidthRequest="48"
+                    HeightRequest="48"
                     IsEnabled="{Binding CanGoToPreviousPage}">
                 <Border.GestureRecognizers>
                     <TapGestureRecognizer Command="{Binding PreviousPageCommand}" />
                 </Border.GestureRecognizers>
-                <Grid HorizontalOptions="Center" VerticalOptions="Center">
-                    <Image WidthRequest="22" HeightRequest="22"
+                <Grid HorizontalOptions="Center"
+                      VerticalOptions="Center">
+                    <Image WidthRequest="22"
+                           HeightRequest="22"
                            helpers:IconHelper.Glyph="&#xebab;"
                            helpers:IconHelper.LightColorResourceKey="IconLight"
                            helpers:IconHelper.DarkColorResourceKey="IconDark" />
                 </Grid>
             </Border>
             <HorizontalStackLayout Grid.Column="1"
-                                      HorizontalOptions="Center" VerticalOptions="Center"
-                                      FontSize="14" TextColor="{DynamicResource TextSecondary}">
+                                   HorizontalOptions="Center"
+                                   VerticalOptions="Center">
                 <Label Text="{loc:Translate Key=PagePrefix}" />
                 <Label Text="{Binding CurrentPage}" />
                 <Label Text="{loc:Translate Key=OfPage}" />
                 <Label Text="{Binding TotalPages}" />
             </HorizontalStackLayout>
-            <Border Grid.Column="2" Style="{StaticResource Card}" Padding="0" WidthRequest="48" HeightRequest="48"
+            <Border Grid.Column="2"
+                    Style="{StaticResource Card}"
+                    Padding="0"
+                    WidthRequest="48"
+                    HeightRequest="48"
                     IsEnabled="{Binding CanGoToNextPage}">
                 <Border.GestureRecognizers>
                     <TapGestureRecognizer Command="{Binding NextPageCommand}" />
                 </Border.GestureRecognizers>
-                <Grid HorizontalOptions="Center" VerticalOptions="Center">
-                    <Image WidthRequest="22" HeightRequest="22"
+                <Grid HorizontalOptions="Center"
+                      VerticalOptions="Center">
+                    <Image WidthRequest="22"
+                           HeightRequest="22"
                            helpers:IconHelper.Glyph="&#xebac;"
                            helpers:IconHelper.LightColorResourceKey="IconLight"
                            helpers:IconHelper.DarkColorResourceKey="IconDark" />
@@ -196,9 +258,11 @@
         <Border Grid.Row="4"
                 BackgroundColor="#80FFFFFF"
                 IsVisible="{Binding IsBusy}"
-                HorizontalOptions="Fill" VerticalOptions="Fill">
+                HorizontalOptions="Fill"
+                VerticalOptions="Fill">
             <ActivityIndicator IsRunning="{Binding IsBusy}"
-                               HorizontalOptions="Center" VerticalOptions="Center"
+                               HorizontalOptions="Center"
+                               VerticalOptions="Center"
                                Color="{StaticResource Primary}" />
         </Border>
 

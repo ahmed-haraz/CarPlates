@@ -132,14 +132,7 @@ public partial class ManualEntryViewModel : BaseViewModel
 
     public List<PlateTypeOption> PlateTypes { get; }
 
-    public class PlateTypeOption(string nameAr, string nameEn)
-    {
-        public string NameAr { get; } = nameAr;
-        public string NameEn { get; } = nameEn;
-        public string DisplayName { get; } = LocalizeHelper.Localize(nameAr, nameEn);
 
-        public override string ToString() => NameAr;
-    }
 
     public Color PlateTextColor => PlateType switch
     {
@@ -245,4 +238,13 @@ public partial class ManualEntryViewModel : BaseViewModel
             PlateInput = PlateInput[..^1];
         }
     }
+}
+
+public class PlateTypeOption(string nameAr, string nameEn)
+{
+    public string NameAr { get; } = nameAr;
+    public string NameEn { get; } = nameEn;
+    public string DisplayName { get; } = LocalizeHelper.Localize(nameAr, nameEn);
+
+    public override string ToString() => NameAr;
 }
