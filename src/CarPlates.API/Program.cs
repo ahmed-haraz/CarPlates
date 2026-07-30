@@ -119,8 +119,6 @@ app.UseSwaggerUI();
 
 app.UseSerilogRequestLogging();
 
-//app.UseHttpsRedirection();
-
 app.UseMiddleware<ExceptionMiddleware>();
 
 app.UseCors("AllowWebApp");
@@ -130,11 +128,5 @@ app.UseAuthorization();
 
 app.MapControllers();
 app.MapHub<ReceivedIP>(CarPlates.Shared.Constants.SignalRConstants.HubPath);
-
-//using (var scope = app.Services.CreateScope())
-//{
-//    var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-//    //context.Database.Migrate();
-//}
 
 app.Run();

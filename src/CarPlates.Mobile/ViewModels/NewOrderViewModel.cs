@@ -22,9 +22,7 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
     private readonly IAuthenticationService _authenticationService;
     private readonly IVehicleColorApiService _vehicleColorService;
     private readonly IScanRepository _scanRepository;
-
     private readonly Dictionary<string, int> _makeIdsByName = new();
-
     [ObservableProperty] private Vehicle _selectedVehicle = null!;
     [ObservableProperty] private Customer _selectedCustomer = null!;
     [ObservableProperty] private ObservableCollection<CartItem> _cartItems = new();
@@ -75,6 +73,7 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
         _newVin = value.ToEnglishNumbers();
         OnPropertyChanged(nameof(NewVin));
     }
+
     [ObservableProperty] private string _selectedBrand = string.Empty;
     [ObservableProperty] private string _selectedModel = string.Empty;
     [ObservableProperty] private string _selectedVehicleType = string.Empty;
@@ -88,7 +87,7 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
     [ObservableProperty] private int _serviceTotalPages = 1;
     [ObservableProperty] private ServiceItem _newServiceItem = null!;
     [ObservableProperty] private string _newServiceName = string.Empty;
-    [ObservableProperty] private string _newServiceCategory = "بانزين";
+    [ObservableProperty] private string _newServiceCategory = "بنزين";
     [ObservableProperty] private string _newServiceType = "Product";
     [ObservableProperty] private decimal _newServicePrice = 0;
     [ObservableProperty] private decimal _newServiceCost = 0;
@@ -693,6 +692,7 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
         IsCustomerPopupVisible = false;
     }
 
+   
     [RelayCommand]
     private async Task SearchCustomerAsync()
     {
