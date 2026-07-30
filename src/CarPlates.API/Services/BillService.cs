@@ -25,8 +25,19 @@ public class BillService(ApplicationDbContext context, IWebHostEnvironment env) 
         int? resolvedCustomerId = dto.CustomerId;
         if ((!resolvedCustomerId.HasValue || resolvedCustomerId == 0) && !string.IsNullOrWhiteSpace(dto.CustomerMobile))
         {
+            var searchMobile = dto.CustomerMobile.Trim();
             var existingCustomer = await _context.WhCustomers
-                .FirstOrDefaultAsync(c => c.Mobile == dto.CustomerMobile, cancellationToken);
+                .FirstOrDefaultAsync(c => c.Mobile == searchMobile, cancellationToken);
+
+            if (existingCustomer == null)
+            {
+                var stripped = searchMobile.TrimStart('0');
+                if (stripped != searchMobile)
+                {
+                    existingCustomer = await _context.WhCustomers
+                        .FirstOrDefaultAsync(c => c.Mobile == stripped, cancellationToken);
+                }
+            }
 
             if (existingCustomer != null)
             {
@@ -40,12 +51,13 @@ public class BillService(ApplicationDbContext context, IWebHostEnvironment env) 
                     .ToListAsync(cancellationToken);
                 var maxNum = allCodes.Select(c => int.TryParse(c, out var n) ? n : 0).DefaultIfEmpty(0).Max();
 
+                var storedMobile = searchMobile.TrimStart('0');
                 var newCustomer = new WhCustomer
                 {
                     Code = (maxNum + 1).ToString(),
                     Name_Ar = string.IsNullOrWhiteSpace(dto.CustomerName_Ar) ? "غير معروف" : dto.CustomerName_Ar,
                     Name_En = string.IsNullOrWhiteSpace(dto.CustomerName_En) ? "Unknown" : dto.CustomerName_En,
-                    Mobile = dto.CustomerMobile,
+                    Mobile = storedMobile,
                     Phone1 = dto.CustomerPhone1,
                     StoreID = branchId,
                     InsertUserID = userIdLong,
@@ -300,23 +312,42 @@ public class BillService(ApplicationDbContext context, IWebHostEnvironment env) 
         // --- 4. Save scan record to wh_scanrecords with location ---
         if (!string.IsNullOrWhiteSpace(normalizedPlate))
         {
-            var scanEvent = new ScanEvent
+            var lat = dto.Latitude.HasValue && dto.Latitude.Value != 0 ? dto.Latitude : null;
+            var lng = dto.Longitude.HasValue && dto.Longitude.Value != 0 ? dto.Longitude : null;
+            var carId = carHeaderId.HasValue && carHeaderId > 0 ? carHeaderId.Value : (long?)null;
+
+            var existingScan = await _context.ScanEvents
+                .Where(s => s.PlateNumber == normalizedPlate && s.CustomerCarID == null)
+                .OrderByDescending(s => s.Id)
+                .FirstOrDefaultAsync(cancellationToken);
+
+            if (existingScan != null)
             {
-                PlateNumber = normalizedPlate,
-                CustomerCarID = carHeaderId.HasValue && carHeaderId > 0 ? carHeaderId.Value : null,
-                DeviceId = null,
-                BranchID = branchId,
-                Latitude = dto.Latitude,
-                Longitude = dto.Longitude,
-                Notes = dto.Notes,
-                ScanTime = DateTime.Now,
-                Status = 1,
-                InsertUserID = userIdLong,
-                UpdateUserID = userIdLong,
-                InsertDateTime = now,
-                UpdateDateTime = now,
-            };
-            _context.ScanEvents.Add(scanEvent);
+                existingScan.CustomerCarID = existingScan.CustomerCarID ?? carId;
+                existingScan.Latitude = existingScan.Latitude ?? lat;
+                existingScan.Longitude = existingScan.Longitude ?? lng;
+                existingScan.UpdateUserID = userIdLong;
+                existingScan.UpdateDateTime = now;
+            }
+            else
+            {
+                _context.ScanEvents.Add(new ScanEvent
+                {
+                    PlateNumber = normalizedPlate,
+                    CustomerCarID = carId,
+                    DeviceId = null,
+                    BranchID = branchId,
+                    Latitude = lat,
+                    Longitude = lng,
+                    Notes = dto.Notes,
+                    ScanTime = DateTime.Now,
+                    Status = 1,
+                    InsertUserID = userIdLong,
+                    UpdateUserID = userIdLong,
+                    InsertDateTime = now,
+                    UpdateDateTime = now,
+                });
+            }
             await _context.SaveChangesAsync(cancellationToken);
         }
 

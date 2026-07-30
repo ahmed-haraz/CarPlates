@@ -45,6 +45,24 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
     [ObservableProperty] private bool _isSignaturePadVisible = false;
     [ObservableProperty] private string _searchPhoneNumber = string.Empty;
     [ObservableProperty] private string _selectedCountryCode = "+966";
+
+    partial void OnSearchPhoneNumberChanged(string value)
+    {
+        if (SelectedCountryCode == "+20" && !string.IsNullOrEmpty(value) && value[0] == '0')
+        {
+            _searchPhoneNumber = value.TrimStart('0');
+            OnPropertyChanged(nameof(SearchPhoneNumber));
+        }
+    }
+
+    partial void OnSelectedCountryCodeChanged(string value)
+    {
+        if (value == "+20" && !string.IsNullOrEmpty(_searchPhoneNumber) && _searchPhoneNumber[0] == '0')
+        {
+            _searchPhoneNumber = _searchPhoneNumber.TrimStart('0');
+            OnPropertyChanged(nameof(SearchPhoneNumber));
+        }
+    }
     [ObservableProperty] private string _customerSearchMessage = string.Empty;
     [ObservableProperty] private string _newCustomerFirstName = string.Empty;
     [ObservableProperty] private string _newCustomerLastName = string.Empty;
@@ -704,7 +722,8 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
 
         await ExecuteAsync(async () =>
         {
-            var fullPhone = SelectedCountryCode + SearchPhoneNumber;
+            var phone = SelectedCountryCode == "+20" ? SearchPhoneNumber.TrimStart('0') : SearchPhoneNumber;
+            var fullPhone = SelectedCountryCode + phone;
             var results = await _customerLookupService.SearchAsync(fullPhone, pageSize: 20);
 
             Customers.Clear();
