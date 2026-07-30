@@ -7,9 +7,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CarPlates.API.Services;
 
-public class BillService(ApplicationDbContext context) : IBillService
+public class BillService(ApplicationDbContext context, IWebHostEnvironment env) : IBillService
 {
     private readonly ApplicationDbContext _context = context;
+    private readonly IWebHostEnvironment _env = env;
 
     public async Task<BillDto> CreateAsync(CreateBillDto dto, string? userId, IUserContext? userContext = null, CancellationToken cancellationToken = default)
     {
@@ -19,6 +20,79 @@ public class BillService(ApplicationDbContext context) : IBillService
         var salesRepId = dto.SalesRepId ?? userContext?.SalesRepId ?? 0;
         var storeId = dto.StoreId ?? userContext?.StoreId ?? 0;
         var branchId = dto.BranchID ?? userContext?.BranchId ?? 0;
+
+        // --- 1. Find-or-create customer by mobile number ---
+        int? resolvedCustomerId = dto.CustomerId;
+        if ((!resolvedCustomerId.HasValue || resolvedCustomerId == 0) && !string.IsNullOrWhiteSpace(dto.CustomerMobile))
+        {
+            var existingCustomer = await _context.WhCustomers
+                .FirstOrDefaultAsync(c => c.Mobile == dto.CustomerMobile, cancellationToken);
+
+            if (existingCustomer != null)
+            {
+                resolvedCustomerId = existingCustomer.Id;
+            }
+            else
+            {
+                var allCodes = await _context.WhCustomers
+                    .Where(c => c.Code != null && c.Code.All(char.IsDigit))
+                    .Select(c => c.Code)
+                    .ToListAsync(cancellationToken);
+                var maxNum = allCodes.Select(c => int.TryParse(c, out var n) ? n : 0).DefaultIfEmpty(0).Max();
+
+                var newCustomer = new WhCustomer
+                {
+                    Code = (maxNum + 1).ToString(),
+                    Name_Ar = string.IsNullOrWhiteSpace(dto.CustomerName_Ar) ? "غير معروف" : dto.CustomerName_Ar,
+                    Name_En = string.IsNullOrWhiteSpace(dto.CustomerName_En) ? "Unknown" : dto.CustomerName_En,
+                    Mobile = dto.CustomerMobile,
+                    Phone1 = dto.CustomerPhone1,
+                    StoreID = branchId,
+                    InsertUserID = userIdLong,
+                    InsertDateTime = now,
+                };
+                _context.WhCustomers.Add(newCustomer);
+                await _context.SaveChangesAsync(cancellationToken);
+                resolvedCustomerId = newCustomer.Id;
+
+                // --- 1a. Create wh_customersbranch link ---
+                var branchLink = await _context.CustomerBranches
+                    .FirstOrDefaultAsync(b => b.ParentID == newCustomer.Id && b.BranchID == branchId, cancellationToken);
+                if (branchLink == null)
+                {
+                    _context.CustomerBranches.Add(new CustomerBranch
+                    {
+                        ParentID = newCustomer.Id,
+                        BranchID = branchId,
+                        InsertUserID = userIdLong,
+                        InsertDateTime = now,
+                    });
+                    await _context.SaveChangesAsync(cancellationToken);
+                }
+            }
+        }
+
+        // --- 2. Ensure user exists in fw_Users ---
+        if (userIdLong > 0)
+        {
+            var userExists = await _context.FwUsers.AnyAsync(u => u.ID == userIdLong, cancellationToken);
+            if (!userExists)
+            {
+                _context.FwUsers.Add(new fw_Users
+                {
+                    ID = (int)userIdLong,
+                    UserName = userId,
+                    UserFullName_En = userId,
+                    UserFullName_Ar = userId,
+                    BranchID = branchId,
+                    StoreID = storeId,
+                    Status = 1,
+                    InsertUserID = userIdLong,
+                    InsertDateTime = now,
+                });
+                await _context.SaveChangesAsync(cancellationToken);
+            }
+        }
 
         var details = dto.Details.Select(d =>
         {
@@ -104,10 +178,10 @@ public class BillService(ApplicationDbContext context) : IBillService
 
         var total = (double)Math.Round(details.Sum(d => (decimal)(d.Value ?? 0d)), 2);
 
-        // --- Req 1: Auto-create car in wh_customercars if not exists ---
+        // --- 3. Auto-create car in wh_customercars if plate not exists ---
         int? carHeaderId = dto.CarHeaderId;
         var normalizedPlate = dto.PlateNumber?.Trim().ToEnglishNumbers().ToUpperInvariant();
-        if (!carHeaderId.HasValue && !string.IsNullOrWhiteSpace(dto.PlateNumber) && dto.CustomerId.HasValue)
+        if (!carHeaderId.HasValue && !string.IsNullOrWhiteSpace(dto.PlateNumber) && resolvedCustomerId.HasValue && resolvedCustomerId > 0)
         {
             var existingCar = await _context.CustomerCars
                 .AsNoTracking()
@@ -116,7 +190,7 @@ public class BillService(ApplicationDbContext context) : IBillService
             {
                 var newCar = new CustomerCar
                 {
-                    CustomerID = dto.CustomerId.Value,
+                    CustomerID = resolvedCustomerId.Value,
                     PlateNumber = normalizedPlate,
                     VIN = dto.Vin,
                     Color = dto.Color,
@@ -177,7 +251,7 @@ public class BillService(ApplicationDbContext context) : IBillService
             }
         }
 
-        // --- Req 9: Auto-generate Code for TransHeader ---
+        // --- Auto-generate Code for TransHeader ---
         var maxCode = await _context.TransHeaders
             .MaxAsync(h => (int?)h.Code, cancellationToken) ?? 0;
         var newCode = maxCode + 1;
@@ -188,9 +262,9 @@ public class BillService(ApplicationDbContext context) : IBillService
             Code = newCode,
             TransDate = int.Parse(DateTime.Now.ToString("yyyyMMdd")),
             BranchID = branchId,
-            CustomerId = dto.CustomerId ?? 0,
+            CustomerId = resolvedCustomerId ?? 0,
             EngineerId = dto.EngineerId ?? 0,
-            CarHeaderId = 0,
+            CarHeaderId = carHeaderId ?? 0,
             SalesRepId = salesRepId,
             StoreId = storeId,
             PayType = 2,
@@ -222,6 +296,61 @@ public class BillService(ApplicationDbContext context) : IBillService
 
         _context.TransHeaders.Add(header);
         await _context.SaveChangesAsync(cancellationToken);
+
+        // --- 4. Save scan record to wh_scanrecords with location ---
+        if (!string.IsNullOrWhiteSpace(normalizedPlate))
+        {
+            var scanEvent = new ScanEvent
+            {
+                PlateNumber = normalizedPlate,
+                CustomerCarID = carHeaderId.HasValue && carHeaderId > 0 ? carHeaderId.Value : null,
+                DeviceId = null,
+                BranchID = branchId,
+                Latitude = dto.Latitude,
+                Longitude = dto.Longitude,
+                Notes = dto.Notes,
+                ScanTime = DateTime.Now,
+                Status = 1,
+                InsertUserID = userIdLong,
+                UpdateUserID = userIdLong,
+                InsertDateTime = now,
+                UpdateDateTime = now,
+            };
+            _context.ScanEvents.Add(scanEvent);
+            await _context.SaveChangesAsync(cancellationToken);
+        }
+
+        // --- 5. Save signature as bill attachment if provided ---
+        if (!string.IsNullOrWhiteSpace(dto.Signature))
+        {
+            var fileName = $"signature_{header.HeaderId}_{now}.png";
+            var attachmentDir = Path.Combine(_env.ContentRootPath, "uploads", "bills", header.HeaderId.ToString());
+            Directory.CreateDirectory(attachmentDir);
+            var filePath = Path.Combine(attachmentDir, fileName);
+
+            try
+            {
+                var bytes = Convert.FromBase64String(dto.Signature);
+                await System.IO.File.WriteAllBytesAsync(filePath, bytes, cancellationToken);
+
+                _context.BillAttachments.Add(new BillAttachment
+                {
+                    HeaderId = header.HeaderId,
+                    FileName = fileName,
+                    FilePath = filePath,
+                    ContentType = "image/png",
+                    FileSize = bytes.Length,
+                    AttachmentType = "Signature",
+                    InsertUserID = userIdLong,
+                    InsertDateTime = now,
+                    Status = 1,
+                });
+                await _context.SaveChangesAsync(cancellationToken);
+            }
+            catch (FormatException)
+            {
+            }
+        }
 
         return await MapToDtoAsync(header, cancellationToken);
     }

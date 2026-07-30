@@ -99,7 +99,12 @@ public record OwnerDto(
 public record ScanRecordSyncDto(
     string PlateNumber,
     DateTime? ScanTime,
-    string? PhotoUrl);
+    string? PhotoUrl,
+    string? DeviceId = null,
+    double? Latitude = null,
+    double? Longitude = null,
+    int? BranchID = null,
+    string? Notes = null);
 
 
 public record SyncBatchResponseDto(int SyncedCount, int FailedCount, List<string> Errors);
@@ -256,6 +261,12 @@ public record CreateBillDto(
     string? PlateNumber,
     string? Signature,
     IReadOnlyList<CreateBillDetailDto> Details,
+    string? CustomerMobile = null,
+    string? CustomerName_Ar = null,
+    string? CustomerName_En = null,
+    string? CustomerPhone1 = null,
+    double? Longitude = null,
+    double? Latitude = null,
     string? Vin = null,
     string? VehicleBrand = null,
     string? VehicleModel = null,
