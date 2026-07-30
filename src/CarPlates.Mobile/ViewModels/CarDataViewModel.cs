@@ -54,6 +54,16 @@ public partial class CarDataViewModel : NewOrderViewModel
             };
 
             NewPlateNumber = dto.PlateNumber;
+
+            if (!string.IsNullOrWhiteSpace(dto.CustomerName_Ar) || !string.IsNullOrWhiteSpace(dto.CustomerMobile))
+            {
+                SelectedCustomer = new Customer
+                {
+                    FirstName = dto.CustomerName_Ar,
+                    LastName = dto.CustomerName_En,
+                    PhoneNumber = dto.CustomerMobile,
+                };
+            }
         }
     }
 }

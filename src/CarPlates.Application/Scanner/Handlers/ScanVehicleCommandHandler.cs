@@ -60,7 +60,10 @@ public class ScanVehicleCommandHandler(
                 1,
                 request.PhotoPath,
                 request.PlateType,
-                CarHeaderId: lookupResult.CarHeaderId);
+                CarHeaderId: lookupResult.CarHeaderId,
+                CustomerName_Ar: lookupResult.CustomerName_Ar,
+                CustomerName_En: lookupResult.CustomerName_En,
+                CustomerMobile: lookupResult.CustomerMobile);
             }
 
         _loggingService.LogScanner(request.PlateNumber, request.Confidence, lookupResult.Success);

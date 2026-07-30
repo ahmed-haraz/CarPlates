@@ -1,3 +1,5 @@
+using CarPlates.Application.Common.DTOs;
+using CarPlates.Application.Common.Interfaces;
 using CarPlates.Mobile.Helpers;
 using CarPlates.Mobile.Localization;
 using CarPlates.Mobile.Navigation;
@@ -9,6 +11,8 @@ namespace CarPlates.Mobile.ViewModels;
 public partial class ManualEntryViewModel : BaseViewModel
 {
     private const int MaxPlateLength = 10;
+    private readonly ICustomerCarLookupService _customerCarLookupService;
+    private readonly IAuthenticationService _authenticationService;
 
     private static readonly Dictionary<char, string> EnglishToArabic = new()
     {
@@ -164,8 +168,13 @@ public partial class ManualEntryViewModel : BaseViewModel
         OnPropertyChanged(nameof(PlateBorderColor));
     }
 
-    public ManualEntryViewModel(INavigationService navigation) : base(navigation)
+    public ManualEntryViewModel(
+        INavigationService navigation,
+        ICustomerCarLookupService customerCarLookupService,
+        IAuthenticationService authenticationService) : base(navigation)
     {
+        _customerCarLookupService = customerCarLookupService;
+        _authenticationService = authenticationService;
         Title = AppResources.ManualEntry;
         PlateTypes =
         [
@@ -215,7 +224,38 @@ public partial class ManualEntryViewModel : BaseViewModel
             }
             else
             {
-                await Navigation.GoToCustomerDataAsync(trimmed);
+                var currentUser = await _authenticationService.GetCurrentUserAsync();
+                var scanResult = await _customerCarLookupService.ScanAsync(
+                    new CustomerCarScanRequest(trimmed, currentUser?.BranchId ?? 0));
+                if (scanResult.Success)
+                {
+                    var isRtl = System.Globalization.CultureInfo.CurrentUICulture.TextInfo.IsRightToLeft;
+                    var brand = isRtl ? (scanResult.MakeName_Ar ?? scanResult.MakeName_En ?? scanResult.MakeName)
+                                      : (scanResult.MakeName_En ?? scanResult.MakeName_Ar ?? scanResult.MakeName);
+                    var model = isRtl ? (scanResult.ModelName_Ar ?? scanResult.ModelName_En ?? scanResult.ModelName)
+                                      : (scanResult.ModelName_En ?? scanResult.ModelName_Ar ?? scanResult.ModelName);
+                    var owner = isRtl ? (scanResult.CustomerName_Ar ?? scanResult.CustomerName_En)
+                                      : (scanResult.CustomerName_En ?? scanResult.CustomerName_Ar);
+                    var vehicleInfo = new VehicleDetailsDto(
+                        trimmed,
+                        brand,
+                        model,
+                        scanResult.Color,
+                        owner,
+                        null,
+                        DateTime.UtcNow,
+                        1,
+                        null,
+                        CarHeaderId: scanResult.CarHeaderId,
+                        CustomerName_Ar: scanResult.CustomerName_Ar,
+                        CustomerName_En: scanResult.CustomerName_En,
+                        CustomerMobile: scanResult.CustomerMobile);
+                    await Navigation.GoToCustomerDataAsync(trimmed, vehicleInfo);
+                }
+                else
+                {
+                    await Navigation.GoToCustomerDataAsync(trimmed);
+                }
             }
         });
     }

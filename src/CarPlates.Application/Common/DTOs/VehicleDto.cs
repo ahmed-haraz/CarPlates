@@ -11,4 +11,7 @@ public record VehicleDetailsDto(
     int TotalScans,
     string? PhotoUrl,
     string? PlateType = null,
-    long? CarHeaderId = null);
+    long? CarHeaderId = null,
+    string? CustomerName_Ar = null,
+    string? CustomerName_En = null,
+    string? CustomerMobile = null);

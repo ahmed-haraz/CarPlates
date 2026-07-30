@@ -22,10 +22,10 @@ public interface INavigationService
     /// card is already known/populated).</summary>
     Task GoToCarDataAsync(VehicleDetailsDto vehicleInfo);
 
-    /// <summary>Swaps the app's root to the manual "add customer / add vehicle" screen,
-    /// used when the plate lookup found no matching vehicle. The detected plate number
-    /// (if any) is pre-filled so the user doesn't have to retype it.</summary>
-    Task GoToCustomerDataAsync(string? plateNumber = null);
+    /// <summary>Swaps the app's root to the manual "add customer / add vehicle" screen.
+    /// The detected plate number is pre-filled. When a <paramref name="vehicleInfo"/> DTO
+    /// is provided the vehicle card and customer fields are pre-populated automatically.</summary>
+    Task GoToCustomerDataAsync(string? plateNumber = null, VehicleDetailsDto? vehicleInfo = null);
 
     /// <summary>Swaps the app root to the cashier/order queue flow.</summary>
     Task GoToCashierRootAsync();

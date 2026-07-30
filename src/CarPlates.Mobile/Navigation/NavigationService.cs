@@ -183,20 +183,25 @@ public class NavigationService(IServiceProvider serviceProvider) : INavigationSe
         return CurrentNavigation.PushAsync(manualEntryPage);
     }
 
-    public Task GoToCustomerDataAsync(string? plateNumber = null)
+    public async Task GoToCustomerDataAsync(string? plateNumber = null, VehicleDetailsDto? vehicleInfo = null)
     {
         var newOrderPage = _serviceProvider.GetRequiredService<NewOrderPage>();
         newOrderPage.FlowDirection = Localization.LocalizationResourceManager.Instance.FlowDirection;
 
-        if (!string.IsNullOrWhiteSpace(plateNumber) && newOrderPage.BindingContext is IQueryAttributable queryAware)
+        if (newOrderPage.BindingContext is IQueryAttributable queryAware)
         {
-            queryAware.ApplyQueryAttributes(new Dictionary<string, object> { ["plateNumber"] = plateNumber });
+            var query = new Dictionary<string, object>();
+            if (!string.IsNullOrWhiteSpace(plateNumber))
+                query["plateNumber"] = plateNumber;
+            if (vehicleInfo != null)
+                query["vehicleInfo"] = vehicleInfo;
+            if (query.Count > 0)
+                queryAware.ApplyQueryAttributes(query);
         }
 
         CurrentWindow.Page = new NavigationPage(newOrderPage)
         {
             FlowDirection = Localization.LocalizationResourceManager.Instance.FlowDirection
         };
-        return Task.CompletedTask;
     }
 }

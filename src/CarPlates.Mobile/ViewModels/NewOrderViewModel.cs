@@ -246,6 +246,32 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
         {
             NewPlateNumber = plate;
         }
+
+        if (query.TryGetValue("vehicleInfo", out var v) && v is VehicleDetailsDto dto)
+        {
+            SelectedVehicle = new Vehicle
+            {
+                Id = Guid.NewGuid().ToString(),
+                PlateNumber = dto.PlateNumber,
+                Brand = dto.Brand,
+                Model = dto.Model,
+                Color = dto.Color,
+                PlateType = dto.PlateType,
+                CarHeaderId = (int?)dto.CarHeaderId,
+            };
+
+            NewPlateNumber = dto.PlateNumber;
+
+            if (!string.IsNullOrWhiteSpace(dto.CustomerName_Ar) || !string.IsNullOrWhiteSpace(dto.CustomerMobile))
+            {
+                SelectedCustomer = new Customer
+                {
+                    FirstName = dto.CustomerName_Ar,
+                    LastName = dto.CustomerName_En,
+                    PhoneNumber = dto.CustomerMobile,
+                };
+            }
+        }
     }
 
     [RelayCommand]
