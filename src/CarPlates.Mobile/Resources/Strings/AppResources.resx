@@ -876,6 +876,9 @@
   <data name="CodePage" xml:space="preserve">
     <value>Code Page</value>
   </data>
+  <data name="PrinterWidth" xml:space="preserve">
+    <value>Printer Width</value>
+  </data>
   <data name="All" xml:space="preserve">
     <value>All</value>
   </data>

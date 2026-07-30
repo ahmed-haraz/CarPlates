@@ -876,6 +876,9 @@
   <data name="CodePage" xml:space="preserve">
     <value>صفحة الترميز</value>
   </data>
+  <data name="PrinterWidth" xml:space="preserve">
+    <value>عرض الطابعة</value>
+  </data>
   <data name="All" xml:space="preserve">
     <value>الكل</value>
   </data>

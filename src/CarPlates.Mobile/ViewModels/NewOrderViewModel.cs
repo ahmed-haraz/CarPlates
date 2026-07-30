@@ -1,9 +1,12 @@
+using CarPlates.Application.Common.DTOs;
 using CarPlates.Application.Common.Interfaces;
 using CarPlates.Domain.Entities;
+using CarPlates.Mobile.Helpers;
 using CarPlates.Mobile.Localization;
 using CarPlates.Mobile.Navigation;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.Maui.Devices.Sensors;
 using System.Collections.ObjectModel;
 
 namespace CarPlates.Mobile.ViewModels;
@@ -18,6 +21,7 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
     private readonly IBillAttachmentApiService _billAttachmentApiService;
     private readonly IAuthenticationService _authenticationService;
     private readonly IVehicleColorApiService _vehicleColorService;
+    private readonly IScanRepository _scanRepository;
 
     // MakeName -> MakeID, so picking a brand can resolve the real ID needed to fetch models.
     private readonly Dictionary<string, int> _makeIdsByName = new();
@@ -163,7 +167,8 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
         IBillApiService billApiService,
         IBillAttachmentApiService billAttachmentApiService,
         IAuthenticationService authenticationService,
-        IVehicleColorApiService vehicleColorService) : base(navigation)
+        IVehicleColorApiService vehicleColorService,
+        IScanRepository scanRepository) : base(navigation)
     {
         _customerCarLookupService = customerCarLookupService;
         _workshopLookupService = workshopLookupService;
@@ -173,6 +178,7 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
         _billAttachmentApiService = billAttachmentApiService;
         _authenticationService = authenticationService;
         _vehicleColorService = vehicleColorService;
+        _scanRepository = scanRepository;
 
         Title = LocalizationResourceManager.Instance["AddVehicle"];
         LoadVehicleYears();
@@ -235,8 +241,6 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
     {
         await ExecuteAsync(async () =>
         {
-            var isRtl = LocalizationResourceManager.Instance.IsRightToLeft;
-
             var makes = await SafeFetchAsync(_customerCarLookupService.GetMakesAsync());
             if (makes == null)
             {
@@ -246,13 +250,15 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
             {
                 _makeIdsByName.Clear();
                 Brands.Clear();
+
                 foreach (var make in makes)
                 {
-                    var name = isRtl ? (make.Name_Ar ?? make.Name_En ?? string.Empty)
-                                     : (make.Name_En ?? make.Name_Ar ?? string.Empty);
+                    var name = LocalizeHelper.Localize(make.Name_Ar, make.Name_En);
+
                     Brands.Add(name);
                     _makeIdsByName[name] = make.MakeID;
                 }
+
                 ResetBrandPaging();
             }
 
@@ -260,9 +266,10 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
             if (vehicleTypes != null)
             {
                 VehicleTypes.Clear();
+
                 foreach (var type in vehicleTypes)
                 {
-                    VehicleTypes.Add(type.Name_En ?? type.Name_Ar ?? string.Empty);
+                    VehicleTypes.Add(LocalizeHelper.Localize(type.Name_Ar, type.Name_En));
                 }
             }
 
@@ -270,9 +277,10 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
             if (engineTypes != null)
             {
                 EngineTypes.Clear();
+
                 foreach (var type in engineTypes)
                 {
-                    EngineTypes.Add(type.Name_En ?? type.Name_Ar ?? string.Empty);
+                    EngineTypes.Add(LocalizeHelper.Localize(type.Name_Ar, type.Name_En));
                 }
             }
 
@@ -280,10 +288,16 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
             if (technicians != null)
             {
                 Technicians.Clear();
+
                 foreach (var tech in technicians.Items)
                 {
-                    Technicians.Add(new Technician { Id = tech.Id.ToString(), Name = tech.Name_En ?? tech.Name_Ar ?? string.Empty });
+                    Technicians.Add(new Technician
+                    {
+                        Id = tech.Id.ToString(),
+                        Name = LocalizeHelper.Localize(tech.Name_Ar, tech.Name_En)
+                    });
                 }
+
                 FilteredTechnicians = new ObservableCollection<Technician>(Technicians);
                 ResetTechnicianPaging();
             }
@@ -292,10 +306,17 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
             if (locations != null)
             {
                 Locations.Clear();
+
                 foreach (var location in locations.Items)
                 {
-                    Locations.Add(new WorkLocation { Id = location.Id.ToString(), Name = location.Name_En ?? location.Name_Ar ?? string.Empty, Type = location.Name_Ar ?? string.Empty });
+                    Locations.Add(new WorkLocation
+                    {
+                        Id = location.Id.ToString(),
+                        Name = LocalizeHelper.Localize(location.Name_Ar, location.Name_En),
+                        Type = LocalizeHelper.Localize(location.Name_Ar, location.Name_En)
+                    });
                 }
+
                 FilteredLocations = new ObservableCollection<WorkLocation>(Locations);
             }
 
@@ -304,10 +325,15 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
             {
                 ItemCategories.Clear();
                 Categories.Clear();
-                ItemCategories.Add(new ItemCategoryOption(null, "الكل"));
+
+                ItemCategories.Add(new ItemCategoryOption(
+                    null,
+                    LocalizationResourceManager.Instance.IsRightToLeft ? "الكل" : "All"));
+
                 foreach (var category in categories.Items)
                 {
-                    var categoryName = category.Name_En ?? category.Name_Ar ?? string.Empty;
+                    var categoryName = LocalizeHelper.Localize(category.Name_Ar, category.Name_En);
+
                     ItemCategories.Add(new ItemCategoryOption(category.Id, categoryName));
                     Categories.Add(categoryName);
                 }
@@ -323,11 +349,18 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
             if (colors != null)
             {
                 Colors.Clear();
+
                 foreach (var c in colors)
                 {
-                    Colors.Add(new ColorOption(c.Name, c.NameAr, c.HexCode, Color.FromArgb(c.HexCode)));
+                    Colors.Add(new ColorOption(
+                        LocalizeHelper.Localize(c.NameAr, c.Name),
+                        c.NameAr,
+                        c.HexCode,
+                        Color.FromArgb(c.HexCode)));
                 }
+
                 ResetColorPaging();
+
                 if (SelectedColor == null && Colors.Count > 0)
                     SelectedColor = Colors[0];
             }
@@ -1178,6 +1211,19 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
                 var currentUser = await _authenticationService.GetCurrentUserAsync();
                 var plateNo = SelectedVehicle?.PlateNumber ?? NewPlateNumber;
 
+                double? lat = null, lng = null;
+                try
+                {
+                    var location = await Geolocation.GetLocationAsync(
+                        new GeolocationRequest(GeolocationAccuracy.Medium, TimeSpan.FromSeconds(5)));
+                    if (location != null)
+                    {
+                        lat = location.Latitude;
+                        lng = location.Longitude;
+                    }
+                }
+                catch { }
+
                 var billDetails = CartItems.Select(ci =>
                 {
                     var price = (double)ci.ServiceItem.Price;
@@ -1269,6 +1315,25 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
                     {
                         System.Diagnostics.Debug.WriteLine($"Failed to upload {uploadErrors.Count} attachment(s): {string.Join(", ", uploadErrors)}");
                     }
+                }
+
+                // Save scan record
+                try
+                {
+                    var scanDto = new CreateScanRecordDto(
+                        PlateNumber: plateNo,
+                        PlateType: SelectedVehicle?.PlateType ?? NewPlateType,
+                        Confidence: 1.0f,
+                        PhotoPath: null,
+                        BranchID: currentUser?.BranchId ?? 0,
+                        Latitude: lat,
+                        Longitude: lng,
+                        Notes: $"Created from bill #{result.HeaderId}");
+                    await _scanRepository.CreateAsync(scanDto);
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine($"[SubmitOrder] Failed to save scan record: {ex.Message}");
                 }
 
                 var order = new Order
@@ -1561,8 +1626,6 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
         NewServiceTaxAmount = 0;
         NewServiceTotalPrice = 0;
     }
-
-    
 }
 
 // Wraps a category for the item-search filter picker; Id is null for the "All" entry.

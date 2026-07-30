@@ -175,14 +175,16 @@
                                       RowSpacing="8"
                                       ColumnSpacing="12">
 
-                                    <Label Grid.Row="0" Grid.Column="0"
+                                    <Label Grid.Row="0"
+                                           Grid.Column="0"
                                            Text="{Binding ServiceItem.Name}"
                                            FontSize="15"
                                            FontAttributes="Bold"
                                            LineBreakMode="TailTruncation" />
 
-                                    <HorizontalStackLayout Grid.Row="0" Grid.Column="1"
-                                                                 VerticalOptions="Center">
+                                    <HorizontalStackLayout Grid.Row="0"
+                                                           Grid.Column="1"
+                                                           VerticalOptions="Center">
                                         <Label Text="{Binding LineTotal, StringFormat='{0:N2}'}"
                                                FontSize="14"
                                                TextColor="{StaticResource Primary}"
@@ -194,7 +196,8 @@
                                                Padding="2,0,0,0" />
                                     </HorizontalStackLayout>
 
-                                    <Image Grid.Row="0" Grid.Column="2"
+                                    <Image Grid.Row="0"
+                                           Grid.Column="2"
                                            WidthRequest="24"
                                            HeightRequest="24"
                                            VerticalOptions="Center"
@@ -205,9 +208,10 @@
                                         </Image.GestureRecognizers>
                                     </Image>
 
-                                    <HorizontalStackLayout Grid.Row="1" Grid.Column="0"
-                                                            Spacing="8"
-                                                            VerticalOptions="Center">
+                                    <HorizontalStackLayout Grid.Row="1"
+                                                           Grid.Column="0"
+                                                           Spacing="8"
+                                                           VerticalOptions="Center">
                                         <Label Text="{loc:Translate Key=Quantity}"
                                                FontSize="12"
                                                TextColor="{DynamicResource TextSecondary}"
@@ -220,10 +224,12 @@
                                                VerticalOptions="Center" />
                                     </HorizontalStackLayout>
 
-                                    <HorizontalStackLayout Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2"
-                                                            Spacing="4"
-                                                            HorizontalOptions="End"
-                                                            VerticalOptions="Center">
+                                    <HorizontalStackLayout Grid.Row="1"
+                                                           Grid.Column="1"
+                                                           Grid.ColumnSpan="2"
+                                                           Spacing="4"
+                                                           HorizontalOptions="End"
+                                                           VerticalOptions="Center">
                                         <Button Text="-"
                                                 WidthRequest="36"
                                                 HeightRequest="36"
@@ -301,7 +307,8 @@
                         Padding="16">
 
                     <VerticalStackLayout Spacing="14">
-                        <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="14">
+                        <Grid ColumnDefinitions="*,Auto,Auto"
+                              ColumnSpacing="14">
                             <Label Grid.Column="0"
                                    Text="{loc:Translate Key=AssignService}"
                                    FontSize="24"
@@ -323,23 +330,52 @@
                             </Label>
                         </Grid>
 
-                        <ScrollView Orientation="Horizontal" HorizontalScrollBarVisibility="Never">
-                            <HorizontalStackLayout Spacing="10" HorizontalOptions="End">
+                        <ScrollView Orientation="Horizontal"
+                                    HorizontalScrollBarVisibility="Never">
+                            <HorizontalStackLayout Spacing="10"
+                                                   HorizontalOptions="End">
                                 <Border Style="{StaticResource Pill}"
                                         Padding="10,6"
                                         IsVisible="{Binding SelectedLocation, Converter={StaticResource IsNotNullConverter}}">
-                                    <Grid ColumnDefinitions="Auto,Auto,Auto" ColumnSpacing="8">
-                                        <Button Grid.Column="0" Text="✕" WidthRequest="24" HeightRequest="24" Padding="0" BackgroundColor="Transparent" TextColor="White" Command="{Binding ClearLocationCommand}" />
-                                        <Label Grid.Column="1" Text="{Binding SelectedLocation.Name}" FontSize="14" TextColor="White" VerticalOptions="Center" />
-                                        <Image Grid.Column="2" Source="car.svg" WidthRequest="22" HeightRequest="22" />
+                                    <Grid ColumnDefinitions="Auto,Auto,Auto"
+                                          ColumnSpacing="8">
+                                        <Button Grid.Column="0"
+                                                Text="✕"
+                                                WidthRequest="24"
+                                                HeightRequest="24"
+                                                Padding="0"
+                                                BackgroundColor="Transparent"
+                                                TextColor="White"
+                                                Command="{Binding ClearLocationCommand}" />
+                                        <Label Grid.Column="1"
+                                               Text="{Binding SelectedLocation.Name}"
+                                               FontSize="14"
+                                               TextColor="White"
+                                               VerticalOptions="Center" />
+                                        <Image Grid.Column="2"
+                                               Source="car.svg"
+                                               WidthRequest="22"
+                                               HeightRequest="22" />
                                     </Grid>
                                 </Border>
                                 <Border Style="{StaticResource Pill}"
                                         Padding="10,6"
                                         IsVisible="{Binding SelectedTechnician, Converter={StaticResource IsNotNullConverter}}">
-                                    <Grid ColumnDefinitions="Auto,Auto" ColumnSpacing="8">
-                                        <Button Grid.Column="0" Text="✕" WidthRequest="24" HeightRequest="24" Padding="0" BackgroundColor="Transparent" TextColor="White" Command="{Binding ClearTechnicianCommand}" />
-                                        <Label Grid.Column="1" FontSize="14" FontAttributes="Bold" TextColor="White" VerticalOptions="Center">
+                                    <Grid ColumnDefinitions="Auto,Auto"
+                                          ColumnSpacing="8">
+                                        <Button Grid.Column="0"
+                                                Text="✕"
+                                                WidthRequest="24"
+                                                HeightRequest="24"
+                                                Padding="0"
+                                                BackgroundColor="Transparent"
+                                                TextColor="White"
+                                                Command="{Binding ClearTechnicianCommand}" />
+                                        <Label Grid.Column="1"
+                                               FontSize="14"
+                                               FontAttributes="Bold"
+                                               TextColor="White"
+                                               VerticalOptions="Center">
                                             <Label.FormattedText>
                                                 <FormattedString>
                                                     <Span Text="{loc:Translate Key=TechnicianPrefix}" />
@@ -352,7 +388,8 @@
                             </HorizontalStackLayout>
                         </ScrollView>
 
-                        <ScrollView Orientation="Horizontal" HorizontalScrollBarVisibility="Never">
+                        <ScrollView Orientation="Horizontal"
+                                    HorizontalScrollBarVisibility="Never">
                             <HorizontalStackLayout Spacing="12">
                                 <Button Text="{loc:Translate Key=SelectLocation}"
                                         BackgroundColor="{DynamicResource Surface}"
@@ -379,8 +416,17 @@
                 <Border Style="{StaticResource Card}"
                         Padding="16"
                         IsVisible="{Binding HasSignature}">
-                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12" FlowDirection="LeftToRight">
-                        <Button Grid.Column="0" Text="✕" WidthRequest="30" HeightRequest="30" Padding="0" BackgroundColor="Transparent" Command="{Binding ClearSignatureCommand}" HorizontalOptions="Start" />
+                    <Grid ColumnDefinitions="*,Auto"
+                          ColumnSpacing="12"
+                          FlowDirection="LeftToRight">
+                        <Button Grid.Column="0"
+                                Text="✕"
+                                WidthRequest="30"
+                                HeightRequest="30"
+                                Padding="0"
+                                BackgroundColor="Transparent"
+                                Command="{Binding ClearSignatureCommand}"
+                                HorizontalOptions="Start" />
                         <controls:SignaturePadView Grid.Column="1"
                                                    SignatureData="{Binding SignatureData}"
                                                    IsReadOnly="True"
@@ -393,7 +439,8 @@
                 <Border Style="{StaticResource Card}"
                         Padding="16"
                         IsVisible="{Binding HasSignature, Converter={StaticResource InvertedBoolConverter}}">
-                    <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
+                    <Grid ColumnDefinitions="Auto,*"
+                          ColumnSpacing="12">
                         <Label Grid.Column="0"
                                Text="✍"
                                FontSize="28"
@@ -410,15 +457,28 @@
                                 IsVisible="{Binding OrderPhotos.Count, Converter={StaticResource CountToBoolConverter}}"
                                 HeightRequest="120">
                     <CollectionView.ItemsLayout>
-                        <LinearItemsLayout Orientation="Horizontal" ItemSpacing="12" />
+                        <LinearItemsLayout Orientation="Horizontal"
+                                           ItemSpacing="12" />
                     </CollectionView.ItemsLayout>
                     <CollectionView.ItemTemplate>
                         <DataTemplate x:DataType="vm:OrderPhoto">
-                            <Grid WidthRequest="110" HeightRequest="110">
-                                <Border Style="{StaticResource Card}" Padding="0">
-                                    <Image Source="{Binding Path}" Aspect="AspectFill" />
+                            <Grid WidthRequest="110"
+                                  HeightRequest="110">
+                                <Border Style="{StaticResource Card}"
+                                        Padding="0">
+                                    <Image Source="{Binding Path}"
+                                           Aspect="AspectFill" />
                                 </Border>
-                                <Button Text="✕" WidthRequest="28" HeightRequest="28" Padding="0" BackgroundColor="#D32F2F" TextColor="White" HorizontalOptions="Start" VerticalOptions="Start" Command="{Binding Source={x:Reference RootPage}, Path=BindingContext.RemovePhotoCommand}" CommandParameter="{Binding .}" />
+                                <Button Text="✕"
+                                        WidthRequest="28"
+                                        HeightRequest="28"
+                                        Padding="0"
+                                        BackgroundColor="#D32F2F"
+                                        TextColor="White"
+                                        HorizontalOptions="Start"
+                                        VerticalOptions="Start"
+                                        Command="{Binding Source={x:Reference RootPage}, Path=BindingContext.RemovePhotoCommand}"
+                                        CommandParameter="{Binding .}" />
                             </Grid>
                         </DataTemplate>
                     </CollectionView.ItemTemplate>
@@ -460,11 +520,13 @@
                                FontAttributes="Bold"
                                HorizontalOptions="Center" />
                         <Button Grid.Column="1"
-                                     Text="✕"
-                                     WidthRequest="28"
-                                     HeightRequest="28"
-                                     BackgroundColor="Transparent"
-                                     TextColor="{DynamicResource TextPrimary}" Padding="0" Command="{Binding CloseCustomerPopupCommand}" />
+                                Text="✕"
+                                WidthRequest="28"
+                                HeightRequest="28"
+                                BackgroundColor="Transparent"
+                                TextColor="{DynamicResource TextPrimary}"
+                                Padding="0"
+                                Command="{Binding CloseCustomerPopupCommand}" />
                     </Grid>
                     <Border Style="{StaticResource Card}"
                             Padding="8">
@@ -551,11 +613,13 @@
                                        FontSize="12" />
                             </Border>
                             <Button Grid.Column="2"
-                                         Text="✕"
-                                         WidthRequest="28"
-                                         HeightRequest="28"
-                                         BackgroundColor="Transparent"
-                                         TextColor="{DynamicResource TextPrimary}" Padding="0" Command="{Binding CloseVehiclePopupCommand}" />
+                                    Text="✕"
+                                    WidthRequest="28"
+                                    HeightRequest="28"
+                                    BackgroundColor="Transparent"
+                                    TextColor="{DynamicResource TextPrimary}"
+                                    Padding="0"
+                                    Command="{Binding CloseVehiclePopupCommand}" />
                         </Grid>
 
                         <Label Text="{loc:Translate Key=Plate}"
@@ -675,7 +739,7 @@
                                        VerticalOptions="Center" />
                             </Grid>
                         </Border>
-                        
+
                         <Button Text="{loc:Translate Key=Next}"
                                 BackgroundColor="{StaticResource Primary}"
                                 TextColor="White"
@@ -718,10 +782,13 @@
                                    FontSize="18"
                                    FontAttributes="Bold" />
                             <Button Grid.Column="1"
-                                         Text="✕"
-                                         WidthRequest="24"
-                                         HeightRequest="24"
-                                         TextColor="{DynamicResource TextPrimary}" BackgroundColor="Transparent" Padding="0" Command="{Binding CloseServicePopupCommand}" />
+                                    Text="✕"
+                                    WidthRequest="24"
+                                    HeightRequest="24"
+                                    TextColor="{DynamicResource TextPrimary}"
+                                    BackgroundColor="Transparent"
+                                    Padding="0"
+                                    Command="{Binding CloseServicePopupCommand}" />
                         </Grid>
 
                         <Label Text="{loc:Translate Key=ItemDetails}"
@@ -845,11 +912,13 @@
                                FontAttributes="Bold"
                                HorizontalOptions="Center" />
                         <Button Grid.Column="1"
-                                     Text="✕"
-                                     WidthRequest="28"
-                                     HeightRequest="28"
-                                     BackgroundColor="Transparent"
-                                     TextColor="{DynamicResource TextPrimary}" Padding="0" Command="{Binding CloseLocationPopupCommand}" />
+                                Text="✕"
+                                WidthRequest="28"
+                                HeightRequest="28"
+                                BackgroundColor="Transparent"
+                                TextColor="{DynamicResource TextPrimary}"
+                                Padding="0"
+                                Command="{Binding CloseLocationPopupCommand}" />
                     </Grid>
                     <SearchBar Placeholder="{loc:Translate Key=SearchLocation}"
                                Text="{Binding LocationSearchText}" />
@@ -862,8 +931,12 @@
                                         <TapGestureRecognizer Command="{Binding Source={x:Reference RootPage}, Path=BindingContext.SelectLocationCommand}"
                                                               CommandParameter="{Binding .}" />
                                     </Border.GestureRecognizers>
-                                    <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
-                                        <Image Grid.Column="0" Source="car.svg" WidthRequest="32" HeightRequest="32" />
+                                    <Grid ColumnDefinitions="Auto,*"
+                                          ColumnSpacing="10">
+                                        <Image Grid.Column="0"
+                                               Source="car.svg"
+                                               WidthRequest="32"
+                                               HeightRequest="32" />
                                         <Label Grid.Column="1"
                                                Text="{Binding Name}"
                                                FontSize="16"
@@ -873,11 +946,21 @@
                             </DataTemplate>
                         </CollectionView.ItemTemplate>
                     </CollectionView>
-                    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12"
+                    <Grid ColumnDefinitions="Auto,*,Auto"
+                          ColumnSpacing="12"
                           IsVisible="{Binding Locations.Count, Converter={StaticResource CountToBoolConverter}}">
-                        <Button Grid.Column="0" Text="‹" Command="{Binding PreviousLocationPageCommand}" IsEnabled="{Binding CanGoToPreviousLocationPage}" />
-                        <Label Grid.Column="1" Text="{Binding LocationPage, StringFormat='{0}'}" HorizontalOptions="Center" VerticalOptions="Center" />
-                        <Button Grid.Column="2" Text="›" Command="{Binding NextLocationPageCommand}" IsEnabled="{Binding CanGoToNextLocationPage}" />
+                        <Button Grid.Column="0"
+                                Text="‹"
+                                Command="{Binding PreviousLocationPageCommand}"
+                                IsEnabled="{Binding CanGoToPreviousLocationPage}" />
+                        <Label Grid.Column="1"
+                               Text="{Binding LocationPage, StringFormat='{0}'}"
+                               HorizontalOptions="Center"
+                               VerticalOptions="Center" />
+                        <Button Grid.Column="2"
+                                Text="›"
+                                Command="{Binding NextLocationPageCommand}"
+                                IsEnabled="{Binding CanGoToNextLocationPage}" />
                     </Grid>
                 </VerticalStackLayout>
             </Border>
@@ -894,8 +977,10 @@
                     HorizontalOptions="Center"
                     WidthRequest="300"
                     MaximumHeightRequest="500">
-                <Grid RowDefinitions="Auto,Auto,*,Auto" RowSpacing="12">
-                    <Grid Grid.Row="0" ColumnDefinitions="*,Auto">
+                <Grid RowDefinitions="Auto,Auto,*,Auto"
+                      RowSpacing="12">
+                    <Grid Grid.Row="0"
+                          ColumnDefinitions="*,Auto">
                         <Label Grid.Column="0"
                                Text="{loc:Translate Key=SelectTechnician}"
                                FontSize="18"
@@ -916,17 +1001,28 @@
                     <CollectionView Grid.Row="2"
                                     ItemsSource="{Binding PagedTechnicians}">
                         <CollectionView.ItemsLayout>
-                            <GridItemsLayout Orientation="Vertical" Span="2" HorizontalItemSpacing="12" VerticalItemSpacing="12" />
+                            <GridItemsLayout Orientation="Vertical"
+                                             Span="2"
+                                             HorizontalItemSpacing="12"
+                                             VerticalItemSpacing="12" />
                         </CollectionView.ItemsLayout>
                         <CollectionView.ItemTemplate>
                             <DataTemplate x:DataType="models:Technician">
-                                <Border Style="{StaticResource Card}" Padding="12">
+                                <Border Style="{StaticResource Card}"
+                                        Padding="12">
                                     <Border.GestureRecognizers>
-                                        <TapGestureRecognizer Command="{Binding Source={x:Reference RootPage}, Path=BindingContext.SelectTechnicianCommand}" CommandParameter="{Binding .}" />
+                                        <TapGestureRecognizer Command="{Binding Source={x:Reference RootPage}, Path=BindingContext.SelectTechnicianCommand}"
+                                                              CommandParameter="{Binding .}" />
                                     </Border.GestureRecognizers>
-                                    <VerticalStackLayout Spacing="8" HorizontalOptions="Center">
-                                        <Image Source="car.svg" WidthRequest="36" HeightRequest="36" />
-                                        <Label Text="{Binding Name}" FontSize="14" HorizontalOptions="Center" LineBreakMode="TailTruncation" />
+                                    <VerticalStackLayout Spacing="8"
+                                                         HorizontalOptions="Center">
+                                        <Image Source="car.svg"
+                                               WidthRequest="36"
+                                               HeightRequest="36" />
+                                        <Label Text="{Binding Name}"
+                                               FontSize="14"
+                                               HorizontalOptions="Center"
+                                               LineBreakMode="TailTruncation" />
                                     </VerticalStackLayout>
                                 </Border>
                             </DataTemplate>
@@ -936,9 +1032,18 @@
                           ColumnDefinitions="Auto,*,Auto"
                           ColumnSpacing="12"
                           IsVisible="{Binding Technicians.Count, Converter={StaticResource CountToBoolConverter}}">
-                        <Button Grid.Column="0" Text="‹" Command="{Binding PreviousTechnicianPageCommand}" IsEnabled="{Binding CanGoToPreviousTechnicianPage}" />
-                        <Label Grid.Column="1" Text="{Binding TechnicianPage, StringFormat='{0}'}" HorizontalOptions="Center" VerticalOptions="Center" />
-                        <Button Grid.Column="2" Text="›" Command="{Binding NextTechnicianPageCommand}" IsEnabled="{Binding CanGoToNextTechnicianPage}" />
+                        <Button Grid.Column="0"
+                                Text="‹"
+                                Command="{Binding PreviousTechnicianPageCommand}"
+                                IsEnabled="{Binding CanGoToPreviousTechnicianPage}" />
+                        <Label Grid.Column="1"
+                               Text="{Binding TechnicianPage, StringFormat='{0}'}"
+                               HorizontalOptions="Center"
+                               VerticalOptions="Center" />
+                        <Button Grid.Column="2"
+                                Text="›"
+                                Command="{Binding NextTechnicianPageCommand}"
+                                IsEnabled="{Binding CanGoToNextTechnicianPage}" />
                     </Grid>
                 </Grid>
             </Border>
@@ -954,46 +1059,68 @@
                     HorizontalOptions="Center"
                     WidthRequest="300"
                     MaximumHeightRequest="500">
-                <Grid RowDefinitions="Auto,Auto,*,Auto" RowSpacing="12">
-                    <Grid Grid.Row="0" ColumnDefinitions="*,Auto">
+                <Grid RowDefinitions="Auto,Auto,*,Auto"
+                      RowSpacing="12">
+                    <Grid Grid.Row="0"
+                          ColumnDefinitions="*,Auto">
                         <Label Grid.Column="0"
                                Text="{loc:Translate Key=Brand}"
                                FontSize="18"
                                FontAttributes="Bold"
                                HorizontalOptions="Center" />
-                        <Button Grid.Column="1" Text="✕" WidthRequest="28" HeightRequest="28" BackgroundColor="Transparent" TextColor="{DynamicResource TextPrimary}" Padding="0" Command="{Binding CloseBrandPopupCommand}" />
+                        <Button Grid.Column="1"
+                                Text="✕"
+                                WidthRequest="28"
+                                HeightRequest="28"
+                                BackgroundColor="Transparent"
+                                TextColor="{DynamicResource TextPrimary}"
+                                Padding="0"
+                                Command="{Binding CloseBrandPopupCommand}" />
                     </Grid>
-                    <SearchBar Grid.Row="1" Placeholder="{loc:Translate Key=Search}"
+                    <SearchBar Grid.Row="1"
+                               Placeholder="{loc:Translate Key=Search}"
                                Text="{Binding BrandSearchText}" />
-                    <CollectionView Grid.Row="2" ItemsSource="{Binding PagedBrands}">
-                            <CollectionView.ItemTemplate>
-                                <DataTemplate x:DataType="x:String">
-                                    <Border Style="{StaticResource Card}"
-                                            Padding="12">
-                                        <Border.GestureRecognizers>
-                                            <TapGestureRecognizer Command="{Binding Source={x:Reference RootPage}, Path=BindingContext.SelectBrandCommand}"
-                                                                  CommandParameter="{Binding .}" />
-                                        </Border.GestureRecognizers>
-                                        <Grid ColumnDefinitions="Auto,*">
-                                            <Image Grid.Column="0"
-                                                   Source="{Binding ., Converter={StaticResource BrandToImageConverter}, FallbackValue=car.svg}"
-                                                   WidthRequest="28"
-                                                   HeightRequest="28" />
-                                            <Label Grid.Column="1"
-                                                   Text="{Binding .}"
-                                                   Margin="10,0"
-                                                   FontSize="16"
-                                                   VerticalOptions="Center" />
-                                        </Grid>
-                                    </Border>
-                                </DataTemplate>
-                            </CollectionView.ItemTemplate>
-                        </CollectionView>
-                    <Grid Grid.Row="3" ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12"
+                    <CollectionView Grid.Row="2"
+                                    ItemsSource="{Binding PagedBrands}">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="x:String">
+                                <Border Style="{StaticResource Card}"
+                                        Padding="12">
+                                    <Border.GestureRecognizers>
+                                        <TapGestureRecognizer Command="{Binding Source={x:Reference RootPage}, Path=BindingContext.SelectBrandCommand}"
+                                                              CommandParameter="{Binding .}" />
+                                    </Border.GestureRecognizers>
+                                    <Grid ColumnDefinitions="Auto,*">
+                                        <Image Grid.Column="0"
+                                               Source="{Binding ., Converter={StaticResource BrandToImageConverter}, FallbackValue=car.svg}"
+                                               WidthRequest="28"
+                                               HeightRequest="28" />
+                                        <Label Grid.Column="1"
+                                               Text="{Binding .}"
+                                               Margin="10,0"
+                                               FontSize="16"
+                                               VerticalOptions="Center" />
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                    <Grid Grid.Row="3"
+                          ColumnDefinitions="Auto,*,Auto"
+                          ColumnSpacing="12"
                           IsVisible="{Binding Brands.Count, Converter={StaticResource CountToBoolConverter}}">
-                        <Button Grid.Column="0" Text="‹" Command="{Binding PreviousBrandPageCommand}" IsEnabled="{Binding CanGoToPreviousBrandPage}" />
-                        <Label Grid.Column="1" Text="{Binding BrandPage, StringFormat='{0}'}" HorizontalOptions="Center" VerticalOptions="Center" />
-                        <Button Grid.Column="2" Text="›" Command="{Binding NextBrandPageCommand}" IsEnabled="{Binding CanGoToNextBrandPage}" />
+                        <Button Grid.Column="0"
+                                Text="‹"
+                                Command="{Binding PreviousBrandPageCommand}"
+                                IsEnabled="{Binding CanGoToPreviousBrandPage}" />
+                        <Label Grid.Column="1"
+                               Text="{Binding BrandPage, StringFormat='{0}'}"
+                               HorizontalOptions="Center"
+                               VerticalOptions="Center" />
+                        <Button Grid.Column="2"
+                                Text="›"
+                                Command="{Binding NextBrandPageCommand}"
+                                IsEnabled="{Binding CanGoToNextBrandPage}" />
                     </Grid>
                 </Grid>
             </Border>
@@ -1009,46 +1136,68 @@
                     HorizontalOptions="Center"
                     WidthRequest="300"
                     MaximumHeightRequest="500">
-                <Grid RowDefinitions="Auto,Auto,*,Auto" RowSpacing="12">
-                    <Grid Grid.Row="0" ColumnDefinitions="*,Auto">
+                <Grid RowDefinitions="Auto,Auto,*,Auto"
+                      RowSpacing="12">
+                    <Grid Grid.Row="0"
+                          ColumnDefinitions="*,Auto">
                         <Label Grid.Column="0"
                                Text="{loc:Translate Key=Model}"
                                FontSize="18"
                                FontAttributes="Bold"
                                HorizontalOptions="Center" />
-                        <Button Grid.Column="1" Text="✕" WidthRequest="28" HeightRequest="28" BackgroundColor="Transparent" TextColor="{DynamicResource TextPrimary}" Padding="0" Command="{Binding CloseModelPopupCommand}" />
+                        <Button Grid.Column="1"
+                                Text="✕"
+                                WidthRequest="28"
+                                HeightRequest="28"
+                                BackgroundColor="Transparent"
+                                TextColor="{DynamicResource TextPrimary}"
+                                Padding="0"
+                                Command="{Binding CloseModelPopupCommand}" />
                     </Grid>
-                    <SearchBar Grid.Row="1" Placeholder="{loc:Translate Key=Search}"
+                    <SearchBar Grid.Row="1"
+                               Placeholder="{loc:Translate Key=Search}"
                                Text="{Binding ModelSearchText}" />
-                    <CollectionView Grid.Row="2" ItemsSource="{Binding PagedModels}">
-                            <CollectionView.ItemTemplate>
-                                <DataTemplate x:DataType="x:String">
-                                    <Border Style="{StaticResource Card}"
-                                            Padding="12">
-                                        <Border.GestureRecognizers>
-                                            <TapGestureRecognizer Command="{Binding Source={x:Reference RootPage}, Path=BindingContext.SelectVehicleModelCommand}"
-                                                                  CommandParameter="{Binding .}" />
-                                        </Border.GestureRecognizers>
-                                        <Grid ColumnDefinitions="Auto,*">
-                                            <Image Grid.Column="0"
-                                                   Source="car.svg"
-                                                   WidthRequest="28"
-                                                   HeightRequest="28" />
-                                            <Label Grid.Column="1"
-                                                   Text="{Binding .}"
-                                                   Margin="10,0"
-                                                   FontSize="16"
-                                                   VerticalOptions="Center" />
-                                        </Grid>
-                                    </Border>
-                                </DataTemplate>
-                            </CollectionView.ItemTemplate>
-                        </CollectionView>
-                    <Grid Grid.Row="3" ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12"
+                    <CollectionView Grid.Row="2"
+                                    ItemsSource="{Binding PagedModels}">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="x:String">
+                                <Border Style="{StaticResource Card}"
+                                        Padding="12">
+                                    <Border.GestureRecognizers>
+                                        <TapGestureRecognizer Command="{Binding Source={x:Reference RootPage}, Path=BindingContext.SelectVehicleModelCommand}"
+                                                              CommandParameter="{Binding .}" />
+                                    </Border.GestureRecognizers>
+                                    <Grid ColumnDefinitions="Auto,*">
+                                        <Image Grid.Column="0"
+                                               Source="car.svg"
+                                               WidthRequest="28"
+                                               HeightRequest="28" />
+                                        <Label Grid.Column="1"
+                                               Text="{Binding .}"
+                                               Margin="10,0"
+                                               FontSize="16"
+                                               VerticalOptions="Center" />
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                    <Grid Grid.Row="3"
+                          ColumnDefinitions="Auto,*,Auto"
+                          ColumnSpacing="12"
                           IsVisible="{Binding AvailableModels.Count, Converter={StaticResource CountToBoolConverter}}">
-                        <Button Grid.Column="0" Text="‹" Command="{Binding PreviousModelPageCommand}" IsEnabled="{Binding CanGoToPreviousModelPage}" />
-                        <Label Grid.Column="1" Text="{Binding ModelPage, StringFormat='{0}'}" HorizontalOptions="Center" VerticalOptions="Center" />
-                        <Button Grid.Column="2" Text="›" Command="{Binding NextModelPageCommand}" IsEnabled="{Binding CanGoToNextModelPage}" />
+                        <Button Grid.Column="0"
+                                Text="‹"
+                                Command="{Binding PreviousModelPageCommand}"
+                                IsEnabled="{Binding CanGoToPreviousModelPage}" />
+                        <Label Grid.Column="1"
+                               Text="{Binding ModelPage, StringFormat='{0}'}"
+                               HorizontalOptions="Center"
+                               VerticalOptions="Center" />
+                        <Button Grid.Column="2"
+                                Text="›"
+                                Command="{Binding NextModelPageCommand}"
+                                IsEnabled="{Binding CanGoToNextModelPage}" />
                     </Grid>
                 </Grid>
             </Border>
@@ -1064,14 +1213,29 @@
                     HorizontalOptions="Center"
                     WidthRequest="300"
                     MaximumHeightRequest="500">
-                <Grid RowDefinitions="Auto,Auto,*,Auto" RowSpacing="12">
-                    <Grid Grid.Row="0" ColumnDefinitions="*,Auto">
-                        <Label Grid.Column="0" Text="{loc:Translate Key=Color}" FontSize="18" FontAttributes="Bold" HorizontalOptions="Center" />
-                        <Button Grid.Column="1" Text="✕" WidthRequest="28" HeightRequest="28" BackgroundColor="Transparent" TextColor="{DynamicResource TextPrimary}" Padding="0" Command="{Binding CloseColorPopupCommand}" />
+                <Grid RowDefinitions="Auto,Auto,*,Auto"
+                      RowSpacing="12">
+                    <Grid Grid.Row="0"
+                          ColumnDefinitions="*,Auto">
+                        <Label Grid.Column="0"
+                               Text="{loc:Translate Key=Color}"
+                               FontSize="18"
+                               FontAttributes="Bold"
+                               HorizontalOptions="Center" />
+                        <Button Grid.Column="1"
+                                Text="✕"
+                                WidthRequest="28"
+                                HeightRequest="28"
+                                BackgroundColor="Transparent"
+                                TextColor="{DynamicResource TextPrimary}"
+                                Padding="0"
+                                Command="{Binding CloseColorPopupCommand}" />
                     </Grid>
-                    <SearchBar Grid.Row="1" Placeholder="{loc:Translate Key=Search}"
+                    <SearchBar Grid.Row="1"
+                               Placeholder="{loc:Translate Key=Search}"
                                Text="{Binding ColorSearchText}" />
-                    <CollectionView Grid.Row="2" ItemsSource="{Binding PagedColors}">
+                    <CollectionView Grid.Row="2"
+                                    ItemsSource="{Binding PagedColors}">
                         <CollectionView.ItemTemplate>
                             <DataTemplate x:DataType="vm:ColorOption">
                                 <Border Style="{StaticResource Card}"
@@ -1087,7 +1251,8 @@
                                                  HeightRequest="28"
                                                  Stroke="Gray"
                                                  StrokeThickness="1" />
-                                        <VerticalStackLayout Grid.Column="1" Margin="10,0">
+                                        <VerticalStackLayout Grid.Column="1"
+                                                             Margin="10,0">
                                             <Label Text="{Binding Name}"
                                                    FontSize="14"
                                                    VerticalOptions="Center" />
@@ -1098,8 +1263,10 @@
                                         </VerticalStackLayout>
                                         <Border Grid.Column="2"
                                                 BackgroundColor="{Binding Swatch}"
-                                                Stroke="Gray" StrokeThickness="1"
-                                                WidthRequest="48" HeightRequest="24"
+                                                Stroke="Gray"
+                                                StrokeThickness="1"
+                                                WidthRequest="48"
+                                                HeightRequest="24"
                                                 Padding="4,2">
                                             <Label Text="{Binding HexCode}"
                                                    FontSize="10"
@@ -1112,11 +1279,22 @@
                             </DataTemplate>
                         </CollectionView.ItemTemplate>
                     </CollectionView>
-                    <Grid Grid.Row="3" ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12"
+                    <Grid Grid.Row="3"
+                          ColumnDefinitions="Auto,*,Auto"
+                          ColumnSpacing="12"
                           IsVisible="{Binding Colors.Count, Converter={StaticResource CountToBoolConverter}}">
-                        <Button Grid.Column="0" Text="‹" Command="{Binding PreviousColorPageCommand}" IsEnabled="{Binding CanGoToPreviousColorPage}" />
-                        <Label Grid.Column="1" Text="{Binding ColorPage, StringFormat='{0}'}" HorizontalOptions="Center" VerticalOptions="Center" />
-                        <Button Grid.Column="2" Text="›" Command="{Binding NextColorPageCommand}" IsEnabled="{Binding CanGoToNextColorPage}" />
+                        <Button Grid.Column="0"
+                                Text="‹"
+                                Command="{Binding PreviousColorPageCommand}"
+                                IsEnabled="{Binding CanGoToPreviousColorPage}" />
+                        <Label Grid.Column="1"
+                               Text="{Binding ColorPage, StringFormat='{0}'}"
+                               HorizontalOptions="Center"
+                               VerticalOptions="Center" />
+                        <Button Grid.Column="2"
+                                Text="›"
+                                Command="{Binding NextColorPageCommand}"
+                                IsEnabled="{Binding CanGoToNextColorPage}" />
                     </Grid>
                 </Grid>
             </Border>
@@ -1134,12 +1312,24 @@
                     MaximumHeightRequest="500">
                 <VerticalStackLayout Spacing="12">
                     <Grid ColumnDefinitions="*,Auto">
-                        <Label Grid.Column="0" Text="{loc:Translate Key=SelectCategory}" FontSize="18" FontAttributes="Bold" HorizontalOptions="Center" />
-                        <Button Grid.Column="1" Text="✕" WidthRequest="28" HeightRequest="28" BackgroundColor="Transparent" TextColor="{DynamicResource TextPrimary}" Padding="0" Command="{Binding CloseItemCategoryPopupCommand}" />
+                        <Label Grid.Column="0"
+                               Text="{loc:Translate Key=SelectCategory}"
+                               FontSize="18"
+                               FontAttributes="Bold"
+                               HorizontalOptions="Center" />
+                        <Button Grid.Column="1"
+                                Text="✕"
+                                WidthRequest="28"
+                                HeightRequest="28"
+                                BackgroundColor="Transparent"
+                                TextColor="{DynamicResource TextPrimary}"
+                                Padding="0"
+                                Command="{Binding CloseItemCategoryPopupCommand}" />
                     </Grid>
                     <SearchBar Placeholder="{loc:Translate Key=Search}"
                                Text="{Binding ItemCategorySearchText}" />
-                    <CollectionView ItemsSource="{Binding PagedItemCategories}" HeightRequest="360">
+                    <CollectionView ItemsSource="{Binding PagedItemCategories}"
+                                    HeightRequest="360">
                         <CollectionView.ItemTemplate>
                             <DataTemplate x:DataType="vm:ItemCategoryOption">
                                 <Border Style="{StaticResource Card}"
@@ -1163,10 +1353,20 @@
                             </DataTemplate>
                         </CollectionView.ItemTemplate>
                     </CollectionView>
-                    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
-                        <Button Grid.Column="0" Text="‹" Command="{Binding PreviousItemCategoryPageCommand}" IsEnabled="{Binding CanGoToPreviousItemCategoryPage}" />
-                        <Label Grid.Column="1" Text="{Binding ItemCategoryPage, StringFormat='{0}'}" HorizontalOptions="Center" VerticalOptions="Center" />
-                        <Button Grid.Column="2" Text="›" Command="{Binding NextItemCategoryPageCommand}" IsEnabled="{Binding CanGoToNextItemCategoryPage}" />
+                    <Grid ColumnDefinitions="Auto,*,Auto"
+                          ColumnSpacing="12">
+                        <Button Grid.Column="0"
+                                Text="‹"
+                                Command="{Binding PreviousItemCategoryPageCommand}"
+                                IsEnabled="{Binding CanGoToPreviousItemCategoryPage}" />
+                        <Label Grid.Column="1"
+                               Text="{Binding ItemCategoryPage, StringFormat='{0}'}"
+                               HorizontalOptions="Center"
+                               VerticalOptions="Center" />
+                        <Button Grid.Column="2"
+                                Text="›"
+                                Command="{Binding NextItemCategoryPageCommand}"
+                                IsEnabled="{Binding CanGoToNextItemCategoryPage}" />
                     </Grid>
                 </VerticalStackLayout>
             </Border>
@@ -1184,18 +1384,27 @@
                     MaximumHeightRequest="650">
                 <ScrollView>
                     <VerticalStackLayout Spacing="16">
-                    <Label Text="{loc:Translate Key=ReviewOrder}"
-                           FontSize="20"
-                           FontAttributes="Bold"
-                           HorizontalOptions="Center" />
+                        <Label Text="{loc:Translate Key=ReviewOrder}"
+                               FontSize="20"
+                               FontAttributes="Bold"
+                               HorizontalOptions="Center" />
 
-                    <BoxView HeightRequest="1" Color="{DynamicResource Border}" />
+                        <BoxView HeightRequest="1"
+                                 Color="{DynamicResource Border}" />
 
-                    <!-- Loading indicator while submitting -->
-                    <VerticalStackLayout IsVisible="{Binding IsBusy}" HorizontalOptions="Center" Spacing="8">
-                        <ActivityIndicator IsRunning="{Binding IsBusy}" HeightRequest="32" WidthRequest="32" Color="{StaticResource Primary}" />
-                        <Label Text="{loc:Translate Key=SavingOrder}" FontSize="14" TextColor="{DynamicResource TextSecondary}" HorizontalOptions="Center" />
-                    </VerticalStackLayout>
+                        <!-- Loading indicator while submitting -->
+                        <VerticalStackLayout IsVisible="{Binding IsBusy}"
+                                             HorizontalOptions="Center"
+                                             Spacing="8">
+                            <ActivityIndicator IsRunning="{Binding IsBusy}"
+                                               HeightRequest="32"
+                                               WidthRequest="32"
+                                               Color="{StaticResource Primary}" />
+                            <Label Text="{loc:Translate Key=SavingOrder}"
+                                   FontSize="14"
+                                   TextColor="{DynamicResource TextSecondary}"
+                                   HorizontalOptions="Center" />
+                        </VerticalStackLayout>
 
                         <CollectionView ItemsSource="{Binding CartItems}"
                                         MaximumHeightRequest="300"
@@ -1207,7 +1416,8 @@
                                             Margin="0,4">
                                         <Grid ColumnDefinitions="*,Auto,Auto"
                                               ColumnSpacing="12">
-                                            <VerticalStackLayout Grid.Column="0" Spacing="4">
+                                            <VerticalStackLayout Grid.Column="0"
+                                                                 Spacing="4">
                                                 <Label Text="{Binding ServiceItem.Name}"
                                                        FontSize="14"
                                                        FontAttributes="Bold"
@@ -1222,7 +1432,8 @@
                                                            Padding="2,0,0,0" />
                                                 </HorizontalStackLayout>
                                             </VerticalStackLayout>
-                                            <HorizontalStackLayout Grid.Column="1" VerticalOptions="Center">
+                                            <HorizontalStackLayout Grid.Column="1"
+                                                                   VerticalOptions="Center">
                                                 <Label Text="{loc:Translate Key=QuantityPrefix}"
                                                        FontSize="14" />
                                                 <Label Text="{Binding Quantity}"
@@ -1244,9 +1455,12 @@
                             </CollectionView.ItemTemplate>
                         </CollectionView>
 
-                        <BoxView HeightRequest="1" Color="{DynamicResource Border}" IsVisible="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}" />
+                        <BoxView HeightRequest="1"
+                                 Color="{DynamicResource Border}"
+                                 IsVisible="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}" />
 
-                        <Grid ColumnDefinitions="*,Auto" IsVisible="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}">
+                        <Grid ColumnDefinitions="*,Auto"
+                              IsVisible="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}">
                             <Label Text="{loc:Translate Key=SubTotal}"
                                    FontSize="14" />
                             <HorizontalStackLayout Grid.Column="1">
@@ -1257,7 +1471,8 @@
                                        Padding="2,0,0,0" />
                             </HorizontalStackLayout>
                         </Grid>
-                        <Grid ColumnDefinitions="*,Auto" IsVisible="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}">
+                        <Grid ColumnDefinitions="*,Auto"
+                              IsVisible="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}">
                             <Label Text="{loc:Translate Key=Discounts}"
                                    FontSize="14"
                                    TextColor="{DynamicResource TextSecondary}" />
@@ -1271,7 +1486,8 @@
                                        Padding="2,0,0,0" />
                             </HorizontalStackLayout>
                         </Grid>
-                        <Grid ColumnDefinitions="*,Auto" IsVisible="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}">
+                        <Grid ColumnDefinitions="*,Auto"
+                              IsVisible="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}">
                             <Label Text="{loc:Translate Key=Tax}"
                                    FontSize="14" />
                             <HorizontalStackLayout Grid.Column="1">
@@ -1282,8 +1498,11 @@
                                        Padding="2,0,0,0" />
                             </HorizontalStackLayout>
                         </Grid>
-                        <BoxView HeightRequest="1" Color="{DynamicResource Border}" IsVisible="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}" />
-                        <Grid ColumnDefinitions="*,Auto" IsVisible="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}">
+                        <BoxView HeightRequest="1"
+                                 Color="{DynamicResource Border}"
+                                 IsVisible="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}" />
+                        <Grid ColumnDefinitions="*,Auto"
+                              IsVisible="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}">
                             <Label Text="{loc:Translate Key=NetTotal}"
                                    FontSize="16"
                                    FontAttributes="Bold" />
@@ -1361,11 +1580,26 @@
               FlowDirection="LeftToRight"
               IsVisible="{Binding IsSignaturePadVisible}">
             <Grid RowDefinitions="Auto,*,Auto">
-                <Grid Grid.Row="0" ColumnDefinitions="*,Auto" Padding="20">
-                    <Label Grid.Column="0" Text="{loc:Translate Key=WriteSignature}" FontSize="18" HorizontalOptions="Center" />
-                    <Button Grid.Column="1" Text="✕" WidthRequest="28" HeightRequest="28" BackgroundColor="Transparent" TextColor="{DynamicResource TextPrimary}" Padding="0" Command="{Binding SaveSignatureCommand}" />
+                <Grid Grid.Row="0"
+                      ColumnDefinitions="*,Auto"
+                      Padding="20">
+                    <Label Grid.Column="0"
+                           Text="{loc:Translate Key=WriteSignature}"
+                           FontSize="18"
+                           HorizontalOptions="Center" />
+                    <Button Grid.Column="1"
+                            Text="✕"
+                            WidthRequest="28"
+                            HeightRequest="28"
+                            BackgroundColor="Transparent"
+                            TextColor="{DynamicResource TextPrimary}"
+                            Padding="0"
+                            Command="{Binding SaveSignatureCommand}" />
                 </Grid>
-                <Border Grid.Row="1" Style="{StaticResource Card}" Padding="0" Margin="16">
+                <Border Grid.Row="1"
+                        Style="{StaticResource Card}"
+                        Padding="0"
+                        Margin="16">
                     <controls:SignaturePadView SignatureData="{Binding SignatureData}" />
                 </Border>
                 <Grid Grid.Row="2"
@@ -1443,24 +1677,36 @@
                                    FontSize="14"
                                    FontAttributes="Bold" />
                             <Grid ColumnDefinitions="*,Auto">
-                                <Label Text="{loc:Translate Key=Discount1}" FontSize="13" />
+                                <Label Text="{loc:Translate Key=Discount1}"
+                                       FontSize="13" />
                                 <HorizontalStackLayout Grid.Column="1">
-                                    <Label Text="{Binding EditingServiceItem.Discount1, StringFormat='{0:N2}'}" FontSize="13" />
-                                    <Label Text="{loc:Translate Key=CurrencySAR}" FontSize="13" Padding="2,0,0,0" />
+                                    <Label Text="{Binding EditingServiceItem.Discount1, StringFormat='{0:N2}'}"
+                                           FontSize="13" />
+                                    <Label Text="{loc:Translate Key=CurrencySAR}"
+                                           FontSize="13"
+                                           Padding="2,0,0,0" />
                                 </HorizontalStackLayout>
                             </Grid>
                             <Grid ColumnDefinitions="*,Auto">
-                                <Label Text="{loc:Translate Key=Discount2}" FontSize="13" />
+                                <Label Text="{loc:Translate Key=Discount2}"
+                                       FontSize="13" />
                                 <HorizontalStackLayout Grid.Column="1">
-                                    <Label Text="{Binding EditingServiceItem.Discount2, StringFormat='{0:N2}'}" FontSize="13" />
-                                    <Label Text="{loc:Translate Key=CurrencySAR}" FontSize="13" Padding="2,0,0,0" />
+                                    <Label Text="{Binding EditingServiceItem.Discount2, StringFormat='{0:N2}'}"
+                                           FontSize="13" />
+                                    <Label Text="{loc:Translate Key=CurrencySAR}"
+                                           FontSize="13"
+                                           Padding="2,0,0,0" />
                                 </HorizontalStackLayout>
                             </Grid>
                             <Grid ColumnDefinitions="*,Auto">
-                                <Label Text="{loc:Translate Key=Discount3}" FontSize="13" />
+                                <Label Text="{loc:Translate Key=Discount3}"
+                                       FontSize="13" />
                                 <HorizontalStackLayout Grid.Column="1">
-                                    <Label Text="{Binding EditingServiceItem.Discount3, StringFormat='{0:N2}'}" FontSize="13" />
-                                    <Label Text="{loc:Translate Key=CurrencySAR}" FontSize="13" Padding="2,0,0,0" />
+                                    <Label Text="{Binding EditingServiceItem.Discount3, StringFormat='{0:N2}'}"
+                                           FontSize="13" />
+                                    <Label Text="{loc:Translate Key=CurrencySAR}"
+                                           FontSize="13"
+                                           Padding="2,0,0,0" />
                                 </HorizontalStackLayout>
                             </Grid>
                         </VerticalStackLayout>
@@ -1508,9 +1754,11 @@
         <Border Grid.RowSpan="2"
                 BackgroundColor="#80FFFFFF"
                 IsVisible="{Binding IsBusy}"
-                HorizontalOptions="Fill" VerticalOptions="Fill">
+                HorizontalOptions="Fill"
+                VerticalOptions="Fill">
             <ActivityIndicator IsRunning="{Binding IsBusy}"
-                               HorizontalOptions="Center" VerticalOptions="Center"
+                               HorizontalOptions="Center"
+                               VerticalOptions="Center"
                                Color="{StaticResource Primary}" />
         </Border>
     </Grid>
