@@ -773,11 +773,13 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
             return;
         }
 
+        var phone = SelectedCountryCode == "+20" ? NewCustomerPhone.TrimStart('0') : NewCustomerPhone;
+        var fullPhone = SelectedCountryCode + phone;
         var customer = new Customer
         {
             FirstName = NewCustomerFirstName,
             LastName = NewCustomerLastName,
-            PhoneNumber = NewCustomerPhone
+            PhoneNumber = fullPhone
         };
         Customers.Add(customer);
         SelectedCustomer = customer;
