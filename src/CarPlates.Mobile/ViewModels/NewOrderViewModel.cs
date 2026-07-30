@@ -2,6 +2,7 @@ using CarPlates.Application.Common.DTOs;
 using CarPlates.Application.Common.Interfaces;
 using CarPlates.Domain.Entities;
 using CarPlates.Mobile.Helpers;
+using CarPlates.Shared.Extensions;
 using CarPlates.Mobile.Localization;
 using CarPlates.Mobile.Navigation;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -70,6 +71,12 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
     [ObservableProperty] private string _newPlateNumber = string.Empty;
     [ObservableProperty] private string _newPlateType = "خصوصي";
     [ObservableProperty] private string _newVin = string.Empty;
+
+partial void OnNewVinChanged(string value)
+{
+    _newVin = value.ToEnglishNumbers();
+    OnPropertyChanged(nameof(NewVin));
+}
     [ObservableProperty] private string _selectedBrand = string.Empty;
     [ObservableProperty] private string _selectedModel = string.Empty;
     [ObservableProperty] private string _selectedVehicleType = string.Empty;
