@@ -1,9 +1,11 @@
 using CarPlates.Application.Common.Interfaces;
+using CarPlates.Application.Common.DTOs;
 using CarPlates.Domain.Entities;
 using CarPlates.Mobile.Localization;
 using CarPlates.Mobile.Navigation;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.Maui.Devices.Sensors;
 using System.Collections.ObjectModel;
 
 namespace CarPlates.Mobile.ViewModels;
@@ -18,6 +20,7 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
     private readonly IBillAttachmentApiService _billAttachmentApiService;
     private readonly IAuthenticationService _authenticationService;
     private readonly IVehicleColorApiService _vehicleColorService;
+    private readonly IScanRepository _scanRepository;
 
     // MakeName -> MakeID, so picking a brand can resolve the real ID needed to fetch models.
     private readonly Dictionary<string, int> _makeIdsByName = new();
@@ -163,7 +166,8 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
         IBillApiService billApiService,
         IBillAttachmentApiService billAttachmentApiService,
         IAuthenticationService authenticationService,
-        IVehicleColorApiService vehicleColorService) : base(navigation)
+        IVehicleColorApiService vehicleColorService,
+        IScanRepository scanRepository) : base(navigation)
     {
         _customerCarLookupService = customerCarLookupService;
         _workshopLookupService = workshopLookupService;
@@ -173,6 +177,7 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
         _billAttachmentApiService = billAttachmentApiService;
         _authenticationService = authenticationService;
         _vehicleColorService = vehicleColorService;
+        _scanRepository = scanRepository;
 
         Title = LocalizationResourceManager.Instance["AddVehicle"];
         LoadVehicleYears();
@@ -1178,6 +1183,19 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
                 var currentUser = await _authenticationService.GetCurrentUserAsync();
                 var plateNo = SelectedVehicle?.PlateNumber ?? NewPlateNumber;
 
+                double? lat = null, lng = null;
+                try
+                {
+                    var location = await Geolocation.GetLocationAsync(
+                        new GeolocationRequest(GeolocationAccuracy.Medium, TimeSpan.FromSeconds(5)));
+                    if (location != null)
+                    {
+                        lat = location.Latitude;
+                        lng = location.Longitude;
+                    }
+                }
+                catch { }
+
                 var billDetails = CartItems.Select(ci =>
                 {
                     var price = (double)ci.ServiceItem.Price;
@@ -1269,6 +1287,25 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
                     {
                         System.Diagnostics.Debug.WriteLine($"Failed to upload {uploadErrors.Count} attachment(s): {string.Join(", ", uploadErrors)}");
                     }
+                }
+
+                // Save scan record
+                try
+                {
+                    var scanDto = new CreateScanRecordDto(
+                        PlateNumber: plateNo,
+                        PlateType: SelectedVehicle?.PlateType ?? NewPlateType,
+                        Confidence: 1.0f,
+                        PhotoPath: null,
+                        BranchID: currentUser?.BranchId ?? 0,
+                        Latitude: lat,
+                        Longitude: lng,
+                        Notes: $"Created from bill #{result.HeaderId}");
+                    await _scanRepository.CreateAsync(scanDto);
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine($"[SubmitOrder] Failed to save scan record: {ex.Message}");
                 }
 
                 var order = new Order

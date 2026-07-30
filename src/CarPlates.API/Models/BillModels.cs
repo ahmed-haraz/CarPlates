@@ -12,8 +12,8 @@ public class TransHeader
     public int? TransDate { get; set; }
     public int? BranchID { get; set; }
     public int? CustomerId { get; set; }
-    public int? EngineerId { get; set; }      // technician - wh_CarsTechnician.ID
-    public int? CarHeaderId { get; set; }     // links to wh_CustomerCars.ID
+    public int? EngineerId { get; set; } 
+    public int? CarHeaderId { get; set; }
     public int? SalesRepId { get; set; }
     public int? StoreId { get; set; }
     public double? HdrDiscount { get; set; }
