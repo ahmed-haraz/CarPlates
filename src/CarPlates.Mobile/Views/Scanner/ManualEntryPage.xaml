@@ -15,9 +15,9 @@
         <!-- Loading overlay -->
         <Grid Grid.RowSpan="2"
               BackgroundColor="#88000000"
-              IsVisible="{Binding IsProcessing}"
+              IsVisible="{Binding IsBusy}"
               InputTransparent="False">
-            <ActivityIndicator IsRunning="{Binding IsProcessing}"
+            <ActivityIndicator IsRunning="{Binding IsBusy}"
                                Color="{StaticResource Accent}"
                                HeightRequest="48"
                                WidthRequest="48"

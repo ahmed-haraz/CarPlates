@@ -140,6 +140,16 @@
 
         </RefreshView>
 
+        <!-- Loading overlay -->
+        <Border Grid.RowSpan="5"
+                BackgroundColor="#80FFFFFF"
+                IsVisible="{Binding IsBusy}"
+                HorizontalOptions="Fill" VerticalOptions="Fill">
+            <ActivityIndicator IsRunning="{Binding IsBusy}"
+                               HorizontalOptions="Center" VerticalOptions="Center"
+                               Color="{StaticResource Primary}" />
+        </Border>
+
     </Grid>
 
 </ContentPage>

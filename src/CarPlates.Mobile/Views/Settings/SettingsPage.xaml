@@ -7,191 +7,202 @@
              x:DataType="vm:SettingsViewModel"
              Title="{Binding Title}">
 
-    <ScrollView>
-        <VerticalStackLayout Padding="16" Spacing="16">
-            <!-- Appearance Section -->
-            <Label Text="{loc:Translate Key=Appearance}" Style="{StaticResource Title}"/>
-            <Border Style="{StaticResource Card}">
-                <VerticalStackLayout Spacing="12">
-                    <Grid ColumnDefinitions="*,Auto">
-                        <Label Grid.Column="0" Text="{loc:Translate Key=DarkMode}" Style="{StaticResource Body}" VerticalOptions="Center"/>
-                        <Switch Grid.Column="1" IsToggled="{Binding IsDarkMode}"/>
-                    </Grid>
-                    <BoxView HeightRequest="1" Color="{DynamicResource Border}" Margin="0,4"/>
-                    <Grid ColumnDefinitions="*,Auto">
-                        <Label Grid.Column="0" Text="{loc:Translate Key=Language}" Style="{StaticResource Body}" VerticalOptions="Center"/>
-                        <Picker Grid.Column="1" 
-                                ItemsSource="{Binding AvailableLanguages}"
-                                SelectedItem="{Binding SelectedLanguage}"
-                                WidthRequest="120"/>
-                    </Grid>
-                </VerticalStackLayout>
-            </Border>
+    <Grid>
+        <ScrollView>
+            <VerticalStackLayout Padding="16" Spacing="16">
+                <!-- Appearance Section -->
+                <Label Text="{loc:Translate Key=Appearance}" Style="{StaticResource Title}"/>
+                <Border Style="{StaticResource Card}">
+                    <VerticalStackLayout Spacing="12">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <Label Grid.Column="0" Text="{loc:Translate Key=DarkMode}" Style="{StaticResource Body}" VerticalOptions="Center"/>
+                            <Switch Grid.Column="1" IsToggled="{Binding IsDarkMode}"/>
+                        </Grid>
+                        <BoxView HeightRequest="1" Color="{DynamicResource Border}" Margin="0,4"/>
+                        <Grid ColumnDefinitions="*,Auto">
+                            <Label Grid.Column="0" Text="{loc:Translate Key=Language}" Style="{StaticResource Body}" VerticalOptions="Center"/>
+                            <Picker Grid.Column="1" 
+                                    ItemsSource="{Binding AvailableLanguages}"
+                                    SelectedItem="{Binding SelectedLanguage}"
+                                    WidthRequest="120"/>
+                        </Grid>
+                    </VerticalStackLayout>
+                </Border>
 
-            <!-- Scanner Section -->
-            <Label Text="{loc:Translate Key=Scanner}" Style="{StaticResource Title}" Margin="0,8,0,0"/>
-            <Border Style="{StaticResource Card}">
-                <VerticalStackLayout Spacing="12">
-                    <Grid ColumnDefinitions="*,Auto">
-                        <Label Grid.Column="0" Text="{loc:Translate Key=OcrConfidence}" Style="{StaticResource Body}" VerticalOptions="Center"/>
-                        <Label Grid.Column="1" Text="{Binding OcrConfidence, StringFormat='{0:P0}'}" Style="{StaticResource Caption}"/>
-                    </Grid>
-                    <Slider Minimum="0.5" Maximum="1.0" Value="{Binding OcrConfidence}" Margin="0,-8,0,0"/>
-                    <BoxView HeightRequest="1" Color="{DynamicResource Border}" Margin="0,4"/>
-                    <Grid ColumnDefinitions="*,Auto">
-                        <Label Grid.Column="0" Text="{loc:Translate Key=AutoResumeScanning}" Style="{StaticResource Body}" VerticalOptions="Center"/>
-                        <Switch Grid.Column="1" IsToggled="{Binding AutoResume}"/>
-                    </Grid>
-                </VerticalStackLayout>
-            </Border>
+                <!-- Scanner Section -->
+                <Label Text="{loc:Translate Key=Scanner}" Style="{StaticResource Title}" Margin="0,8,0,0"/>
+                <Border Style="{StaticResource Card}">
+                    <VerticalStackLayout Spacing="12">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <Label Grid.Column="0" Text="{loc:Translate Key=OcrConfidence}" Style="{StaticResource Body}" VerticalOptions="Center"/>
+                            <Label Grid.Column="1" Text="{Binding OcrConfidence, StringFormat='{0:P0}'}" Style="{StaticResource Caption}"/>
+                        </Grid>
+                        <Slider Minimum="0.5" Maximum="1.0" Value="{Binding OcrConfidence}" Margin="0,-8,0,0"/>
+                        <BoxView HeightRequest="1" Color="{DynamicResource Border}" Margin="0,4"/>
+                        <Grid ColumnDefinitions="*,Auto">
+                            <Label Grid.Column="0" Text="{loc:Translate Key=AutoResumeScanning}" Style="{StaticResource Body}" VerticalOptions="Center"/>
+                            <Switch Grid.Column="1" IsToggled="{Binding AutoResume}"/>
+                        </Grid>
+                    </VerticalStackLayout>
+                </Border>
 
-            <!-- API Section -->
-            <Label Text="{loc:Translate Key=ApiConfiguration}" Style="{StaticResource Title}" Margin="0,8,0,0"/>
-            <Border Style="{StaticResource Card}">
-                <VerticalStackLayout Spacing="12">
-                    <Label Text="{loc:Translate Key=ApiUrl}" Style="{StaticResource Body}" FontAttributes="Bold"/>
-                    <Entry Text="{Binding ApiUrl}" Placeholder="{loc:Translate Key=ApiUrlPlaceholder}"
-                           IsPassword="{Binding IsApiUrlLocked}"
-                           IsReadOnly="{Binding IsApiUrlLocked}"/>
+                <!-- API Section -->
+                <Label Text="{loc:Translate Key=ApiConfiguration}" Style="{StaticResource Title}" Margin="0,8,0,0"/>
+                <Border Style="{StaticResource Card}">
+                    <VerticalStackLayout Spacing="12">
+                        <Label Text="{loc:Translate Key=ApiUrl}" Style="{StaticResource Body}" FontAttributes="Bold"/>
+                        <Entry Text="{Binding ApiUrl}" Placeholder="{loc:Translate Key=ApiUrlPlaceholder}"
+                               IsPassword="{Binding IsApiUrlLocked}"
+                               IsReadOnly="{Binding IsApiUrlLocked}"/>
 
-                    <!-- Unlock UI when API URL is locked -->
-                    <VerticalStackLayout Spacing="8" IsVisible="{Binding IsApiUrlLocked}">
-                        <Entry Placeholder="{loc:Translate Key=EnterSettingsPassword}"
-                               Text="{Binding ApiUrlPassword}"
-                               IsPassword="True"/>
-                        <Button Text="{loc:Translate Key=UnlockApiUrl}"
+                        <!-- Unlock UI when API URL is locked -->
+                        <VerticalStackLayout Spacing="8" IsVisible="{Binding IsApiUrlLocked}">
+                            <Entry Placeholder="{loc:Translate Key=EnterSettingsPassword}"
+                                   Text="{Binding ApiUrlPassword}"
+                                   IsPassword="True"/>
+                            <Button Text="{loc:Translate Key=UnlockApiUrl}"
+                                    Style="{StaticResource SecondaryButton}"
+                                    Command="{Binding UnlockApiUrlCommand}"
+                                    HeightRequest="40"
+                                    FontSize="14"/>
+                        </VerticalStackLayout>
+
+                        <!-- Lock button when API URL is unlocked -->
+                        <Button Text="{loc:Translate Key=LockApiUrl}"
                                 Style="{StaticResource SecondaryButton}"
-                                Command="{Binding UnlockApiUrlCommand}"
+                                Command="{Binding LockApiUrlCommand}"
+                                HeightRequest="40"
+                                FontSize="14"
+                                IsVisible="{Binding IsApiUrlLocked, Converter={StaticResource InvertedBoolConverter}}"/>
+
+                        <Button Text="{loc:Translate Key=TestConnectionButton}"
+                                Style="{StaticResource SecondaryButton}"
+                                Command="{Binding TestConnectionCommand}"
                                 HeightRequest="40"
                                 FontSize="14"/>
                     </VerticalStackLayout>
+                </Border>
 
-                    <!-- Lock button when API URL is unlocked -->
-                    <Button Text="{loc:Translate Key=LockApiUrl}"
-                            Style="{StaticResource SecondaryButton}"
-                            Command="{Binding LockApiUrlCommand}"
-                            HeightRequest="40"
-                            FontSize="14"
-                            IsVisible="{Binding IsApiUrlLocked, Converter={StaticResource InvertedBoolConverter}}"/>
-
-                    <Button Text="{loc:Translate Key=TestConnectionButton}"
-                            Style="{StaticResource SecondaryButton}"
-                            Command="{Binding TestConnectionCommand}"
-                            HeightRequest="40"
-                            FontSize="14"/>
-                </VerticalStackLayout>
-            </Border>
-
-            <!-- Notifications Section -->
-            <Label Text="{loc:Translate Key=Notifications}" Style="{StaticResource Title}" Margin="0,8,0,0"/>
-            <Border Style="{StaticResource Card}">
-                <Grid ColumnDefinitions="*,Auto">
-                    <Label Grid.Column="0" Text="{loc:Translate Key=EnableNotifications}" Style="{StaticResource Body}" VerticalOptions="Center"/>
-                    <Switch Grid.Column="1" IsToggled="{Binding NotificationsEnabled}"/>
-                </Grid>
-            </Border>
-
-            <!-- Payment Gateway Section -->
-            <Label Text="{loc:Translate Key=PaymentGateway}" Style="{StaticResource Title}" Margin="0,8,0,0"/>
-            <Border Style="{StaticResource Card}">
-                <VerticalStackLayout Spacing="12">
+                <!-- Notifications Section -->
+                <Label Text="{loc:Translate Key=Notifications}" Style="{StaticResource Title}" Margin="0,8,0,0"/>
+                <Border Style="{StaticResource Card}">
                     <Grid ColumnDefinitions="*,Auto">
-                        <Label Grid.Column="0" Text="{loc:Translate Key=EnableGateway}" Style="{StaticResource Body}" VerticalOptions="Center"/>
-                        <Switch Grid.Column="1" IsToggled="{Binding PaymentGatewayEnabled}"/>
+                        <Label Grid.Column="0" Text="{loc:Translate Key=EnableNotifications}" Style="{StaticResource Body}" VerticalOptions="Center"/>
+                        <Switch Grid.Column="1" IsToggled="{Binding NotificationsEnabled}"/>
                     </Grid>
-                    <BoxView HeightRequest="1" Color="{DynamicResource Border}" Margin="0,4"/>
-                    <Label Text="{loc:Translate Key=GatewayName}" Style="{StaticResource Body}" FontAttributes="Bold"/>
-                    <Entry Placeholder="{loc:Translate Key=GatewayNamePlaceholder}" Text="{Binding PaymentGatewayName}"/>
-                    <Label Text="{loc:Translate Key=MerchantId}" Style="{StaticResource Body}" FontAttributes="Bold"/>
-                    <Entry Placeholder="{loc:Translate Key=MerchantIdPlaceholder}" Text="{Binding PaymentMerchantId}"/>
-                    <Label Text="{loc:Translate Key=ApiKey}" Style="{StaticResource Body}" FontAttributes="Bold"/>
-                    <Entry Placeholder="{loc:Translate Key=ApiKeyPlaceholder}" Text="{Binding PaymentApiKey}" IsPassword="True"/>
-                    <Label Text="{loc:Translate Key=EndpointUrl}" Style="{StaticResource Body}" FontAttributes="Bold"/>
-                    <Entry Placeholder="{loc:Translate Key=EndpointUrlPlaceholder}" Text="{Binding PaymentEndpointUrl}"/>
-                    <Label Text="{loc:Translate Key=AdditionalSettingsJson}" Style="{StaticResource Body}" FontAttributes="Bold"/>
-                    <Editor Placeholder="{loc:Translate Key=AdditionalSettingsPlaceholder}" Text="{Binding PaymentAdditionalSettings}"
-                            HeightRequest="60" FontSize="12"/>
-                </VerticalStackLayout>
-            </Border>
+                </Border>
 
-            <!-- Print Settings -->
-            <Label Text="{loc:Translate Key=PrintSettings}" Style="{StaticResource Title}" Margin="0,8,0,0"/>
-            <Border Style="{StaticResource Card}">
-                <VerticalStackLayout Spacing="12">
-                    <Grid ColumnDefinitions="*,Auto">
-                        <Label Grid.Column="0" Text="{loc:Translate Key=UseSavedPrintSettings}" Style="{StaticResource Body}" VerticalOptions="Center"/>
-                        <Switch Grid.Column="1" IsToggled="{Binding UseSavedPrintSettings}"/>
-                    </Grid>
+                <!-- Payment Gateway Section -->
+                <Label Text="{loc:Translate Key=PaymentGateway}" Style="{StaticResource Title}" Margin="0,8,0,0"/>
+                <Border Style="{StaticResource Card}">
+                    <VerticalStackLayout Spacing="12">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <Label Grid.Column="0" Text="{loc:Translate Key=EnableGateway}" Style="{StaticResource Body}" VerticalOptions="Center"/>
+                            <Switch Grid.Column="1" IsToggled="{Binding PaymentGatewayEnabled}"/>
+                        </Grid>
+                        <BoxView HeightRequest="1" Color="{DynamicResource Border}" Margin="0,4"/>
+                        <Label Text="{loc:Translate Key=GatewayName}" Style="{StaticResource Body}" FontAttributes="Bold"/>
+                        <Entry Placeholder="{loc:Translate Key=GatewayNamePlaceholder}" Text="{Binding PaymentGatewayName}"/>
+                        <Label Text="{loc:Translate Key=MerchantId}" Style="{StaticResource Body}" FontAttributes="Bold"/>
+                        <Entry Placeholder="{loc:Translate Key=MerchantIdPlaceholder}" Text="{Binding PaymentMerchantId}"/>
+                        <Label Text="{loc:Translate Key=ApiKey}" Style="{StaticResource Body}" FontAttributes="Bold"/>
+                        <Entry Placeholder="{loc:Translate Key=ApiKeyPlaceholder}" Text="{Binding PaymentApiKey}" IsPassword="True"/>
+                        <Label Text="{loc:Translate Key=EndpointUrl}" Style="{StaticResource Body}" FontAttributes="Bold"/>
+                        <Entry Placeholder="{loc:Translate Key=EndpointUrlPlaceholder}" Text="{Binding PaymentEndpointUrl}"/>
+                        <Label Text="{loc:Translate Key=AdditionalSettingsJson}" Style="{StaticResource Body}" FontAttributes="Bold"/>
+                        <Editor Placeholder="{loc:Translate Key=AdditionalSettingsPlaceholder}" Text="{Binding PaymentAdditionalSettings}"
+                                HeightRequest="60" FontSize="12"/>
+                    </VerticalStackLayout>
+                </Border>
 
-                    <BoxView HeightRequest="1" Color="{DynamicResource Border}" Margin="0,4"/>
+                <!-- Print Settings -->
+                <Label Text="{loc:Translate Key=PrintSettings}" Style="{StaticResource Title}" Margin="0,8,0,0"/>
+                <Border Style="{StaticResource Card}">
+                    <VerticalStackLayout Spacing="12">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <Label Grid.Column="0" Text="{loc:Translate Key=UseSavedPrintSettings}" Style="{StaticResource Body}" VerticalOptions="Center"/>
+                            <Switch Grid.Column="1" IsToggled="{Binding UseSavedPrintSettings}"/>
+                        </Grid>
 
-                    <Label Text="{loc:Translate Key=DefaultPrinter}" Style="{StaticResource Body}" FontAttributes="Bold"/>
-                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
-                        <Picker Grid.Column="0"
-                                ItemsSource="{Binding AvailablePrinters}"
-                                SelectedItem="{Binding SelectedPrinter}"
-                                IsVisible="{Binding HasPrinters}"/>
-                        <Button Grid.Column="1" Text="{loc:Translate Key=Refresh}"
-                                Command="{Binding RefreshPrintersCommand}"
-                                HeightRequest="40" FontSize="12"
-                                Padding="12,0"/>
-                    </Grid>
-                    <Label Text="{loc:Translate Key=NoPrintersFound}"
-                           IsVisible="{Binding HasPrinters, Converter={StaticResource InvertedBoolConverter}}"
-                           Style="{StaticResource Caption}" FontSize="12"/>
+                        <BoxView HeightRequest="1" Color="{DynamicResource Border}" Margin="0,4"/>
 
-                    <Label Text="{loc:Translate Key=EnterNetworkPrinter}" Style="{StaticResource Caption}"/>
-                    <Entry Placeholder="{loc:Translate Key=PrinterIpPlaceholder}" Text="{Binding PrinterIp}"
-                           IsEnabled="{Binding IsIpEntryEnabled}"/>
+                        <Label Text="{loc:Translate Key=DefaultPrinter}" Style="{StaticResource Body}" FontAttributes="Bold"/>
+                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                            <Picker Grid.Column="0"
+                                    ItemsSource="{Binding AvailablePrinters}"
+                                    SelectedItem="{Binding SelectedPrinter}"
+                                    IsVisible="{Binding HasPrinters}"/>
+                            <Button Grid.Column="1" Text="{loc:Translate Key=Refresh}"
+                                    Command="{Binding RefreshPrintersCommand}"
+                                    HeightRequest="40" FontSize="12"
+                                    Padding="12,0"/>
+                        </Grid>
+                        <Label Text="{loc:Translate Key=NoPrintersFound}"
+                               IsVisible="{Binding HasPrinters, Converter={StaticResource InvertedBoolConverter}}"
+                               Style="{StaticResource Caption}" FontSize="12"/>
 
-                    <BoxView HeightRequest="1" Color="{DynamicResource Border}" Margin="0,4"/>
+                        <Label Text="{loc:Translate Key=EnterNetworkPrinter}" Style="{StaticResource Caption}"/>
+                        <Entry Placeholder="{loc:Translate Key=PrinterIpPlaceholder}" Text="{Binding PrinterIp}"
+                               IsEnabled="{Binding IsIpEntryEnabled}"/>
 
-                    <Label Text="{loc:Translate Key=PrintFormat}" Style="{StaticResource Body}" FontAttributes="Bold"/>
-                    <Picker ItemsSource="{Binding PrintFormatOptions}"
-                            SelectedIndex="{Binding SelectedPrintFormatIndex}"/>
+                        <BoxView HeightRequest="1" Color="{DynamicResource Border}" Margin="0,4"/>
 
-                    <Label Text="{loc:Translate Key=PrintLanguage}" Style="{StaticResource Body}" FontAttributes="Bold"/>
-                    <Picker ItemsSource="{Binding PrintLanguageOptions}"
-                            SelectedIndex="{Binding SelectedPrintLanguageIndex}"/>
+                        <Label Text="{loc:Translate Key=PrintFormat}" Style="{StaticResource Body}" FontAttributes="Bold"/>
+                        <Picker ItemsSource="{Binding PrintFormatOptions}"
+                                SelectedIndex="{Binding SelectedPrintFormatIndex}"/>
 
-                    <Label Text="{loc:Translate Key=CodePage}" Style="{StaticResource Body}" FontAttributes="Bold"/>
-                    <Picker ItemsSource="{Binding CodepageOptions}"
-                            SelectedIndex="{Binding SelectedCodepageIndex}"/>
-                </VerticalStackLayout>
-            </Border>
+                        <Label Text="{loc:Translate Key=PrintLanguage}" Style="{StaticResource Body}" FontAttributes="Bold"/>
+                        <Picker ItemsSource="{Binding PrintLanguageOptions}"
+                                SelectedIndex="{Binding SelectedPrintLanguageIndex}"/>
 
-            <!-- Data Management -->
-            <Label Text="{loc:Translate Key=DataManagement}" Style="{StaticResource Title}" Margin="0,8,0,0"/>
-            <Border Style="{StaticResource Card}">
-                <VerticalStackLayout Spacing="8">
-                    <Button Text="{loc:Translate Key=ViewLogsButton}"
+                        <Label Text="{loc:Translate Key=CodePage}" Style="{StaticResource Body}" FontAttributes="Bold"/>
+                        <Picker ItemsSource="{Binding CodepageOptions}"
+                                SelectedIndex="{Binding SelectedCodepageIndex}"/>
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Data Management -->
+                <Label Text="{loc:Translate Key=DataManagement}" Style="{StaticResource Title}" Margin="0,8,0,0"/>
+                <Border Style="{StaticResource Card}">
+                    <VerticalStackLayout Spacing="8">
+                        <Button Text="{loc:Translate Key=ViewLogsButton}"
+                                Style="{StaticResource SecondaryButton}"
+                                Command="{Binding ViewLogsCommand}"
+                                HeightRequest="44"/>
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Save Button -->
+                <Button Text="{loc:Translate Key=SaveSettingsButton}"
+                        Style="{StaticResource PrimaryButton}"
+                        Command="{Binding SaveSettingsCommand}"
+                        HeightRequest="56"
+                        Margin="0,16,0,0"/>
+
+                <!-- About & Logout -->
+                <VerticalStackLayout Spacing="8" Margin="0,16,0,0">
+                    <Button Text="{loc:Translate Key=AboutButton}"
                             Style="{StaticResource SecondaryButton}"
-                            Command="{Binding ViewLogsCommand}"
+                            Command="{Binding NavigateToAboutCommand}"
                             HeightRequest="44"/>
+                    <Button Text="{loc:Translate Key=LogoutButton}"
+                            BackgroundColor="{StaticResource Error}"
+                            TextColor="White"
+                            Command="{Binding LogoutCommand}"
+                            HeightRequest="44"
+                            CornerRadius="12"/>
                 </VerticalStackLayout>
-            </Border>
-
-            <!-- Save Button -->
-            <Button Text="{loc:Translate Key=SaveSettingsButton}"
-                    Style="{StaticResource PrimaryButton}"
-                    Command="{Binding SaveSettingsCommand}"
-                    HeightRequest="56"
-                    Margin="0,16,0,0"/>
-
-            <!-- About & Logout -->
-            <VerticalStackLayout Spacing="8" Margin="0,16,0,0">
-                <Button Text="{loc:Translate Key=AboutButton}"
-                        Style="{StaticResource SecondaryButton}"
-                        Command="{Binding NavigateToAboutCommand}"
-                        HeightRequest="44"/>
-                <Button Text="{loc:Translate Key=LogoutButton}"
-                        BackgroundColor="{StaticResource Error}"
-                        TextColor="White"
-                        Command="{Binding LogoutCommand}"
-                        HeightRequest="44"
-                        CornerRadius="12"/>
             </VerticalStackLayout>
-        </VerticalStackLayout>
-    </ScrollView>
+        </ScrollView>
+
+        <!-- Loading overlay -->
+        <Border BackgroundColor="#80FFFFFF"
+                IsVisible="{Binding IsBusy}"
+                HorizontalOptions="Fill" VerticalOptions="Fill">
+            <ActivityIndicator IsRunning="{Binding IsBusy}"
+                               HorizontalOptions="Center" VerticalOptions="Center"
+                               Color="{StaticResource Primary}" />
+        </Border>
+    </Grid>
 
 </ContentPage>

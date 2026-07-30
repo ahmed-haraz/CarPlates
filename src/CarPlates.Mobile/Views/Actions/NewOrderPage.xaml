@@ -489,9 +489,9 @@
                             CornerRadius="12"
                             HeightRequest="48"
                             Command="{Binding SearchCustomerCommand}"
-                            IsEnabled="{Binding IsSearchingCustomer, Converter={StaticResource InvertedBoolConverter}}" />
-                    <ActivityIndicator IsVisible="{Binding IsSearchingCustomer}"
-                                       IsRunning="{Binding IsSearchingCustomer}"
+                            IsEnabled="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}" />
+                    <ActivityIndicator IsVisible="{Binding IsBusy}"
+                                       IsRunning="{Binding IsBusy}"
                                        Color="{StaticResource Primary}" />
                     <Label Text="{Binding CustomerSearchMessage}"
                            IsVisible="{Binding CustomerSearchMessage, Converter={StaticResource IsStringNotEmptyConverter}}"
@@ -1503,5 +1503,15 @@
                 </ScrollView>
             </Border>
         </Grid>
+
+        <!-- Loading overlay -->
+        <Border Grid.RowSpan="2"
+                BackgroundColor="#80FFFFFF"
+                IsVisible="{Binding IsBusy}"
+                HorizontalOptions="Fill" VerticalOptions="Fill">
+            <ActivityIndicator IsRunning="{Binding IsBusy}"
+                               HorizontalOptions="Center" VerticalOptions="Center"
+                               Color="{StaticResource Primary}" />
+        </Border>
     </Grid>
 </ContentPage>

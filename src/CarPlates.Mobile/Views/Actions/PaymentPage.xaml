@@ -8,153 +8,160 @@
              Title="{Binding Title}"
              BackgroundColor="{DynamicResource Background}">
 
-    <ScrollView>
-        <VerticalStackLayout Padding="16" Spacing="12">
+    <Grid>
+        <ScrollView>
+            <VerticalStackLayout Padding="16" Spacing="12">
 
-            <!-- Bill Summary -->
-            <Border Style="{StaticResource Card}">
-                <VerticalStackLayout Spacing="6" Padding="12">
-                    <Label Text="{loc:Translate Key=BillSummary}" FontSize="16" FontAttributes="Bold"/>
-                    <BoxView HeightRequest="1" Color="{DynamicResource Border}"/>
-                    <Label FontSize="13">
+                <!-- Bill Summary -->
+                <Border Style="{StaticResource Card}">
+                    <VerticalStackLayout Spacing="6" Padding="12">
+                        <Label Text="{loc:Translate Key=BillSummary}" FontSize="16" FontAttributes="Bold"/>
+                        <BoxView HeightRequest="1" Color="{DynamicResource Border}"/>
+                        <Label FontSize="13">
+                            <Label.FormattedText>
+                                <FormattedString>
+                                    <Span Text="#" />
+                                    <Span Text="{Binding HeaderId}" />
+                                    <Span Text=" — " />
+                                    <Span Text="{Binding TransDate, StringFormat='{0:D8}'}" />
+                                </FormattedString>
+                            </Label.FormattedText>
+                        </Label>
+                        <Label FontSize="13">
+                            <Label.FormattedText>
+                                <FormattedString>
+                                    <Span Text="{loc:Translate Key=CustomerField}" />
+                                    <Span Text=": " />
+                                    <Span Text="{Binding CustomerName}" />
+                                </FormattedString>
+                            </Label.FormattedText>
+                        </Label>
+                        <Label FontSize="13">
+                            <Label.FormattedText>
+                                <FormattedString>
+                                    <Span Text="{loc:Translate Key=Plate}" />
+                                    <Span Text=": " />
+                                    <Span Text="{Binding PlateNumber}" />
+                                </FormattedString>
+                            </Label.FormattedText>
+                        </Label>
+                        <Label FontSize="13">
+                            <Label.FormattedText>
+                                <FormattedString>
+                                    <Span Text="{loc:Translate Key=LocationField}" />
+                                    <Span Text=": " />
+                                    <Span Text="{Binding WorkLocationName}" />
+                                </FormattedString>
+                            </Label.FormattedText>
+                        </Label>
+                        <Label FontSize="13">
+                            <Label.FormattedText>
+                                <FormattedString>
+                                    <Span Text="{loc:Translate Key=TechnicianField}" />
+                                    <Span Text=": " />
+                                    <Span Text="{Binding TechnicianName}" />
+                                </FormattedString>
+                            </Label.FormattedText>
+                        </Label>
+                        <Label FontSize="13">
+                            <Label.FormattedText>
+                                <FormattedString>
+                                    <Span Text="{loc:Translate Key=ColorField}" />
+                                    <Span Text=": " />
+                                    <Span Text="{Binding Color}" />
+                                </FormattedString>
+                            </Label.FormattedText>
+                        </Label>
+                        <Label FontSize="13">
+                            <Label.FormattedText>
+                                <FormattedString>
+                                    <Span Text="{loc:Translate Key=PlateType}" />
+                                    <Span Text=": " />
+                                    <Span Text="{Binding PlateType}" />
+                                </FormattedString>
+                            </Label.FormattedText>
+                        </Label>
+                        <Label FontSize="14" FontAttributes="Bold" TextColor="{StaticResource Primary}">
+                            <Label.FormattedText>
+                                <FormattedString>
+                                    <Span Text="{loc:Translate Key=TotalLabel}" />
+                                    <Span Text=": " />
+                                    <Span Text="{Binding NetTotal, StringFormat='{0:N2}'}" />
+                                    <Span Text=" " />
+                                    <Span Text="{loc:Translate Key=CurrencySAR}" />
+                                </FormattedString>
+                            </Label.FormattedText>
+                        </Label>
+                        <Label FontSize="13">
+                            <Label.FormattedText>
+                                <FormattedString>
+                                    <Span Text="{loc:Translate Key=Paid}" />
+                                    <Span Text=": " />
+                                    <Span Text="{Binding Paid, StringFormat='{0:N2}'}" />
+                                    <Span Text=" " />
+                                    <Span Text="{loc:Translate Key=CurrencySAR}" />
+                                </FormattedString>
+                            </Label.FormattedText>
+                        </Label>
+                        <Label FontSize="14" FontAttributes="Bold" TextColor="{StaticResource Error}">
+                            <Label.FormattedText>
+                                <FormattedString>
+                                    <Span Text="{loc:Translate Key=BalanceLabelPrefix}" />
+                                    <Span Text="{Binding Balance, StringFormat='{0:N2}'}" />
+                                    <Span Text=" " />
+                                    <Span Text="{loc:Translate Key=CurrencySAR}" />
+                                </FormattedString>
+                            </Label.FormattedText>
+                        </Label>
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Pay Button -->
+                <Button Text="{loc:Translate Key=PayFullBalance}"
+                        Style="{StaticResource PrimaryButton}"
+                        Command="{Binding PayCommand}"
+                        HeightRequest="48"
+                        IsVisible="{Binding IsPaid, Converter={StaticResource InvertedBoolConverter}}"/>
+
+                <!-- After Payment Actions -->
+                <VerticalStackLayout Spacing="8" IsVisible="{Binding IsPaid}">
+                    <Label Text="{loc:Translate Key=PaymentComplete}" FontSize="18" FontAttributes="Bold"
+                           HorizontalOptions="Center" TextColor="{StaticResource Primary}"/>
+                    <Label FontSize="14" HorizontalOptions="Center">
                         <Label.FormattedText>
                             <FormattedString>
-                                <Span Text="#" />
-                                <Span Text="{Binding HeaderId}" />
-                                <Span Text=" — " />
-                                <Span Text="{Binding TransDate, StringFormat='{0:D8}'}" />
+                                <Span Text="{loc:Translate Key=ReceiptPrefix}" />
+                                <Span Text="{Binding Receipt.ReceiptNo}" />
                             </FormattedString>
                         </Label.FormattedText>
                     </Label>
-                    <Label FontSize="13">
-                        <Label.FormattedText>
-                            <FormattedString>
-                                <Span Text="{loc:Translate Key=CustomerField}" />
-                                <Span Text=": " />
-                                <Span Text="{Binding CustomerName}" />
-                            </FormattedString>
-                        </Label.FormattedText>
-                    </Label>
-                    <Label FontSize="13">
-                        <Label.FormattedText>
-                            <FormattedString>
-                                <Span Text="{loc:Translate Key=Plate}" />
-                                <Span Text=": " />
-                                <Span Text="{Binding PlateNumber}" />
-                            </FormattedString>
-                        </Label.FormattedText>
-                    </Label>
-                    <Label FontSize="13">
-                        <Label.FormattedText>
-                            <FormattedString>
-                                <Span Text="{loc:Translate Key=LocationField}" />
-                                <Span Text=": " />
-                                <Span Text="{Binding WorkLocationName}" />
-                            </FormattedString>
-                        </Label.FormattedText>
-                    </Label>
-                    <Label FontSize="13">
-                        <Label.FormattedText>
-                            <FormattedString>
-                                <Span Text="{loc:Translate Key=TechnicianField}" />
-                                <Span Text=": " />
-                                <Span Text="{Binding TechnicianName}" />
-                            </FormattedString>
-                        </Label.FormattedText>
-                    </Label>
-                    <Label FontSize="13">
-                        <Label.FormattedText>
-                            <FormattedString>
-                                <Span Text="{loc:Translate Key=ColorField}" />
-                                <Span Text=": " />
-                                <Span Text="{Binding Color}" />
-                            </FormattedString>
-                        </Label.FormattedText>
-                    </Label>
-                    <Label FontSize="13">
-                        <Label.FormattedText>
-                            <FormattedString>
-                                <Span Text="{loc:Translate Key=PlateType}" />
-                                <Span Text=": " />
-                                <Span Text="{Binding PlateType}" />
-                            </FormattedString>
-                        </Label.FormattedText>
-                    </Label>
-                    <Label FontSize="14" FontAttributes="Bold" TextColor="{StaticResource Primary}">
-                        <Label.FormattedText>
-                            <FormattedString>
-                                <Span Text="{loc:Translate Key=TotalLabel}" />
-                                <Span Text=": " />
-                                <Span Text="{Binding NetTotal, StringFormat='{0:N2}'}" />
-                                <Span Text=" " />
-                                <Span Text="{loc:Translate Key=CurrencySAR}" />
-                            </FormattedString>
-                        </Label.FormattedText>
-                    </Label>
-                    <Label FontSize="13">
-                        <Label.FormattedText>
-                            <FormattedString>
-                                <Span Text="{loc:Translate Key=Paid}" />
-                                <Span Text=": " />
-                                <Span Text="{Binding Paid, StringFormat='{0:N2}'}" />
-                                <Span Text=" " />
-                                <Span Text="{loc:Translate Key=CurrencySAR}" />
-                            </FormattedString>
-                        </Label.FormattedText>
-                    </Label>
-                    <Label FontSize="14" FontAttributes="Bold" TextColor="{StaticResource Error}">
-                        <Label.FormattedText>
-                            <FormattedString>
-                                <Span Text="{loc:Translate Key=BalanceLabelPrefix}" />
-                                <Span Text="{Binding Balance, StringFormat='{0:N2}'}" />
-                                <Span Text=" " />
-                                <Span Text="{loc:Translate Key=CurrencySAR}" />
-                            </FormattedString>
-                        </Label.FormattedText>
-                    </Label>
+
+                    <Button Text="{loc:Translate Key=PreviewReceipt}"
+                            Style="{StaticResource SecondaryButton}"
+                            Command="{Binding PreviewReceiptCommand}"
+                            HeightRequest="44"/>
+
+                    <Button Text="{loc:Translate Key=PrintReceipt}"
+                            Style="{StaticResource SecondaryButton}"
+                            Command="{Binding PrintReceiptCommand}"
+                            HeightRequest="44"/>
+
+                    <Button Text="{loc:Translate Key=PrintA4}"
+                            Style="{StaticResource SecondaryButton}"
+                            Command="{Binding PrintA4Command}"
+                            HeightRequest="44"/>
                 </VerticalStackLayout>
-            </Border>
 
-            <!-- Pay Button -->
-            <Button Text="{loc:Translate Key=PayFullBalance}"
-                    Style="{StaticResource PrimaryButton}"
-                    Command="{Binding PayCommand}"
-                    HeightRequest="48"
-                    IsVisible="{Binding IsPaid, Converter={StaticResource InvertedBoolConverter}}"/>
-
-            <ActivityIndicator IsRunning="{Binding IsProcessing}"
-                               IsVisible="{Binding IsProcessing}"
-                               Color="{StaticResource Primary}"/>
-
-            <!-- After Payment Actions -->
-            <VerticalStackLayout Spacing="8" IsVisible="{Binding IsPaid}">
-                <Label Text="{loc:Translate Key=PaymentComplete}" FontSize="18" FontAttributes="Bold"
-                       HorizontalOptions="Center" TextColor="{StaticResource Primary}"/>
-                <Label FontSize="14" HorizontalOptions="Center">
-                    <Label.FormattedText>
-                        <FormattedString>
-                            <Span Text="{loc:Translate Key=ReceiptPrefix}" />
-                            <Span Text="{Binding Receipt.ReceiptNo}" />
-                        </FormattedString>
-                    </Label.FormattedText>
-                </Label>
-
-                <Button Text="{loc:Translate Key=PreviewReceipt}"
-                        Style="{StaticResource SecondaryButton}"
-                        Command="{Binding PreviewReceiptCommand}"
-                        HeightRequest="44"/>
-
-                <Button Text="{loc:Translate Key=PrintReceipt}"
-                        Style="{StaticResource SecondaryButton}"
-                        Command="{Binding PrintReceiptCommand}"
-                        HeightRequest="44"/>
-
-                <Button Text="{loc:Translate Key=PrintA4}"
-                        Style="{StaticResource SecondaryButton}"
-                        Command="{Binding PrintA4Command}"
-                        HeightRequest="44"/>
             </VerticalStackLayout>
+        </ScrollView>
 
-        </VerticalStackLayout>
-    </ScrollView>
+        <!-- Loading overlay -->
+        <Border BackgroundColor="#80FFFFFF"
+                IsVisible="{Binding IsBusy}"
+                HorizontalOptions="Fill" VerticalOptions="Fill">
+            <ActivityIndicator IsRunning="{Binding IsBusy}"
+                               HorizontalOptions="Center" VerticalOptions="Center"
+                               Color="{StaticResource Primary}" />
+        </Border>
+    </Grid>
 </ContentPage>

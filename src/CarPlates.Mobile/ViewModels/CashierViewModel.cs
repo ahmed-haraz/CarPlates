@@ -153,9 +153,8 @@ public partial class CashierViewModel : BaseViewModel
     [RelayCommand]
     private async Task PrintBillAsync(BillApiItem bill)
     {
-        try
+        await ExecuteAsync(async () =>
         {
-            IsBusy = true;
             var detail = await _billApiService.GetBillByIdAsync(bill.HeaderId);
             if (detail == null)
             {
@@ -169,7 +168,6 @@ public partial class CashierViewModel : BaseViewModel
             if (TryGetSavedPrintSettings(out var savedPrinter, out var savedFormat))
             {
                 await Navigation.DisplayAlertAsync("Print Preview", BuildPrintPreview(detail));
-                IsBusy = false;
                 await _printService.PrintReceiptAsync(receipt, savedPrinter, savedFormat);
                 await Navigation.DisplayAlertAsync("Print", "Receipt sent to printer");
                 return;
@@ -178,7 +176,6 @@ public partial class CashierViewModel : BaseViewModel
             // 1. Show preview formatted exactly as the printed receipt
             var preview = BuildPrintPreview(detail);
             await Navigation.DisplayAlertAsync("Print Preview", preview);
-            IsBusy = false;
 
             // 2. Pick printer
             var printers = (await _printService.GetAvailablePrintersAsync()).ToList();
@@ -233,24 +230,14 @@ public partial class CashierViewModel : BaseViewModel
             }
 
             await Navigation.DisplayAlertAsync("Print", "Receipt sent to printer");
-        }
-        catch (Exception ex)
-        {
-            System.Diagnostics.Debug.WriteLine($"[PrintBill] {ex}");
-            await Navigation.DisplayAlertAsync("Print Error", ex.Message);
-        }
-        finally
-        {
-            IsBusy = false;
-        }
+        });
     }
 
     [RelayCommand]
     private async Task PrintA4BillAsync(BillApiItem bill)
     {
-        try
+        await ExecuteAsync(async () =>
         {
-            IsBusy = true;
             var detail = await _billApiService.GetBillByIdAsync(bill.HeaderId);
             if (detail == null)
             {
@@ -261,16 +248,7 @@ public partial class CashierViewModel : BaseViewModel
             var receipt = BuildReceiptResult(detail);
             await _printService.PrintReceiptAsync(receipt, format: PrintFormat.A4);
             await Navigation.DisplayAlertAsync("Print", "Receipt sent to printer");
-        }
-        catch (Exception ex)
-        {
-            System.Diagnostics.Debug.WriteLine($"[PrintA4] {ex}");
-            await Navigation.DisplayAlertAsync("Print Error", ex.Message);
-        }
-        finally
-        {
-            IsBusy = false;
-        }
+        });
     }
 
     private static string BuildPrintPreview(BillDetailResult detail)
