@@ -606,12 +606,7 @@
                                    Text="{loc:Translate Key=VehicleDetails}"
                                    FontSize="18"
                                    FontAttributes="Bold" />
-                            <Border Grid.Column="1"
-                                    Style="{StaticResource Card}"
-                                    Padding="8,4">
-                                <Label Text="{loc:Translate Key=Karage}"
-                                       FontSize="12" />
-                            </Border>
+                           
                             <Button Grid.Column="2"
                                     Text="✕"
                                     WidthRequest="28"

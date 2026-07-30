@@ -48,7 +48,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <None Include="..\..\..\..\..\..\Downloads\signature.svg" Link="Resources\Images\signature.svg" />
+	  <Page Include="..\..\..\..\..\..\Downloads\signature.svg" Link="Resources\Images\signature.svg" />
 	</ItemGroup>
 
 	<ItemGroup>
