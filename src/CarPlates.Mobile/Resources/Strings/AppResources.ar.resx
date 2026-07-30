@@ -709,7 +709,7 @@
     <value>مسافة</value>
   </data>
   <data name="InvalidPhoneNumber" xml:space="preserve">
-    <value>يرجى إدخال رقم هاتف سعودي صحيح (9 أرقام تبدأ بـ 5)</value>
+    <value>يرجى إدخال رقم هاتف صحيح للدولة المحددة</value>
   </data>
   <data name="FirstNameRequired" xml:space="preserve">
     <value>الاسم الأول مطلوب</value>

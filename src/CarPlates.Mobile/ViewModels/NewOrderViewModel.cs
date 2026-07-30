@@ -148,8 +148,8 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
     public ObservableCollection<string> TaxTypes { get; } = new() { "VAT", "معفى من الضريبة" };
     public ObservableCollection<string> CountryCodes { get; } = new()
     {
-        "+966", "+971", "+973", "+974", "+965", "+968", "+962", "+963", "+964", "+967",
-        "+20", "+27", "+30", "+31", "+32", "+33", "+34", "+36", "+39", "+40", "+41", "+43",
+        "+966",
+        "+20",
     };
     public ObservableCollection<Vehicle> Vehicles { get; } = new();
 
@@ -694,6 +694,12 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
             return;
         }
 
+        if (!IsValidPhoneForCountry(SearchPhoneNumber, SelectedCountryCode))
+        {
+            ShowAlert(string.Empty, AppResources.InvalidPhoneNumber);
+            return;
+        }
+
         CustomerSearchMessage = string.Empty;
 
         await ExecuteAsync(async () =>
@@ -722,10 +728,23 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
             }
             else
             {
-                NewCustomerPhone = fullPhone;
+                NewCustomerPhone = SearchPhoneNumber;
                 CustomerSearchMessage = AppResources.CustomerNotFound;
             }
         });
+    }
+
+    private static bool IsValidPhoneForCountry(string phone, string countryCode)
+    {
+        if (string.IsNullOrWhiteSpace(phone) || !phone.All(char.IsDigit))
+            return false;
+
+        return countryCode switch
+        {
+            "+966" => phone.Length == 9 && phone.StartsWith('5'),
+            "+20" => (phone.Length == 10 && phone.StartsWith('1')) || (phone.Length == 11 && phone.StartsWith("01")),
+            _ => phone.Length >= 6,
+        };
     }
 
     [RelayCommand]
@@ -737,7 +756,7 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
             return;
         }
 
-        if (string.IsNullOrWhiteSpace(NewCustomerPhone) || NewCustomerPhone.Length != 9 || !NewCustomerPhone.StartsWith('5') || !NewCustomerPhone.All(char.IsDigit))
+        if (string.IsNullOrWhiteSpace(NewCustomerPhone) || !IsValidPhoneForCountry(NewCustomerPhone, SelectedCountryCode))
         {
             ShowAlert(string.Empty, AppResources.InvalidPhoneNumber);
             return;

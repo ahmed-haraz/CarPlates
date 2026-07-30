@@ -49,16 +49,16 @@
                 <Border Style="{StaticResource Card}"
                         Padding="16">
 
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding ShowCustomerPopupCommand}" />
+                    </Border.GestureRecognizers>
+
                     <Grid ColumnDefinitions="Auto,*"
                           ColumnSpacing="12">
                         <Image Grid.Column="0"
                                WidthRequest="40"
                                HeightRequest="40"
-                               helpers:IconHelper.Glyph="&#xeafc;">
-                            <Image.GestureRecognizers>
-                                <TapGestureRecognizer Command="{Binding ShowCustomerPopupCommand}" />
-                            </Image.GestureRecognizers>
-                        </Image>
+                               helpers:IconHelper.Glyph="&#xeafc;" />
 
                         <Label Grid.Column="1"
                                Text="{loc:Translate Key=AddCustomer}"
@@ -87,6 +87,10 @@
                 <Border Style="{StaticResource Card}"
                         Padding="16">
 
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding ShowVehiclePopupCommand}" />
+                    </Border.GestureRecognizers>
+
                     <Grid ColumnDefinitions="Auto,Auto,*"
                           ColumnSpacing="12">
 
@@ -94,11 +98,7 @@
                                helpers:IconHelper.Glyph="&#xe962;"
                                WidthRequest="40"
                                HeightRequest="40"
-                               BackgroundColor="Transparent">
-                            <Image.GestureRecognizers>
-                                <TapGestureRecognizer Command="{Binding ShowVehiclePopupCommand}" />
-                            </Image.GestureRecognizers>
-                        </Image>
+                               BackgroundColor="Transparent" />
 
                         <Border Grid.Column="1"
                                 Style="{StaticResource Card}"

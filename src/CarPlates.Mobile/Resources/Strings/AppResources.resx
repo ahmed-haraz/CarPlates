@@ -709,7 +709,7 @@
     <value>Space</value>
   </data>
   <data name="InvalidPhoneNumber" xml:space="preserve">
-    <value>Please enter a valid Saudi phone number (9 digits starting with 5)</value>
+    <value>Please enter a valid phone number for the selected country</value>
   </data>
   <data name="FirstNameRequired" xml:space="preserve">
     <value>First name is required</value>
