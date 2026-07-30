@@ -1,3 +1,4 @@
+using CarPlates.Mobile.Helpers;
 using CarPlates.Mobile.Localization;
 using CarPlates.Mobile.Navigation;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -11,32 +12,58 @@ public partial class ManualEntryViewModel : BaseViewModel
 
     private static readonly Dictionary<char, string> EnglishToArabic = new()
     {
-        ['a'] = "ا", ['A'] = "ا",
-        ['b'] = "ب", ['B'] = "ب",
-        ['c'] = "س", ['C'] = "س",
-        ['d'] = "د", ['D'] = "د",
-        ['e'] = "ي", ['E'] = "ي",
-        ['f'] = "ف", ['F'] = "ف",
-        ['g'] = "ق", ['G'] = "ق",
-        ['h'] = "ه", ['H'] = "ه",
-        ['i'] = "ي", ['I'] = "ي",
-        ['j'] = "ج", ['J'] = "ج",
-        ['k'] = "ك", ['K'] = "ك",
-        ['l'] = "ل", ['L'] = "ل",
-        ['m'] = "م", ['M'] = "م",
-        ['n'] = "ن", ['N'] = "ن",
-        ['o'] = "و", ['O'] = "و",
-        ['p'] = "ب", ['P'] = "ب",
-        ['q'] = "ق", ['Q'] = "ق",
-        ['r'] = "ر", ['R'] = "ر",
-        ['s'] = "س", ['S'] = "س",
-        ['t'] = "ت", ['T'] = "ت",
-        ['u'] = "و", ['U'] = "و",
-        ['v'] = "ف", ['V'] = "ف",
-        ['w'] = "و", ['W'] = "و",
-        ['x'] = "إكس", ['X'] = "إكس",
-        ['y'] = "ي", ['Y'] = "ي",
-        ['z'] = "ز", ['Z'] = "ز",
+        ['a'] = "ا",
+        ['A'] = "ا",
+        ['b'] = "ب",
+        ['B'] = "ب",
+        ['c'] = "س",
+        ['C'] = "س",
+        ['d'] = "د",
+        ['D'] = "د",
+        ['e'] = "ي",
+        ['E'] = "ي",
+        ['f'] = "ف",
+        ['F'] = "ف",
+        ['g'] = "ق",
+        ['G'] = "ق",
+        ['h'] = "ه",
+        ['H'] = "ه",
+        ['i'] = "ي",
+        ['I'] = "ي",
+        ['j'] = "ج",
+        ['J'] = "ج",
+        ['k'] = "ك",
+        ['K'] = "ك",
+        ['l'] = "ل",
+        ['L'] = "ل",
+        ['m'] = "م",
+        ['M'] = "م",
+        ['n'] = "ن",
+        ['N'] = "ن",
+        ['o'] = "و",
+        ['O'] = "و",
+        ['p'] = "ب",
+        ['P'] = "ب",
+        ['q'] = "ق",
+        ['Q'] = "ق",
+        ['r'] = "ر",
+        ['R'] = "ر",
+        ['s'] = "س",
+        ['S'] = "س",
+        ['t'] = "ت",
+        ['T'] = "ت",
+        ['u'] = "و",
+        ['U'] = "و",
+        ['v'] = "ف",
+        ['V'] = "ف",
+        ['w'] = "و",
+        ['W'] = "و",
+        ['x'] = "إكس",
+        ['X'] = "إكس",
+        ['y'] = "ي",
+        ['Y'] = "ي",
+        ['z'] = "ز",
+        ['Z'] = "ز",
     };
 
     [ObservableProperty]
@@ -93,48 +120,48 @@ public partial class ManualEntryViewModel : BaseViewModel
     }
 
     public List<string> PlateChars => string.IsNullOrEmpty(PlateText)
-        ? new List<string>()
-        : PlateText.Select(c => c.ToString()).ToList();
+        ? []
+        : [.. PlateText.Select(c => c.ToString())];
 
     public List<string> ArabicChars => string.IsNullOrEmpty(ArabicText)
-        ? new List<string>()
-        : ArabicText.Select(c => c.ToString()).ToList();
+        ? []
+        : [.. ArabicText.Select(c => c.ToString())];
 
     [ObservableProperty]
     private string plateType = "خصوصي";
 
-    public List<string> PlateTypes { get; } = new()
+    public List<PlateTypeOption> PlateTypes { get; }
+
+    public class PlateTypeOption(string nameAr, string nameEn)
     {
-        "خصوصي",
-        "نقل عام",
-        "تجاري",
-        "دبلوماسي",
-        "مؤقته",
-        "معدات ثقيله",
-        "اخرى"
-    };
+        public string NameAr { get; } = nameAr;
+        public string NameEn { get; } = nameEn;
+        public string DisplayName { get; } = LocalizeHelper.Localize(nameAr, nameEn);
+
+        public override string ToString() => NameAr;
+    }
 
     public Color PlateTextColor => PlateType switch
     {
-        "خصوصي" => Colors.Black,
-        "نقل عام" => Colors.Orange,
-        "تجاري" => Colors.Blue,
-        "دبلوماسي" => Colors.Green,
-        "مؤقته" => Colors.LightGray,
-        "معدات ثقيله" => Colors.DarkRed,
-        "اخرى" => Colors.Gray,
+        "خصوصي" or "Private" => Colors.Black,
+        "نقل عام" or "Public Transport" => Colors.Orange,
+        "تجاري" or "Commercial" => Colors.Blue,
+        "دبلوماسي" or "Diplomatic" => Colors.Green,
+        "مؤقته" or "Temporary" => Colors.LightGray,
+        "معدات ثقيله" or "Heavy Equipment" => Colors.DarkRed,
+        "اخرى" or "Other" => Colors.Gray,
         _ => Colors.Black
     };
 
     public Color PlateBorderColor => PlateType switch
     {
-        "خصوصي" => Colors.Wheat,
-        "نقل عام" => Colors.Orange,
-        "تجاري" => Colors.Blue,
-        "دبلوماسي" => Colors.Green,
-        "مؤقته" => Colors.LightGray,
-        "معدات ثقيله" => Colors.DarkRed,
-        "اخرى" => Colors.Gray,
+        "خصوصي" or "Private" => Colors.Wheat,
+        "نقل عام" or "Public Transport" => Colors.Orange,
+        "تجاري" or "Commercial" => Colors.Blue,
+        "دبلوماسي" or "Diplomatic" => Colors.Green,
+        "مؤقته" or "Temporary" => Colors.LightGray,
+        "معدات ثقيله" or "Heavy Equipment" => Colors.DarkRed,
+        "اخرى" or "Other" => Colors.Gray,
         _ => Colors.Black
     };
 
@@ -147,6 +174,16 @@ public partial class ManualEntryViewModel : BaseViewModel
     public ManualEntryViewModel(INavigationService navigation) : base(navigation)
     {
         Title = AppResources.ManualEntry;
+        PlateTypes =
+        [
+            new("خصوصي", "Private"),
+            new("نقل عام", "Public Transport"),
+            new("تجاري", "Commercial"),
+            new("دبلوماسي", "Diplomatic"),
+            new("مؤقته", "Temporary"),
+            new("معدات ثقيله", "Heavy Equipment"),
+            new("اخرى", "Other"),
+        ];
     }
 
     [RelayCommand]
@@ -169,7 +206,7 @@ public partial class ManualEntryViewModel : BaseViewModel
 
         await ExecuteAsync(async () =>
         {
-            var trimmed = ArabicText.Trim();
+            var trimmed = PlateText.Trim().ToUpperInvariant();
 
             await Navigation.GoBackAsync();
 
