@@ -84,6 +84,47 @@ public class BillService(ApplicationDbContext context, IWebHostEnvironment env) 
             }
         }
 
+        // --- 1b. Fallback: create customer if still not resolved and we have a plate number ---
+        var normalizedPlate = dto.PlateNumber?.Trim().ToEnglishNumbers().ToUpperInvariant();
+        if ((!resolvedCustomerId.HasValue || resolvedCustomerId == 0) && !string.IsNullOrWhiteSpace(normalizedPlate))
+        {
+            var allCodes = await _context.WhCustomers
+                .Where(c => c.Code != null && c.Code.All(char.IsDigit))
+                .Select(c => c.Code)
+                .ToListAsync(cancellationToken);
+            var maxNum = allCodes.Select(c => int.TryParse(c, out var n) ? n : 0).DefaultIfEmpty(0).Max();
+
+            var storedMobile = dto.CustomerMobile?.TrimStart('0');
+            var newCustomer = new WhCustomer
+            {
+                Code = (maxNum + 1).ToString(),
+                Name_Ar = string.IsNullOrWhiteSpace(dto.CustomerName_Ar) ? "غير معروف" : dto.CustomerName_Ar,
+                Name_En = string.IsNullOrWhiteSpace(dto.CustomerName_En) ? "Unknown" : dto.CustomerName_En,
+                Mobile = storedMobile,
+                Phone1 = dto.CustomerPhone1,
+                StoreID = branchId,
+                InsertUserID = userIdLong,
+                InsertDateTime = now,
+            };
+            _context.WhCustomers.Add(newCustomer);
+            await _context.SaveChangesAsync(cancellationToken);
+            resolvedCustomerId = newCustomer.Id;
+
+            var branchLink = await _context.CustomerBranches
+                .FirstOrDefaultAsync(b => b.ParentID == newCustomer.Id && b.BranchID == branchId, cancellationToken);
+            if (branchLink == null)
+            {
+                _context.CustomerBranches.Add(new CustomerBranch
+                {
+                    ParentID = newCustomer.Id,
+                    BranchID = branchId,
+                    InsertUserID = userIdLong,
+                    InsertDateTime = now,
+                });
+                await _context.SaveChangesAsync(cancellationToken);
+            }
+        }
+
         // --- 2. Ensure user exists in fw_Users ---
         if (userIdLong > 0)
         {
@@ -192,7 +233,6 @@ public class BillService(ApplicationDbContext context, IWebHostEnvironment env) 
 
         // --- 3. Auto-create car in wh_customercars if plate not exists ---
         int? carHeaderId = dto.CarHeaderId;
-        var normalizedPlate = dto.PlateNumber?.Trim().ToEnglishNumbers().ToUpperInvariant();
         if (!carHeaderId.HasValue && !string.IsNullOrWhiteSpace(dto.PlateNumber) && resolvedCustomerId.HasValue && resolvedCustomerId > 0)
         {
             var existingCar = await _context.CustomerCars
