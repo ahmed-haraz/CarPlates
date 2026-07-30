@@ -412,7 +412,7 @@
     <value>• Scan History and Export</value>
   </data>
   <data name="Copyright" xml:space="preserve">
-    <value>© 2026 ArkanMaintenance. All rights reserved.</value>
+    <value>© 2026 Arkan Services. All rights reserved.</value>
   </data>
   <data name="DetectedFormat" xml:space="preserve">
     <value>Detected: {0}</value>
@@ -779,5 +779,182 @@
   </data>
   <data name="VATLabel" xml:space="preserve">
     <value>VAT 15%</value>
+  </data>
+  <data name="SessionExpiredTitle" xml:space="preserve">
+    <value>Session Expired</value>
+  </data>
+  <data name="SessionExpiredMessage" xml:space="preserve">
+    <value>You have been logged in from another device.</value>
+  </data>
+  <data name="SmartPlateAccess" xml:space="preserve">
+    <value>SMART PLATE ACCESS</value>
+  </data>
+  <data name="SecureContinueMessage" xml:space="preserve">
+    <value>Securely continue to your vehicle scanning workspace.</value>
+  </data>
+  <data name="LiveControlCenter" xml:space="preserve">
+    <value>LIVE CONTROL CENTER</value>
+  </data>
+  <data name="KSA" xml:space="preserve">
+    <value>KSA</value>
+  </data>
+  <data name="ApiUrlPlaceholder" xml:space="preserve">
+    <value>https://api.example.com</value>
+  </data>
+  <data name="EnterSettingsPassword" xml:space="preserve">
+    <value>Enter settings password</value>
+  </data>
+  <data name="UnlockApiUrl" xml:space="preserve">
+    <value>Unlock API URL</value>
+  </data>
+  <data name="LockApiUrl" xml:space="preserve">
+    <value>Lock API URL</value>
+  </data>
+  <data name="PaymentGateway" xml:space="preserve">
+    <value>Payment Gateway</value>
+  </data>
+  <data name="EnableGateway" xml:space="preserve">
+    <value>Enable Gateway</value>
+  </data>
+  <data name="GatewayName" xml:space="preserve">
+    <value>Gateway Name</value>
+  </data>
+  <data name="GatewayNamePlaceholder" xml:space="preserve">
+    <value>e.g. Stripe, PayPal, Mada</value>
+  </data>
+  <data name="MerchantId" xml:space="preserve">
+    <value>Merchant ID</value>
+  </data>
+  <data name="MerchantIdPlaceholder" xml:space="preserve">
+    <value>Merchant ID</value>
+  </data>
+  <data name="ApiKey" xml:space="preserve">
+    <value>API Key</value>
+  </data>
+  <data name="ApiKeyPlaceholder" xml:space="preserve">
+    <value>API Key</value>
+  </data>
+  <data name="EndpointUrl" xml:space="preserve">
+    <value>Endpoint URL</value>
+  </data>
+  <data name="EndpointUrlPlaceholder" xml:space="preserve">
+    <value>https://api.gateway.com</value>
+  </data>
+  <data name="AdditionalSettingsJson" xml:space="preserve">
+    <value>Additional Settings (JSON)</value>
+  </data>
+  <data name="AdditionalSettingsPlaceholder" xml:space="preserve">
+    <value>{&quot;key&quot;: &quot;value&quot;}</value>
+  </data>
+  <data name="PrintSettings" xml:space="preserve">
+    <value>Print Settings</value>
+  </data>
+  <data name="UseSavedPrintSettings" xml:space="preserve">
+    <value>Use saved print settings</value>
+  </data>
+  <data name="DefaultPrinter" xml:space="preserve">
+    <value>Default Printer</value>
+  </data>
+  <data name="Refresh" xml:space="preserve">
+    <value>Refresh</value>
+  </data>
+  <data name="NoPrintersFound" xml:space="preserve">
+    <value>No Bluetooth printers found. Tap Refresh or use a network IP below.</value>
+  </data>
+  <data name="EnterNetworkPrinter" xml:space="preserve">
+    <value>Or enter network printer IP:Port</value>
+  </data>
+  <data name="PrinterIpPlaceholder" xml:space="preserve">
+    <value>192.168.1.100:9100</value>
+  </data>
+  <data name="PrintFormat" xml:space="preserve">
+    <value>Print Format</value>
+  </data>
+  <data name="PrintLanguage" xml:space="preserve">
+    <value>Print Language</value>
+  </data>
+  <data name="CodePage" xml:space="preserve">
+    <value>Code Page</value>
+  </data>
+  <data name="All" xml:space="preserve">
+    <value>All</value>
+  </data>
+  <data name="Paid" xml:space="preserve">
+    <value>Paid</value>
+  </data>
+  <data name="Unpaid" xml:space="preserve">
+    <value>Unpaid</value>
+  </data>
+  <data name="Preview" xml:space="preserve">
+    <value>Preview</value>
+  </data>
+  <data name="Pay" xml:space="preserve">
+    <value>Pay</value>
+  </data>
+  <data name="PrintRec" xml:space="preserve">
+    <value>Print Rec.</value>
+  </data>
+  <data name="PrintA4" xml:space="preserve">
+    <value>Print A4</value>
+  </data>
+  <data name="BillSummary" xml:space="preserve">
+    <value>Bill Summary</value>
+  </data>
+  <data name="PayFullBalance" xml:space="preserve">
+    <value>Pay Full Balance</value>
+  </data>
+  <data name="PaymentComplete" xml:space="preserve">
+    <value>Payment Complete</value>
+  </data>
+  <data name="PreviewReceipt" xml:space="preserve">
+    <value>Preview Receipt</value>
+  </data>
+  <data name="PrintReceipt" xml:space="preserve">
+    <value>Print Receipt</value>
+  </data>
+  <data name="NoData" xml:space="preserve">
+    <value>No Data</value>
+  </data>
+  <data name="NothingToShow" xml:space="preserve">
+    <value>There's nothing to show here yet</value>
+  </data>
+  <data name="SomethingWentWrong" xml:space="preserve">
+    <value>Something went wrong</value>
+  </data>
+  <data name="PleaseTryAgainLater" xml:space="preserve">
+    <value>Please try again later</value>
+  </data>
+  <data name="Retry" xml:space="preserve">
+    <value>Retry</value>
+  </data>
+  <data name="TechnicianPrefix" xml:space="preserve">
+    <value>Tech: </value>
+  </data>
+  <data name="QuantityPrefix" xml:space="preserve">
+    <value>x</value>
+  </data>
+  <data name="TotalWithCurrency" xml:space="preserve">
+    <value>Total: {0:N2} SAR</value>
+  </data>
+  <data name="PaidWithCurrency" xml:space="preserve">
+    <value>Paid: {0:N2} SAR</value>
+  </data>
+  <data name="BalanceWithCurrency" xml:space="preserve">
+    <value>Balance: {0:N2} SAR</value>
+  </data>
+  <data name="CharCountFormat" xml:space="preserve">
+    <value>200/0</value>
+  </data>
+  <data name="BalanceLabelPrefix" xml:space="preserve">
+    <value>Balance: </value>
+  </data>
+  <data name="ReceiptPrefix" xml:space="preserve">
+    <value>Receipt: </value>
+  </data>
+  <data name="PagePrefix" xml:space="preserve">
+    <value>Page </value>
+  </data>
+  <data name="OfPage" xml:space="preserve">
+    <value> of </value>
   </data>
 </root>

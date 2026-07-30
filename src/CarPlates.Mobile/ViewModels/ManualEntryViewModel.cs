@@ -50,7 +50,7 @@ public partial class ManualEntryViewModel : BaseViewModel
 
     partial void OnPlateInputChanged(string value)
     {
-        if (IsProcessing)
+        if (IsBusy)
             return;
 
         if (string.IsNullOrEmpty(value))
@@ -102,9 +102,6 @@ public partial class ManualEntryViewModel : BaseViewModel
 
     [ObservableProperty]
     private string plateType = "خصوصي";
-
-    [ObservableProperty]
-    private bool isProcessing;
 
     public List<string> PlateTypes { get; } = new()
     {
@@ -170,9 +167,7 @@ public partial class ManualEntryViewModel : BaseViewModel
         if (string.IsNullOrWhiteSpace(PlateText))
             return;
 
-        IsProcessing = true;
-
-        try
+        await ExecuteAsync(async () =>
         {
             var trimmed = ArabicText.Trim();
 
@@ -192,11 +187,7 @@ public partial class ManualEntryViewModel : BaseViewModel
             {
                 await Navigation.GoToCustomerDataAsync(trimmed);
             }
-        }
-        finally
-        {
-            IsProcessing = false;
-        }
+        });
     }
 
     [RelayCommand]

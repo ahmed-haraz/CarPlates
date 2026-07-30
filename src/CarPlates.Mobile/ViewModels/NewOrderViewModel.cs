@@ -41,7 +41,6 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
     [ObservableProperty] private bool _isSignaturePadVisible = false;
     [ObservableProperty] private string _searchPhoneNumber = string.Empty;
     [ObservableProperty] private string _selectedCountryCode = "+966";
-    [ObservableProperty] private bool _isSearchingCustomer;
     [ObservableProperty] private string _customerSearchMessage = string.Empty;
     [ObservableProperty] private string _newCustomerFirstName = string.Empty;
     [ObservableProperty] private string _newCustomerLastName = string.Empty;
@@ -662,7 +661,6 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
             return;
         }
 
-        IsSearchingCustomer = true;
         CustomerSearchMessage = string.Empty;
 
         await ExecuteAsync(async () =>
@@ -695,8 +693,6 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
                 CustomerSearchMessage = AppResources.CustomerNotFound;
             }
         });
-
-        IsSearchingCustomer = false;
     }
 
     [RelayCommand]
@@ -1175,132 +1171,128 @@ public partial class NewOrderViewModel : BaseViewModel, IQueryAttributable
     [RelayCommand]
     private async Task SubmitOrder()
     {
-        if (IsBusy) return;
-        IsBusy = true;
-
-        try
+        await ExecuteAsync(async () =>
         {
-            var currentUser = await _authenticationService.GetCurrentUserAsync();
-            var plateNo = SelectedVehicle?.PlateNumber ?? NewPlateNumber;
-
-            var billDetails = CartItems.Select(ci =>
+            try
             {
-                var price = (double)ci.ServiceItem.Price;
-                var qty = ci.Quantity;
-                var discount1 = (double)ci.ServiceItem.Discount1;
-                var discount2 = (double)ci.ServiceItem.Discount2;
-                var discount3 = (double)ci.ServiceItem.Discount3;
-                var totalDiscount = discount1 + discount2 + discount3;
-                var discountRatio = price > 0 ? totalDiscount / price * 100 : 0;
-                var taxAmount = (double)ci.ServiceItem.TaxAmount;
-                var taxRatio = price > 0 ? taxAmount / price * 100 : 0;
+                var currentUser = await _authenticationService.GetCurrentUserAsync();
+                var plateNo = SelectedVehicle?.PlateNumber ?? NewPlateNumber;
 
-                var si = ci.ServiceItem;
-                return new CreateBillLineRequest(
-                    ItemBarCode: si.ItemBarCode ?? si.Id ?? string.Empty,
-                    ItemID: si.ItemID,
-                    Package: si.Package > 0 ? si.Package : null,
-                    Qty: qty,
-                    Price: Math.Round(price, 2),
-                    DetailDiscount1: Math.Round(totalDiscount, 2),
-                    DetailDiscount2: Math.Round(discount2, 2),
-                    DetailDiscountR1: Math.Round(discountRatio, 2),
-                    DetailDiscountR2: null,
-                    DetailTax: Math.Round(taxAmount, 2),
-                    DetailTaxR: Math.Round(taxRatio, 2),
-                    DetailNotes: null,
-                    Pkg2Qty: si.Pkg2Qty > 0 ? si.Pkg2Qty : null,
-                    Pkg3Qty: si.Pkg3Qty > 0 ? si.Pkg3Qty : null,
-                    Pkg1Price1: si.Pkg1Price1 > 0 ? si.Pkg1Price1 : null,
-                    Pkg2Price1: si.Pkg2Price1 > 0 ? si.Pkg2Price1 : null,
-                    Pkg3Price1: si.Pkg3Price1 > 0 ? si.Pkg3Price1 : null,
-                    Pkg1Price2: si.Pkg1Price2 > 0 ? si.Pkg1Price2 : null,
-                    Pkg2Price2: si.Pkg2Price2 > 0 ? si.Pkg2Price2 : null,
-                    Pkg3Price2: si.Pkg3Price2 > 0 ? si.Pkg3Price2 : null,
-                    OriginalPrice: si.OriginalPrice > 0 ? si.OriginalPrice : null);
-            }).ToList();
+                var billDetails = CartItems.Select(ci =>
+                {
+                    var price = (double)ci.ServiceItem.Price;
+                    var qty = ci.Quantity;
+                    var discount1 = (double)ci.ServiceItem.Discount1;
+                    var discount2 = (double)ci.ServiceItem.Discount2;
+                    var discount3 = (double)ci.ServiceItem.Discount3;
+                    var totalDiscount = discount1 + discount2 + discount3;
+                    var discountRatio = price > 0 ? totalDiscount / price * 100 : 0;
+                    var taxAmount = (double)ci.ServiceItem.TaxAmount;
+                    var taxRatio = price > 0 ? taxAmount / price * 100 : 0;
 
-            var isNewCar = SelectedVehicle?.CarHeaderId == null;
-            var request = new CreateBillRequest(
-                BranchID: currentUser?.BranchId,
-                CustomerId: SelectedCustomer?.Id > 0 ? SelectedCustomer.Id : null,
-                EngineerId: SelectedTechnician != null && int.TryParse(SelectedTechnician.Id, out var engId) ? engId : null,
-                CarHeaderId: null,
-                SalesRepId: currentUser?.SalesRepID,
-                StoreId: currentUser?.StoreId,
-                Notes: OrderNotes,
-                ReferenceNo: null,
-                PlateNumber: plateNo,
-                Signature: SignatureData,
-                Details: billDetails,
-                Vin: isNewCar ? (SelectedVehicle?.Vin ?? NewVin) : null,
-                VehicleBrand: isNewCar ? (SelectedVehicle?.Brand ?? SelectedBrand) : null,
-                VehicleModel: isNewCar ? (SelectedVehicle?.Model ?? SelectedModel) : null,
-                VehicleTypeName: isNewCar ? (SelectedVehicle?.VehicleType ?? SelectedVehicleType) : null,
-                EngineTypeName: isNewCar ? (SelectedVehicle?.EngineType ?? SelectedEngineType) : null,
-                Mileage: isNewCar ? (SelectedVehicle?.Mileage != 0 ? SelectedVehicle?.Mileage : NewMileage) : null,
-                VehicleYear: isNewCar ? (SelectedVehicle?.Year != 0 ? SelectedVehicle?.Year : SelectedVehicleYear) : null,
-                Color: isNewCar ? (SelectedVehicle?.Color ?? SelectedColor?.Name) : null,
-                PlateType: isNewCar ? (SelectedVehicle?.PlateType ?? NewPlateType) : null,
-                WorkLocationID: SelectedLocation != null && int.TryParse(SelectedLocation.Id, out var locId) ? locId : null,
-                TechnicianID: SelectedTechnician != null && int.TryParse(SelectedTechnician.Id, out var techId) ? techId : null);
+                    var si = ci.ServiceItem;
+                    return new CreateBillLineRequest(
+                        ItemBarCode: si.ItemBarCode ?? si.Id ?? string.Empty,
+                        ItemID: si.ItemID,
+                        Package: si.Package > 0 ? si.Package : null,
+                        Qty: qty,
+                        Price: Math.Round(price, 2),
+                        DetailDiscount1: Math.Round(totalDiscount, 2),
+                        DetailDiscount2: Math.Round(discount2, 2),
+                        DetailDiscountR1: Math.Round(discountRatio, 2),
+                        DetailDiscountR2: null,
+                        DetailTax: Math.Round(taxAmount, 2),
+                        DetailTaxR: Math.Round(taxRatio, 2),
+                        DetailNotes: null,
+                        Pkg2Qty: si.Pkg2Qty > 0 ? si.Pkg2Qty : null,
+                        Pkg3Qty: si.Pkg3Qty > 0 ? si.Pkg3Qty : null,
+                        Pkg1Price1: si.Pkg1Price1 > 0 ? si.Pkg1Price1 : null,
+                        Pkg2Price1: si.Pkg2Price1 > 0 ? si.Pkg2Price1 : null,
+                        Pkg3Price1: si.Pkg3Price1 > 0 ? si.Pkg3Price1 : null,
+                        Pkg1Price2: si.Pkg1Price2 > 0 ? si.Pkg1Price2 : null,
+                        Pkg2Price2: si.Pkg2Price2 > 0 ? si.Pkg2Price2 : null,
+                        Pkg3Price2: si.Pkg3Price2 > 0 ? si.Pkg3Price2 : null,
+                        OriginalPrice: si.OriginalPrice > 0 ? si.OriginalPrice : null);
+                }).ToList();
 
-            var result = await _billApiService.CreateBillAsync(request);
+                var isNewCar = SelectedVehicle?.CarHeaderId == null;
+                var request = new CreateBillRequest(
+                    BranchID: currentUser?.BranchId,
+                    CustomerId: SelectedCustomer?.Id > 0 ? SelectedCustomer.Id : null,
+                    EngineerId: SelectedTechnician != null && int.TryParse(SelectedTechnician.Id, out var engId) ? engId : null,
+                    CarHeaderId: null,
+                    SalesRepId: currentUser?.SalesRepID,
+                    StoreId: currentUser?.StoreId,
+                    Notes: OrderNotes,
+                    ReferenceNo: null,
+                    PlateNumber: plateNo,
+                    Signature: SignatureData,
+                    Details: billDetails,
+                    Vin: isNewCar ? (SelectedVehicle?.Vin ?? NewVin) : null,
+                    VehicleBrand: isNewCar ? (SelectedVehicle?.Brand ?? SelectedBrand) : null,
+                    VehicleModel: isNewCar ? (SelectedVehicle?.Model ?? SelectedModel) : null,
+                    VehicleTypeName: isNewCar ? (SelectedVehicle?.VehicleType ?? SelectedVehicleType) : null,
+                    EngineTypeName: isNewCar ? (SelectedVehicle?.EngineType ?? SelectedEngineType) : null,
+                    Mileage: isNewCar ? (SelectedVehicle?.Mileage != 0 ? SelectedVehicle?.Mileage : NewMileage) : null,
+                    VehicleYear: isNewCar ? (SelectedVehicle?.Year != 0 ? SelectedVehicle?.Year : SelectedVehicleYear) : null,
+                    Color: isNewCar ? (SelectedVehicle?.Color ?? SelectedColor?.Name) : null,
+                    PlateType: isNewCar ? (SelectedVehicle?.PlateType ?? NewPlateType) : null,
+                    WorkLocationID: SelectedLocation != null && int.TryParse(SelectedLocation.Id, out var locId) ? locId : null,
+                    TechnicianID: SelectedTechnician != null && int.TryParse(SelectedTechnician.Id, out var techId) ? techId : null);
 
-            if (!result.Success)
-            {
-                ShowAlert(AppResources.Error, result.ErrorMessage ?? "Failed to save bill");
-                return;
+                var result = await _billApiService.CreateBillAsync(request);
+
+                if (!result.Success)
+                {
+                    ShowAlert(AppResources.Error, result.ErrorMessage ?? "Failed to save bill");
+                    return;
+                }
+
+                if (result.HeaderId.HasValue)
+                {
+                    var uploadErrors = new List<string>();
+                    foreach (var photo in OrderPhotos)
+                    {
+                        var ok = await _billAttachmentApiService.UploadAsync(result.HeaderId.Value, photo.Path, "Photo");
+                        if (!ok) uploadErrors.Add(Path.GetFileName(photo.Path));
+                    }
+
+                    if (!string.IsNullOrWhiteSpace(SignatureData))
+                    {
+                        var sigPath = Path.Combine(FileSystem.CacheDirectory, $"sig-{Guid.NewGuid():N}.txt");
+                        await File.WriteAllTextAsync(sigPath, SignatureData);
+                        var ok = await _billAttachmentApiService.UploadAsync(result.HeaderId.Value, sigPath, "Signature");
+                        if (!ok) uploadErrors.Add("Signature");
+                    }
+
+                    if (uploadErrors.Count > 0)
+                    {
+                        System.Diagnostics.Debug.WriteLine($"Failed to upload {uploadErrors.Count} attachment(s): {string.Join(", ", uploadErrors)}");
+                    }
+                }
+
+                var order = new Order
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    Vehicle = SelectedVehicle,
+                    Customer = SelectedCustomer,
+                    Items = new ObservableCollection<CartItem>(CartItems),
+                    Location = SelectedLocation,
+                    Technician = SelectedTechnician,
+                    Notes = OrderNotes,
+                    Signature = SignatureData,
+                    PhotoPaths = new ObservableCollection<string>(OrderPhotos.Select(photo => photo.Path)),
+                    Status = "مكتملة"
+                };
+                AppData.Orders.Add(order);
+
+                await Navigation.GoToMainRootAsync();
             }
-
-            if (result.HeaderId.HasValue)
+            catch (Exception ex)
             {
-                var uploadErrors = new List<string>();
-                foreach (var photo in OrderPhotos)
-                {
-                    var ok = await _billAttachmentApiService.UploadAsync(result.HeaderId.Value, photo.Path, "Photo");
-                    if (!ok) uploadErrors.Add(Path.GetFileName(photo.Path));
-                }
-
-                if (!string.IsNullOrWhiteSpace(SignatureData))
-                {
-                    var sigPath = Path.Combine(FileSystem.CacheDirectory, $"sig-{Guid.NewGuid():N}.txt");
-                    await File.WriteAllTextAsync(sigPath, SignatureData);
-                    var ok = await _billAttachmentApiService.UploadAsync(result.HeaderId.Value, sigPath, "Signature");
-                    if (!ok) uploadErrors.Add("Signature");
-                }
-
-                if (uploadErrors.Count > 0)
-                {
-                    System.Diagnostics.Debug.WriteLine($"Failed to upload {uploadErrors.Count} attachment(s): {string.Join(", ", uploadErrors)}");
-                }
+                ShowAlert(AppResources.Error, ex.Message);
             }
-
-            var order = new Order
-            {
-                Id = Guid.NewGuid().ToString(),
-                Vehicle = SelectedVehicle,
-                Customer = SelectedCustomer,
-                Items = new ObservableCollection<CartItem>(CartItems),
-                Location = SelectedLocation,
-                Technician = SelectedTechnician,
-                Notes = OrderNotes,
-                Signature = SignatureData,
-                PhotoPaths = new ObservableCollection<string>(OrderPhotos.Select(photo => photo.Path)),
-                Status = "مكتملة"
-            };
-            AppData.Orders.Add(order);
-
-            await Navigation.GoToMainRootAsync();
-        }
-        catch (Exception ex)
-        {
-            ShowAlert(AppResources.Error, ex.Message);
-        }
-        finally
-        {
-            IsBusy = false;
-        }
+        });
     }
 
     private void RecalculateTotals()

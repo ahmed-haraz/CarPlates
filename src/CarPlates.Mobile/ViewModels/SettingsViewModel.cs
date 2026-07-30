@@ -76,11 +76,16 @@ public partial class SettingsViewModel : BaseViewModel
     [ObservableProperty] private int _selectedPrintFormatIndex;
     [ObservableProperty] private bool _useSavedPrintSettings;
     [ObservableProperty] private bool _isIpEntryEnabled = true;
+    [ObservableProperty] private int _selectedPrintLanguageIndex;
+    [ObservableProperty] private int _selectedCodepageIndex;
 
     partial void OnSelectedPrinterChanged(string value) => IsIpEntryEnabled = string.IsNullOrWhiteSpace(value);
 
     public List<string> AvailableLanguages { get; } = new() { "English", "العربية" };
     public ObservableCollection<string> AvailablePrinters { get; } = new();
+    [ObservableProperty]
+    private bool _hasPrinters;
+
     public List<string> PrintFormatOptions { get; } = new()
     {
         "ESC/POS Formatted",
@@ -89,6 +94,32 @@ public partial class SettingsViewModel : BaseViewModel
         "Plain Text (universal)"
     };
 
+    public List<string> PrintLanguageOptions { get; } = new() { "English", "العربية" };
+
+    public List<string> CodepageOptions { get; } = new()
+    {
+        "0 - CP437  (USA/Europe) [default]",
+        "1 - CP850  (Multilingual Latin I)",
+        "2 - CP860  (Portuguese)",
+        "3 - CP863  (Canadian French)",
+        "4 - CP865  (Nordic)",
+        "5 - CP1252 (Latin I Windows)",
+        "6 - CP866  (Cyrillic 2)",
+        "7 - CP852  (Latin II)",
+        "8 - CP858  (Multilingual + Euro)",
+        "9 - CP862  (Hebrew)",
+        "10 - CP864 (Arabic PC864) [MTP-3B]",
+        "11 - CP1256 (Arabic Windows)",
+        "12 - CP1255 (Hebrew Windows)",
+        "13 - CP737 (Greek)",
+        "14 - CP1253 (Greek Windows)",
+        "15 - CP857 (Turkish)",
+        "16 - CP1254 (Turkish Windows)",
+        "17 - CP1250 (Central Europe)",
+        "18 - CP1251 (Cyrillic Windows)",
+        "19 - CP874 (Thai)",
+        "20 - CP861 (Icelandic)",
+    };
     public SettingsViewModel(
         IMediator mediator,
         ISettingsService settingsService,
@@ -133,22 +164,32 @@ public partial class SettingsViewModel : BaseViewModel
             PaymentEndpointUrl = paymentConfig.EndpointUrl;
             PaymentAdditionalSettings = paymentConfig.AdditionalSettings;
 
-            // Load print settings from Preferences
-            await RefreshPrintersAsync();
+            // Load print settings from Preferences (don't scan printers on load — user clicks Refresh)
             SelectedPrinter = Preferences.Get("print_default_printer", string.Empty);
             PrinterIp = Preferences.Get("print_default_ip", string.Empty);
             SelectedPrintFormatIndex = Preferences.Get("print_default_format", 0);
             UseSavedPrintSettings = Preferences.Get("print_auto_print", false);
+            SelectedPrintLanguageIndex = Preferences.Get("print_language", 0);
+            SelectedCodepageIndex = Preferences.Get("print_codepage", 10); // 10 = CP864 Arabic
         });
     }
 
     [RelayCommand]
     private async Task RefreshPrintersAsync()
     {
-        var printers = await _printService.GetAvailablePrintersAsync();
-        AvailablePrinters.Clear();
-        foreach (var p in printers)
-            AvailablePrinters.Add(p);
+        try
+        {
+            var printers = await _printService.GetAvailablePrintersAsync();
+            AvailablePrinters.Clear();
+            foreach (var p in printers)
+                AvailablePrinters.Add(p);
+            HasPrinters = AvailablePrinters.Count > 0;
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"[Settings] RefreshPrinters: {ex.Message}");
+            HasPrinters = false;
+        }
     }
 
     [RelayCommand]
@@ -164,22 +205,34 @@ public partial class SettingsViewModel : BaseViewModel
 
             await _settingsService.SaveSettingsAsync(settings);
 
-            // Save payment gateway config via API
-            await _paymentSettingsService.SaveAsync(new PaymentGatewayConfig
+            // Save payment gateway config via API (only if enabled)
+            if (PaymentGatewayEnabled)
             {
-                IsEnabled = PaymentGatewayEnabled,
-                GatewayName = PaymentGatewayName,
-                MerchantId = PaymentMerchantId,
-                ApiKey = PaymentApiKey,
-                EndpointUrl = PaymentEndpointUrl,
-                AdditionalSettings = PaymentAdditionalSettings
-            });
+                try
+                {
+                    await _paymentSettingsService.SaveAsync(new PaymentGatewayConfig
+                    {
+                        IsEnabled = true,
+                        GatewayName = PaymentGatewayName,
+                        MerchantId = PaymentMerchantId,
+                        ApiKey = PaymentApiKey,
+                        EndpointUrl = PaymentEndpointUrl,
+                        AdditionalSettings = PaymentAdditionalSettings
+                    });
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine($"[Settings] Failed to save payment gateway settings: {ex.Message}");
+                }
+            }
 
             // Save print settings
             Preferences.Set("print_default_printer", SelectedPrinter ?? string.Empty);
             Preferences.Set("print_default_ip", PrinterIp ?? string.Empty);
             Preferences.Set("print_default_format", SelectedPrintFormatIndex);
             Preferences.Set("print_auto_print", UseSavedPrintSettings);
+            Preferences.Set("print_language", SelectedPrintLanguageIndex);
+            Preferences.Set("print_codepage", SelectedCodepageIndex);
 
             LocalizationResourceManager.Instance.SetCulture(new CultureInfo(language));
             await Navigation.ApplyCurrentFlowDirectionAsync();

@@ -1,10 +1,12 @@
+using CarPlates.Infrastructure.Api.Authentication;
 using CarPlates.Mobile.Localization;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace CarPlates.Mobile;
 
 public partial class App : Microsoft.Maui.Controls.Application
 {
+    private bool _sessionSubscribed;
+
     public App()
     {
         InitializeComponent();
@@ -33,6 +35,9 @@ public partial class App : Microsoft.Maui.Controls.Application
         // Start SignalR monitor for live API URL updates
         _ = services.GetRequiredService<Services.IApiUrlMonitorService>().StartAsync();
 
+        // Subscribe once to detect when another device logs in with the same credentials.
+        SubscribeToSessionRevoked();
+
         var splashPage = services.GetRequiredService<Views.Splash.SplashPage>();
         NavigationPage.SetHasNavigationBar(splashPage, false);
 
@@ -41,5 +46,49 @@ public partial class App : Microsoft.Maui.Controls.Application
             FlowDirection = LocalizationResourceManager.Instance.FlowDirection
         };
         return new Window(rootNav);
+    }
+
+    private void SubscribeToSessionRevoked()
+    {
+        if (_sessionSubscribed) return;
+        _sessionSubscribed = true;
+
+        AuthDelegatingHandler.SessionRevoked += OnSessionRevokedAsync;
+    }
+
+    private async Task OnSessionRevokedAsync()
+    {
+        try
+        {
+            // Must run on the UI thread to show dialogs and navigate.
+            if (MainThread.IsMainThread)
+                await ForceLogoutAsync();
+            else
+                await MainThread.InvokeOnMainThreadAsync(ForceLogoutAsync);
+        }
+        catch
+        {
+            // Best-effort — if the UI is already gone, nothing to do.
+        }
+    }
+
+    private async Task ForceLogoutAsync()
+    {
+        try
+        {
+            var navService = IPlatformApplication.Current?.Services
+                .GetRequiredService<Navigation.INavigationService>();
+            if (navService == null) return;
+
+            await navService.DisplayAlertAsync(
+                AppResources.SessionExpiredTitle,
+                AppResources.SessionExpiredMessage);
+
+            await navService.GoToLoginRootAsync();
+        }
+        catch
+        {
+            // Best-effort.
+        }
     }
 }

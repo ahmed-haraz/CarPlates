@@ -68,11 +68,17 @@
         <!-- Stats Bar -->
         <Grid Grid.Row="3"
               Padding="20,4"
-              ColumnDefinitions="*,Auto">
+              ColumnDefinitions="Auto,Auto,*,Auto">
             <Label Grid.Column="0"
-                   Text="{Binding TotalCount, StringFormat='{0} records'}"
+                   Text="{Binding TotalCount}"
                    Style="{StaticResource Caption}" />
-            <Button Grid.Column="1"
+            <Label Grid.Column="1"
+                   Text=" "
+                   Style="{StaticResource Caption}" />
+            <Label Grid.Column="2"
+                   Text="{loc:Translate Key=RecordsSuffix}"
+                   Style="{StaticResource Caption}" />
+            <Button Grid.Column="3"
                     Text="{loc:Translate Key=ExportButton}"
                     Style="{StaticResource IconButton}"
                     Command="{Binding ExportCommand}"
@@ -133,6 +139,16 @@
             </CollectionView>
 
         </RefreshView>
+
+        <!-- Loading overlay -->
+        <Border Grid.RowSpan="5"
+                BackgroundColor="#80FFFFFF"
+                IsVisible="{Binding IsBusy}"
+                HorizontalOptions="Fill" VerticalOptions="Fill">
+            <ActivityIndicator IsRunning="{Binding IsBusy}"
+                               HorizontalOptions="Center" VerticalOptions="Center"
+                               Color="{StaticResource Primary}" />
+        </Border>
 
     </Grid>
 

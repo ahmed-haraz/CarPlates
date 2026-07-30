@@ -66,7 +66,7 @@ public class ItemService(ApplicationDbContext context) : IItemService
         i.ItemDiscount2,
         i.ItemDiscount3,
         i.Pkg2Qty,
-        i.Pkg3Qty,
+        (double?)i.Pkg3Qty,
         i.Pkg1Price1,
         i.Pkg2Price1,
         i.Pkg3Price1,

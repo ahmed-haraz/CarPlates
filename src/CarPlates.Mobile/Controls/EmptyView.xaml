@@ -6,11 +6,11 @@
     <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Spacing="16">
         <Label x:Name="IconLabel" Text="📭" FontSize="64" HorizontalOptions="Center"/>
         <Label x:Name="TitleLabel"
-               Text="No Data"
+               Text="{loc:Translate Key=NoData}"
                Style="{StaticResource Title}"
                HorizontalOptions="Center"/>
         <Label x:Name="DescriptionLabel"
-               Text="There's nothing to show here yet"
+               Text="{loc:Translate Key=NothingToShow}"
                Style="{StaticResource Body}"
                HorizontalOptions="Center"
                HorizontalTextAlignment="Center"/>

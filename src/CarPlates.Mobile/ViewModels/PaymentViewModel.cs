@@ -40,8 +40,6 @@ public partial class PaymentViewModel : BaseViewModel
 
     [ObservableProperty] private ReceiptApiResult? _receipt;
     [ObservableProperty] private bool _isPaid;
-    [ObservableProperty] private bool _isProcessing;
-
     public PaymentViewModel(
         INavigationService navigation,
         IPaymentApiService paymentApiService,
@@ -117,7 +115,6 @@ public partial class PaymentViewModel : BaseViewModel
         };
         CashAmount = Balance;
 
-        IsProcessing = true;
         await ExecuteAsync(async () =>
         {
             var request = new PayBillApiRequest(HeaderId, payments, Notes);
@@ -136,7 +133,6 @@ public partial class PaymentViewModel : BaseViewModel
                 await Navigation.DisplayAlertAsync(AppResources.Error, result.Message ?? "Payment failed");
             }
         });
-        IsProcessing = false;
     }
 
     [RelayCommand]

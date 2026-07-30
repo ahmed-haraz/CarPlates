@@ -1,14 +1,15 @@
 using System.Windows.Input;
+using CarPlates.Mobile.Localization;
 
 namespace CarPlates.Mobile.Controls;
 
 public partial class ErrorView : ContentView
 {
     public static readonly BindableProperty TitleProperty = BindableProperty.Create(
-        nameof(Title), typeof(string), typeof(ErrorView), "Something went wrong");
+        nameof(Title), typeof(string), typeof(ErrorView), AppResources.SomethingWentWrong);
 
     public static readonly BindableProperty DescriptionProperty = BindableProperty.Create(
-        nameof(Description), typeof(string), typeof(ErrorView), "Please try again later");
+        nameof(Description), typeof(string), typeof(ErrorView), AppResources.PleaseTryAgainLater);
 
     public static readonly BindableProperty RetryCommandProperty = BindableProperty.Create(
         nameof(RetryCommand), typeof(ICommand), typeof(ErrorView), null);

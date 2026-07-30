@@ -125,7 +125,7 @@
                                 Text="{Binding OrderNotes}"
                                 HeightRequest="120"
                                 BackgroundColor="Transparent"/>
-                        <Label Text="٢٠٠/٠" FontSize="12" TextColor="Gray" HorizontalOptions="End"/>
+                        <Label Text="{loc:Translate Key=CharCountFormat}" FontSize="12" TextColor="Gray" HorizontalOptions="End"/>
                         <HorizontalStackLayout Spacing="12" HorizontalOptions="End">
                             <Button Text="{loc:Translate Key=Signature}"
                                     ImageSource="signature.png"
@@ -173,7 +173,14 @@
                             <CollectionView.ItemTemplate>
                                 <DataTemplate x:DataType="models:Technician">
                                     <Frame BackgroundColor="#E8F5E9" CornerRadius="20" Padding="8,4">
-                                        <Label Text="{Binding Name, StringFormat='Tech: {0}'}" TextColor="Green" FontSize="12"/>
+                                        <Label TextColor="Green" FontSize="12">
+                                            <Label.FormattedText>
+                                                <FormattedString>
+                                                    <Span Text="{loc:Translate Key=TechnicianPrefix}" />
+                                                    <Span Text="{Binding Name}" />
+                                                </FormattedString>
+                                            </Label.FormattedText>
+                                        </Label>
                                     </Frame>
                                 </DataTemplate>
                             </CollectionView.ItemTemplate>
@@ -275,8 +282,8 @@
                         <Picker Title="{loc:Translate Key=ItemType}">
                             <Picker.ItemsSource>
                                 <x:Array Type="{x:Type x:String}">
-                                    <x:String>Product</x:String>
-                                    <x:String>Service</x:String>
+                                    <x:String>{loc:Translate Key=Product}</x:String>
+                                    <x:String>{loc:Translate Key=Service}</x:String>
                                 </x:Array>
                             </Picker.ItemsSource>
                         </Picker>

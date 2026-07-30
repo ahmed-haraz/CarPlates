@@ -69,6 +69,14 @@ public class AuthService(
         };
 
 
+        // Revoke all existing refresh tokens for this user — forces any other
+        // device logged in with the same credentials to re-authenticate.
+        var existingTokens = await _context.RefreshTokens
+            .Where(x => x.UserId == applicationUser.Id && !x.Revoked)
+            .ToListAsync();
+        foreach (var t in existingTokens)
+            t.Revoked = true;
+
         var accessToken = _jwtService.GenerateAccessToken(applicationUser);
         var refreshToken = _jwtService.GenerateRefreshToken();
 

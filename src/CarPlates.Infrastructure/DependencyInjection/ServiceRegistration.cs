@@ -38,6 +38,7 @@ public static class ServiceRegistration
         services.AddScoped<ITokenStorage, TokenStorage>();
         services.AddScoped<ILoggingService, LoggingService>();
         services.AddScoped<IApiConnectivityService, ApiConnectivityService>();
+        services.AddSingleton<IReceiptTemplateService, ReceiptTemplateService>();
 
         // Live-updatable API base URL: seeded from the persisted preference, but
         // changing it later (Settings -> Save) updates this singleton immediately,

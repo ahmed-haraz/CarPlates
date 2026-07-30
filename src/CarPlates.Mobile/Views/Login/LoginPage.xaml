@@ -26,7 +26,7 @@
                                HorizontalOptions="Center"
                                VerticalOptions="Center" />
                     </Border>
-                    <Label Text="SMART PLATE ACCESS"
+                    <Label Text="{loc:Translate Key=SmartPlateAccess}"
                            Style="{StaticResource Eyebrow}"
                            TextColor="{StaticResource Accent}" />
                     <Label Text="{loc:Translate Key=AppName}"
@@ -45,7 +45,7 @@
                 <VerticalStackLayout Spacing="4">
                     <Label Text="{loc:Translate Key=WelcomeBack}"
                            Style="{StaticResource Title}" />
-                    <Label Text="Securely continue to your vehicle scanning workspace."
+                    <Label Text="{loc:Translate Key=SecureContinueMessage}"
                            Style="{StaticResource Subtitle}" />
                 </VerticalStackLayout>
 
