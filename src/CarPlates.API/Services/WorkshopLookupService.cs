@@ -74,7 +74,7 @@ public class WorkshopLookupService(ApplicationDbContext context, IConfiguration 
         await connection.OpenAsync();
 
         var code = await ResolveCodeAsync(connection, "wh_CarsTechnician", request.Code);
-        var now = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+        var now = ConverterHelper.GetDateTime();
 
         await using var cmd = new SqlCommand(@"
 INSERT INTO wh_CarsTechnician (Code, Name_ar, Name_en, Status, InsertUserID, InsertDateTime, UpdateDateTime)
@@ -139,7 +139,7 @@ WHERE ID = @Id", connection);
         await connection.OpenAsync();
 
         var code = await ResolveCodeAsync(connection, "wh_WorkLocations", request.Code);
-        var now = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+        var now = ConverterHelper.GetDateTime();
 
         await using var cmd = new SqlCommand(@"
 INSERT INTO wh_WorkLocations (Code, Name_ar, Name_en, Status, InsertUserID, InsertDateTime, UpdateDateTime)

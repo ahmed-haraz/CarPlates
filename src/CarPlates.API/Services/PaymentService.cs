@@ -14,7 +14,7 @@ public class PaymentService(ApplicationDbContext context, IUserContext userConte
     public async Task<PayBillResponse> PayAsync(PayBillRequest request, string? userId, CancellationToken cancellationToken = default)
     {
         var userIdLong = long.TryParse(userId, out var uid) ? uid : 0L;
-        var now = long.Parse(DateTime.Now.ToString("yyyyMMddHHmmss"));
+        var now = ConverterHelper.GetDateTime();
         var transDate = int.Parse(DateTime.Now.ToString("yyyyMMdd"));
 
         var header = await _context.TransHeaders

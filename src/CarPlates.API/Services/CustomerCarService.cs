@@ -143,7 +143,7 @@ public class CustomerCarService(ApplicationDbContext context) : ICustomerCarServ
             return new CustomerCarScanResultDto(MapToDto(existing), WasNewCar: false, WasNewCustomer: false, WasNewBranchLink: false);
         }
 
-        var now = long.Parse(DateTime.Now.ToString("yyyyMMddHHmmss"));
+        var now = ConverterHelper.GetDateTime();
         var wasNewCustomer = false;
         var wasNewBranchLink = false;
 
@@ -243,7 +243,7 @@ public class CustomerCarService(ApplicationDbContext context) : ICustomerCarServ
     public async Task<CarMakeDto> CreateMakeAsync(RegisterCarMakeRequestDto request, long? userId = null)
     {
         var code = await ResolveMakeCodeAsync(request.Code);
-        var now = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+        var now = ConverterHelper.GetDateTime();
 
         var make = new CarMake
         {
@@ -294,7 +294,7 @@ public class CustomerCarService(ApplicationDbContext context) : ICustomerCarServ
     public async Task<CarModelDto> CreateModelAsync(RegisterCarModelRequestDto request, long? userId = null)
     {
         var code = await ResolveModelCodeAsync(request.Code);
-        var now = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+        var now = ConverterHelper.GetDateTime();
 
         var model = new CarModel
         {

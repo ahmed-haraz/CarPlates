@@ -1,3 +1,4 @@
+using CarPlates.API.Common;
 using CarPlates.API.Data;
 using CarPlates.API.Interface;
 using CarPlates.API.Models;
@@ -12,7 +13,7 @@ public class BillAttachmentService(ApplicationDbContext context, IWebHostEnviron
 
     public async Task<long> UploadAsync(long headerId, string fileName, Stream content, string contentType, string attachmentType, long? userId, CancellationToken cancellationToken = default)
     {
-        var now = long.Parse(DateTime.Now.ToString("yyyyMMddHHmmss"));
+        var now = ConverterHelper.GetDateTime();
 
         var attachmentDir = Path.Combine(_env.ContentRootPath, "uploads", "bills", headerId.ToString());
         Directory.CreateDirectory(attachmentDir);

@@ -88,7 +88,7 @@ public class ScanRecordService(ApplicationDbContext context, ICustomerCarService
     {
         var plateNumber = dto.PlateNumber.ToEnglishNumbers().ToUpperInvariant();
         var userIdLong = long.TryParse(userId, out var uid) ? uid : 0L;
-        var now = long.Parse(DateTime.Now.ToString("yyyyMMddHHmmss"));
+        var now = ConverterHelper.GetDateTime();
 
         long? customerCarId = null;
 

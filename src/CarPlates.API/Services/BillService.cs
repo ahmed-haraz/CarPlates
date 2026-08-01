@@ -15,7 +15,7 @@ public class BillService(ApplicationDbContext context, IWebHostEnvironment env) 
     public async Task<BillDto> CreateAsync(CreateBillDto dto, string? userId, IUserContext? userContext = null, CancellationToken cancellationToken = default)
     {
         var userIdLong = long.TryParse(userId, out var uid) ? uid : 0L;
-        var now = long.Parse(DateTime.Now.ToString("yyyyMMddHHmmss"));
+        var now = ConverterHelper.GetDateTime();
 
         var salesRepId = dto.SalesRepId ?? userContext?.SalesRepId ?? 0;
         var storeId = dto.StoreId ?? userContext?.StoreId ?? 0;
