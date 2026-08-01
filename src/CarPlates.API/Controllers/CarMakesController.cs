@@ -1,3 +1,4 @@
+using CarPlates.API.Common;
 using CarPlates.API.Interface;
 using CarPlates.API.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -8,7 +9,7 @@ namespace CarPlates.API.Controllers;
 [ApiController]
 [Route("api/v1/[controller]")]
 [Authorize]
-public class CarMakesController(ICustomerCarService customerCarService) : ControllerBase
+public class CarMakesController(ICustomerCarService customerCarService, IUserContext userContext) : ControllerBase
 {
     private readonly ICustomerCarService _customerCarService = customerCarService;
 
@@ -25,7 +26,8 @@ public class CarMakesController(ICustomerCarService customerCarService) : Contro
     [HttpPost]
     public async Task<ActionResult<CarMakeDto>> Create([FromBody] RegisterCarMakeRequestDto request)
     {
-        var make = await _customerCarService.CreateMakeAsync(request);
+        var userId = long.TryParse(userContext.UserId, out var uid) ? (long?)uid : null;
+        var make = await _customerCarService.CreateMakeAsync(request, userId);
         return StatusCode(201, make);
     }
 
@@ -33,14 +35,16 @@ public class CarMakesController(ICustomerCarService customerCarService) : Contro
     [HttpPut("{id:int}")]
     public async Task<ActionResult<CarMakeDto>> Update(int id, [FromBody] RegisterCarMakeRequestDto request)
     {
-        var make = await _customerCarService.UpdateMakeAsync(id, request);
+        var userId = long.TryParse(userContext.UserId, out var uid) ? (long?)uid : null;
+        var make = await _customerCarService.UpdateMakeAsync(id, request, userId);
         return Ok(make);
     }
 
     [HttpDelete("{id:int}")]
     public async Task<ActionResult> Delete(int id)
     {
-        await _customerCarService.DeleteMakeAsync(id);
+        var userId = long.TryParse(userContext.UserId, out var uid) ? (long?)uid : null;
+        await _customerCarService.DeleteMakeAsync(id, userId);
         return NoContent();
     }
 }

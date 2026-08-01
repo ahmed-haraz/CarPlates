@@ -1,3 +1,4 @@
+using CarPlates.API.Common;
 using CarPlates.API.Interface;
 using CarPlates.API.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -8,7 +9,7 @@ namespace CarPlates.API.Controllers;
 [ApiController]
 [Route("api/v1/[controller]")]
 [Authorize]
-public class TechniciansController(IWorkshopLookupService lookupService) : ControllerBase
+public class TechniciansController(IWorkshopLookupService lookupService, IUserContext userContext) : ControllerBase
 {
     private readonly IWorkshopLookupService _lookupService = lookupService;
 
@@ -25,21 +26,24 @@ public class TechniciansController(IWorkshopLookupService lookupService) : Contr
     [HttpPost]
     public async Task<ActionResult<TechnicianDto>> Register([FromBody] RegisterTechnicianRequestDto request)
     {
-        var technician = await _lookupService.RegisterTechnicianAsync(request);
+        var userId = long.TryParse(userContext.UserId, out var uid) ? (long?)uid : null;
+        var technician = await _lookupService.RegisterTechnicianAsync(request, userId);
         return CreatedAtAction(nameof(GetAll), new { id = technician.Id }, technician);
     }
 
     [HttpPut("{id:int}")]
     public async Task<ActionResult<TechnicianDto>> Update(int id, [FromBody] RegisterTechnicianRequestDto request)
     {
-        var technician = await _lookupService.UpdateTechnicianAsync(id, request);
+        var userId = long.TryParse(userContext.UserId, out var uid) ? (long?)uid : null;
+        var technician = await _lookupService.UpdateTechnicianAsync(id, request, userId);
         return Ok(technician);
     }
 
     [HttpDelete("{id:int}")]
     public async Task<ActionResult> Delete(int id)
     {
-        await _lookupService.DeleteTechnicianAsync(id);
+        var userId = long.TryParse(userContext.UserId, out var uid) ? (long?)uid : null;
+        await _lookupService.DeleteTechnicianAsync(id, userId);
         return NoContent();
     }
 }

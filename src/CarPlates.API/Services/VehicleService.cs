@@ -70,7 +70,7 @@ public class VehicleService(ApplicationDbContext context, ICustomerCarService cu
         return new PagedResult<VehicleDto>(items, paged.TotalCount, paged.Page, paged.PageSize, paged.TotalPages);
     }
 
-    public async Task<VehicleDto> CreateAsync(VehicleCreateDto dto)
+    public async Task<VehicleDto> CreateAsync(VehicleCreateDto dto, string? userId = null)
     {
         var makeId = await ResolveMakeIdAsync(dto.Brand);
         var modelId = await ResolveModelIdAsync(dto.Model, makeId);
@@ -93,14 +93,17 @@ public class VehicleService(ApplicationDbContext context, ICustomerCarService cu
             CustomerPhone1: dto.OwnerPhone,
             PlateType: dto.PlateType);
 
-        var result = await _customerCarService.RegisterAsync(scanDto, userId: null);
+        var result = await _customerCarService.RegisterAsync(scanDto, userId);
         return MapToDto(result.Car);
     }
 
-    public async Task<VehicleDto?> UpdateAsync(int id, VehicleUpdateDto dto)
+    public async Task<VehicleDto?> UpdateAsync(int id, VehicleUpdateDto dto, string? userId = null)
     {
         var car = await _context.CustomerCars.FirstOrDefaultAsync(c => c.Id == id);
         if (car == null || car.Status == 0) return null;
+
+        var userIdLong = long.TryParse(userId, out var uid) ? (long?)uid : null;
+        var now = ConverterHelper.GetDateTime();
 
         if (dto.Brand != null)
         {
@@ -113,7 +116,8 @@ public class VehicleService(ApplicationDbContext context, ICustomerCarService cu
         }
 
         car.Color = dto.Color ?? car.Color;
-        car.UpdateDateTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+        car.UpdateUserID = userIdLong;
+        car.UpdateDateTime = now;
         // dto.Notes has no home on wh_CustomerCars — intentionally dropped.
 
         if (car.CustomerID.HasValue && (dto.OwnerName != null || dto.OwnerPhone != null))
@@ -127,7 +131,8 @@ public class VehicleService(ApplicationDbContext context, ICustomerCarService cu
                     customer.Mobile = dto.OwnerPhone;
                     customer.Phone1 = dto.OwnerPhone;
                 }
-                customer.UpdateDateTime = car.UpdateDateTime;
+                customer.UpdateUserID = userIdLong;
+                customer.UpdateDateTime = now;
             }
         }
 
@@ -137,13 +142,14 @@ public class VehicleService(ApplicationDbContext context, ICustomerCarService cu
         return MapToDto(full);
     }
 
-    public async Task<bool> DeleteAsync(int id)
+    public async Task<bool> DeleteAsync(int id, string? userId = null)
     {
         var car = await _context.CustomerCars.FirstOrDefaultAsync(c => c.Id == id);
         if (car == null || car.Status == 0) return false;
 
         car.Status = 0;
-        car.UpdateDateTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+        car.UpdateUserID = long.TryParse(userId, out var uid) ? (long?)uid : null;
+        car.UpdateDateTime = ConverterHelper.GetDateTime();
         await _context.SaveChangesAsync();
         return true;
     }

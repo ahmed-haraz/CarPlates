@@ -38,6 +38,8 @@ public class JwtService(IConfiguration configuration) : IJwtService
                 new("salesRepId", user.SalesRepId.ToString()),
                 new("storeId", user.StoreId.ToString()),
                 new("carId", user.CarId.ToString()),
+                new("cashboxId", user.CashboxId.ToString()),
+                new("usertype", user.UserType.ToString()),
                 new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
             };
 

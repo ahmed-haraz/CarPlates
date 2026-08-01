@@ -1,3 +1,4 @@
+using CarPlates.API.Common;
 using CarPlates.API.Interface;
 using CarPlates.API.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -8,7 +9,7 @@ namespace CarPlates.API.Controllers;
 [ApiController]
 [Route("api/v1/[controller]")]
 [Authorize]
-public class CustomersController(ICustomerService customerService) : ControllerBase
+public class CustomersController(ICustomerService customerService, IUserContext userContext) : ControllerBase
 {
     private readonly ICustomerService _customerService = customerService;
 
@@ -33,14 +34,16 @@ public class CustomersController(ICustomerService customerService) : ControllerB
     [HttpPut("{id:int}")]
     public async Task<ActionResult<CustomerDto>> Update(int id, [FromBody] UpdateCustomerRequestDto request)
     {
-        var customer = await _customerService.UpdateAsync(id, request);
+        var userId = long.TryParse(userContext.UserId, out var uid) ? (long?)uid : null;
+        var customer = await _customerService.UpdateAsync(id, request, userId);
         return Ok(customer);
     }
 
     [HttpDelete("{id:int}")]
     public async Task<ActionResult> Delete(int id)
     {
-        await _customerService.DeleteAsync(id);
+        var userId = long.TryParse(userContext.UserId, out var uid) ? (long?)uid : null;
+        await _customerService.DeleteAsync(id, userId);
         return NoContent();
     }
 }

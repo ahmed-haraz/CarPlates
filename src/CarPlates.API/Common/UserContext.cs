@@ -9,6 +9,8 @@ public interface IUserContext
     int SalesRepId { get; }
     int StoreId { get; }
     int CarId { get; }
+    int CashboxId { get; }
+    int UserType { get; }
 }
 
 public class UserContext(IHttpContextAccessor httpContextAccessor) : IUserContext
@@ -26,6 +28,12 @@ public class UserContext(IHttpContextAccessor httpContextAccessor) : IUserContex
 
     public int CarId => int.TryParse(
         _httpContextAccessor.HttpContext?.User.FindFirstValue("carId"), out var id) ? id : 0;
+
+    public int CashboxId => int.TryParse(
+        _httpContextAccessor.HttpContext?.User.FindFirstValue("cashboxId"), out var id) ? id : 0;
+
+    public int UserType => int.TryParse(
+        _httpContextAccessor.HttpContext?.User.FindFirstValue("usertype"), out var id) ? id : 0;
 
     private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
 }

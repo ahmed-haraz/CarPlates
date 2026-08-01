@@ -240,7 +240,7 @@ public class CustomerCarService(ApplicationDbContext context) : ICustomerCarServ
         return await _context.CarModels.MaxAsync(m => (int?)m.Code) + 1 ?? 1;
     }
 
-    public async Task<CarMakeDto> CreateMakeAsync(RegisterCarMakeRequestDto request)
+    public async Task<CarMakeDto> CreateMakeAsync(RegisterCarMakeRequestDto request, long? userId = null)
     {
         var code = await ResolveMakeCodeAsync(request.Code);
         var now = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
@@ -251,6 +251,8 @@ public class CustomerCarService(ApplicationDbContext context) : ICustomerCarServ
             Name_ar = request.Name_ar,
             Name_en = request.Name_en,
             Status = 1,
+            InsertUserID = userId,
+            UpdateUserID = userId,
             InsertDateTime = now,
             UpdateDateTime = now,
         };
@@ -261,7 +263,7 @@ public class CustomerCarService(ApplicationDbContext context) : ICustomerCarServ
         return new CarMakeDto(make.MakeID, make.Code, make.Name_ar, make.Name_en, make.IconOriginalURL);
     }
 
-    public async Task<CarMakeDto> UpdateMakeAsync(int id, RegisterCarMakeRequestDto request)
+    public async Task<CarMakeDto> UpdateMakeAsync(int id, RegisterCarMakeRequestDto request, long? userId = null)
     {
         var make = await _context.CarMakes.FindAsync(id)
             ?? throw new KeyNotFoundException($"CarMake with ID {id} not found.");
@@ -269,24 +271,27 @@ public class CustomerCarService(ApplicationDbContext context) : ICustomerCarServ
         make.Code = await ResolveMakeCodeAsync(request.Code);
         make.Name_ar = request.Name_ar;
         make.Name_en = request.Name_en;
-        make.UpdateDateTime = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+        make.UpdateUserID = userId;
+        make.UpdateDateTime = ConverterHelper.GetDateTime();
 
         await _context.SaveChangesAsync();
 
         return new CarMakeDto(make.MakeID, make.Code, make.Name_ar, make.Name_en, make.IconOriginalURL);
     }
 
-    public async Task DeleteMakeAsync(int id)
+    public async Task DeleteMakeAsync(int id, long? userId = null)
     {
         var make = await _context.CarMakes.FindAsync(id);
         if (make != null)
         {
             make.Status = 0;
+            make.UpdateUserID = userId;
+            make.UpdateDateTime = ConverterHelper.GetDateTime();
             await _context.SaveChangesAsync();
         }
     }
 
-    public async Task<CarModelDto> CreateModelAsync(RegisterCarModelRequestDto request)
+    public async Task<CarModelDto> CreateModelAsync(RegisterCarModelRequestDto request, long? userId = null)
     {
         var code = await ResolveModelCodeAsync(request.Code);
         var now = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
@@ -298,6 +303,8 @@ public class CustomerCarService(ApplicationDbContext context) : ICustomerCarServ
             Name_ar = request.Name_ar,
             Name_en = request.Name_en,
             Status = 1,
+            InsertUserID = userId,
+            UpdateUserID = userId,
             InsertDateTime = now,
             UpdateDateTime = now,
         };
@@ -308,7 +315,7 @@ public class CustomerCarService(ApplicationDbContext context) : ICustomerCarServ
         return new CarModelDto(model.ModelID, model.MakeID, model.Code, model.Name_ar, model.Name_en);
     }
 
-    public async Task<CarModelDto> UpdateModelAsync(int id, RegisterCarModelRequestDto request)
+    public async Task<CarModelDto> UpdateModelAsync(int id, RegisterCarModelRequestDto request, long? userId = null)
     {
         var model = await _context.CarModels.FindAsync(id)
             ?? throw new KeyNotFoundException($"CarModel with ID {id} not found.");
@@ -317,19 +324,22 @@ public class CustomerCarService(ApplicationDbContext context) : ICustomerCarServ
         model.Code = await ResolveModelCodeAsync(request.Code);
         model.Name_ar = request.Name_ar;
         model.Name_en = request.Name_en;
-        model.UpdateDateTime = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+        model.UpdateUserID = userId;
+        model.UpdateDateTime = ConverterHelper.GetDateTime();
 
         await _context.SaveChangesAsync();
 
         return new CarModelDto(model.ModelID, model.MakeID, model.Code, model.Name_ar, model.Name_en);
     }
 
-    public async Task DeleteModelAsync(int id)
+    public async Task DeleteModelAsync(int id, long? userId = null)
     {
         var model = await _context.CarModels.FindAsync(id);
         if (model != null)
         {
             model.Status = 0;
+            model.UpdateUserID = userId;
+            model.UpdateDateTime = ConverterHelper.GetDateTime();
             await _context.SaveChangesAsync();
         }
     }

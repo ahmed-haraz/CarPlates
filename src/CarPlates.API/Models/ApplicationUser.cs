@@ -12,4 +12,6 @@ public class ApplicationUser : IdentityUser
     public int SalesRepId { get; set; }
     public int StoreId { get; set; }
     public int CarId { get; set; }
+    public int CashboxId { get; set; }
+    public int UserType { get; set; }
 }

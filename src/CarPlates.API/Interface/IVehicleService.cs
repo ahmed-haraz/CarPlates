@@ -7,8 +7,8 @@ public interface IVehicleService
     Task<VehicleDto?> GetByPlateNumberAsync(string plateNumber);
     Task<VehicleDto?> GetByIdAsync(int id);
     Task<PagedResult<VehicleDto>> GetAllAsync(string? search = null, string? status = null, int page = 1, int pageSize = 20, int? branchId = null, long? userId = null);
-    Task<VehicleDto> CreateAsync(VehicleCreateDto dto);
-    Task<VehicleDto?> UpdateAsync(int id, VehicleUpdateDto dto);
-    Task<bool> DeleteAsync(int id);
+    Task<VehicleDto> CreateAsync(VehicleCreateDto dto, string? userId = null);
+    Task<VehicleDto?> UpdateAsync(int id, VehicleUpdateDto dto, string? userId = null);
+    Task<bool> DeleteAsync(int id, string? userId = null);
     Task<bool> ExistsAsync(string plateNumber);
 }

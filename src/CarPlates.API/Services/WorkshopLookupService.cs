@@ -8,17 +8,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CarPlates.API.Services;
 
-public class WorkshopLookupService : IWorkshopLookupService
+public class WorkshopLookupService(ApplicationDbContext context, IConfiguration configuration) : IWorkshopLookupService
 {
-    private readonly ApplicationDbContext _context;
-    private readonly string _connectionString;
-
-    public WorkshopLookupService(ApplicationDbContext context, IConfiguration configuration)
-    {
-        _context = context;
-        _connectionString = configuration.GetConnectionString("DefaultConnection")
+    private readonly ApplicationDbContext _context = context;
+    private readonly string _connectionString = configuration.GetConnectionString("DefaultConnection")
             ?? throw new InvalidOperationException("DefaultConnection string is not configured.");
-    }
 
     public async Task<PagedResult<TechnicianDto>> GetTechniciansAsync(
         string? search, int page, int pageSize, CancellationToken cancellationToken = default)
@@ -74,7 +68,7 @@ public class WorkshopLookupService : IWorkshopLookupService
         return (int)(await maxCmd.ExecuteScalarAsync() ?? 1);
     }
 
-    public async Task<TechnicianDto> RegisterTechnicianAsync(RegisterTechnicianRequestDto request)
+    public async Task<TechnicianDto> RegisterTechnicianAsync(RegisterTechnicianRequestDto request, long? userId = null)
     {
         await using var connection = new SqlConnection(_connectionString);
         await connection.OpenAsync();
@@ -83,13 +77,14 @@ public class WorkshopLookupService : IWorkshopLookupService
         var now = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
 
         await using var cmd = new SqlCommand(@"
-INSERT INTO wh_CarsTechnician (Code, Name_ar, Name_en, Status, InsertDateTime, UpdateDateTime)
+INSERT INTO wh_CarsTechnician (Code, Name_ar, Name_en, Status, InsertUserID, InsertDateTime, UpdateDateTime)
 OUTPUT INSERTED.ID
-VALUES (@Code, @NameAr, @NameEn, 1, @Now, @Now)", connection);
+VALUES (@Code, @NameAr, @NameEn, 1, @InsertUserId, @Now, @Now)", connection);
 
         cmd.Parameters.AddWithValue("@Code", code);
         cmd.Parameters.AddWithValue("@NameAr", request.Name_Ar);
         cmd.Parameters.AddWithValue("@NameEn", request.Name_En);
+        cmd.Parameters.AddWithValue("@InsertUserId", userId ?? 0L);
         cmd.Parameters.AddWithValue("@Now", now);
 
         var newId = (int)(await cmd.ExecuteScalarAsync() ?? throw new InvalidOperationException("Failed to insert technician."));
@@ -97,23 +92,24 @@ VALUES (@Code, @NameAr, @NameEn, 1, @Now, @Now)", connection);
         return new TechnicianDto(newId, code, request.Name_Ar, request.Name_En);
     }
 
-    public async Task<TechnicianDto> UpdateTechnicianAsync(int id, RegisterTechnicianRequestDto request)
+    public async Task<TechnicianDto> UpdateTechnicianAsync(int id, RegisterTechnicianRequestDto request, long? userId = null)
     {
         await using var connection = new SqlConnection(_connectionString);
         await connection.OpenAsync();
 
         var code = await ResolveCodeAsync(connection, "wh_CarsTechnician", request.Code);
-        var now = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+        var now = ConverterHelper.GetDateTime();
 
         await using var cmd = new SqlCommand(@"
 UPDATE wh_CarsTechnician
-SET Code = @Code, Name_ar = @NameAr, Name_en = @NameEn, UpdateDateTime = @Now
+SET Code = @Code, Name_ar = @NameAr, Name_en = @NameEn, UpdateUserID = @UpdateUserId, UpdateDateTime = @Now
 WHERE ID = @Id", connection);
 
         cmd.Parameters.AddWithValue("@Id", id);
         cmd.Parameters.AddWithValue("@Code", code);
         cmd.Parameters.AddWithValue("@NameAr", request.Name_Ar);
         cmd.Parameters.AddWithValue("@NameEn", request.Name_En);
+        cmd.Parameters.AddWithValue("@UpdateUserId", userId ?? 0L);
         cmd.Parameters.AddWithValue("@Now", now);
 
         await cmd.ExecuteNonQueryAsync();
@@ -121,19 +117,23 @@ WHERE ID = @Id", connection);
         return new TechnicianDto(id, code, request.Name_Ar, request.Name_En);
     }
 
-    public async Task DeleteTechnicianAsync(int id)
+    public async Task DeleteTechnicianAsync(int id, long? userId = null)
     {
         await using var connection = new SqlConnection(_connectionString);
         await connection.OpenAsync();
 
-        await using var cmd = new SqlCommand(
-            "UPDATE wh_CarsTechnician SET Status = 0 WHERE ID = @Id", connection);
+        await using var cmd = new SqlCommand(@"
+UPDATE wh_CarsTechnician
+SET Status = 0, UpdateUserID = @UpdateUserId, UpdateDateTime = @Now
+WHERE ID = @Id", connection);
 
         cmd.Parameters.AddWithValue("@Id", id);
+        cmd.Parameters.AddWithValue("@UpdateUserId", userId ?? 0L);
+        cmd.Parameters.AddWithValue("@Now", ConverterHelper.GetDateTime());
         await cmd.ExecuteNonQueryAsync();
     }
 
-    public async Task<WorkLocationDto> RegisterWorkLocationAsync(RegisterWorkLocationRequestDto request)
+    public async Task<WorkLocationDto> RegisterWorkLocationAsync(RegisterWorkLocationRequestDto request, long? userId = null)
     {
         await using var connection = new SqlConnection(_connectionString);
         await connection.OpenAsync();
@@ -142,13 +142,14 @@ WHERE ID = @Id", connection);
         var now = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
 
         await using var cmd = new SqlCommand(@"
-INSERT INTO wh_WorkLocations (Code, Name_ar, Name_en, Status, InsertDateTime, UpdateDateTime)
+INSERT INTO wh_WorkLocations (Code, Name_ar, Name_en, Status, InsertUserID, InsertDateTime, UpdateDateTime)
 OUTPUT INSERTED.ID
-VALUES (@Code, @NameAr, @NameEn, 1, @Now, @Now)", connection);
+VALUES (@Code, @NameAr, @NameEn, 1, @InsertUserId, @Now, @Now)", connection);
 
         cmd.Parameters.AddWithValue("@Code", code);
         cmd.Parameters.AddWithValue("@NameAr", request.Name_Ar);
         cmd.Parameters.AddWithValue("@NameEn", request.Name_En);
+        cmd.Parameters.AddWithValue("@InsertUserId", userId ?? 0L);
         cmd.Parameters.AddWithValue("@Now", now);
 
         var newId = (int)(await cmd.ExecuteScalarAsync() ?? throw new InvalidOperationException("Failed to insert work location."));
@@ -156,23 +157,24 @@ VALUES (@Code, @NameAr, @NameEn, 1, @Now, @Now)", connection);
         return new WorkLocationDto(newId, code, request.Name_Ar, request.Name_En);
     }
 
-    public async Task<WorkLocationDto> UpdateWorkLocationAsync(int id, RegisterWorkLocationRequestDto request)
+    public async Task<WorkLocationDto> UpdateWorkLocationAsync(int id, RegisterWorkLocationRequestDto request, long? userId = null)
     {
         await using var connection = new SqlConnection(_connectionString);
         await connection.OpenAsync();
 
         var code = await ResolveCodeAsync(connection, "wh_WorkLocations", request.Code);
-        var now = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+        var now = ConverterHelper.GetDateTime();
 
         await using var cmd = new SqlCommand(@"
 UPDATE wh_WorkLocations
-SET Code = @Code, Name_ar = @NameAr, Name_en = @NameEn, UpdateDateTime = @Now
+SET Code = @Code, Name_ar = @NameAr, Name_en = @NameEn, UpdateUserID = @UpdateUserId, UpdateDateTime = @Now
 WHERE ID = @Id", connection);
 
         cmd.Parameters.AddWithValue("@Id", id);
         cmd.Parameters.AddWithValue("@Code", code);
         cmd.Parameters.AddWithValue("@NameAr", request.Name_Ar);
         cmd.Parameters.AddWithValue("@NameEn", request.Name_En);
+        cmd.Parameters.AddWithValue("@UpdateUserId", userId ?? 0L);
         cmd.Parameters.AddWithValue("@Now", now);
 
         await cmd.ExecuteNonQueryAsync();
@@ -180,15 +182,19 @@ WHERE ID = @Id", connection);
         return new WorkLocationDto(id, code, request.Name_Ar, request.Name_En);
     }
 
-    public async Task DeleteWorkLocationAsync(int id)
+    public async Task DeleteWorkLocationAsync(int id, long? userId = null)
     {
         await using var connection = new SqlConnection(_connectionString);
         await connection.OpenAsync();
 
-        await using var cmd = new SqlCommand(
-            "UPDATE wh_WorkLocations SET Status = 0 WHERE ID = @Id", connection);
+        await using var cmd = new SqlCommand(@"
+UPDATE wh_WorkLocations
+SET Status = 0, UpdateUserID = @UpdateUserId, UpdateDateTime = @Now
+WHERE ID = @Id", connection);
 
         cmd.Parameters.AddWithValue("@Id", id);
+        cmd.Parameters.AddWithValue("@UpdateUserId", userId ?? 0L);
+        cmd.Parameters.AddWithValue("@Now", ConverterHelper.GetDateTime());
         await cmd.ExecuteNonQueryAsync();
     }
 }

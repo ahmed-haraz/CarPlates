@@ -12,13 +12,13 @@ public interface ICustomerCarService
 
     Task<PagedResult<CarMakeDto>> GetMakesPagedAsync(string? search, int page, int pageSize, CancellationToken cancellationToken = default);
     Task<PagedResult<CarModelDto>> GetModelsPagedAsync(int? makeId, string? search, int page, int pageSize, CancellationToken cancellationToken = default);
-    Task<CarMakeDto> CreateMakeAsync(RegisterCarMakeRequestDto request);
-    Task<CarMakeDto> UpdateMakeAsync(int id, RegisterCarMakeRequestDto request);
-    Task DeleteMakeAsync(int id);
+    Task<CarMakeDto> CreateMakeAsync(RegisterCarMakeRequestDto request, long? userId = null);
+    Task<CarMakeDto> UpdateMakeAsync(int id, RegisterCarMakeRequestDto request, long? userId = null);
+    Task DeleteMakeAsync(int id, long? userId = null);
 
-    Task<CarModelDto> CreateModelAsync(RegisterCarModelRequestDto request);
-    Task<CarModelDto> UpdateModelAsync(int id, RegisterCarModelRequestDto request);
-    Task DeleteModelAsync(int id);
+    Task<CarModelDto> CreateModelAsync(RegisterCarModelRequestDto request, long? userId = null);
+    Task<CarModelDto> UpdateModelAsync(int id, RegisterCarModelRequestDto request, long? userId = null);
+    Task DeleteModelAsync(int id, long? userId = null);
 
     /// <summary>
     /// Looks the plate up in VW_WH_CustomerCarsFull. If it's already registered, returns it

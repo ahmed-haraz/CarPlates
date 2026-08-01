@@ -33,7 +33,7 @@ public class ReceiptTemplateService(ApplicationDbContext context) : IReceiptTemp
         return template;
     }
 
-    public async Task<ReceiptTemplate> SaveAsync(ReceiptTemplate template, CancellationToken cancellationToken = default)
+    public async Task<ReceiptTemplate> SaveAsync(ReceiptTemplate template, string? updatedBy = null, CancellationToken cancellationToken = default)
     {
         var existing = await context.ReceiptTemplates
             .FirstOrDefaultAsync(t => t.Format == template.Format, cancellationToken);
@@ -42,11 +42,12 @@ public class ReceiptTemplateService(ApplicationDbContext context) : IReceiptTemp
         {
             existing.Content = template.Content;
             existing.UpdatedAt = DateTime.UtcNow;
-            existing.UpdatedBy = template.UpdatedBy;
+            existing.UpdatedBy = string.IsNullOrWhiteSpace(updatedBy) ? template.UpdatedBy : updatedBy;
         }
         else
         {
             template.UpdatedAt = DateTime.UtcNow;
+            template.UpdatedBy = string.IsNullOrWhiteSpace(updatedBy) ? template.UpdatedBy : updatedBy;
             context.ReceiptTemplates.Add(template);
             existing = template;
         }

@@ -1,3 +1,4 @@
+using CarPlates.API.Common;
 using CarPlates.API.Interface;
 using CarPlates.API.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -8,7 +9,7 @@ namespace CarPlates.API.Controllers;
 [ApiController]
 [Route("api/v1/receipt-templates")]
 [Authorize]
-public class ReceiptTemplatesController(IReceiptTemplateService service) : ControllerBase
+public class ReceiptTemplatesController(IReceiptTemplateService service, IUserContext userContext) : ControllerBase
 {
     [HttpGet]
     public async Task<ActionResult<List<ReceiptTemplate>>> GetAll(CancellationToken cancellationToken)
@@ -33,7 +34,7 @@ public class ReceiptTemplatesController(IReceiptTemplateService service) : Contr
         CancellationToken cancellationToken)
     {
         template.Format = format;
-        var result = await service.SaveAsync(template, cancellationToken);
+        var result = await service.SaveAsync(template, userContext.UserId, cancellationToken);
         return Ok(result);
     }
 }

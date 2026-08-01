@@ -44,7 +44,8 @@ public class ScansController(IScanRecordService scanService, IUserContext userCo
     public async Task<ActionResult<ScanRecordDto>> Create([FromBody] ScanRecordCreateDto dto)
     {
         var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
-        var record = await _scanService.CreateAsync(dto, userId);
+        var branchId = dto.BranchID > 0 ? dto.BranchID : userContext.BranchId;
+        var record = await _scanService.CreateAsync(dto with { BranchID = branchId }, userId);
         return CreatedAtAction(nameof(GetById), new { id = record.Id }, record);
     }
 

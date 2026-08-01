@@ -1,3 +1,4 @@
+using CarPlates.API.Common;
 using CarPlates.API.Interface;
 using CarPlates.API.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -8,7 +9,7 @@ namespace CarPlates.API.Controllers;
 [ApiController]
 [Route("api/v1/[controller]")]
 [Authorize]
-public class CarModelsController(ICustomerCarService customerCarService) : ControllerBase
+public class CarModelsController(ICustomerCarService customerCarService, IUserContext userContext) : ControllerBase
 {
     private readonly ICustomerCarService _customerCarService = customerCarService;
 
@@ -26,21 +27,24 @@ public class CarModelsController(ICustomerCarService customerCarService) : Contr
     [HttpPost]
     public async Task<ActionResult<CarModelDto>> Create([FromBody] RegisterCarModelRequestDto request)
     {
-        var model = await _customerCarService.CreateModelAsync(request);
+        var userId = long.TryParse(userContext.UserId, out var uid) ? (long?)uid : null;
+        var model = await _customerCarService.CreateModelAsync(request, userId);
         return StatusCode(201, model);
     }
 
     [HttpPut("{id:int}")]
     public async Task<ActionResult<CarModelDto>> Update(int id, [FromBody] RegisterCarModelRequestDto request)
     {
-        var model = await _customerCarService.UpdateModelAsync(id, request);
+        var userId = long.TryParse(userContext.UserId, out var uid) ? (long?)uid : null;
+        var model = await _customerCarService.UpdateModelAsync(id, request, userId);
         return Ok(model);
     }
 
     [HttpDelete("{id:int}")]
     public async Task<ActionResult> Delete(int id)
     {
-        await _customerCarService.DeleteModelAsync(id);
+        var userId = long.TryParse(userContext.UserId, out var uid) ? (long?)uid : null;
+        await _customerCarService.DeleteModelAsync(id, userId);
         return NoContent();
     }
 }

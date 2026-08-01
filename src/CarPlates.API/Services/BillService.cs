@@ -141,6 +141,7 @@ public class BillService(ApplicationDbContext context, IWebHostEnvironment env) 
                     UserFullName_Ar = userId,
                     BranchID = branchId,
                     StoreID = storeId,
+                    Module = 1,
                     Status = 1,
                     InsertUserID = userIdLong,
                     InsertDateTime = now,

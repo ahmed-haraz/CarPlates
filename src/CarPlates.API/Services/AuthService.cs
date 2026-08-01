@@ -65,7 +65,9 @@ public class AuthService(
             BranchId = user.BranchID ?? 0,
             SalesRepId = user.SalesRepID ?? 0,
             StoreId = user.StoreID ?? 0,
-            CarId = user.CarID ?? 0
+            CarId = user.CarID ?? 0,
+            CashboxId = user.CashBoxID ?? 0,
+            UserType = user.UserType ?? 0
         };
 
 
@@ -140,7 +142,9 @@ public class AuthService(
             BranchId = user.BranchID ?? 0,
             SalesRepId = user.SalesRepID ?? 0,
             StoreId = user.StoreID ?? 0,
-            CarId = user.CarID ?? 0
+            CarId = user.CarID ?? 0,
+            CashboxId = user.CashBoxID ?? 0,
+            UserType = user.UserType ?? 0
         };
 
 
@@ -195,6 +199,7 @@ public class AuthService(
             UserFullName_En = request.FullName_En,
             UserFullName_Ar = request.FullName_Ar,
             BranchID = request.BranchId,
+            Module = 1,
             Status = 1,
             CashBoxID = request.CashboxID,
             InsertDateTime = ConverterHelper.GetDateTime(),

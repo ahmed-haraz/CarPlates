@@ -50,7 +50,8 @@ public class VehiclesController(IVehicleService vehicleService, IUserContext use
     [HttpPost]
     public async Task<ActionResult<VehicleDto>> Create([FromBody] VehicleCreateDto dto)
     {
-        if (dto.BranchID <= 0)
+        var branchId = dto.BranchID > 0 ? dto.BranchID : _userContext.BranchId;
+        if (branchId <= 0)
         {
             return BadRequest(new { Message = "BranchID is required" });
         }
@@ -60,14 +61,14 @@ public class VehiclesController(IVehicleService vehicleService, IUserContext use
             return Conflict(new { Message = "Vehicle with this plate number already exists" });
         }
 
-        var vehicle = await _vehicleService.CreateAsync(dto);
+        var vehicle = await _vehicleService.CreateAsync(dto with { BranchID = branchId }, _userContext.UserId);
         return CreatedAtAction(nameof(GetById), new { id = vehicle.Id }, vehicle);
     }
 
     [HttpPut("{id:int}")]
     public async Task<ActionResult<VehicleDto>> Update(int id, [FromBody] VehicleUpdateDto dto)
     {
-        var vehicle = await _vehicleService.UpdateAsync(id, dto);
+        var vehicle = await _vehicleService.UpdateAsync(id, dto, _userContext.UserId);
         if (vehicle == null) return NotFound();
         return Ok(vehicle);
     }
@@ -75,7 +76,7 @@ public class VehiclesController(IVehicleService vehicleService, IUserContext use
     [HttpDelete("{id:int}")]
     public async Task<ActionResult> Delete(int id)
     {
-        var result = await _vehicleService.DeleteAsync(id);
+        var result = await _vehicleService.DeleteAsync(id, _userContext.UserId);
         if (!result) return NotFound();
         return NoContent();
     }

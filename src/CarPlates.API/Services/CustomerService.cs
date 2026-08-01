@@ -43,7 +43,7 @@ public class CustomerService(ApplicationDbContext context) : ICustomerService
         return customer == null ? null : MapToDto(customer);
     }
 
-    public async Task<CustomerDto> UpdateAsync(int id, UpdateCustomerRequestDto request)
+    public async Task<CustomerDto> UpdateAsync(int id, UpdateCustomerRequestDto request, long? userId = null)
     {
         var customer = await _context.WhCustomers.FindAsync(id)
             ?? throw new KeyNotFoundException($"Customer with ID {id} not found.");
@@ -54,21 +54,23 @@ public class CustomerService(ApplicationDbContext context) : ICustomerService
         customer.Phone1 = request.Phone1;
         customer.email = request.Email;
         customer.Address = request.Address;
-        customer.UpdateDateTime = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+        customer.UpdateUserID = userId;
+        customer.UpdateDateTime = ConverterHelper.GetDateTime();
 
         await _context.SaveChangesAsync();
 
         return MapToDto(customer);
     }
 
-    public async Task DeleteAsync(int id)
+    public async Task DeleteAsync(int id, long? userId = null)
     {
         var customer = await _context.WhCustomers.FindAsync(id);
         if (customer != null)
         {
             customer.Inactive = true;
             customer.Status = 0;
-            customer.UpdateDateTime = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+            customer.UpdateUserID = userId;
+            customer.UpdateDateTime = ConverterHelper.GetDateTime();
             await _context.SaveChangesAsync();
         }
     }
