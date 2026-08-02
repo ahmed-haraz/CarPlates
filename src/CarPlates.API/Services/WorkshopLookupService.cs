@@ -11,8 +11,8 @@ namespace CarPlates.API.Services;
 public class WorkshopLookupService(ApplicationDbContext context, IConfiguration configuration) : IWorkshopLookupService
 {
     private readonly ApplicationDbContext _context = context;
-    private readonly string _connectionString = configuration.GetConnectionString("DefaultConnection")
-            ?? throw new InvalidOperationException("DefaultConnection string is not configured.");
+    private readonly string _connectionString = configuration.GetConnectionString("HexaConnection")
+            ?? throw new InvalidOperationException("HexaConnection string is not configured.");
 
     public async Task<PagedResult<TechnicianDto>> GetTechniciansAsync(
         string? search, int page, int pageSize, CancellationToken cancellationToken = default)

@@ -16,8 +16,8 @@ public class LovService : ILovService
     public LovService(ApplicationDbContext context, IConfiguration configuration)
     {
         _context = context;
-        _connectionString = configuration.GetConnectionString("DefaultConnection")
-            ?? throw new InvalidOperationException("DefaultConnection string is not configured.");
+        _connectionString = configuration.GetConnectionString("HexaConnection")
+            ?? throw new InvalidOperationException("HexaConnection string is not configured.");
     }
 
     public async Task<List<Dictionary<string, object?>>> GetLovItemsAsync(int lovId, string? lang = "ar", string? whereClause = null)

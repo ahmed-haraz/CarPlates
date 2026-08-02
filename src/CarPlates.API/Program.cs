@@ -11,6 +11,18 @@ using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
+foreach (var entry in builder.Configuration.AsEnumerable()
+             .Where(e => e.Value?.StartsWith("${") == true && e.Value.EndsWith("}"))
+             .ToList())
+{
+    var envVarName = entry.Value!.Substring(2, entry.Value.Length - 3);
+    var envValue = Environment.GetEnvironmentVariable(envVarName);
+    if (envValue != null)
+    {
+        builder.Configuration[entry.Key] = envValue;
+    }
+}
+
 Log.Logger = new LoggerConfiguration()
     .ReadFrom.Configuration(builder.Configuration)
     .WriteTo.Console()
@@ -72,7 +84,7 @@ builder.Services.Configure<LegacyDesOptions>(
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(
-        builder.Configuration.GetConnectionString("DefaultConnection")));
+        builder.Configuration.GetConnectionString("HexaConnection")));
 
 builder.Services.AddJwtAuthentication(builder.Configuration);
 builder.Services.AddHttpContextAccessor();
