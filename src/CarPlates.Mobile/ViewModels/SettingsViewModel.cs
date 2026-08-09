@@ -1,6 +1,5 @@
 using CarPlates.Application.Authentication.Commands;
 using CarPlates.Application.Common.Interfaces;
-using CarPlates.Shared.Constants;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CarPlates.Mobile.Localization;
@@ -37,10 +36,13 @@ public partial class SettingsViewModel : BaseViewModel
     private string _apiUrl = string.Empty;
 
     [ObservableProperty]
-    private bool _isApiUrlLocked = true;
+    private string _companyCode = string.Empty;
 
     [ObservableProperty]
-    private string _apiUrlPassword = string.Empty;
+    private bool _isSettingsLocked = true;
+
+    [ObservableProperty]
+    private string _settingsPassword = string.Empty;
 
     [ObservableProperty]
     private float _ocrConfidence = 0.75f;
@@ -158,6 +160,7 @@ public partial class SettingsViewModel : BaseViewModel
             IsDarkMode = settings.Theme == AppTheme.Dark;
             SelectedLanguage = settings.Language == "ar" ? "العربية" : "English";
             ApiUrl = settings.ApiUrl;
+            CompanyCode = settings.CompanyCode;
             OcrConfidence = settings.OcrConfidence;
             AutoResume = settings.AutoResume;
             NotificationsEnabled = settings.NotificationsEnabled;
@@ -209,7 +212,7 @@ public partial class SettingsViewModel : BaseViewModel
             var language = SelectedLanguage == "العربية" ? "ar" : "en";
 
             var settings = new AppSettings(
-                theme, language, ApiUrl, OcrConfidence, AutoResume, NotificationsEnabled);
+                theme, language, ApiUrl, CompanyCode, OcrConfidence, AutoResume, NotificationsEnabled);
 
             await _settingsService.SaveSettingsAsync(settings);
 
@@ -252,9 +255,9 @@ public partial class SettingsViewModel : BaseViewModel
     }
 
     [RelayCommand]
-    private async Task UnlockApiUrlAsync()
+    private async Task UnlockSettingsAsync()
     {
-        if (string.IsNullOrWhiteSpace(ApiUrlPassword))
+        if (string.IsNullOrWhiteSpace(SettingsPassword))
         {
             await Navigation.DisplayAlertAsync(AppResources.Error, "Please enter the settings password");
             return;
@@ -267,7 +270,7 @@ public partial class SettingsViewModel : BaseViewModel
             var apiBase = baseUrl?.Replace("/api/v1", "") ?? "https://online.arkancloud.com:7072";
 
             var response = await client.PostAsJsonAsync("settings/verify-password",
-                new { companyCode = AuthConstants.DefaultCompanyCode, password = ApiUrlPassword });
+                new { companyCode = CompanyCode, password = SettingsPassword });
 
             if (!response.IsSuccessStatusCode)
             {
@@ -278,8 +281,8 @@ public partial class SettingsViewModel : BaseViewModel
             var result = await response.Content.ReadFromJsonAsync<VerifyResult>();
             if (result?.IsValid == true)
             {
-                IsApiUrlLocked = false;
-                ApiUrlPassword = string.Empty;
+                IsSettingsLocked = false;
+                SettingsPassword = string.Empty;
             }
             else
             {
@@ -289,10 +292,10 @@ public partial class SettingsViewModel : BaseViewModel
     }
 
     [RelayCommand]
-    private void LockApiUrl()
+    private void LockSettings()
     {
-        IsApiUrlLocked = true;
-        ApiUrlPassword = string.Empty;
+        IsSettingsLocked = true;
+        SettingsPassword = string.Empty;
     }
 
     [RelayCommand]

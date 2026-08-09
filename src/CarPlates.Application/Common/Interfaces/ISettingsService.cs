@@ -12,6 +12,8 @@ public interface ISettingsService
     Task SetLanguageAsync(string language);
     Task<string> GetApiUrlAsync();
     Task SetApiUrlAsync(string url);
+    Task<string> GetCompanyCodeAsync();
+    Task SetCompanyCodeAsync(string companyCode);
     Task<float> GetOcrConfidenceAsync();
     Task SetOcrConfidenceAsync(float confidence);
     Task<bool> GetAutoResumeAsync();
@@ -24,6 +26,7 @@ public record AppSettings(
     AppTheme Theme,
     string Language,
     string ApiUrl,
+    string CompanyCode,
     float OcrConfidence,
     bool AutoResume,
     bool NotificationsEnabled);

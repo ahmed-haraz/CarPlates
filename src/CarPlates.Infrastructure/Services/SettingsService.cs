@@ -14,6 +14,7 @@ public class SettingsService(IApiUrlProvider apiUrlProvider) : ISettingsService
             await GetThemeAsync(),
             await GetLanguageAsync(),
             await GetApiUrlAsync(),
+            await GetCompanyCodeAsync(),
             await GetOcrConfidenceAsync(),
             await GetAutoResumeAsync(),
             await GetNotificationsEnabledAsync());
@@ -24,6 +25,7 @@ public class SettingsService(IApiUrlProvider apiUrlProvider) : ISettingsService
         await SetThemeAsync(settings.Theme);
         await SetLanguageAsync(settings.Language);
         await SetApiUrlAsync(settings.ApiUrl);
+        await SetCompanyCodeAsync(settings.CompanyCode);
         await SetOcrConfidenceAsync(settings.OcrConfidence);
         await SetAutoResumeAsync(settings.AutoResume);
         await SetNotificationsEnabledAsync(settings.NotificationsEnabled);
@@ -61,6 +63,17 @@ public class SettingsService(IApiUrlProvider apiUrlProvider) : ISettingsService
     {
         Preferences.Set("api_url", url);
         _apiUrlProvider.SetApiUrl(url);
+        return Task.CompletedTask;
+    }
+
+    public Task<string> GetCompanyCodeAsync()
+    {
+        return Task.FromResult(Preferences.Get(CompanyConstants.CompanyCodePreference, AuthConstants.DefaultCompanyCode));
+    }
+
+    public Task SetCompanyCodeAsync(string companyCode)
+    {
+        Preferences.Set(CompanyConstants.CompanyCodePreference, companyCode);
         return Task.CompletedTask;
     }
 

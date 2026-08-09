@@ -11,11 +11,15 @@ public interface IUserContext
     int CarId { get; }
     int CashboxId { get; }
     int UserType { get; }
+    string? CompanyCode { get; }
 }
 
 public class UserContext(IHttpContextAccessor httpContextAccessor) : IUserContext
 {
     public string? UserId => _httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+    public string? CompanyCode =>
+        _httpContextAccessor.HttpContext?.User.FindFirstValue("companyCode");
 
     public int BranchId => int.TryParse(
         _httpContextAccessor.HttpContext?.User.FindFirstValue("branchId"), out var id) ? id : 0;

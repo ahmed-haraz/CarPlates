@@ -8,11 +8,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CarPlates.API.Services;
 
-public class WorkshopLookupService(ApplicationDbContext context, IConfiguration configuration) : IWorkshopLookupService
+public class WorkshopLookupService(ApplicationDbContext context, ICompanyConnectionProvider companyConnection) : IWorkshopLookupService
 {
     private readonly ApplicationDbContext _context = context;
-    private readonly string _connectionString = configuration.GetConnectionString("HexaConnection")
-            ?? throw new InvalidOperationException("HexaConnection string is not configured.");
+    private readonly ICompanyConnectionProvider _companyConnection = companyConnection;
 
     public async Task<PagedResult<TechnicianDto>> GetTechniciansAsync(
         string? search, int page, int pageSize, CancellationToken cancellationToken = default)
@@ -73,7 +72,7 @@ public class WorkshopLookupService(ApplicationDbContext context, IConfiguration 
 
     public async Task<TechnicianDto> RegisterTechnicianAsync(RegisterTechnicianRequestDto request, long? userId = null)
     {
-        await using var connection = new SqlConnection(_connectionString);
+        await using var connection = new SqlConnection(_companyConnection.ConnectionString);
         await connection.OpenAsync();
 
         var code = await ResolveCodeAsync(connection, "wh_CarsTechnician", request.Code);
@@ -97,7 +96,7 @@ VALUES (@Code, @NameAr, @NameEn, 1, @InsertUserId, @Now, @Now)", connection);
 
     public async Task<TechnicianDto> UpdateTechnicianAsync(int id, RegisterTechnicianRequestDto request, long? userId = null)
     {
-        await using var connection = new SqlConnection(_connectionString);
+        await using var connection = new SqlConnection(_companyConnection.ConnectionString);
         await connection.OpenAsync();
 
         var code = await ResolveCodeAsync(connection, "wh_CarsTechnician", request.Code);
@@ -122,7 +121,7 @@ WHERE ID = @Id", connection);
 
     public async Task DeleteTechnicianAsync(int id, long? userId = null)
     {
-        await using var connection = new SqlConnection(_connectionString);
+        await using var connection = new SqlConnection(_companyConnection.ConnectionString);
         await connection.OpenAsync();
 
         await using var cmd = new SqlCommand(@"
@@ -138,7 +137,7 @@ WHERE ID = @Id", connection);
 
     public async Task<WorkLocationDto> RegisterWorkLocationAsync(RegisterWorkLocationRequestDto request, long? userId = null)
     {
-        await using var connection = new SqlConnection(_connectionString);
+        await using var connection = new SqlConnection(_companyConnection.ConnectionString);
         await connection.OpenAsync();
 
         var code = await ResolveCodeAsync(connection, "wh_WorkLocations", request.Code);
@@ -162,7 +161,7 @@ VALUES (@Code, @NameAr, @NameEn, 1, @InsertUserId, @Now, @Now)", connection);
 
     public async Task<WorkLocationDto> UpdateWorkLocationAsync(int id, RegisterWorkLocationRequestDto request, long? userId = null)
     {
-        await using var connection = new SqlConnection(_connectionString);
+        await using var connection = new SqlConnection(_companyConnection.ConnectionString);
         await connection.OpenAsync();
 
         var code = await ResolveCodeAsync(connection, "wh_WorkLocations", request.Code);
@@ -187,7 +186,7 @@ WHERE ID = @Id", connection);
 
     public async Task DeleteWorkLocationAsync(int id, long? userId = null)
     {
-        await using var connection = new SqlConnection(_connectionString);
+        await using var connection = new SqlConnection(_companyConnection.ConnectionString);
         await connection.OpenAsync();
 
         await using var cmd = new SqlCommand(@"

@@ -1,7 +1,6 @@
 using CarPlates.Application.Authentication.Commands;
 using CarPlates.Application.Common.DTOs;
 using CarPlates.Application.Common.Interfaces;
-using CarPlates.Shared.Constants;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MediatR;
@@ -15,6 +14,7 @@ public partial class LoginViewModel : BaseViewModel
 {
     private readonly IMediator _mediator;
     private readonly IAuthenticationService _authService;
+    private readonly ISettingsService _settingsService;
 
     [ObservableProperty]
     private string _username = string.Empty;
@@ -25,10 +25,11 @@ public partial class LoginViewModel : BaseViewModel
     [ObservableProperty]
     private bool _isPasswordVisible;
 
-    public LoginViewModel(IMediator mediator, IAuthenticationService authService, INavigationService navigation) : base(navigation)
+    public LoginViewModel(IMediator mediator, IAuthenticationService authService, ISettingsService settingsService, INavigationService navigation) : base(navigation)
     {
         _mediator = mediator;
         _authService = authService;
+        _settingsService = settingsService;
         Title = AppResources.SignIn;
     }
 
@@ -56,7 +57,8 @@ public partial class LoginViewModel : BaseViewModel
             var model = DeviceInfo.Model;
             var deviceName = DeviceInfo.Name;
 
-            var deviceInfo = new DeviceInfoDto(AuthConstants.DefaultCompanyCode, deviceId, appVersion, manufacturer, model, deviceName);
+            var companyCode = await _settingsService.GetCompanyCodeAsync();
+            var deviceInfo = new DeviceInfoDto(companyCode, deviceId, appVersion, manufacturer, model, deviceName);
 
             var command = new LoginCommand(Username, Password, deviceInfo);
             var result = await _mediator.Send(command);

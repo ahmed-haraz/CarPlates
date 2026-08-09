@@ -182,6 +182,8 @@ public static class AppResources
     public static string LiveControlCenter => LocalizationResourceManager.Instance["LiveControlCenter"];
     public static string KSA => LocalizationResourceManager.Instance["KSA"];
     public static string ApiUrlPlaceholder => LocalizationResourceManager.Instance["ApiUrlPlaceholder"];
+    public static string CompanyCode => LocalizationResourceManager.Instance["CompanyCode"];
+    public static string CompanyCodePlaceholder => LocalizationResourceManager.Instance["CompanyCodePlaceholder"];
     public static string EnterSettingsPassword => LocalizationResourceManager.Instance["EnterSettingsPassword"];
     public static string UnlockApiUrl => LocalizationResourceManager.Instance["UnlockApiUrl"];
     public static string LockApiUrl => LocalizationResourceManager.Instance["LockApiUrl"];

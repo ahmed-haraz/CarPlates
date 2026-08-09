@@ -82,9 +82,16 @@ builder.Services.AddSwaggerGen(c =>
 builder.Services.Configure<LegacyDesOptions>(
     builder.Configuration.GetSection("LegacyDes"));
 
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(
-        builder.Configuration.GetConnectionString("HexaConnection")));
+// The SQL connection string is resolved per request from the company code sent
+// by the calling app (X-Company-Code header); it is NOT read from the environment.
+// Each request scope builds its own DbContext options so different companies hit
+// different databases (see CompanyConnectionProvider).
+builder.Services.AddScoped<ICompanyConnectionProvider, CompanyConnectionProvider>();
+builder.Services.AddDbContext<ApplicationDbContext>((sp, options) =>
+{
+    var connectionProvider = sp.GetRequiredService<ICompanyConnectionProvider>();
+    options.UseSqlServer(connectionProvider.ConnectionString);
+}, ServiceLifetime.Scoped, ServiceLifetime.Scoped);
 
 builder.Services.AddJwtAuthentication(builder.Configuration);
 builder.Services.AddHttpContextAccessor();

@@ -11,13 +11,12 @@ namespace CarPlates.API.Services;
 public class LovService : ILovService
 {
     private readonly ApplicationDbContext _context;
-    private readonly string _connectionString;
+    private readonly ICompanyConnectionProvider _companyConnection;
 
-    public LovService(ApplicationDbContext context, IConfiguration configuration)
+    public LovService(ApplicationDbContext context, ICompanyConnectionProvider companyConnection)
     {
         _context = context;
-        _connectionString = configuration.GetConnectionString("HexaConnection")
-            ?? throw new InvalidOperationException("HexaConnection string is not configured.");
+        _companyConnection = companyConnection;
     }
 
     public async Task<List<Dictionary<string, object?>>> GetLovItemsAsync(int lovId, string? lang = "ar", string? whereClause = null)
@@ -119,7 +118,7 @@ public class LovService : ILovService
 
         var result = new List<Dictionary<string, object?>>();
 
-        await using var connection = new SqlConnection(_connectionString);
+        await using var connection = new SqlConnection(_companyConnection.ConnectionString);
         await using var command = new SqlCommand(sqlBuilder.ToString(), connection);
         command.CommandType = CommandType.Text;
 

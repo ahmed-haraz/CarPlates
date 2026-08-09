@@ -45,6 +45,16 @@ public static class AuthConstants
     public const string DefaultCompanyCode = "99999999999999";
 }
 
+public static class CompanyConstants
+{
+    /// <summary>Request header the mobile app sends on every API call so the API can
+    /// pick the right database for that company.</summary>
+    public const string CompanyCodeHeader = "X-Company-Code";
+
+    /// <summary>Preferences key where the app stores the configured company code.</summary>
+    public const string CompanyCodePreference = "company_code";
+}
+
 public static class SignalRConstants
 {
     public const string HubPath = "/notify";

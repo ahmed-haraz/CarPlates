@@ -46,17 +46,20 @@ public static class ServiceRegistration
         // no app restart needed to point at a different API.
         services.AddSingleton<IApiUrlProvider>(_ => new ApiUrlProvider(apiUrl));
 
-        // HttpClient with Auth handler
+        // HttpClient with Auth handler + company code header
         services.AddHttpClient("CarPlatesApi", (sp, client) =>
         {
             client.BaseAddress = new Uri(sp.GetRequiredService<IApiUrlProvider>().CurrentApiUrl);
             client.Timeout = TimeSpan.FromSeconds(ApiConstants.TimeoutSeconds);
             client.DefaultRequestHeaders.Add("Accept", "application/json");
         })
-        .AddHttpMessageHandler<AuthDelegatingHandler>();
+        .AddHttpMessageHandler<AuthDelegatingHandler>()
+        .AddHttpMessageHandler<CompanyCodeDelegatingHandler>();
 
         services.AddScoped<AuthDelegatingHandler>(sp =>
             new AuthDelegatingHandler(sp.GetRequiredService<ITokenStorage>(), sp.GetRequiredService<IApiUrlProvider>()));
+
+        services.AddTransient<CompanyCodeDelegatingHandler>();
 
         // Logging - use a simple path that works on all platforms
         var logDir = Path.Combine(

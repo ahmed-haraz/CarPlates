@@ -15,21 +15,25 @@ public class AuthService(
     ApplicationDbContext context,
     IJwtService jwtService,
     IOptions<LegacyDesOptions> desOptions,
-    IDeviceValidationService deviceValidation) : IAuthService
+    IDeviceValidationService deviceValidation,
+    ICompanyConnectionProvider companyConnection) : IAuthService
 {
 
     private readonly ApplicationDbContext _context = context;
     private readonly IJwtService _jwtService = jwtService;
     private readonly LegacyDesOptions _desOptions = desOptions.Value;
     private readonly IDeviceValidationService _deviceValidation = deviceValidation;
+    private readonly ICompanyConnectionProvider _companyConnection = companyConnection;
 
     public async Task<LoginServiceResult?> LoginAsync(LoginRequestDto request)
     {
+        var companyCode = request.Device?.CompanyCode ?? _companyConnection.CompanyCode;
+
         // Device validation before authentication
         if (request.Device != null)
         {
             var deviceResult = await _deviceValidation.ValidateDeviceAsync(
-                request.Device.CompanyCode ?? AuthConstants.DefaultCompanyCode,
+                companyCode,
                 request.Device.DeviceId ?? "",
                 request.Device.AppVersion ?? "",
                 request.Device.Manufacturer ?? "",
@@ -67,7 +71,8 @@ public class AuthService(
             StoreId = user.StoreID ?? 0,
             CarId = user.CarID ?? 0,
             CashboxId = user.CashBoxID ?? 0,
-            UserType = user.UserType ?? 0
+            UserType = user.UserType ?? 0,
+            CompanyCode = _companyConnection.CompanyCode
         };
 
 
@@ -144,7 +149,8 @@ public class AuthService(
             StoreId = user.StoreID ?? 0,
             CarId = user.CarID ?? 0,
             CashboxId = user.CashBoxID ?? 0,
-            UserType = user.UserType ?? 0
+            UserType = user.UserType ?? 0,
+            CompanyCode = _companyConnection.CompanyCode
         };
 
 

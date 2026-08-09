@@ -40,6 +40,7 @@ public class JwtService(IConfiguration configuration) : IJwtService
                 new("carId", user.CarId.ToString()),
                 new("cashboxId", user.CashboxId.ToString()),
                 new("usertype", user.UserType.ToString()),
+                new("companyCode", user.CompanyCode ?? ""),
                 new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
             };
 

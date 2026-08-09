@@ -810,6 +810,12 @@
   <data name="LockApiUrl" xml:space="preserve">
     <value>Lock API URL</value>
   </data>
+  <data name="CompanyCode" xml:space="preserve">
+    <value>Company Code</value>
+  </data>
+  <data name="CompanyCodePlaceholder" xml:space="preserve">
+    <value>Enter company code</value>
+  </data>
   <data name="PaymentGateway" xml:space="preserve">
     <value>Payment Gateway</value>
   </data>

@@ -14,4 +14,5 @@ public class ApplicationUser : IdentityUser
     public int CarId { get; set; }
     public int CashboxId { get; set; }
     public int UserType { get; set; }
+    public string? CompanyCode { get; set; }
 }
