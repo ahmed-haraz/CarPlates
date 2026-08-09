@@ -816,6 +816,9 @@
   <data name="CompanyCodePlaceholder" xml:space="preserve">
     <value>Enter company code</value>
   </data>
+  <data name="PleaseEnterCompanyCode" xml:space="preserve">
+    <value>Please enter your company code</value>
+  </data>
   <data name="PaymentGateway" xml:space="preserve">
     <value>Payment Gateway</value>
   </data>

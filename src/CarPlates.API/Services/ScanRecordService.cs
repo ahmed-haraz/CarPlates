@@ -40,14 +40,29 @@ public class ScanRecordService(ApplicationDbContext context, ICustomerCarService
         if (userId.HasValue && userId.Value > 0)
             scanQuery = scanQuery.Where(s => s.InsertUserID == userId);
 
-        var matchingIds = await scanQuery
-            .OrderByDescending(s => s.ScanTime)
-            .Skip((page - 1) * pageSize)
-            .Take(pageSize)
-            .Select(s => s.Id)
-            .ToListAsync();
+        var ordered = scanQuery.OrderByDescending(s => s.ScanTime);
 
-        var totalCount = await scanQuery.CountAsync();
+        IReadOnlyList<long> matchingIds;
+        int totalCount;
+
+        if (pageSize == PaginationExtensions.AllPageSize)
+        {
+            // pageSize = 0 => fetch every matching row in one page.
+            matchingIds = await ordered
+                .Select(s => s.Id)
+                .ToListAsync();
+            totalCount = matchingIds.Count;
+        }
+        else
+        {
+            matchingIds = await ordered
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .Select(s => s.Id)
+                .ToListAsync();
+
+            totalCount = await scanQuery.CountAsync();
+        }
 
         var records = await _context.ScanRecords
             .AsNoTracking()
@@ -56,7 +71,7 @@ public class ScanRecordService(ApplicationDbContext context, ICustomerCarService
             .ToListAsync();
 
         var items = records.Select(MapToDto).ToList();
-        var totalPages = (int)Math.Ceiling((double)totalCount / pageSize);
+        var totalPages = totalCount == 0 ? 0 : (pageSize == PaginationExtensions.AllPageSize ? 1 : (int)Math.Ceiling((double)totalCount / pageSize));
 
         return new PagedResult<ScanRecordDto>(items, totalCount, page, pageSize, totalPages);
     }

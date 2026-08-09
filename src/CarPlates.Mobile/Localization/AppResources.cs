@@ -184,6 +184,7 @@ public static class AppResources
     public static string ApiUrlPlaceholder => LocalizationResourceManager.Instance["ApiUrlPlaceholder"];
     public static string CompanyCode => LocalizationResourceManager.Instance["CompanyCode"];
     public static string CompanyCodePlaceholder => LocalizationResourceManager.Instance["CompanyCodePlaceholder"];
+    public static string PleaseEnterCompanyCode => LocalizationResourceManager.Instance["PleaseEnterCompanyCode"];
     public static string EnterSettingsPassword => LocalizationResourceManager.Instance["EnterSettingsPassword"];
     public static string UnlockApiUrl => LocalizationResourceManager.Instance["UnlockApiUrl"];
     public static string LockApiUrl => LocalizationResourceManager.Instance["LockApiUrl"];

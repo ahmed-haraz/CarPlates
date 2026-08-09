@@ -816,6 +816,9 @@
   <data name="CompanyCodePlaceholder" xml:space="preserve">
     <value>أدخل رمز الشركة</value>
   </data>
+  <data name="PleaseEnterCompanyCode" xml:space="preserve">
+    <value>يرجى إدخال رمز الشركة</value>
+  </data>
   <data name="PaymentGateway" xml:space="preserve">
     <value>بوابة الدفع</value>
   </data>

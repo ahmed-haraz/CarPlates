@@ -17,6 +17,9 @@ public partial class LoginViewModel : BaseViewModel
     private readonly ISettingsService _settingsService;
 
     [ObservableProperty]
+    private string _companyCode = string.Empty;
+
+    [ObservableProperty]
     private string _username = string.Empty;
 
     [ObservableProperty]
@@ -33,9 +36,25 @@ public partial class LoginViewModel : BaseViewModel
         Title = AppResources.SignIn;
     }
 
+    /// <summary>Prefills the saved company code so the user doesn't have to retype it.</summary>
+    public async Task InitializeAsync()
+    {
+        if (string.IsNullOrWhiteSpace(CompanyCode))
+        {
+            CompanyCode = await _settingsService.GetCompanyCodeAsync();
+        }
+    }
+
     [RelayCommand]
     private async Task LoginAsync()
     {
+        if (string.IsNullOrWhiteSpace(CompanyCode))
+        {
+            ErrorMessage = AppResources.PleaseEnterCompanyCode;
+            HasError = true;
+            return;
+        }
+
         if (string.IsNullOrWhiteSpace(Username) || string.IsNullOrWhiteSpace(Password))
         {
             ErrorMessage = AppResources.PleaseEnterCredentials;
@@ -45,6 +64,9 @@ public partial class LoginViewModel : BaseViewModel
 
         await ExecuteAsync(async () =>
         {
+            // Remember the company code so it's prefilled next time.
+            await _settingsService.SetCompanyCodeAsync(CompanyCode);
+
             var deviceId = await SecureStorage.GetAsync("device_id");
             if (string.IsNullOrWhiteSpace(deviceId))
             {
@@ -57,8 +79,7 @@ public partial class LoginViewModel : BaseViewModel
             var model = DeviceInfo.Model;
             var deviceName = DeviceInfo.Name;
 
-            var companyCode = await _settingsService.GetCompanyCodeAsync();
-            var deviceInfo = new DeviceInfoDto(companyCode, deviceId, appVersion, manufacturer, model, deviceName);
+            var deviceInfo = new DeviceInfoDto(CompanyCode, deviceId, appVersion, manufacturer, model, deviceName);
 
             var command = new LoginCommand(Username, Password, deviceInfo);
             var result = await _mediator.Send(command);
