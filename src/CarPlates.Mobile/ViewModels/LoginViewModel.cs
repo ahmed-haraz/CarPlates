@@ -15,6 +15,7 @@ public partial class LoginViewModel : BaseViewModel
     private readonly IMediator _mediator;
     private readonly IAuthenticationService _authService;
     private readonly ISettingsService _settingsService;
+    private readonly ICompanyApiService _companyApiService;
 
     [ObservableProperty]
     private string _companyCode = string.Empty;
@@ -28,20 +29,71 @@ public partial class LoginViewModel : BaseViewModel
     [ObservableProperty]
     private bool _isPasswordVisible;
 
-    public LoginViewModel(IMediator mediator, IAuthenticationService authService, ISettingsService settingsService, INavigationService navigation) : base(navigation)
+    [ObservableProperty]
+    private string? _logoUrl;
+
+    private CancellationTokenSource? _logoDebounce;
+    private string? _lastFetchedCompanyCode;
+    private string? _lastFetchedCompanyName;
+    private string? _lastFetchedLogoUrl;
+
+    public bool HasLogo => !string.IsNullOrWhiteSpace(LogoUrl);
+
+    partial void OnLogoUrlChanged(string? value) => OnPropertyChanged(nameof(HasLogo));
+
+    public LoginViewModel(IMediator mediator, IAuthenticationService authService, ISettingsService settingsService, ICompanyApiService companyApiService, INavigationService navigation) : base(navigation)
     {
         _mediator = mediator;
         _authService = authService;
         _settingsService = settingsService;
+        _companyApiService = companyApiService;
         Title = AppResources.SignIn;
     }
 
     /// <summary>Prefills the saved company code so the user doesn't have to retype it.</summary>
     public async Task InitializeAsync()
     {
-        if (string.IsNullOrWhiteSpace(CompanyCode))
+        CompanyCode = await _settingsService.GetCompanyCodeAsync();
+    }
+
+    /// <summary>While the user types a company code, fetch that company's logo (debounced).</summary>
+    partial void OnCompanyCodeChanged(string value)
+    {
+        _logoDebounce?.Cancel();
+        var cts = _logoDebounce = new CancellationTokenSource();
+        _ = RefreshLogoAsync(value, cts.Token);
+    }
+
+    private async Task RefreshLogoAsync(string companyCode, CancellationToken token)
+    {
+        try
         {
-            CompanyCode = await _settingsService.GetCompanyCodeAsync();
+            await Task.Delay(600, token);
+            if (token.IsCancellationRequested)
+                return;
+
+            if (string.IsNullOrWhiteSpace(companyCode))
+            {
+                LogoUrl = null;
+                return;
+            }
+
+            var result = await _companyApiService.GetCompanyInfoAsync(companyCode, token);
+            if (token.IsCancellationRequested)
+                return;
+
+            _lastFetchedCompanyCode = companyCode;
+            _lastFetchedCompanyName = result?.CompanyName;
+            _lastFetchedLogoUrl = string.IsNullOrWhiteSpace(result?.LogoUrl) ? null : result.LogoUrl;
+            LogoUrl = _lastFetchedLogoUrl;
+        }
+        catch (OperationCanceledException)
+        {
+            // Debounced: a newer company code cancelled this one.
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"[Login] Logo fetch failed: {ex.Message}");
         }
     }
 
@@ -66,6 +118,13 @@ public partial class LoginViewModel : BaseViewModel
         {
             // Remember the company code so it's prefilled next time.
             await _settingsService.SetCompanyCodeAsync(CompanyCode);
+
+            // Remember the logo/name fetched for this company so the dashboard can show it.
+            if (_lastFetchedCompanyCode == CompanyCode)
+            {
+                await _settingsService.SetCompanyNameAsync(_lastFetchedCompanyName ?? string.Empty);
+                await _settingsService.SetCompanyLogoUrlAsync(_lastFetchedLogoUrl ?? string.Empty);
+            }
 
             var deviceId = await SecureStorage.GetAsync("device_id");
             if (string.IsNullOrWhiteSpace(deviceId))

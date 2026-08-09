@@ -14,6 +14,10 @@ public interface ISettingsService
     Task SetApiUrlAsync(string url);
     Task<string> GetCompanyCodeAsync();
     Task SetCompanyCodeAsync(string companyCode);
+    Task<string> GetCompanyNameAsync();
+    Task SetCompanyNameAsync(string companyName);
+    Task<string> GetCompanyLogoUrlAsync();
+    Task SetCompanyLogoUrlAsync(string logoUrl);
     Task<float> GetOcrConfidenceAsync();
     Task SetOcrConfidenceAsync(float confidence);
     Task<bool> GetAutoResumeAsync();
@@ -27,6 +31,8 @@ public record AppSettings(
     string Language,
     string ApiUrl,
     string CompanyCode,
+    string CompanyName,
+    string CompanyLogoUrl,
     float OcrConfidence,
     bool AutoResume,
     bool NotificationsEnabled);

@@ -35,6 +35,7 @@ public static class ServiceRegistration
         services.AddScoped<IPlateRecognitionService, PlateRecognitionService>();
         services.AddScoped<ICameraService, CameraService>();
         services.AddScoped<ISettingsService, SettingsService>();
+        services.AddScoped<ICompanyApiService, CompanyApiService>();
         services.AddScoped<ITokenStorage, TokenStorage>();
         services.AddScoped<ILoggingService, LoggingService>();
         services.AddScoped<IApiConnectivityService, ApiConnectivityService>();

@@ -21,10 +21,20 @@
                             StrokeShape="RoundRectangle 24"
                             Padding="0"
                             HorizontalOptions="Start">
-                        <Label Text="🚘"
-                               FontSize="40"
-                               HorizontalOptions="Center"
-                               VerticalOptions="Center" />
+                        <Grid>
+                            <Label Text="🚘"
+                                   FontSize="40"
+                                   HorizontalOptions="Center"
+                                   VerticalOptions="Center"
+                                   IsVisible="{Binding HasLogo, Converter={StaticResource InvertedBoolConverter}}" />
+                            <Image Source="{Binding LogoUrl}"
+                                   Aspect="AspectFit"
+                                   WidthRequest="56"
+                                   HeightRequest="56"
+                                   HorizontalOptions="Center"
+                                   VerticalOptions="Center"
+                                   IsVisible="{Binding HasLogo}" />
+                        </Grid>
                     </Border>
                     <Label Text="{loc:Translate Key=SmartPlateAccess}"
                            Style="{StaticResource Eyebrow}"

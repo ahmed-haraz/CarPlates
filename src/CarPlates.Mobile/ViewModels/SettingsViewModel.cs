@@ -211,8 +211,11 @@ public partial class SettingsViewModel : BaseViewModel
             var theme = IsDarkMode ? AppTheme.Dark : AppTheme.Light;
             var language = SelectedLanguage == "العربية" ? "ar" : "en";
 
+            // Preserve the company name/logo written at login; the settings page does not edit them.
+            var current = await _settingsService.GetSettingsAsync();
+
             var settings = new AppSettings(
-                theme, language, ApiUrl, CompanyCode, OcrConfidence, AutoResume, NotificationsEnabled);
+                theme, language, ApiUrl, CompanyCode, current.CompanyName, current.CompanyLogoUrl, OcrConfidence, AutoResume, NotificationsEnabled);
 
             await _settingsService.SaveSettingsAsync(settings);
 

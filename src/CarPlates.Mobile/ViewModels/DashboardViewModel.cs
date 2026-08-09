@@ -14,6 +14,7 @@ public partial class DashboardViewModel : BaseViewModel
     private readonly IMediator _mediator;
     private readonly IAuthenticationService _authService;
     private readonly IBillApiService _billApiService;
+    private readonly ISettingsService _settingsService;
 
     [ObservableProperty]
     private DashboardStatisticsDto _statistics = new(0, 0, 0, 0, 0, 0,0,0);
@@ -33,11 +34,19 @@ public partial class DashboardViewModel : BaseViewModel
     [ObservableProperty]
     private double _todaySalesTotal;
 
-    public DashboardViewModel(IMediator mediator, IAuthenticationService authService, INavigationService navigation, IBillApiService billApiService) : base(navigation)
+    [ObservableProperty]
+    private string? _logoUrl;
+
+    public bool HasLogo => !string.IsNullOrWhiteSpace(LogoUrl);
+
+    partial void OnLogoUrlChanged(string? value) => OnPropertyChanged(nameof(HasLogo));
+
+    public DashboardViewModel(IMediator mediator, IAuthenticationService authService, INavigationService navigation, IBillApiService billApiService, ISettingsService settingsService) : base(navigation)
     {
         _mediator = mediator;
         _authService = authService;
         _billApiService = billApiService;
+        _settingsService = settingsService;
         Title = AppResources.Dashboard;
     }
 
@@ -48,6 +57,10 @@ public partial class DashboardViewModel : BaseViewModel
         {
             await ExecuteAsync(async () =>
             {
+                // Load the company logo saved at login.
+                var logoUrl = await _settingsService.GetCompanyLogoUrlAsync();
+                LogoUrl = string.IsNullOrWhiteSpace(logoUrl) ? null : logoUrl;
+
                 // Load statistics
                 var statsQuery = new GetDashboardStatisticsQuery();
                 Statistics = await _mediator.Send(statsQuery) ?? new DashboardStatisticsDto(0, 0, 0, 0, 0, 0,0,0);

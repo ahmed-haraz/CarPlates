@@ -15,6 +15,8 @@ public class SettingsService(IApiUrlProvider apiUrlProvider) : ISettingsService
             await GetLanguageAsync(),
             await GetApiUrlAsync(),
             await GetCompanyCodeAsync(),
+            await GetCompanyNameAsync(),
+            await GetCompanyLogoUrlAsync(),
             await GetOcrConfidenceAsync(),
             await GetAutoResumeAsync(),
             await GetNotificationsEnabledAsync());
@@ -26,6 +28,8 @@ public class SettingsService(IApiUrlProvider apiUrlProvider) : ISettingsService
         await SetLanguageAsync(settings.Language);
         await SetApiUrlAsync(settings.ApiUrl);
         await SetCompanyCodeAsync(settings.CompanyCode);
+        await SetCompanyNameAsync(settings.CompanyName);
+        await SetCompanyLogoUrlAsync(settings.CompanyLogoUrl);
         await SetOcrConfidenceAsync(settings.OcrConfidence);
         await SetAutoResumeAsync(settings.AutoResume);
         await SetNotificationsEnabledAsync(settings.NotificationsEnabled);
@@ -74,6 +78,28 @@ public class SettingsService(IApiUrlProvider apiUrlProvider) : ISettingsService
     public Task SetCompanyCodeAsync(string companyCode)
     {
         Preferences.Set(CompanyConstants.CompanyCodePreference, companyCode);
+        return Task.CompletedTask;
+    }
+
+    public Task<string> GetCompanyNameAsync()
+    {
+        return Task.FromResult(Preferences.Get(CompanyConstants.CompanyNamePreference, string.Empty));
+    }
+
+    public Task SetCompanyNameAsync(string companyName)
+    {
+        Preferences.Set(CompanyConstants.CompanyNamePreference, companyName);
+        return Task.CompletedTask;
+    }
+
+    public Task<string> GetCompanyLogoUrlAsync()
+    {
+        return Task.FromResult(Preferences.Get(CompanyConstants.CompanyLogoUrlPreference, string.Empty));
+    }
+
+    public Task SetCompanyLogoUrlAsync(string logoUrl)
+    {
+        Preferences.Set(CompanyConstants.CompanyLogoUrlPreference, logoUrl);
         return Task.CompletedTask;
     }
 

@@ -53,6 +53,12 @@ public static class CompanyConstants
 
     /// <summary>Preferences key where the app stores the configured company code.</summary>
     public const string CompanyCodePreference = "company_code";
+
+    /// <summary>Preferences key where the app stores the company display name.</summary>
+    public const string CompanyNamePreference = "company_name";
+
+    /// <summary>Preferences key where the app stores the company logo URL.</summary>
+    public const string CompanyLogoUrlPreference = "company_logo_url";
 }
 
 public static class SignalRConstants
