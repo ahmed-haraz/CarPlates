@@ -24,10 +24,14 @@ public class CustomerService(ApplicationDbContext context) : ICustomerService
                 c.Name_Ar.Contains(search) ||
                 c.Name_En.Contains(search) ||
                 (c.Mobile != null && c.Mobile.Contains(searchMobile)) ||
-                (c.Phone1 != null && c.Phone1.Contains(searchMobile)));
+                (c.Phone1 != null && c.Phone1.Contains(searchMobile)) ||
+                (c.email != null && c.email.Contains(search))       ||
+                (c.Address != null && c.Address.Contains(search)) ||
+                c.Code.Contains(search)
+                );
         }
 
-        query = query.OrderBy(c => c.Name_En);
+        query = query.OrderBy(c => c.Name_En ?? c.Name_Ar ?? c.Code);
 
         var paged = await query.ToPagedResultAsync(page, pageSize, cancellationToken);
         var items = paged.Items.Select(MapToDto).ToList();

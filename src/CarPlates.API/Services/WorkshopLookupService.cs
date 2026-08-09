@@ -23,7 +23,9 @@ public class WorkshopLookupService(ApplicationDbContext context, IConfiguration 
         {
             query = query.Where(t =>
                 (t.Name_ar != null && t.Name_ar.Contains(search)) ||
-                (t.Name_en != null && t.Name_en.Contains(search)));
+                (t.Name_en != null && t.Name_en.Contains(search)) ||
+                (t.Code.ToString()   != null && t.Code.ToString()!.Contains(search))
+                );
         }
 
         query = query.OrderBy(t => t.Name_en ?? t.Name_ar);
@@ -43,10 +45,11 @@ public class WorkshopLookupService(ApplicationDbContext context, IConfiguration 
         {
             query = query.Where(w =>
                 (w.Name_ar != null && w.Name_ar.Contains(search)) ||
-                (w.Name_en != null && w.Name_en.Contains(search)));
+                (w.Name_en != null && w.Name_en.Contains(search)) ||
+                (w.Code.ToString() != null && w.Code.ToString()!.Contains(search)));
         }
 
-        query = query.OrderBy(w => w.Name_en ?? w.Name_ar);
+        query = query.OrderBy(w => w.Name_en ?? w.Name_ar?? w.Code.ToString());
 
         var paged = await query.ToPagedResultAsync(page, pageSize, cancellationToken);
         var items = paged.Items.Select(w => new WorkLocationDto(w.Id, w.Code, w.Name_ar, w.Name_en)).ToList();

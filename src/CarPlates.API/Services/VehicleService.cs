@@ -40,7 +40,19 @@ public class VehicleService(ApplicationDbContext context, ICustomerCarService cu
                 (c.PlateNumber != null && c.PlateNumber.Contains(search)) ||
                 (c.MakeName != null && c.MakeName.Contains(search)) ||
                 (c.CustomerName_En != null && c.CustomerName_En.Contains(search)) ||
-                (c.CustomerName_Ar != null && c.CustomerName_Ar.Contains(search)));
+                (c.CustomerName_Ar != null && c.CustomerName_Ar.Contains(search)) ||
+                (c.ModelName != null && c.ModelName.Contains(search)) ||
+                (c.Color != null && c.Color.Contains(search)) ||
+                (c.PlateType != null && c.PlateType.Contains(search)) ||
+                (c.VehicleStatusName_En != null && c.VehicleStatusName_En.Contains(search)) ||
+                (c.VehicleStatusName_Ar != null && c.VehicleStatusName_Ar.Contains(search)) ||
+                (c.CustomerMobile != null && c.CustomerMobile.Contains(search)) ||
+                (c.CustomerPhone1 != null && c.CustomerPhone1.Contains(search)) ||
+                (c.CustomerEmail != null && c.CustomerEmail.Contains(search)) ||
+                (c.CustomerAddress != null && c.CustomerAddress.Contains(search)) ||
+                (c.CustomerCode != null && c.CustomerCode.Contains(search)) ||
+                (c.VIN != null && c.VIN.Contains(search))
+                );
         }
 
         if (!string.IsNullOrWhiteSpace(status))
@@ -94,7 +106,7 @@ public class VehicleService(ApplicationDbContext context, ICustomerCarService cu
             PlateType: dto.PlateType);
 
         var result = await _customerCarService.RegisterAsync(scanDto, userId);
-        return MapToDto(result.Car);
+        return MapToDto(result.Car!);
     }
 
     public async Task<VehicleDto?> UpdateAsync(int id, VehicleUpdateDto dto, string? userId = null)

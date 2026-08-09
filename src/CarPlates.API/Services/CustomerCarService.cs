@@ -75,10 +75,13 @@ public class CustomerCarService(ApplicationDbContext context) : ICustomerCarServ
         if (!string.IsNullOrWhiteSpace(search))
         {
             query = query.Where(m =>
-                m.Name_ar.Contains(search) || m.Name_en.Contains(search));
+                (m.Name_ar != null && m.Name_ar.Contains(search)) ||
+                (m.Name_en != null && m.Name_en.Contains(search)) ||
+                (m.Code.ToString() != null && m.Code.ToString().Contains(search))
+                );
         }
 
-        query = query.OrderBy(m => m.Name_en ?? m.Name_ar);
+        query = query.OrderBy(m => m.Name_en ?? m.Name_ar ?? m.Code.ToString());
 
         var paged = await query.ToPagedResultAsync(page, pageSize, cancellationToken);
         var items = paged.Items.Select(m => new CarModelDto(m.ModelID, m.MakeID, m.Code, m.Name_ar, m.Name_en)).ToList();

@@ -24,10 +24,12 @@ public class CategoryService(ApplicationDbContext context) : ICategoryService
         {
             query = query.Where(c =>
                 (c.Name_AR != null && c.Name_AR.Contains(search)) ||
-                (c.Name_En != null && c.Name_En.Contains(search)));
+                (c.Name_En != null && c.Name_En.Contains(search)) ||
+                (c.Code.ToString() != null && c.Code.ToString()!.Contains(search))
+                );
         }
 
-        query = query.OrderBy(c => c.Name_En ?? c.Name_AR);
+        query = query.OrderBy(c => c.Name_En ?? c.Name_AR ?? c.Code.ToString());
 
         var paged = await query.ToPagedResultAsync(page, pageSize, cancellationToken);
         var items = paged.Items.Select(MapToDto).ToList();
