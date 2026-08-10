@@ -431,7 +431,9 @@ public class BillService(ApplicationDbContext context, IWebHostEnvironment env) 
             query = query.Where(h =>
                 (h.PlateNumber != null && EF.Functions.Like(h.PlateNumber, $"%{search}%")) ||
                 (h.ReferenceNo != null && EF.Functions.Like(h.ReferenceNo, $"%{search}%")) ||
-                (h.DocTransNo != null && EF.Functions.Like(h.DocTransNo, $"%{search}%")));
+                (h.DocTransNo != null && EF.Functions.Like(h.DocTransNo, $"%{search}%")) ||
+                (h.CustomerId.HasValue && _context.WhCustomers.Any(c => c.Id == h.CustomerId && (EF.Functions.Like(c.Code, $"%{search}%") || EF.Functions.Like(c.Code, $"%{search}%"))))                
+                );
         }
 
         if (transDateFrom.HasValue)
