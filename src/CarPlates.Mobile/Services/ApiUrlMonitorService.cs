@@ -41,7 +41,7 @@ public class ApiUrlMonitorService(
             {
                 _logger.LogInformation("Received IP update: {NewIP}", payload.NewIP);
 
-                var newUrl = payload.NewIP.TrimEnd('/') + "/api/v1/";
+                var newUrl = payload.NewIP;
                 _apiUrlProvider.SetApiUrl(newUrl);
                 await _settingsService.SetApiUrlAsync(newUrl);
             });

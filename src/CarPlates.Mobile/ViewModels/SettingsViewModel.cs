@@ -270,7 +270,7 @@ public partial class SettingsViewModel : BaseViewModel
         {
             var client = _httpClientFactory.CreateClient("CarPlatesApi");
             var baseUrl = client.BaseAddress?.ToString()?.TrimEnd('/');
-            var apiBase = baseUrl?.Replace("/api/v1", "") ?? "https://hexa2025.dyndns.org:8052";
+            var apiBase = baseUrl?.Replace("/api/v1", "") ?? "https://hexa2025.dyndns.org:8051";
 
             var response = await client.PostAsJsonAsync("settings/verify-password",
                 new { companyCode = CompanyCode, password = SettingsPassword });
