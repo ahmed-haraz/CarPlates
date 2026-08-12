@@ -3,7 +3,7 @@ namespace CarPlates.Shared.Constants;
 public static class ApiConstants
 {
     public const string ApiVersion = "v1";
-    public const string DefaultApiUrl = $"https://online.arkancloud.com:7072/api/{ApiVersion}/";
+    public const string DefaultApiUrl = $"https://hexa2025.dyndns.org:8052/api/{ApiVersion}/";
     public const int TimeoutSeconds = 30;
     public const int MaxRetryCount = 3;
     public const int RetryDelayMs = 1000;
