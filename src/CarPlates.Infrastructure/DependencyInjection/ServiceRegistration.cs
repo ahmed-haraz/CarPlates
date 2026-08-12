@@ -8,6 +8,8 @@ using CarPlates.Infrastructure.Services;
 using CarPlates.Shared.Constants;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
+using System.Net.Http;
+using System.Net.Security;
 
 namespace CarPlates.Infrastructure.DependencyInjection;
 
@@ -47,13 +49,17 @@ public static class ServiceRegistration
         // no app restart needed to point at a different API.
         services.AddSingleton<IApiUrlProvider>(_ => new ApiUrlProvider(apiUrl));
 
-        // HttpClient with Auth handler + company code header
+        // HttpClient with Auth handler + company code header.
+        // The API runs on an insecure/self-signed HTTPS certificate, so the
+        // primary handler is configured to skip certificate validation - that
+        // is what makes Android report net_http_ssl_connection_failed otherwise.
         services.AddHttpClient("CarPlatesApi", (sp, client) =>
         {
             client.BaseAddress = new Uri(sp.GetRequiredService<IApiUrlProvider>().CurrentApiUrl);
             client.Timeout = TimeSpan.FromSeconds(ApiConstants.TimeoutSeconds);
             client.DefaultRequestHeaders.Add("Accept", "application/json");
         })
+        .ConfigurePrimaryHttpMessageHandler(CreateInsecureHttpMessageHandler)
         .AddHttpMessageHandler<AuthDelegatingHandler>()
         .AddHttpMessageHandler<CompanyCodeDelegatingHandler>();
 
@@ -80,5 +86,19 @@ public static class ServiceRegistration
             .CreateLogger();
 
         return services;
+    }
+
+    // Accepts ANY server certificate. The API runs on a self-signed/invalid HTTPS
+    // cert, and without this the native handler on Android fails with
+    // net_http_ssl_connection_failed. Development workaround only.
+    public static HttpMessageHandler CreateInsecureHttpMessageHandler()
+    {
+        return new SocketsHttpHandler
+        {
+            SslOptions = new SslClientAuthenticationOptions
+            {
+                RemoteCertificateValidationCallback = (message, cert, chain, errors) => true
+            }
+        };
     }
 }

@@ -1,4 +1,5 @@
 using CarPlates.Application.Common.Interfaces;
+using CarPlates.Infrastructure.DependencyInjection;
 using CarPlates.Shared.Constants;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.Logging;
@@ -29,7 +30,10 @@ public class ApiUrlMonitorService(
             var hubUrl = baseUrl.Replace("/api/v1/", "").TrimEnd('/') + SignalRConstants.HubPath;
 
             _connection = new HubConnectionBuilder()
-                .WithUrl(hubUrl)
+                .WithUrl(hubUrl, options =>
+                {
+                    options.HttpMessageHandlerFactory = _ => ServiceRegistration.CreateInsecureHttpMessageHandler();
+                })
                 .WithAutomaticReconnect()
                 .Build();
 
