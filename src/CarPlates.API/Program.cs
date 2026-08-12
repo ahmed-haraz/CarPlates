@@ -11,49 +11,78 @@ using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// ============================================================
+// Resolve environment variable placeholders
+// ============================================================
+
 foreach (var entry in builder.Configuration.AsEnumerable()
              .Where(e => e.Value?.StartsWith("${") == true && e.Value.EndsWith("}"))
              .ToList())
 {
     var envVarName = entry.Value!.Substring(2, entry.Value.Length - 3);
+
     var envValue = Environment.GetEnvironmentVariable(envVarName);
+
     if (envValue != null)
     {
         builder.Configuration[entry.Key] = envValue;
     }
 }
 
+// ============================================================
+// Serilog
+// ============================================================
+
 Log.Logger = new LoggerConfiguration()
     .ReadFrom.Configuration(builder.Configuration)
     .WriteTo.Console()
-    .WriteTo.File("logs/api-.log", rollingInterval: RollingInterval.Day)
+    .WriteTo.File(
+        "logs/api-.log",
+        rollingInterval: RollingInterval.Day)
     .CreateLogger();
 
 builder.Host.UseSerilog();
 
-var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Value ?? "";
-var origins = allowedOrigins
-    .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
-    .Where(o => Uri.TryCreate(o, UriKind.Absolute, out _))
+// ============================================================
+// CORS
+// ============================================================
+
+var origins = builder.Configuration
+    .GetSection("Cors:AllowedOrigins")
+    .Get<string[]>() ?? Array.Empty<string>();
+
+origins = origins
+    .Where(origin =>
+        Uri.TryCreate(origin, UriKind.Absolute, out var uri) &&
+        (uri.Scheme == Uri.UriSchemeHttp || uri.Scheme == Uri.UriSchemeHttps))
+    .Select(origin => origin.TrimEnd('/'))
     .ToArray();
 
-if (origins.Length > 0)
+builder.Services.AddCors(options =>
 {
-    builder.Services.AddCors(options =>
+    options.AddPolicy("AllowWebApp", policy =>
     {
-        options.AddPolicy("AllowWebApp", policy =>
-        {
-            policy.WithOrigins(origins)
-                  .AllowAnyMethod()
-                  .AllowAnyHeader()
-                  .AllowCredentials();
-        });
+        policy
+            .WithOrigins(origins)
+            .AllowAnyMethod()
+            .AllowAnyHeader()
+            .AllowCredentials();
     });
-}
+});
+
+// ============================================================
+// Controllers / API
+// ============================================================
 
 builder.Services.AddControllers();
+
 builder.Services.AddEndpointsApiExplorer();
+
 builder.Services.AddSignalR();
+
+// ============================================================
+// Swagger
+// ============================================================
 
 builder.Services.AddSwaggerGen(c =>
 {
@@ -65,11 +94,17 @@ builder.Services.AddSwaggerGen(c =>
 
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
-        Description = "JWT Authorization header using the Bearer scheme. Example: \"Bearer {token}\"",
+        Description =
+            "JWT Authorization header using the Bearer scheme. Example: \"Bearer {token}\"",
+
         Name = "Authorization",
+
         In = ParameterLocation.Header,
+
         Type = SecuritySchemeType.Http,
+
         Scheme = "bearer",
+
         BearerFormat = "JWT"
     });
 
@@ -79,73 +114,172 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
+// ============================================================
+// Legacy DES
+// ============================================================
+
 builder.Services.Configure<LegacyDesOptions>(
     builder.Configuration.GetSection("LegacyDes"));
 
-// The SQL connection string is resolved per request from the company code sent
-// by the calling app (X-Company-Code header); it is NOT read from the environment.
-// Each request scope builds its own DbContext options so different companies hit
-// different databases (see CompanyConnectionProvider).
+// ============================================================
+// Database
+// ============================================================
+
+// The SQL connection string is resolved per request from the
+// company code sent by the calling app (X-Company-Code header).
+//
+// Each request scope builds its own DbContext options so different
+// companies hit different databases.
+
 builder.Services.AddScoped<ICompanyConnectionProvider, CompanyConnectionProvider>();
-builder.Services.AddDbContext<ApplicationDbContext>((sp, options) =>
-{
-    var connectionProvider = sp.GetRequiredService<ICompanyConnectionProvider>();
-    options.UseSqlServer(connectionProvider.ConnectionString);
-}, ServiceLifetime.Scoped, ServiceLifetime.Scoped);
+
+builder.Services.AddDbContext<ApplicationDbContext>(
+    (sp, options) =>
+    {
+        var connectionProvider =
+            sp.GetRequiredService<ICompanyConnectionProvider>();
+
+        options.UseSqlServer(connectionProvider.ConnectionString);
+    },
+    ServiceLifetime.Scoped,
+    ServiceLifetime.Scoped);
+
+// ============================================================
+// Authentication / Authorization
+// ============================================================
 
 builder.Services.AddJwtAuthentication(builder.Configuration);
+
 builder.Services.AddHttpContextAccessor();
+
+// ============================================================
+// Services
+// ============================================================
+
 builder.Services.AddScoped<IUserContext, UserContext>();
+
 builder.Services.AddScoped<IVehicleService, VehicleService>();
+
 builder.Services.AddScoped<IScanRecordService, ScanRecordService>();
+
 builder.Services.AddScoped<ICustomerCarService, CustomerCarService>();
+
 builder.Services.AddScoped<IWorkshopLookupService, WorkshopLookupService>();
+
 builder.Services.AddScoped<IItemService, ItemService>();
+
 builder.Services.AddScoped<ICategoryService, CategoryService>();
+
 builder.Services.AddScoped<ICustomerService, CustomerService>();
+
 builder.Services.AddScoped<IBillService, BillService>();
+
 builder.Services.AddScoped<IBillAttachmentService, BillAttachmentService>();
+
 builder.Services.AddScoped<IAuthService, AuthService>();
+
 builder.Services.AddScoped<IJwtService, JwtService>();
+
 builder.Services.AddScoped<IDeviceValidationService, DeviceValidationService>();
+
 builder.Services.AddScoped<IPaymentService, PaymentService>();
+
 builder.Services.AddScoped<ILovService, LovService>();
+
 builder.Services.AddScoped<IPaymentGatewaySettingsService, PaymentGatewaySettingsService>();
+
 builder.Services.AddScoped<IVehicleColorService, VehicleColorService>();
+
 builder.Services.AddScoped<IReceiptTemplateService, ReceiptTemplateService>();
+
 builder.Services.AddHostedService<PublishIPMonitorService>();
+
+// ============================================================
+// HTTP Clients
+// ============================================================
 
 builder.Services.AddHttpClient("FwApi", client =>
 {
     client.BaseAddress = new Uri("https://online.arkancloud.com:7070");
+
     client.Timeout = TimeSpan.FromSeconds(30);
-    client.DefaultRequestHeaders.Add("Accept", "application/json");
+
+    client.DefaultRequestHeaders.Add(
+        "Accept",
+        "application/json");
 });
 
-builder.Services.AddAutoMapper(cfg => cfg.AddMaps(AppDomain.CurrentDomain.GetAssemblies()));
+// ============================================================
+// AutoMapper
+// ============================================================
 
+builder.Services.AddAutoMapper(
+    cfg => cfg.AddMaps(AppDomain.CurrentDomain.GetAssemblies()));
+
+// ============================================================
+// Kestrel
+// ============================================================
 
 builder.WebHost.ConfigureKestrel(options =>
 {
     options.ListenAnyIP(56035);
-    //options.ListenAnyIP(56036, listenOptions => listenOptions.UseHttps());
+
+    // options.ListenAnyIP(
+    //     56036,
+    //     listenOptions => listenOptions.UseHttps());
 });
+
+// ============================================================
+// Build Application
+// ============================================================
 
 var app = builder.Build();
 
+// ============================================================
+// Swagger
+// ============================================================
+
 app.UseSwagger();
+
 app.UseSwaggerUI();
+
+// ============================================================
+// Logging
+// ============================================================
 
 app.UseSerilogRequestLogging();
 
+// ============================================================
+// Exception Middleware
+// ============================================================
+
 app.UseMiddleware<ExceptionMiddleware>();
+
+// ============================================================
+// CORS
+// ============================================================
 
 app.UseCors("AllowWebApp");
 
+// ============================================================
+// Authentication / Authorization
+// ============================================================
+
 app.UseAuthentication();
+
 app.UseAuthorization();
 
+// ============================================================
+// Endpoints
+// ============================================================
+
 app.MapControllers();
-app.MapHub<ReceivedIP>(CarPlates.Shared.Constants.SignalRConstants.HubPath);
+
+app.MapHub<ReceivedIP>(
+    CarPlates.Shared.Constants.SignalRConstants.HubPath);
+
+// ============================================================
+// Run
+// ============================================================
 
 app.Run();
