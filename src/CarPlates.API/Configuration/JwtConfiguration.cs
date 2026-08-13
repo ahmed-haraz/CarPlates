@@ -5,6 +5,7 @@ using System.Text;
 using CarPlates.API.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace CarPlates.API.Configuration;
 
@@ -67,16 +68,32 @@ public static class JwtConfiguration
                     var dbContext = context.HttpContext.RequestServices
                         .GetRequiredService<ApplicationDbContext>();
 
-                    var sessionIsValid = await dbContext.RefreshTokens
-                        .AnyAsync(t =>
-                            t.UserId == userId &&
-                            t.SessionId == sessionGuid &&
-                            !t.Revoked &&
-                            t.ExpiresAt > DateTime.UtcNow);
-
-                    if (!sessionIsValid)
+                    try
                     {
-                        context.Fail("Session has been revoked.");
+                        var sessionIsValid = await dbContext.RefreshTokens
+                            .AnyAsync(t =>
+                                t.UserId == userId &&
+                                t.SessionId == sessionGuid &&
+                                !t.Revoked &&
+                                t.ExpiresAt > DateTime.UtcNow);
+
+                        if (!sessionIsValid)
+                        {
+                            context.Fail("Session has been revoked.");
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        // Fail open: a transient DB outage must not log every user
+                        // out. The token is still cryptographically valid, and any
+                        // endpoint that actually needs the database will surface its
+                        // own error without destroying the client's session.
+                        var logger = context.HttpContext.RequestServices
+                            .GetRequiredService<ILoggerFactory>()
+                            .CreateLogger("JwtSessionValidation");
+                        logger.LogWarning(ex,
+                            "Session validation skipped due to a database error for user {UserId}.",
+                            userId);
                     }
                 }
             };
