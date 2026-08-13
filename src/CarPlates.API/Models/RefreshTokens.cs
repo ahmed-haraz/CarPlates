@@ -6,6 +6,8 @@ public class RefreshTokens
 
     public string UserId { get; set; } = null!;
 
+    public Guid SessionId { get; set; }
+
     public string Token { get; set; } = null!;
 
     public DateTime CreatedAt { get; set; }

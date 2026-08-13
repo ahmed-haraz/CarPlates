@@ -84,12 +84,15 @@ public class AuthService(
         foreach (var t in existingTokens)
             t.Revoked = true;
 
-        var accessToken = _jwtService.GenerateAccessToken(applicationUser);
+        var sessionId = Guid.NewGuid();
+
+        var accessToken = _jwtService.GenerateAccessToken(applicationUser, sessionId);
         var refreshToken = _jwtService.GenerateRefreshToken();
 
         _context.RefreshTokens.Add(new RefreshTokens
         {
             UserId = applicationUser.Id,
+            SessionId = sessionId,
             Token = refreshToken,
             CreatedAt = DateTime.UtcNow,
             ExpiresAt = DateTime.UtcNow.AddDays(7),
@@ -154,7 +157,9 @@ public class AuthService(
         };
 
 
-        var newAccessToken = _jwtService.GenerateAccessToken(applicationUser);
+        var sessionId = storedToken.SessionId;
+
+        var newAccessToken = _jwtService.GenerateAccessToken(applicationUser, sessionId);
         var newRefreshToken = _jwtService.GenerateRefreshToken();
 
         // Revoke the old refresh token
@@ -164,6 +169,7 @@ public class AuthService(
         _context.RefreshTokens.Add(new RefreshTokens
         {
             UserId = applicationUser.Id,
+            SessionId = sessionId,
             Token = newRefreshToken,
             CreatedAt = DateTime.UtcNow,
             ExpiresAt = DateTime.UtcNow.AddDays(7),

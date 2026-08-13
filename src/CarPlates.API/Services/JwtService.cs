@@ -12,7 +12,7 @@ public class JwtService(IConfiguration configuration) : IJwtService
 {
     private readonly IConfiguration _configuration = configuration;
 
-    public string GenerateAccessToken(ApplicationUser user)
+    public string GenerateAccessToken(ApplicationUser user, Guid sessionId)
     {
         var secret = Environment.GetEnvironmentVariable("JWT__Key")
     ?? throw new InvalidOperationException("JWT__Key is missing.");
@@ -41,6 +41,7 @@ public class JwtService(IConfiguration configuration) : IJwtService
                 new("cashboxId", user.CashboxId.ToString()),
                 new("usertype", user.UserType.ToString()),
                 new("companyCode", user.CompanyCode ?? ""),
+                new("sessionId", sessionId.ToString()),
                 new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
             };
 

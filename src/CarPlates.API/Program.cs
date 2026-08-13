@@ -139,7 +139,12 @@ builder.Services.AddDbContext<ApplicationDbContext>(
         var connectionProvider =
             sp.GetRequiredService<ICompanyConnectionProvider>();
 
-        options.UseSqlServer(connectionProvider.ConnectionString);
+        options.UseSqlServer(
+            connectionProvider.ConnectionString,
+            sqlOptions => sqlOptions.EnableRetryOnFailure(
+                maxRetryCount: 3,
+                maxRetryDelay: TimeSpan.FromSeconds(10),
+                errorNumbersToAdd: null));
     },
     ServiceLifetime.Scoped,
     ServiceLifetime.Scoped);

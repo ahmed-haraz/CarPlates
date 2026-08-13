@@ -75,6 +75,8 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
 
             entity.HasIndex(x => x.UserId);
 
+            entity.HasIndex(x => new { x.UserId, x.SessionId });
+
         });
 
         // ---- wh_ tables: these already exist in MobileDemo (see database/*.sql).
