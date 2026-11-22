@@ -1,3 +1,4 @@
+using System.Threading.RateLimiting;
 using CarPlates.API.Common;
 using CarPlates.API.Configuration;
 using CarPlates.API.Data;
@@ -75,6 +76,23 @@ builder.Services.AddCors(options =>
 // ============================================================
 
 builder.Services.AddControllers();
+
+// In-process IP limit. Production edge protection and account-aware controls
+// are still required, especially across multiple replicas or a reverse proxy.
+builder.Services.AddRateLimiter(options =>
+{
+    options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+    options.AddPolicy("auth", context =>
+        RateLimitPartition.GetFixedWindowLimiter(
+            context.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+            _ => new FixedWindowRateLimiterOptions
+            {
+                PermitLimit = 10,
+                Window = TimeSpan.FromMinutes(1),
+                QueueLimit = 0,
+                AutoReplenishment = true
+            }));
+});
 
 builder.Services.AddEndpointsApiExplorer();
 
@@ -225,14 +243,8 @@ builder.Services.AddAutoMapper(
 // Kestrel
 // ============================================================
 
-builder.WebHost.ConfigureKestrel(options =>
-{
-    options.ListenAnyIP(56035);
-
-    // options.ListenAnyIP(
-    //     56036,
-    //     listenOptions => listenOptions.UseHttps());
-});
+// Configure HTTPS endpoints/certificates through Kestrel configuration or
+// a reviewed trusted-proxy deployment. Do not hard-code an all-interface HTTP port.
 
 // ============================================================
 // Build Application
@@ -244,14 +256,29 @@ var app = builder.Build();
 // Swagger
 // ============================================================
 
-app.UseSwagger();
-
-app.UseSwaggerUI();
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
 
 // ============================================================
 // Logging
 // ============================================================
 
+// Reject, do not redirect, plaintext requests carrying credentials.
+// Forwarded headers are deliberately not trusted automatically.
+app.Use(async (context, next) =>
+{
+    if (!app.Environment.IsDevelopment() && !context.Request.IsHttps)
+    {
+        context.Response.StatusCode = StatusCodes.Status400BadRequest;
+        return;
+    }
+    await next(context);
+});
+app.UseRouting();
+app.UseRateLimiter();
 app.UseSerilogRequestLogging();
 
 // ============================================================
