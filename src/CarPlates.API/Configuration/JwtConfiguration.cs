@@ -14,7 +14,7 @@ public static class JwtConfiguration
     public static IServiceCollection AddJwtAuthentication(this IServiceCollection services, IConfiguration configuration)
     {
         // IMPORTANT: this must read from the SAME configuration source that
-        // JwtService uses to sign tokens (the JWT__Key / JWT__Issuer / JWT__Audience
+        // JwtService uses to sign tokens (the CARPLATES_JWT_KEY / CARPLATES_JWT_ISSUER / CARPLATES_JWT_AUDIENCE
         // environment variables, which ASP.NET Core binds to the "JWT" config
         // section). Previously this read a "JwtSettings" section from
         // appsettings.json that only ever contained un-substituted "${...}"
@@ -22,8 +22,16 @@ public static class JwtConfiguration
         // validation here with a completely different key/issuer/audience -
         // every authenticated call would 401 right after a successful login.
         var jwtSettings = configuration.GetSection("JWT");
-        var secret = jwtSettings["Key"]
-            ?? throw new InvalidOperationException("JWT__Key is missing.");
+        var secret = jwtSettings["Key"];
+        if (string.IsNullOrWhiteSpace(secret) || secret.StartsWith("${", StringComparison.Ordinal))
+            throw new InvalidOperationException(
+                "JWT signing key is missing. Set the CARPLATES_JWT_KEY environment variable (see SECURITY-NOTES.md).");
+        var jwtIssuer = jwtSettings["Issuer"];
+        var jwtAudience = jwtSettings["Audience"];
+        if (string.IsNullOrWhiteSpace(jwtIssuer) || jwtIssuer.StartsWith("${", StringComparison.Ordinal) ||
+            string.IsNullOrWhiteSpace(jwtAudience) || jwtAudience.StartsWith("${", StringComparison.Ordinal))
+            throw new InvalidOperationException(
+                "JWT issuer/audience are missing. Set the CARPLATES_JWT_ISSUER and CARPLATES_JWT_AUDIENCE environment variables (see SECURITY-NOTES.md).");
 
         services.AddAuthentication(options =>
         {
@@ -38,8 +46,8 @@ public static class JwtConfiguration
                 ValidateAudience = true,
                 ValidateLifetime = true,
                 ValidateIssuerSigningKey = true,
-                ValidIssuer = jwtSettings["Issuer"],
-                ValidAudience = jwtSettings["Audience"],
+                ValidIssuer = jwtIssuer,
+                ValidAudience = jwtAudience,
                 IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret)),
                 ClockSkew = TimeSpan.Zero
             };
