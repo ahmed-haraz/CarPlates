@@ -29,6 +29,30 @@ foreach (var entry in builder.Configuration.AsEnumerable()
         builder.Configuration[entry.Key] = envValue;
     }
 }
+// Only the project-specific variable names are honored. The pre-review generic
+// names (JWT__Key, LegacyDes__Key, ConnectionStrings__HexaConnection, ...) are
+// deliberately NOT read, so a leftover shared variable is never used silently.
+// Missing values fail closed at startup.
+string RequireProjectValue(string environmentName, string configurationKey)
+{
+    var value = Environment.GetEnvironmentVariable(environmentName);
+    if (string.IsNullOrWhiteSpace(value))
+    {
+        throw new InvalidOperationException(
+            $"{environmentName} is not set. Configure it in the server environment (see SECURITY-NOTES.md).");
+    }
+    builder.Configuration[configurationKey] = value;
+    return value;
+}
+
+builder.Configuration["JWT:Key"] = RequireProjectValue("CARPLATES_JWT_KEY", "JWT:Key");
+builder.Configuration["JWT:Issuer"] = RequireProjectValue("CARPLATES_JWT_ISSUER", "JWT:Issuer");
+builder.Configuration["JWT:Audience"] = RequireProjectValue("CARPLATES_JWT_AUDIENCE", "JWT:Audience");
+builder.Configuration["LegacyDes:Key"] = RequireProjectValue("CARPLATES_LEGACY_DES_KEY", "LegacyDes:Key");
+builder.Configuration["LegacyDes:Iv"] = RequireProjectValue("CARPLATES_LEGACY_DES_IV", "LegacyDes:Iv");
+builder.Configuration["ConnectionStrings:HexaConnection"] =
+    Environment.GetEnvironmentVariable("CARPLATES_DB_CONNECTION") ?? "";
+
 
 // ============================================================
 // Serilog
