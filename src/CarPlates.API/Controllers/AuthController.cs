@@ -15,6 +15,7 @@ public class AuthController(IAuthService authService, ILogger<AuthController> lo
 
     [HttpPost("login")]
     [AllowAnonymous]
+    [Microsoft.AspNetCore.RateLimiting.EnableRateLimiting("auth")]
     public async Task<ActionResult> Login([FromBody] LoginRequestDto request)
     {
         _logger.LogInformation("Login attempt for user: {Username}", request.Username);
@@ -38,6 +39,7 @@ public class AuthController(IAuthService authService, ILogger<AuthController> lo
 
     [HttpPost("refresh")]
     [AllowAnonymous]
+    [Microsoft.AspNetCore.RateLimiting.EnableRateLimiting("auth")]
     public async Task<ActionResult<LoginResponseDto>> RefreshToken([FromBody] RefreshTokenRequestDto request)
     {
         var result = await _authService.RefreshTokenAsync(request);
@@ -45,13 +47,14 @@ public class AuthController(IAuthService authService, ILogger<AuthController> lo
         return Ok(result);
     }
 
+    // Enrollment is disabled until an approved tenant-admin or invitation flow
+    // binds tenant, role and branch server-side. Authentication alone is not admin.
     [HttpPost("register")]
-    [AllowAnonymous]
-    public async Task<ActionResult> Register([FromBody] RegisterRequestDto request)
+    [Authorize]
+    public ActionResult Register([FromBody] RegisterRequestDto request)
     {
-        var result = await _authService.RegisterAsync(request);
-        if (!result) return BadRequest(new { Message = "Registration failed" });
-        return Ok(new { Message = "User registered successfully" });
+        return StatusCode(StatusCodes.Status403Forbidden,
+            new { Message = "Self-service enrollment is disabled." });
     }
 
     [HttpGet("me")]
