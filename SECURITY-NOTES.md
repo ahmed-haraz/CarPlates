@@ -30,6 +30,25 @@ Required design review: inventory all consumers and columns, select a modern sal
 - Login and refresh have an in-process per-remote-IP limit of 10 requests per minute with no queue and a 429 response. This is not distributed or account-aware. Behind a proxy, callers may share a bucket; coordinate safe proxy handling and edge/account-aware limits. Development bypasses the HTTPS requirement but not this limiter.
 - Full CarPlates.API project build succeeded using .NET SDK 10.0.404. NuGet reported pre-existing vulnerability warnings for AutoMapper 16.2.0 (GHSA-6vhm-j9h7-f9gh, GHSA-gpwp-5797-mjff) and transitive System.Security.Cryptography.Pkcs 9.0.4 (GHSA-2fmv-rv2c-59x7, GHSA-846f-f764-76mx). No dependency upgrade is included; review compatible fixed versions separately.
 
+## Required server environment (project-specific names)
+
+Set these before the app will start; every name is specific to this project, so
+nothing is shared with or reused from another application. Missing values fail
+closed at startup. The pre-review generic names (`JWT__Key`, `JWT__Issuer`,
+`JWT__Audience`, `LegacyDes__Key`, `LegacyDes__Iv`,
+`ConnectionStrings__HexaConnection`) are deliberately NOT read, so a leftover shared
+variable is never used silently.
+
+- `CARPLATES_JWT_KEY` - secret, REQUIRED. JWT signing key; long random value.
+- `CARPLATES_JWT_ISSUER` - REQUIRED. Token issuer string (non-secret).
+- `CARPLATES_JWT_AUDIENCE` - REQUIRED. Token audience string (non-secret).
+- `CARPLATES_LEGACY_DES_KEY` - secret, REQUIRED while legacy ERP password
+  compatibility lasts (see "Not fixed: shared legacy password storage").
+- `CARPLATES_LEGACY_DES_IV` - secret, REQUIRED. Legacy ERP DES IV.
+- `CARPLATES_DB_CONNECTION` - OPTIONAL. Base `HexaConnection` connection string. The
+  reviewed startup path resolves each tenant database from the licensing
+  service per request; this is only a fallback hook.
+
 ## Offline validation
 
 A local harness ran 29 checks across the two repositories, with no live network services or databases contacted. Fourteen checks per repository covered explicit anonymous login/refresh tenant routing; denial of other anonymous routes, missing headers/claims, duplicate headers/claims, malformed claims and cross-tenant headers; valid claim/matching-header selection; lookup failure with no fallback; JWT session database-resolution failure rejection; and restoration of the temporary request principal. One extra check confirmed the CarPlates registration action returns 403 without calling the service. BankServices used the isolated substitutes described above. These are focused regression checks, not end-to-end application or deployment tests. HTTPS middleware, endpoint throttling, successful database-backed sessions and multi-client password compatibility still need staging tests.
