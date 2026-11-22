@@ -9,18 +9,9 @@ using Microsoft.Data.SqlClient;
 namespace CarPlates.API.Data;
 
 /// <summary>
-/// Resolves the SQL Server connection string for the company that made the current
-/// request. The company code is taken from the X-Company-Code request header (sent by
-/// the mobile app on every call) and, as a fallback, from the authenticated user's
-/// companyCode JWT claim.
-/// <para>
-/// The connection string is fetched from the external ArkanCloud FwApi
-/// (FwMobileControls), which stores each company's SQL server/database credentials.
-/// Results are cached in-memory for a short TTL so the FwApi is only contacted once per
-/// company per TTL window instead of on every request. If the FwApi is unreachable or
-/// returns no database configuration for the company, the locally configured
-/// "HexaConnection" connection string is used as a fallback so the API keeps working.
-/// </para>
+/// Resolves a tenant connection. Validated token claims own authenticated tenant
+/// identity; a header is only a login/refresh routing hint, never authorization.
+/// Resolution errors fail closed. No local cross-tenant fallback is permitted.
 /// </summary>
 public interface ICompanyConnectionProvider
 {
@@ -34,13 +25,11 @@ public interface ICompanyConnectionProvider
 public class CompanyConnectionProvider(
     IHttpContextAccessor httpContextAccessor,
     IHttpClientFactory httpClientFactory,
-    IConfiguration configuration,
     ILogger<CompanyConnectionProvider> logger) : ICompanyConnectionProvider
 {
     private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
     private readonly IHttpClientFactory _httpClientFactory = httpClientFactory;
-    private readonly IConfiguration _configuration = configuration;
-    private readonly ILogger<CompanyConnectionProvider> _logger = logger;
+        private readonly ILogger<CompanyConnectionProvider> _logger = logger;
 
     private static readonly ConcurrentDictionary<string, CachedConnection> Cache = new();
     private static readonly TimeSpan CacheTtl = TimeSpan.FromMinutes(10);
@@ -52,10 +41,41 @@ public class CompanyConnectionProvider(
 
     private HttpClient Client => _httpClientFactory.CreateClient("FwApi");
 
-    public string CompanyCode =>
-        _httpContextAccessor.HttpContext?.Request.Headers[CompanyConstants.CompanyCodeHeader].FirstOrDefault()
-        ?? _httpContextAccessor.HttpContext?.User.FindFirstValue("companyCode")
-        ?? AuthConstants.DefaultCompanyCode;
+    public string CompanyCode
+    {
+        get
+        {
+            var context = _httpContextAccessor.HttpContext
+                ?? throw new InvalidOperationException("Tenant resolution requires a request.");
+            var headers = context.Request.Headers[CompanyConstants.CompanyCodeHeader];
+            if (headers.Count > 1)
+                throw new UnauthorizedAccessException("Multiple tenant headers are not allowed.");
+            var header = headers.FirstOrDefault();
+            var authenticated = context.User.Identity?.IsAuthenticated == true;
+            string? code;
+            if (authenticated)
+            {
+                var claims = context.User.FindAll("companyCode").ToArray();
+                if (claims.Length != 1)
+                    throw new UnauthorizedAccessException("A single tenant claim is required.");
+                code = claims[0].Value;
+                if (header != null && !string.Equals(header, code, StringComparison.Ordinal))
+                    throw new UnauthorizedAccessException("Tenant header does not match token.");
+            }
+            else
+            {
+                var path = context.Request.Path;
+                if (path != "/api/v1/Auth/login" && path != "/api/v1/Auth/refresh")
+                    throw new UnauthorizedAccessException("Tenant access requires authentication.");
+                code = header;
+            }
+
+            if (string.IsNullOrWhiteSpace(code) || code.Length > 64 ||
+                code.Any(c => !char.IsAsciiLetterOrDigit(c) && c != '-' && c != '_'))
+                throw new UnauthorizedAccessException("A valid company code is required.");
+            return code;
+        }
+    }
 
     public string ConnectionString
     {
@@ -78,15 +98,15 @@ public class CompanyConnectionProvider(
     {
         try
         {
-            var response = Client.GetAsync($"api/FwMobileControls/1/1/{companyCode}")
+            using var response = Client.GetAsync($"api/FwMobileControls/1/1/{Uri.EscapeDataString(companyCode)}")
                 .GetAwaiter().GetResult();
 
             if (!response.IsSuccessStatusCode)
             {
                 _logger.LogWarning(
-                    "FwApi returned {Status} for company {CompanyCode}; falling back to local connection string.",
+                    "FwApi returned {Status} for company {CompanyCode}; tenant access denied.",
                     (int)response.StatusCode, companyCode);
-                return GetLocalFallback(companyCode);
+                throw new InvalidOperationException("Tenant database resolution failed.");
             }
 
             var control = response.Content.ReadFromJsonAsync<CompanyControlRaw>(JsonOptions)
@@ -99,9 +119,9 @@ public class CompanyConnectionProvider(
                 control.Password == null)
             {
                 _logger.LogWarning(
-                    "FwApi returned no database configuration for company {CompanyCode}; falling back to local connection string.",
+                    "FwApi returned no database configuration for company {CompanyCode}; tenant access denied.",
                     companyCode);
-                return GetLocalFallback(companyCode);
+                throw new InvalidOperationException("Tenant database resolution failed.");
             }
 
             var sql = new SqlConnectionStringBuilder
@@ -117,27 +137,13 @@ public class CompanyConnectionProvider(
             _logger.LogInformation("Resolved database connection for company {CompanyCode}", companyCode);
             return sql.ConnectionString;
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            _logger.LogWarning(ex,
-                "Failed to resolve connection for company {CompanyCode} from FwApi; falling back to local connection string.",
+            _logger.LogWarning(
+                "Failed to resolve connection for company {CompanyCode} from FwApi; tenant access denied.",
                 companyCode);
-            return GetLocalFallback(companyCode);
+            throw new InvalidOperationException("Tenant database resolution failed.");
         }
-    }
-
-    private string GetLocalFallback(string companyCode)
-    {
-        var local = _configuration.GetConnectionString("HexaConnection");
-        if (string.IsNullOrWhiteSpace(local))
-        {
-            throw new InvalidOperationException(
-                $"Could not resolve a connection string for company '{companyCode}' and no local " +
-                "'ConnectionStrings:HexaConnection' fallback is configured.");
-        }
-
-        _logger.LogInformation("Using local connection string as fallback for company {CompanyCode}", companyCode);
-        return local;
     }
 
     private record CompanyControlRaw(
