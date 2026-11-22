@@ -65,11 +65,15 @@ public static class JwtConfiguration
                         return;
                     }
 
-                    var dbContext = context.HttpContext.RequestServices
-                        .GetRequiredService<ApplicationDbContext>();
-
+                    // Signature/issuer/audience/lifetime have already passed here.
+                    // Publish that principal before tenant-scoped DbContext construction.
+                    // Session validation must use the claim tenant, never an anonymous header.
+                    var previousPrincipal = context.HttpContext.User;
+                    context.HttpContext.User = principal!;
                     try
                     {
+                        var dbContext = context.HttpContext.RequestServices
+                            .GetRequiredService<ApplicationDbContext>();
                         var sessionIsValid = await dbContext.RefreshTokens
                             .AnyAsync(t =>
                                 t.UserId == userId &&
@@ -82,18 +86,14 @@ public static class JwtConfiguration
                             context.Fail("Session has been revoked.");
                         }
                     }
-                    catch (Exception ex)
+                    catch (Exception)
                     {
-                        // Fail open: a transient DB outage must not log every user
-                        // out. The token is still cryptographically valid, and any
-                        // endpoint that actually needs the database will surface its
-                        // own error without destroying the client's session.
-                        var logger = context.HttpContext.RequestServices
-                            .GetRequiredService<ILoggerFactory>()
-                            .CreateLogger("JwtSessionValidation");
-                        logger.LogWarning(ex,
-                            "Session validation skipped due to a database error for user {UserId}.",
-                            userId);
+                        // Database/tenant failures cannot bypass session revocation.
+                        context.Fail("Session could not be validated.");
+                    }
+                    finally
+                    {
+                        context.HttpContext.User = previousPrincipal;
                     }
                 }
             };
